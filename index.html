@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notebook LM</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "dark-blue": "#001b30",
+              "blue-gray": "#0b2539",
+              "light-blue": "#4285f4",
+              "accent-blue": "#8ab4f8",
+              "dark-highlighter": "#3c3c3c",
+              "dark-downlighter": "#fff",
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Flowbite CSS -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Custom CSS -->
+    <link href="/css/style.css" rel="stylesheet" />
+  </head>
+
+  <body class="h-screen flex flex-col bg-dark-blue">
+    <header class="p-4 flex justify-between items-center">
+      <div class="flex items-center">
+        <i class="fas fa-book-open text-accent-blue text-2xl mr-3"></i>
+        <h1 class="text-2xl font-bold text-white">
+          Kiago Edwin Rwaro - Study Guide
+        </h1>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button
+          class="text-gray-300 hover:text-white p-2 rounded-full hover:bg-blue-gray transition-colors"
+        >
+          <i class="fas fa-share-alt"></i>
+        </button>
+        <button
+          class="text-gray-300 hover:text-white p-2 rounded-full hover:bg-blue-gray transition-colors"
+        >
+          <i class="fas fa-cog"></i>
+        </button>
+        <div class="relative">
+          <div
+            class="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-medium cursor-pointer hover:bg-indigo-600 transition-colors"
+          >
+            KE
+          </div>
+          hava a green ling arounf the avator image i.e boundary wise
+        </div>
+      </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden gap-4 p-4">
+      <!-- Left Column (Sources) -->
+      <div
+        id="left-column"
+        class="left-column column w-80 bg-white rounded-lg shadow-sm border border-gray-200 overflow-y-auto transition-all duration-300"
+      >
+        <div class="column-header">
+          <h2 class="text-xl font-semibold text-gray-800">Sources</h2>
+          <div class="flex space-x-2">
+            <button id="collapse-left" class="btn-icon">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="p-4 transition-opacity duration-300">
+          <!-- Add Source and Discover buttons row -->
+          <div class="flex justify-between items-center mb-4">
+            <button
+              class="flex items-center text-indigo-600 hover:text-indigo-800"
+            >
+              <i class="fas fa-plus mr-2"></i>
+              <span>Add</span>
+            </button>
+            <button class="text-gray-600 hover:text-indigo-600">
+              Discover
+            </button>
+          </div>
+
+          <!-- Select all sources section -->
+          <div class="mb-4">
+            <h3 class="text-sm font-medium text-gray-500 mb-2">
+              Select all sources
+            </h3>
+            <div class="space-y-2">
+              <!-- Source item with checkbox -->
+              <div
+                class="flex items-center justify-between py-2 px-2 hover:bg-gray-50 rounded"
+              >
+                <div class="flex items-center">
+                  <input
+                    type="checkbox"
+                    class="mr-3 h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                  />
+                  <span>Business Model *With focus on the initial stage</span>
+                </div>
+              </div>
+
+              <!-- Source item with checkbox -->
+              <div
+                class="flex items-center justify-between py-2 px-2 hover:bg-gray-50 rounded"
+              >
+                <div class="flex items-center">
+                  <input
+                    type="checkbox"
+                    class="mr-3 h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                  />
+                  <span>Resume Template #4</span>
+                </div>
+              </div>
+
+              <!-- Source item with checkbox -->
+              <div
+                class="flex items-center justify-between py-2 px-2 hover:bg-gray-50 rounded"
+              >
+                <div class="flex items-center">
+                  <input
+                    type="checkbox"
+                    class="mr-3 h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                  />
+                  <span>SMS to Tenants When They Occupy a Unit</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Middle Column (Notes & Study) -->
+      <div
+        id="middle-column"
+        class="middle-column flex-1 bg-white rounded-lg shadow-sm border border-gray-200 overflow-auto transition-all duration-300"
+      >
+        <div class="sticky top-0 bg-white z-10 rounded-t-lg">
+          <div class="column-header">
+            <h2 class="text-xl font-semibold text-gray-800">Chat</h2>
+            <div class="flex space-x-2">
+              <button class="btn-icon expand-middle">
+                <i class="fas fa-expand"></i>
+              </button>
+              <button class="btn-icon">
+                <i class="fas fa-ellipsis-v"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex border-b">
+            <button
+              class="px-4 py-2 text-gray-600 hover:text-indigo-600 border-b-2 border-indigo-600 font-medium"
+            >
+              Study Guide
+            </button>
+            <button class="px-4 py-2 text-gray-600 hover:text-indigo-600">
+              Notes
+            </button>
+            <button class="px-4 py-2 text-gray-600 hover:text-indigo-600">
+              Mind Map
+            </button>
+            <button class="px-4 py-2 text-gray-600 hover:text-indigo-600">
+              Timeline
+            </button>
+          </div>
+        </div>
+
+        <div class="p-6">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">
+            Study Guide Content
+          </h3>
+
+          <div class="note-card">
+            <h4 class="font-medium text-gray-800">
+              Key Concept: Research Methodology
+            </h4>
+            <p class="text-gray-600 mt-2">
+              The systematic approach to solving research problems through
+              specific techniques and procedures.
+            </p>
+            <div class="flex mt-3 text-sm">
+              <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2"
+                >Chapter 2</span
+              >
+              <span class="bg-green-100 text-green-800 px-2 py-1 rounded"
+                >Important</span
+              >
+            </div>
+          </div>
+
+          <div class="note-card">
+            <h4 class="font-medium text-gray-800">
+              Definition: Empirical Research
+            </h4>
+            <p class="text-gray-600 mt-2">
+              Research based on observed and measured phenomena, deriving
+              knowledge from actual experience.
+            </p>
+            <div class="flex mt-3 text-sm">
+              <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2"
+                >Chapter 1</span
+              >
+              <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded"
+                >Definition</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column (Studio) -->
+      <div
+        id="right-column"
+        class="right-column column w-96 bg-gray-50 rounded-lg shadow-sm border border-gray-200 flex flex-col transition-all duration-300"
+      >
+        <div class="column-header">
+          <h2 class="text-xl font-semibold text-gray-800">Studio</h2>
+          <div class="flex space-x-2">
+            <button id="collapse-right" class="btn-icon">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="p-4 flex-1 flex flex-col transition-opacity duration-300">
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+              AI Assistant
+            </label>
+            <div
+              class="bg-white p-3 rounded-lg shadow-sm border border-gray-200"
+            >
+              <p class="text-gray-600 text-sm">
+                How can I help with your study guide today?
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-auto">
+            <div class="relative">
+              <input
+                type="text"
+                class="w-full py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                placeholder="Ask a question..."
+              />
+              <button
+                class="absolute right-3 top-3 text-indigo-600 hover:text-indigo-800 transition-colors"
+              >
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Flowbite JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="/js/script.js"></script>
+  </body>
+</html>
