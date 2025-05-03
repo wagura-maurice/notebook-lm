@@ -14,8 +14,8 @@
             colors: {
               "dark-blue": "#001b30",
               "blue-gray": "#0b2539",
-              highlighter: "#0b2539",
-              downlighter: "#fff",
+              "accent-blue": "#8ab4f8",
+              "purple-500": "#8b5cf6",
             },
           },
         },
@@ -28,7 +28,7 @@
       rel="stylesheet"
     />
 
-    <!-- Font Awesome for icons -->
+    <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -39,33 +39,35 @@
   </head>
 
   <body class="h-screen flex flex-col bg-dark-blue">
-    <header class="p-4 flex justify-between items-center bg-dark-blue">
+    <header
+      class="p-4 flex justify-between items-center bg-dark-blue border-b border-gray-800"
+    >
       <div class="flex items-center">
-        <i class="fas fa-book-open text-blue-500 text-2xl mr-3"></i>
-        <h1 class="text-2xl font-bold text-white hover:text-purple-500">
+        <i class="fas fa-book-open text-accent-blue text-2xl mr-3"></i>
+        <h1
+          class="text-2xl font-bold text-white hover:text-accent-blue transition-colors"
+        >
           Kiago Edwin Rwaro - Study Guide
         </h1>
       </div>
       <div class="flex items-center space-x-4">
         <button
-          class="text-gray-300 hover:text-white p-2 rounded-full hover:bg-purple-500 transition-colors"
+          class="text-gray-300 hover:text-white p-2 rounded-full hover:bg-blue-gray transition-colors"
         >
           <i class="fas fa-share-alt"></i>
         </button>
         <button
-          class="text-gray-300 hover:text-white p-2 rounded-full hover:bg-purple-500 transition-colors"
+          class="text-gray-300 hover:text-white p-2 rounded-full hover:bg-blue-gray transition-colors"
         >
           <i class="fas fa-cog"></i>
         </button>
         <div class="relative">
-          <!-- Avatar with green status ring -->
           <div class="relative h-10 w-10">
             <img
-              src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=indigo&color=f9f9f9&rounded=true&size=40"
+              src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=6366f1&color=fff&rounded=true&size=40"
               alt="Peter Thirikwa"
-              class="h-full w-full rounded-full bg-indigo-500 flex items-center justify-center text-white font-medium cursor-pointer hover:bg-indigo-600 transition-colors"
+              class="h-full w-full rounded-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
             />
-            <!-- Green status ring -->
             <div
               class="absolute inset-0 rounded-full border-2 border-green-500 pointer-events-none"
             ></div>
@@ -78,73 +80,77 @@
       <!-- Left Column (Sources) -->
       <div
         id="left-column"
-        class="left-column column w-80 bg-highlighter rounded-lg shadow-md shadow-purple-500 border-lg border-gray-500 overflow-y-auto transition-all duration-300"
+        class="left-column column w-80 bg-blue-gray rounded-lg border border-gray-700 overflow-y-auto transition-all duration-300"
       >
-        <div class="column-header bg-highlighter">
-          <h2 class="text-xl font-semibold text-gray-800">Sources</h2>
+        <div
+          class="column-header bg-blue-gray sticky top-0 z-10 px-4 py-3 border-b border-gray-700"
+        >
+          <h2 class="text-lg font-semibold text-gray-200">Sources</h2>
           <div class="flex space-x-2">
-            <button id="collapse-left" class="btn-icon">
-              <i class="fas fa-chevron-left"></i>
+            <button
+              id="collapse-left"
+              class="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700 transition-colors"
+            >
+              <i class="fas fa-chevron-left w-4 h-4"></i>
             </button>
           </div>
         </div>
 
         <div class="p-4 transition-opacity duration-300">
-          <!-- Add Source and Discover buttons row -->
           <div class="flex justify-between items-center mb-4">
             <button
-              class="flex items-center text-indigo-600 hover:text-indigo-800"
+              class="flex items-center text-accent-blue hover:text-accent-blue-light"
             >
               <i class="fas fa-plus mr-2"></i>
               <span>Add</span>
             </button>
-            <button class="text-gray-600 hover:text-indigo-600">
-              Discover
-            </button>
+            <button class="text-gray-400 hover:text-white">Discover</button>
           </div>
 
-          <!-- Select all sources section -->
           <div class="mb-4">
-            <h3 class="text-sm font-medium text-gray-500 mb-2">
+            <h3
+              class="text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider"
+            >
               Select all sources
             </h3>
             <div class="space-y-2">
-              <!-- Source item with checkbox -->
               <div
-                class="flex items-center justify-between py-2 px-2 hover:bg-gray-50 rounded"
+                class="flex items-center justify-between py-2 px-3 hover:bg-gray-700 rounded-lg transition-colors"
               >
                 <div class="flex items-center">
                   <input
                     type="checkbox"
-                    class="mr-3 h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                    class="mr-3 h-4 w-4 text-accent-blue rounded border-gray-600 focus:ring-accent-blue bg-gray-800"
                   />
-                  <span>Business Model *With focus on the initial stage</span>
+                  <span class="text-gray-300"
+                    >Business Model *With focus on the initial stage</span
+                  >
                 </div>
               </div>
 
-              <!-- Source item with checkbox -->
               <div
-                class="flex items-center justify-between py-2 px-2 hover:bg-gray-50 rounded"
+                class="flex items-center justify-between py-2 px-3 hover:bg-gray-700 rounded-lg transition-colors"
               >
                 <div class="flex items-center">
                   <input
                     type="checkbox"
-                    class="mr-3 h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                    class="mr-3 h-4 w-4 text-accent-blue rounded border-gray-600 focus:ring-accent-blue bg-gray-800"
                   />
-                  <span>Resume Template #4</span>
+                  <span class="text-gray-300">Resume Template #4</span>
                 </div>
               </div>
 
-              <!-- Source item with checkbox -->
               <div
-                class="flex items-center justify-between py-2 px-2 hover:bg-gray-50 rounded"
+                class="flex items-center justify-between py-2 px-3 hover:bg-gray-700 rounded-lg transition-colors"
               >
                 <div class="flex items-center">
                   <input
                     type="checkbox"
-                    class="mr-3 h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                    class="mr-3 h-4 w-4 text-accent-blue rounded border-gray-600 focus:ring-accent-blue bg-gray-800"
                   />
-                  <span>SMS to Tenants When They Occupy a Unit</span>
+                  <span class="text-gray-300"
+                    >SMS to Tenants When They Occupy a Unit</span
+                  >
                 </div>
               </div>
             </div>
@@ -152,40 +158,64 @@
         </div>
       </div>
 
-      highlighter: is using the colour #0b2539" an the baground it aperain one is of the colour #001b30.
-
-      updat the conserne code ared to ensure is work with thos colurs to produc a nice flow for the ui
       <!-- Middle Column (Notes & Study) -->
       <div
         id="middle-column"
-        class="middle-column flex-1 bg-white rounded-lg shadow-sm border border-gray-200 overflow-auto transition-all duration-300"
+        class="middle-column flex-1 bg-gray-50 rounded-lg border border-gray-300 overflow-auto transition-all duration-300"
       >
-        <div class="sticky top-0 bg-white z-10 rounded-t-lg">
-          <div class="column-header">
-            <h2 class="text-xl font-semibold text-gray-800">Chat</h2>
-            <div class="flex space-x-2">
-              <button class="btn-icon expand-middle">
-                <i class="fas fa-expand"></i>
+        <div class="sticky top-0 bg-gray-50 z-10 rounded-t-lg">
+          <div
+            class="px-4 py-3 flex justify-between items-center border-b border-gray-300"
+          >
+            <div class="flex items-center">
+              <svg
+                class="w-5 h-5 mr-2 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                ></path>
+              </svg>
+              <h2 class="text-lg font-semibold text-gray-900">Chat</h2>
+            </div>
+            <div class="flex items-center space-x-1">
+              <button
+                class="expand-middle p-2 text-gray-500 hover:text-blue-600 hover:bg-gray-200 rounded-full transition-colors"
+              >
+                <i class="fas fa-expand w-4 h-4"></i>
               </button>
-              <button class="btn-icon">
-                <i class="fas fa-ellipsis-v"></i>
+              <button
+                class="p-2 text-gray-500 hover:text-blue-600 hover:bg-gray-200 rounded-full transition-colors"
+              >
+                <i class="fas fa-ellipsis-v w-4 h-4"></i>
               </button>
             </div>
           </div>
 
-          <div class="flex border-b">
+          <div class="flex border-b border-gray-300 px-4">
             <button
-              class="px-4 py-2 text-gray-600 hover:text-indigo-600 border-b-2 border-indigo-600 font-medium"
+              class="px-4 py-3 text-sm font-medium text-blue-600 border-b-2 border-blue-600 hover:bg-blue-50 transition-colors"
             >
               Study Guide
             </button>
-            <button class="px-4 py-2 text-gray-600 hover:text-indigo-600">
+            <button
+              class="px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+            >
               Notes
             </button>
-            <button class="px-4 py-2 text-gray-600 hover:text-indigo-600">
+            <button
+              class="px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+            >
               Mind Map
             </button>
-            <button class="px-4 py-2 text-gray-600 hover:text-indigo-600">
+            <button
+              class="px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+            >
               Timeline
             </button>
           </div>
@@ -196,7 +226,9 @@
             Study Guide Content
           </h3>
 
-          <div class="note-card">
+          <div
+            class="mb-6 p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow"
+          >
             <h4 class="font-medium text-gray-800">
               Key Concept: Research Methodology
             </h4>
@@ -214,7 +246,9 @@
             </div>
           </div>
 
-          <div class="note-card">
+          <div
+            class="mb-6 p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow"
+          >
             <h4 class="font-medium text-gray-800">
               Definition: Empirical Research
             </h4>
@@ -237,25 +271,30 @@
       <!-- Right Column (Studio) -->
       <div
         id="right-column"
-        class="right-column column w-96 bg-gray-50 rounded-lg shadow-sm border border-gray-200 flex flex-col transition-all duration-300"
+        class="right-column column w-96 bg-white rounded-lg border border-gray-300 flex flex-col transition-all duration-300"
       >
-        <div class="column-header">
-          <h2 class="text-xl font-semibold text-gray-800">Studio</h2>
-          <div class="flex space-x-2">
-            <button id="collapse-right" class="btn-icon">
-              <i class="fas fa-chevron-right"></i>
-            </button>
+        <div
+          class="sticky top-0 bg-white z-10 px-4 py-3 border-b border-gray-300 rounded-t-lg"
+        >
+          <div class="flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-gray-900">Studio</h2>
+            <div class="flex space-x-2">
+              <button
+                id="collapse-right"
+                class="text-gray-500 hover:text-blue-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <i class="fas fa-chevron-right w-4 h-4"></i>
+              </button>
+            </div>
           </div>
         </div>
 
-        <div class="p-4 flex-1 flex flex-col transition-opacity duration-300">
+        <div class="p-4 flex-1 flex flex-col">
           <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2">
               AI Assistant
             </label>
-            <div
-              class="bg-white p-3 rounded-lg shadow-sm border border-gray-200"
-            >
+            <div class="bg-gray-50 p-3 rounded-lg border border-gray-300">
               <p class="text-gray-600 text-sm">
                 How can I help with your study guide today?
               </p>
@@ -266,11 +305,11 @@
             <div class="relative">
               <input
                 type="text"
-                class="w-full py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                class="w-full py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 placeholder="Ask a question..."
               />
               <button
-                class="absolute right-3 top-3 text-indigo-600 hover:text-indigo-800 transition-colors"
+                class="absolute right-3 top-3 text-blue-600 hover:text-blue-800 transition-colors"
               >
                 <i class="fas fa-paper-plane"></i>
               </button>
