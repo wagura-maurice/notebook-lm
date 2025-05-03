@@ -41,7 +41,7 @@
   </head>
 
   <body class="h-screen flex flex-col bg-dark-blue">
-    <header class="p-4 flex justify-between items-center">
+    <header class="p-4 flex justify-between items-center bg-dark-blue">
       <div class="flex items-center">
         <i class="fas fa-book-open text-accent-blue text-2xl mr-3"></i>
         <h1 class="text-2xl font-bold text-white">
@@ -60,12 +60,18 @@
           <i class="fas fa-cog"></i>
         </button>
         <div class="relative">
-          <div
-            class="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-medium cursor-pointer hover:bg-indigo-600 transition-colors"
-          >
-            KE
+          <!-- Avatar with green status ring -->
+          <div class="relative h-10 w-10">
+            <div
+              class="h-full w-full rounded-full bg-indigo-500 flex items-center justify-center text-white font-medium cursor-pointer hover:bg-indigo-600 transition-colors"
+            >
+              KE
+            </div>
+            <!-- Green status ring -->
+            <div
+              class="absolute inset-0 rounded-full border-2 border-green-500 pointer-events-none"
+            ></div>
           </div>
-          hava a green ling arounf the avator image i.e boundary wise
         </div>
       </div>
     </header>
