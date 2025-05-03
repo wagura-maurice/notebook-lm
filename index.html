@@ -14,10 +14,8 @@
             colors: {
               "dark-blue": "#001b30",
               "blue-gray": "#0b2539",
-              "light-blue": "#4285f4",
-              "accent-blue": "#8ab4f8",
-              "dark-highlighter": "#3c3c3c",
-              "dark-downlighter": "#fff",
+              highlighter: "#0b2539",
+              downlighter: "#fff",
             },
           },
         },
@@ -43,19 +41,19 @@
   <body class="h-screen flex flex-col bg-dark-blue">
     <header class="p-4 flex justify-between items-center bg-dark-blue">
       <div class="flex items-center">
-        <i class="fas fa-book-open text-accent-blue text-2xl mr-3"></i>
-        <h1 class="text-2xl font-bold text-white">
+        <i class="fas fa-book-open text-blue-500 text-2xl mr-3"></i>
+        <h1 class="text-2xl font-bold text-white hover:text-purple-500">
           Kiago Edwin Rwaro - Study Guide
         </h1>
       </div>
       <div class="flex items-center space-x-4">
         <button
-          class="text-gray-300 hover:text-white p-2 rounded-full hover:bg-blue-gray transition-colors"
+          class="text-gray-300 hover:text-white p-2 rounded-full hover:bg-purple-500 transition-colors"
         >
           <i class="fas fa-share-alt"></i>
         </button>
         <button
-          class="text-gray-300 hover:text-white p-2 rounded-full hover:bg-blue-gray transition-colors"
+          class="text-gray-300 hover:text-white p-2 rounded-full hover:bg-purple-500 transition-colors"
         >
           <i class="fas fa-cog"></i>
         </button>
@@ -63,9 +61,9 @@
           <!-- Avatar with green status ring -->
           <div class="relative h-10 w-10">
             <img
-              src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=blue&color=f9f9f9&rounded=true&size=40"
+              src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=indigo&color=f9f9f9&rounded=true&size=40"
               alt="Peter Thirikwa"
-              class="h-full w-full rounded-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+              class="h-full w-full rounded-full bg-indigo-500 flex items-center justify-center text-white font-medium cursor-pointer hover:bg-indigo-600 transition-colors"
             />
             <!-- Green status ring -->
             <div
@@ -80,9 +78,9 @@
       <!-- Left Column (Sources) -->
       <div
         id="left-column"
-        class="left-column column w-80 bg-white rounded-lg shadow-sm border border-gray-200 overflow-y-auto transition-all duration-300"
+        class="left-column column w-80 bg-highlighter rounded-lg shadow-md shadow-purple-500 border-lg border-gray-500 overflow-y-auto transition-all duration-300"
       >
-        <div class="column-header">
+        <div class="column-header bg-highlighter">
           <h2 class="text-xl font-semibold text-gray-800">Sources</h2>
           <div class="flex space-x-2">
             <button id="collapse-left" class="btn-icon">
@@ -154,6 +152,9 @@
         </div>
       </div>
 
+      highlighter: is using the colour #0b2539" an the baground it aperain one is of the colour #001b30.
+
+      updat the conserne code ared to ensure is work with thos colurs to produc a nice flow for the ui
       <!-- Middle Column (Notes & Study) -->
       <div
         id="middle-column"
