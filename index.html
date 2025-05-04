@@ -1,10 +1,10 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Notebook LM</title>
-
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -12,60 +12,91 @@
         theme: {
           extend: {
             colors: {
-              "dark-blue": "#001b30",
-              "blue-gray": "#0b2539",
-              "accent-blue": "#8ab4f8",
+              "dark-blue": "#0f172a",
+              "blue-gray": "#1e293b",
+              "accent-blue": "#38bdf8",
               "purple-500": "#8b5cf6",
             },
           },
         },
       };
     </script>
-
-    <!-- Flowbite CSS -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css"
-      rel="stylesheet"
-    />
-
     <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-
     <!-- Custom CSS -->
     <link href="./css/style.css" rel="stylesheet" />
   </head>
-
-  <body class="h-screen flex flex-col bg-dark-blue">
+  <body class="h-screen flex flex-col bg-dark-blue overflow-hidden">
+    <!-- Header Section -->
     <header
-      class="p-4 flex justify-between items-center bg-dark-blue border-b border-gray-800"
+      class="px-4 py-3 bg-dark-blue border-b border-gray-700 min-h-16 lg:h-20 shadow-md"
     >
-      <div class="flex items-center">
-        <i class="fas fa-book-open text-accent-blue text-2xl mr-3"></i>
+      <div
+        class="flex flex-col lg:flex-row h-full lg:items-center max-w-7xl mx-auto"
+      >
+        <div
+          class="flex items-center justify-between w-full lg:w-auto lg:flex-1"
+        >
+          <!-- Logo -->
+          <div class="flex items-center">
+            <img
+              src="./images/logo-Microidea-white.svg"
+              alt="Logo"
+              class="h-10 w-10 lg:h-12 lg:w-12 rounded-full mr-3"
+            />
+          </div>
+
+          <!-- Mobile Icons -->
+          <div class="lg:hidden flex items-center space-x-3">
+            <button
+              class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
+            >
+              <i class="fas fa-share-alt fa-md"></i>
+            </button>
+            <button
+              class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
+            >
+              <i class="fas fa-cog fa-md"></i>
+            </button>
+            <div class="relative h-8 w-8">
+              <img
+                src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=6366f1&color=fff&rounded=true&size=40"
+                class="h-full w-full rounded-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+              />
+              <div
+                class="absolute inset-0 rounded-full border-2 border-green-500 pointer-events-none"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Title -->
         <h1
-          class="text-2xl font-bold text-white hover:text-accent-blue transition-colors"
+          class="text-center lg:text-left text-lg lg:text-2xl font-bold text-white hover:text-accent-blue transition-colors mt-2 lg:mt-0 lg:mx-4 lg:flex-1"
         >
           Kiago Edwin Rwaro - Study Guide
         </h1>
-      </div>
-      <div class="flex items-center space-x-4">
-        <button
-          class="text-gray-300 hover:text-white p-2 rounded-full hover:bg-blue-gray transition-colors"
+
+        <!-- Desktop Icons -->
+        <div
+          class="hidden lg:flex items-center justify-end space-x-3 lg:flex-1"
         >
-          <i class="fas fa-share-alt"></i>
-        </button>
-        <button
-          class="text-gray-300 hover:text-white p-2 rounded-full hover:bg-blue-gray transition-colors"
-        >
-          <i class="fas fa-cog"></i>
-        </button>
-        <div class="relative">
+          <button
+            class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
+          >
+            <i class="fas fa-share-alt fa-md"></i>
+          </button>
+          <button
+            class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
+          >
+            <i class="fas fa-cog fa-md"></i>
+          </button>
           <div class="relative h-10 w-10">
             <img
               src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=6366f1&color=fff&rounded=true&size=40"
-              alt="Peter Thirikwa"
               class="h-full w-full rounded-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
             />
             <div
@@ -76,256 +107,214 @@
       </div>
     </header>
 
-    <div class="flex flex-1 overflow-hidden gap-4 p-4">
-      <!-- Left Column (Sources) -->
+    <!-- Mobile Tabs -->
+    <div
+      class="lg:hidden flex border-b border-gray-700 bg-blue-gray sticky top-16 z-10"
+    >
+      <button
+        class="tab-button flex-1 py-3 text-center font-medium"
+        data-tab="left-column"
+      >
+        <i class="fas fa-book mr-2"></i><span>Sources</span>
+      </button>
+      <button
+        class="tab-button active flex-1 py-3 text-center font-medium"
+        data-tab="middle-column"
+      >
+        <i class="fas fa-comments mr-2"></i><span>Chat</span>
+      </button>
+      <button
+        class="tab-button flex-1 py-3 text-center font-medium"
+        data-tab="right-column"
+      >
+        <i class="fas fa-sliders-h mr-2"></i><span>Studio</span>
+      </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex flex-1 overflow-hidden" id="columns-container">
+      <!-- Left Column -->
       <div
         id="left-column"
-        class="left-column column w-80 bg-blue-gray rounded-lg border border-gray-700 overflow-y-auto transition-all duration-300"
+        class="mobile-tab-content w-full lg:w-64 bg-blue-gray text-white border-r border-gray-700 transition-all duration-300 flex flex-col"
       >
         <div
-          class="column-header bg-blue-gray sticky top-0 z-10 px-4 py-3 border-b border-gray-700"
+          class="flex items-center justify-between px-4 py-3 border-b border-gray-700"
         >
-          <h2 class="text-lg font-semibold text-gray-200">Sources</h2>
-          <div class="flex space-x-2">
-            <button
-              id="collapse-left"
-              class="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700 transition-colors"
-            >
-              <i class="fas fa-chevron-left w-4 h-4"></i>
-            </button>
-          </div>
+          <h2 class="text-lg font-semibold">Sources</h2>
+          <button id="collapse-left" class="text-white hover:text-accent-blue">
+            <i class="fas fa-chevron-left"></i>
+          </button>
         </div>
+        // the above div content or js activity should all be hidden includin
+        the bounday staff when we are in mobile screen view
 
-        <div class="p-4 transition-opacity duration-300">
-          <div class="flex justify-between items-center mb-4">
-            <button
-              class="flex items-center text-accent-blue hover:text-accent-blue-light"
+        <div class="overflow-y-auto flex-1 p-4">
+          <ul class="space-y-2">
+            <li
+              class="p-3 rounded hover:bg-blue-gray-700 cursor-pointer flex items-center"
             >
-              <i class="fas fa-plus mr-2"></i>
-              <span>Add</span>
-            </button>
-            <button class="text-gray-400 hover:text-white">Discover</button>
-          </div>
-
-          <div class="mb-4">
-            <h3
-              class="text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider"
+              <i class="fas fa-file-alt mr-3 text-accent-blue"></i>
+              <span>Introduction to Machine Learning</span>
+            </li>
+            <li
+              class="p-3 rounded hover:bg-blue-gray-700 cursor-pointer flex items-center"
             >
-              Select all sources
-            </h3>
-            <div class="space-y-2">
-              <div
-                class="flex items-center justify-between py-2 px-3 hover:bg-gray-700 rounded-lg transition-colors"
-              >
-                <div class="flex items-center">
-                  <input
-                    type="checkbox"
-                    class="mr-3 h-4 w-4 text-accent-blue rounded border-gray-600 focus:ring-accent-blue bg-gray-800"
-                  />
-                  <span class="text-gray-300"
-                    >Business Model *With focus on the initial stage</span
-                  >
-                </div>
-              </div>
-
-              <div
-                class="flex items-center justify-between py-2 px-3 hover:bg-gray-700 rounded-lg transition-colors"
-              >
-                <div class="flex items-center">
-                  <input
-                    type="checkbox"
-                    class="mr-3 h-4 w-4 text-accent-blue rounded border-gray-600 focus:ring-accent-blue bg-gray-800"
-                  />
-                  <span class="text-gray-300">Resume Template #4</span>
-                </div>
-              </div>
-
-              <div
-                class="flex items-center justify-between py-2 px-3 hover:bg-gray-700 rounded-lg transition-colors"
-              >
-                <div class="flex items-center">
-                  <input
-                    type="checkbox"
-                    class="mr-3 h-4 w-4 text-accent-blue rounded border-gray-600 focus:ring-accent-blue bg-gray-800"
-                  />
-                  <span class="text-gray-300"
-                    >SMS to Tenants When They Occupy a Unit</span
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
+              <i class="fas fa-file-alt mr-3 text-accent-blue"></i>
+              <span>Mathematical Foundations</span>
+            </li>
+            <li
+              class="p-3 rounded hover:bg-blue-gray-700 cursor-pointer flex items-center"
+            >
+              <i class="fas fa-file-alt mr-3 text-accent-blue"></i>
+              <span>Neural Networks Basics</span>
+            </li>
+            <li
+              class="p-3 rounded hover:bg-blue-gray-700 cursor-pointer flex items-center"
+            >
+              <i class="fas fa-file-alt mr-3 text-accent-blue"></i>
+              <span>Advanced Techniques</span>
+            </li>
+          </ul>
         </div>
       </div>
 
-      <!-- Middle Column (Notes & Study) -->
+      <!-- Middle Column -->
       <div
         id="middle-column"
-        class="middle-column flex-1 bg-gray-50 rounded-lg border border-gray-300 overflow-auto transition-all duration-300"
-      >
-        <div class="sticky top-0 bg-gray-50 z-10 rounded-t-lg">
-          <div
-            class="px-4 py-3 flex justify-between items-center border-b border-gray-300"
-          >
-            <div class="flex items-center">
-              <svg
-                class="w-5 h-5 mr-2 text-blue-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                ></path>
-              </svg>
-              <h2 class="text-lg font-semibold text-gray-900">Chat</h2>
-            </div>
-            <div class="flex items-center space-x-1">
-              <button
-                class="expand-middle p-2 text-gray-500 hover:text-blue-600 hover:bg-gray-200 rounded-full transition-colors"
-              >
-                <i class="fas fa-expand w-4 h-4"></i>
-              </button>
-              <button
-                class="p-2 text-gray-500 hover:text-blue-600 hover:bg-gray-200 rounded-full transition-colors"
-              >
-                <i class="fas fa-ellipsis-v w-4 h-4"></i>
-              </button>
-            </div>
-          </div>
-
-          <div class="flex border-b border-gray-300 px-4">
-            <button
-              class="px-4 py-3 text-sm font-medium text-blue-600 border-b-2 border-blue-600 hover:bg-blue-50 transition-colors"
-            >
-              Study Guide
-            </button>
-            <button
-              class="px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-            >
-              Notes
-            </button>
-            <button
-              class="px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-            >
-              Mind Map
-            </button>
-            <button
-              class="px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-            >
-              Timeline
-            </button>
-          </div>
-        </div>
-
-        <div class="p-6">
-          <h3 class="text-lg font-semibold text-gray-800 mb-4">
-            Study Guide Content
-          </h3>
-
-          <div
-            class="mb-6 p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow"
-          >
-            <h4 class="font-medium text-gray-800">
-              Key Concept: Research Methodology
-            </h4>
-            <p class="text-gray-600 mt-2">
-              The systematic approach to solving research problems through
-              specific techniques and procedures.
-            </p>
-            <div class="flex mt-3 text-sm">
-              <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2"
-                >Chapter 2</span
-              >
-              <span class="bg-green-100 text-green-800 px-2 py-1 rounded"
-                >Important</span
-              >
-            </div>
-          </div>
-
-          <div
-            class="mb-6 p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow"
-          >
-            <h4 class="font-medium text-gray-800">
-              Definition: Empirical Research
-            </h4>
-            <p class="text-gray-600 mt-2">
-              Research based on observed and measured phenomena, deriving
-              knowledge from actual experience.
-            </p>
-            <div class="flex mt-3 text-sm">
-              <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2"
-                >Chapter 1</span
-              >
-              <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded"
-                >Definition</span
-              >
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Column (Studio) -->
-      <div
-        id="right-column"
-        class="right-column column w-96 bg-white rounded-lg border border-gray-300 flex flex-col transition-all duration-300"
+        class="mobile-tab-content active flex-1 bg-dark-blue text-white overflow-hidden transition-all duration-300 flex flex-col"
       >
         <div
-          class="sticky top-0 bg-white z-10 px-4 py-3 border-b border-gray-300 rounded-t-lg"
+          class="flex items-center justify-between px-4 py-3 border-b border-gray-700"
         >
-          <div class="flex justify-between items-center">
-            <h2 class="text-lg font-semibold text-gray-900">Studio</h2>
-            <div class="flex space-x-2">
-              <button
-                id="collapse-right"
-                class="text-gray-500 hover:text-blue-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
-              >
-                <i class="fas fa-chevron-right w-4 h-4"></i>
-              </button>
-            </div>
-          </div>
+          <h2 class="text-lg font-semibold">Chat</h2>
+          <button class="expand-middle text-white hover:text-accent-blue">
+            <i class="fas fa-expand-alt"></i>
+          </button>
         </div>
+        // the above div content or js activity should all be hidden includin
+        the bounday staff when we are in mobile screen view
 
-        <div class="p-4 flex-1 flex flex-col">
-          <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2">
-              AI Assistant
-            </label>
-            <div class="bg-gray-50 p-3 rounded-lg border border-gray-300">
-              <p class="text-gray-600 text-sm">
-                How can I help with your study guide today?
+        <div class="overflow-y-auto flex-1 p-4 space-y-4">
+          <!-- Bot message -->
+          <div class="flex items-start">
+            <div
+              class="w-8 h-8 rounded-full bg-accent-blue flex items-center justify-center mr-3"
+            >
+              <i class="fas fa-robot text-white"></i>
+            </div>
+            <div class="bg-blue-gray p-3 rounded-lg max-w-[80%]">
+              <p>
+                Hello! I'm your NotebookLM assistant. How can I help with your
+                study guide today?
               </p>
             </div>
           </div>
 
-          <div class="mt-auto">
-            <div class="relative">
-              <input
-                type="text"
-                class="w-full py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                placeholder="Ask a question..."
-              />
-              <button
-                class="absolute right-3 top-3 text-blue-600 hover:text-blue-800 transition-colors"
-              >
-                <i class="fas fa-paper-plane"></i>
-              </button>
+          <!-- User message -->
+          <div class="flex items-start justify-end">
+            <div
+              class="bg-accent-blue bg-opacity-20 p-3 rounded-lg max-w-[80%]"
+            >
+              <p>
+                Can you summarize the key concepts from the Neural Networks
+                Basics document?
+              </p>
             </div>
+            <div
+              class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center ml-3"
+            >
+              <i class="fas fa-user text-white"></i>
+            </div>
+          </div>
+
+          <!-- Bot response -->
+          <div class="flex items-start">
+            <div
+              class="w-8 h-8 rounded-full bg-accent-blue flex items-center justify-center mr-3"
+            >
+              <i class="fas fa-robot text-white"></i>
+            </div>
+            <div class="bg-blue-gray p-3 rounded-lg max-w-[80%]">
+              <p>
+                From the Neural Networks Basics document, here are the key
+                concepts:
+              </p>
+              <ul class="list-disc pl-5 mt-2 space-y-1">
+                <li>Neurons as the basic computational units</li>
+                <li>Activation functions (sigmoid, ReLU, tanh)</li>
+                <li>Forward and backpropagation</li>
+                <li>Loss functions and optimization</li>
+              </ul>
+              <p class="mt-2">
+                Would you like me to explain any of these in more detail?
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="p-4 border-t border-gray-700">
+          <div class="relative">
+            <textarea
+              class="w-full bg-blue-gray rounded-lg p-3 pr-12 text-white resize-none focus:ring-2 focus:ring-accent-blue focus:outline-none"
+              placeholder="Ask a question..."
+              rows="2"
+            ></textarea>
+            <button
+              class="absolute right-2 bottom-2 text-accent-blue hover:text-white p-2 rounded-full transition-colors"
+            >
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div
+        id="right-column"
+        class="mobile-tab-content w-full lg:w-72 bg-blue-gray text-white border-l border-gray-700 transition-all duration-300 flex flex-col"
+      >
+        <div
+          class="flex items-center justify-between px-4 py-3 border-b border-gray-700"
+        >
+          <h2 class="text-lg font-semibold">Studio</h2>
+          <button id="collapse-right" class="text-white hover:text-accent-blue">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        // the above div content or js activity should all be hidden includin
+        the bounday staff when we are in mobile screen view
+
+        <div class="overflow-y-auto flex-1 p-4 space-y-4">
+          <div class="bg-blue-gray-700 p-4 rounded-lg">
+            <h3 class="font-medium text-accent-blue mb-2">Note Taking</h3>
+            <button
+              class="w-full bg-accent-blue bg-opacity-20 hover:bg-opacity-30 text-white p-2 rounded flex items-center justify-center"
+            >
+              <i class="fas fa-plus mr-2"></i> New Note
+            </button>
+          </div>
+          <div class="bg-blue-gray-700 p-4 rounded-lg">
+            <h3 class="font-medium text-accent-blue mb-2">Flashcards</h3>
+            <button
+              class="w-full bg-accent-blue bg-opacity-20 hover:bg-opacity-30 text-white p-2 rounded flex items-center justify-center"
+            >
+              <i class="fas fa-plus mr-2"></i> Create Flashcards
+            </button>
+          </div>
+          <div class="bg-blue-gray-700 p-4 rounded-lg">
+            <h3 class="font-medium text-accent-blue mb-2">Summary</h3>
+            <button
+              class="w-full bg-accent-blue bg-opacity-20 hover:bg-opacity-30 text-white p-2 rounded flex items-center justify-center"
+            >
+              <i class="fas fa-file-alt mr-2"></i> Generate Summary
+            </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Flowbite JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
-
-    <!-- Custom JS -->
-    <script src="./js/script.js"></script>
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="js/script.js"></script>
   </body>
 </html>
