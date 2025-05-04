@@ -1,137 +1,104 @@
-// js/script.js
+// script.js
+$(document).ready(function () {
+  // DOM Elements
+  const $container = $("#columns-container");
+  const $leftColumn = $("#left-column");
+  const $middleColumn = $("#middle-column");
+  const $rightColumn = $("#right-column");
+  const $tabButtons = $(".tab-button");
 
-class NotebookApp {
-  constructor() {
-    this.initElements();
-    this.initEvents();
-    this.checkInitialState();
-    this.setupResizeObserver();
-  }
+  // State
+  let state = {
+    leftVisible: true,
+    rightVisible: true,
+    activeTab: "middle-column",
+    isMobile: window.innerWidth < 1024,
+  };
 
-  initElements() {
-    this.$leftColumn = $("#left-column");
-    this.$rightColumn = $("#right-column");
-    this.$middleColumn = $("#middle-column");
-    this.$collapseLeft = $("#collapse-left");
-    this.$collapseRight = $("#collapse-right");
-    this.$expandMiddle = $(".fa-expand");
-    this.isMobile = window.innerWidth < 768;
-  }
+  // Initialize
+  initLayout();
+  setupEventListeners();
 
-  initEvents() {
-    // Column toggle events
-    this.$collapseLeft.on("click", () => this.toggleColumn("left"));
-    this.$collapseRight.on("click", () => this.toggleColumn("right"));
-
-    // Middle expand button
-    this.$expandMiddle.on("click", () => this.toggleFullScreenMode());
-
-    // Note card selection
-    $(document).on("click", ".note-card", (e) =>
-      this.selectNoteCard(e.currentTarget)
-    );
-  }
-
-  toggleColumn(side) {
-    const $column = side === "left" ? this.$leftColumn : this.$rightColumn;
-    const $button = side === "left" ? this.$collapseLeft : this.$collapseRight;
-
-    $column.toggleClass("collapsed");
-    $button.find("i").toggleClass("fa-chevron-left fa-chevron-right");
-    this.updateMiddleColumn();
-  }
-
-  toggleFullScreenMode() {
-    const isFullScreen = this.$middleColumn.hasClass("full-screen");
-
-    if (isFullScreen) {
-      // Exit full screen - restore both columns
-      this.$leftColumn.removeClass("collapsed");
-      this.$rightColumn.removeClass("collapsed");
-      this.$collapseLeft
-        .find("i")
-        .removeClass("fa-chevron-right")
-        .addClass("fa-chevron-left");
-      this.$collapseRight
-        .find("i")
-        .removeClass("fa-chevron-left")
-        .addClass("fa-chevron-right");
+  // Functions
+  function initLayout() {
+    if (state.isMobile) {
+      setupMobileView();
     } else {
-      // Enter full screen - collapse both columns
-      this.$leftColumn.addClass("collapsed");
-      this.$rightColumn.addClass("collapsed");
-      this.$collapseLeft
-        .find("i")
-        .removeClass("fa-chevron-left")
-        .addClass("fa-chevron-right");
-      this.$collapseRight
-        .find("i")
-        .removeClass("fa-chevron-right")
-        .addClass("fa-chevron-left");
-    }
-
-    this.$middleColumn.toggleClass("full-screen");
-    this.updateMiddleColumn();
-  }
-
-  updateMiddleColumn() {
-    const leftCollapsed = this.$leftColumn.hasClass("collapsed");
-    const rightCollapsed = this.$rightColumn.hasClass("collapsed");
-
-    // Remove all state classes first
-    this.$middleColumn.removeClass(
-      "left-collapsed right-collapsed both-collapsed"
-    );
-
-    if (leftCollapsed && rightCollapsed) {
-      this.$middleColumn.addClass("both-collapsed");
-    } else if (leftCollapsed) {
-      this.$middleColumn.addClass("left-collapsed");
-    } else if (rightCollapsed) {
-      this.$middleColumn.addClass("right-collapsed");
+      setupDesktopView();
     }
   }
 
-  selectNoteCard(card) {
-    $(".note-card").removeClass("selected");
-    $(card).addClass("selected");
+  function setupMobileView() {
+    $container.removeClass("collapsed-left collapsed-right full-expand");
+    $(".mobile-tab-content").removeClass("active").hide();
+    $(`#${state.activeTab}`).addClass("active").show();
+    $tabButtons.removeClass("active");
+    $(`.tab-button[data-tab="${state.activeTab}"]`).addClass("active");
   }
 
-  checkInitialState() {
-    // Initialize columns as visible
-    this.$leftColumn.removeClass("collapsed");
-    this.$rightColumn.removeClass("collapsed");
+  function setupDesktopView() {
+    $(".mobile-tab-content").removeClass("active").show();
+    $tabButtons.removeClass("active");
+    updateColumnLayout();
+  }
 
-    // Check mobile state
-    if (this.isMobile) {
-      this.handleMobileLayout();
+  function updateColumnLayout() {
+    $container.removeClass("collapsed-left collapsed-right full-expand");
+
+    if (!state.leftVisible && !state.rightVisible) {
+      $container.addClass("full-expand");
+    } else {
+      if (!state.leftVisible) $container.addClass("collapsed-left");
+      if (!state.rightVisible) $container.addClass("collapsed-right");
     }
   }
 
-  handleMobileLayout() {
-    this.$leftColumn.addClass("collapsed");
-    this.$rightColumn.addClass("collapsed");
-    this.updateMiddleColumn();
-  }
+  function setupEventListeners() {
+    // Column toggles
+    $("#collapse-left").click(function () {
+      state.leftVisible = !state.leftVisible;
+      updateColumnLayout();
+    });
 
-  setupResizeObserver() {
-    $(window).on("resize", () => {
-      const newIsMobile = window.innerWidth < 768;
-      if (newIsMobile !== this.isMobile) {
-        this.isMobile = newIsMobile;
-        if (this.isMobile) {
-          this.handleMobileLayout();
+    $("#collapse-right").click(function () {
+      state.rightVisible = !state.rightVisible;
+      updateColumnLayout();
+    });
+
+    $(".expand-middle").click(function () {
+      if (state.leftVisible || state.rightVisible) {
+        state.leftVisible = false;
+        state.rightVisible = false;
+      } else {
+        state.leftVisible = true;
+        state.rightVisible = true;
+      }
+      updateColumnLayout();
+    });
+
+    // Mobile tabs
+    $tabButtons.click(function () {
+      const tabId = $(this).data("tab");
+      state.activeTab = tabId;
+
+      $tabButtons.removeClass("active");
+      $(this).addClass("active");
+
+      $(".mobile-tab-content").removeClass("active").hide();
+      $(`#${tabId}`).addClass("active").show();
+    });
+
+    // Window resize
+    $(window).resize(function () {
+      const isMobileNow = window.innerWidth < 1024;
+      if (isMobileNow !== state.isMobile) {
+        state.isMobile = isMobileNow;
+        if (state.isMobile) {
+          setupMobileView();
         } else {
-          this.$leftColumn.removeClass("collapsed");
-          this.$rightColumn.removeClass("collapsed");
-          this.updateMiddleColumn();
+          setupDesktopView();
         }
       }
     });
   }
-}
-
-// Initialize the application when DOM is ready
-$(document).ready(() => {
-  new NotebookApp();
 });
