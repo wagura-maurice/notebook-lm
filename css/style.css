@@ -189,7 +189,7 @@ header {
 
 /* Source Items List */
 #left-column .source-item {
-  padding: 0 0.75rem;
+  padding: 0;
 }
 
 #left-column .source-item li {
