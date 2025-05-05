@@ -26,8 +26,133 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <!-- Custom CSS -->
-    <link href="./css/style.css" rel="stylesheet" />
+    <style>
+      /* Base Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        background-color: #0f172a;
+        color: white;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Column Transitions */
+      #left-column,
+      #middle-column,
+      #right-column {
+        transition: all 0.3s ease;
+      }
+
+      /* Left Column */
+      #left-column {
+        width: 16rem;
+        min-width: 16rem;
+        background-color: #1e293b;
+        border-right: 1px solid #1e293b;
+      }
+
+      #left-column.collapsed {
+        width: 3rem;
+        min-width: 3rem;
+      }
+
+      #left-column.collapsed .overflow-y-auto,
+      #left-column.collapsed h2 {
+        display: none;
+      }
+
+      /* Right Column */
+      #right-column {
+        width: 18rem;
+        min-width: 18rem;
+        background-color: #1e293b;
+        border-left: 1px solid #1e293b;
+      }
+
+      #right-column.collapsed {
+        width: 3rem;
+        min-width: 3rem;
+      }
+
+      #right-column.collapsed .overflow-y-auto,
+      #right-column.collapsed h2 {
+        display: none;
+      }
+
+      /* Collapsed States */
+      .collapsed-left #left-column {
+        width: 3rem;
+        min-width: 3rem;
+      }
+
+      .collapsed-right #right-column {
+        width: 3rem;
+        min-width: 3rem;
+      }
+
+      .collapsed-left #left-column h2,
+      .collapsed-left #left-column .overflow-y-auto,
+      .collapsed-right #right-column h2,
+      .collapsed-right #right-column .overflow-y-auto {
+        display: none;
+      }
+
+      /* Full expand state */
+      .full-expand #left-column,
+      .full-expand #right-column {
+        width: 3rem;
+        min-width: 3rem;
+      }
+
+      .full-expand #left-column h2,
+      .full-expand #left-column .overflow-y-auto,
+      .full-expand #right-column h2,
+      .full-expand #right-column .overflow-y-auto {
+        display: none;
+      }
+
+      /* Column headers in collapsed state */
+      .collapsed-left #left-column .flex,
+      .collapsed-right #right-column .flex,
+      .full-expand #left-column .flex,
+      .full-expand #right-column .flex,
+      #left-column.collapsed .flex,
+      #right-column.collapsed .flex {
+        justify-content: center;
+      }
+
+      /* Mobile View */
+      @media (max-width: 1023px) {
+        .mobile-tab-content:not(.active) {
+          display: none;
+        }
+      }
+
+      @media (min-width: 1024px) {
+        .tab-button {
+          display: none;
+        }
+
+        .mobile-tab-content {
+          display: flex !important;
+          flex-direction: column;
+        }
+      }
+    </style>
   </head>
   <body class="h-screen flex flex-col bg-dark-blue overflow-hidden">
     <!-- Header Section -->
@@ -140,38 +265,87 @@
           class="flex items-center justify-between px-4 py-3 border-b border-gray-700 hidden lg:flex"
         >
           <h2 class="text-lg font-semibold">Sources</h2>
-          <button id="collapse-left" class="text-white hover:text-accent-blue">
+          <button
+            id="collapse-left"
+            class="text-white text-lg hover:text-accent-blue"
+          >
             <i class="fas fa-chevron-left"></i>
           </button>
         </div>
 
-        <div class="overflow-y-auto flex-1 p-4">
-          <ul class="space-y-2">
+        <!-- Actions -->
+        <div class="p-2 flex items-center gap-2 px-3">
+          <button
+            type="button"
+            class="flex items-center justify-center flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-medium transition-colors"
+          >
+            <i class="fas fa-plus mr-2"></i>
+            Add
+          </button>
+          <button
+            type="button"
+            class="flex items-center justify-center flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-medium transition-colors"
+          >
+            <i class="fas fa-search mr-2"></i>
+            Discover
+          </button>
+        </div>
+
+        <!-- Select source -->
+        <div
+          class="select-source-row px-3 py-2 border-b border-gray-700 flex justify-between items-center"
+        >
+          <span class="text-sm">Select sources</span>
+          <input type="checkbox" id="select-all" class="source-checkbox" />
+        </div>
+
+        <div class="overflow-y-auto flex-1">
+          <ul class="source-item px-3">
             <li
-              class="p-3 rounded hover:bg-blue-gray-700 cursor-pointer flex items-center"
+              class="py-2 hover:bg-blue-gray-700 rounded cursor-pointer flex items-center"
             >
-              <i class="fas fa-file-alt mr-3 text-accent-blue"></i>
-              <span>Introduction to Machine Learning</span>
+              <i class="fas fa-file-pdf ml-2"></i>
+              <span class="ml-2">Introduction to Machine Learning</span>
+              <input type="checkbox" class="source-checkbox" />
             </li>
             <li
-              class="p-3 rounded hover:bg-blue-gray-700 cursor-pointer flex items-center"
+              class="py-2 hover:bg-blue-gray-700 rounded cursor-pointer flex items-center"
             >
-              <i class="fas fa-file-alt mr-3 text-accent-blue"></i>
-              <span>Mathematical Foundations</span>
+              <i class="fas fa-file-word ml-2"></i>
+              <span class="ml-2">Mathematical Foundations</span>
+              <input type="checkbox" class="source-checkbox" />
             </li>
             <li
-              class="p-3 rounded hover:bg-blue-gray-700 cursor-pointer flex items-center"
+              class="py-2 hover:bg-blue-gray-700 rounded cursor-pointer flex items-center"
             >
-              <i class="fas fa-file-alt mr-3 text-accent-blue"></i>
-              <span>Neural Networks Basics</span>
+              <i class="fas fa-file-excel ml-2"></i>
+              <span class="ml-2">Neural Networks Basics</span>
+              <input type="checkbox" class="source-checkbox" />
             </li>
             <li
-              class="p-3 rounded hover:bg-blue-gray-700 cursor-pointer flex items-center"
+              class="py-2 hover:bg-blue-gray-700 rounded cursor-pointer flex items-center"
             >
-              <i class="fas fa-file-alt mr-3 text-accent-blue"></i>
-              <span>Advanced Techniques</span>
+              <i class="fas fa-file-code ml-2"></i>
+              <span class="ml-2">Advanced Techniques</span>
+              <input type="checkbox" class="source-checkbox" />
             </li>
           </ul>
+        </div>
+
+        <!-- Collapsed icon view -->
+        <div class="source-icon hidden">
+          <div
+            class="w-full text-center py-3 hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
+          >
+            <i class="fas fa-file-alt block text-lg"></i>
+            <div class="text-xs mt-1">Sources</div>
+          </div>
+          <div
+            class="w-full text-center py-3 hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
+          >
+            <i class="fas fa-book block text-lg"></i>
+            <div class="text-xs mt-1">Docs</div>
+          </div>
         </div>
       </div>
 
@@ -184,7 +358,9 @@
           class="flex items-center justify-between px-4 py-3 border-b border-gray-700 hidden lg:flex"
         >
           <h2 class="text-lg font-semibold">Chat</h2>
-          <button class="expand-middle text-white hover:text-accent-blue">
+          <button
+            class="expand-middle text-white text-lg hover:text-accent-blue"
+          >
             <i class="fas fa-expand-alt"></i>
           </button>
         </div>
@@ -271,35 +447,62 @@
           class="flex items-center justify-between px-4 py-3 border-b border-gray-700 hidden lg:flex"
         >
           <h2 class="text-lg font-semibold">Studio</h2>
-          <button id="collapse-right" class="text-white hover:text-accent-blue">
+          <button
+            id="collapse-right"
+            class="text-white text-lg hover:text-accent-blue"
+          >
             <i class="fas fa-chevron-right"></i>
           </button>
         </div>
 
-        <div class="overflow-y-auto flex-1 p-4 space-y-4">
-          <div class="bg-blue-gray-700 p-4 rounded-lg">
-            <h3 class="font-medium text-accent-blue mb-2">Note Taking</h3>
-            <button
-              class="w-full bg-accent-blue bg-opacity-20 hover:bg-opacity-30 text-white p-2 rounded flex items-center justify-center"
-            >
-              <i class="fas fa-plus mr-2"></i> New Note
-            </button>
+        <div class="overflow-y-auto flex-1 p-4 lg:p-0">
+          <!-- Desktop expanded view -->
+          <div class="studio-item space-y-4">
+            <div class="bg-blue-gray-700 p-4 rounded-lg">
+              <h3 class="font-medium text-accent-blue mb-2">Note Taking</h3>
+              <button
+                class="w-full bg-accent-blue bg-opacity-20 hover:bg-opacity-30 text-white p-2 rounded flex items-center justify-center"
+              >
+                <i class="fas fa-plus mr-2"></i> New Note
+              </button>
+            </div>
+            <div class="bg-blue-gray-700 p-4 rounded-lg">
+              <h3 class="font-medium text-accent-blue mb-2">Flashcards</h3>
+              <button
+                class="w-full bg-accent-blue bg-opacity-20 hover:bg-opacity-30 text-white p-2 rounded flex items-center justify-center"
+              >
+                <i class="fas fa-plus mr-2"></i> Create Flashcards
+              </button>
+            </div>
+            <div class="bg-blue-gray-700 p-4 rounded-lg">
+              <h3 class="font-medium text-accent-blue mb-2">Summary</h3>
+              <button
+                class="w-full bg-accent-blue bg-opacity-20 hover:bg-opacity-30 text-white p-2 rounded flex items-center justify-center"
+              >
+                <i class="fas fa-file-alt mr-2"></i> Generate Summary
+              </button>
+            </div>
           </div>
-          <div class="bg-blue-gray-700 p-4 rounded-lg">
-            <h3 class="font-medium text-accent-blue mb-2">Flashcards</h3>
-            <button
-              class="w-full bg-accent-blue bg-opacity-20 hover:bg-opacity-30 text-white p-2 rounded flex items-center justify-center"
+          <!-- Collapsed icon view -->
+          <div class="studio-icon hidden">
+            <div
+              class="w-full text-center py-3 hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
             >
-              <i class="fas fa-plus mr-2"></i> Create Flashcards
-            </button>
-          </div>
-          <div class="bg-blue-gray-700 p-4 rounded-lg">
-            <h3 class="font-medium text-accent-blue mb-2">Summary</h3>
-            <button
-              class="w-full bg-accent-blue bg-opacity-20 hover:bg-opacity-30 text-white p-2 rounded flex items-center justify-center"
+              <i class="fas fa-sticky-note block text-lg"></i>
+              <div class="text-xs mt-1">Notes</div>
+            </div>
+            <div
+              class="w-full text-center py-3 hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
             >
-              <i class="fas fa-file-alt mr-2"></i> Generate Summary
-            </button>
+              <i class="fas fa-layer-group block text-lg"></i>
+              <div class="text-xs mt-1">Cards</div>
+            </div>
+            <div
+              class="w-full text-center py-3 hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
+            >
+              <i class="fas fa-file-contract block text-lg"></i>
+              <div class="text-xs mt-1">Summary</div>
+            </div>
           </div>
         </div>
       </div>
