@@ -6,6 +6,9 @@ $(document).ready(function () {
   const $middleColumn = $("#middle-column");
   const $rightColumn = $("#right-column");
   const $tabButtons = $(".tab-button");
+  const $collapseLeft = $("#collapse-left");
+  const $collapseRight = $("#collapse-right");
+  const $expandMiddle = $(".expand-middle");
 
   // State
   let state = {
@@ -34,6 +37,18 @@ $(document).ready(function () {
     $(`#${state.activeTab}`).addClass("active").show();
     $tabButtons.removeClass("active");
     $(`.tab-button[data-tab="${state.activeTab}"]`).addClass("active");
+
+    // Reset any collapsed states for mobile
+    $leftColumn.removeClass("collapsed");
+    $rightColumn.removeClass("collapsed");
+    $collapseLeft
+      .find("i")
+      .removeClass("fa-chevron-right")
+      .addClass("fa-chevron-left");
+    $collapseRight
+      .find("i")
+      .removeClass("fa-chevron-left")
+      .addClass("fa-chevron-right");
   }
 
   function setupDesktopView() {
@@ -47,25 +62,126 @@ $(document).ready(function () {
 
     if (!state.leftVisible && !state.rightVisible) {
       $container.addClass("full-expand");
+      $leftColumn.addClass("collapsed");
+      $rightColumn.addClass("collapsed");
+      // Update icons for collapsed state
+      $collapseLeft
+        .find("i")
+        .removeClass("fa-chevron-left")
+        .addClass("fa-chevron-right");
+      $collapseRight
+        .find("i")
+        .removeClass("fa-chevron-right")
+        .addClass("fa-chevron-left");
     } else {
-      if (!state.leftVisible) $container.addClass("collapsed-left");
-      if (!state.rightVisible) $container.addClass("collapsed-right");
+      if (!state.leftVisible) {
+        $container.addClass("collapsed-left");
+        $leftColumn.addClass("collapsed");
+        $collapseLeft
+          .find("i")
+          .removeClass("fa-chevron-left")
+          .addClass("fa-chevron-right");
+      } else {
+        $leftColumn.removeClass("collapsed");
+        $collapseLeft
+          .find("i")
+          .removeClass("fa-chevron-right")
+          .addClass("fa-chevron-left");
+      }
+
+      if (!state.rightVisible) {
+        $container.addClass("collapsed-right");
+        $rightColumn.addClass("collapsed");
+        $collapseRight
+          .find("i")
+          .removeClass("fa-chevron-right")
+          .addClass("fa-chevron-left");
+      } else {
+        $rightColumn.removeClass("collapsed");
+        $collapseRight
+          .find("i")
+          .removeClass("fa-chevron-left")
+          .addClass("fa-chevron-right");
+      }
+    }
+
+    // Update middle column expand/collapse icon
+    if (!state.leftVisible || !state.rightVisible) {
+      $expandMiddle
+        .find("i")
+        .removeClass("fa-expand-alt")
+        .addClass("fa-compress-alt");
+    } else {
+      $expandMiddle
+        .find("i")
+        .removeClass("fa-compress-alt")
+        .addClass("fa-expand-alt");
+    }
+
+    // Toggle between icon and full views
+    if (state.leftVisible) {
+      $leftColumn.find(".source-item").show();
+      $leftColumn.find(".source-icon").hide();
+    } else {
+      $leftColumn.find(".source-item").hide();
+      $leftColumn.find(".source-icon").show();
+    }
+
+    if (state.rightVisible) {
+      $rightColumn.find(".studio-item").show();
+      $rightColumn.find(".studio-icon").hide();
+    } else {
+      $rightColumn.find(".studio-item").hide();
+      $rightColumn.find(".studio-icon").show();
+    }
+
+    // Handle collapsed column styles
+    if ($leftColumn.hasClass("collapsed")) {
+      $leftColumn.css({
+        "border-radius": "0.75rem",
+        "box-shadow": "0 4px 6px -1px rgba(0, 0, 0, 0.25)",
+      });
+      $leftColumn.find(".source-item").hide();
+      $leftColumn.find(".source-icon").show();
+    } else {
+      $leftColumn.css({
+        "border-radius": "0.75rem 0 0 0.75rem",
+        "box-shadow": "0 4px 6px -1px rgba(0, 0, 0, 0.25)",
+      });
+      $leftColumn.find(".source-item").show();
+      $leftColumn.find(".source-icon").hide();
+    }
+
+    if ($rightColumn.hasClass("collapsed")) {
+      $rightColumn.css({
+        "border-radius": "0.75rem",
+        "box-shadow": "0 4px 6px -1px rgba(0, 0, 0, 0.25)",
+      });
+      $rightColumn.find(".studio-item").hide();
+      $rightColumn.find(".studio-icon").show();
+    } else {
+      $rightColumn.css({
+        "border-radius": "0 0.75rem 0.75rem 0",
+        "box-shadow": "0 4px 6px -1px rgba(0, 0, 0, 0.25)",
+      });
+      $rightColumn.find(".studio-item").show();
+      $rightColumn.find(".studio-icon").hide();
     }
   }
 
   function setupEventListeners() {
     // Column toggles
-    $("#collapse-left").click(function () {
+    $collapseLeft.click(function () {
       state.leftVisible = !state.leftVisible;
       updateColumnLayout();
     });
 
-    $("#collapse-right").click(function () {
+    $collapseRight.click(function () {
       state.rightVisible = !state.rightVisible;
       updateColumnLayout();
     });
 
-    $(".expand-middle").click(function () {
+    $expandMiddle.click(function () {
       if (state.leftVisible || state.rightVisible) {
         state.leftVisible = false;
         state.rightVisible = false;
@@ -86,6 +202,12 @@ $(document).ready(function () {
 
       $(".mobile-tab-content").removeClass("active").hide();
       $(`#${tabId}`).addClass("active").show();
+
+      // For mobile, ensure columns are fully expanded
+      if (state.isMobile) {
+        $leftColumn.removeClass("collapsed");
+        $rightColumn.removeClass("collapsed");
+      }
     });
 
     // Window resize
