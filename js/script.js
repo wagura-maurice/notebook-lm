@@ -224,3 +224,64 @@ $(document).ready(function () {
     });
   }
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Handle dropdown toggle for desktop
+  const sourceItems = document.querySelectorAll(".source-item li");
+
+  sourceItems.forEach((item) => {
+    let pressTimer;
+
+    // Desktop hover behavior
+    item.addEventListener("mouseenter", () => {
+      clearTimeout(pressTimer);
+    });
+
+    item.addEventListener("mouseleave", () => {
+      item.querySelector(".dropdown-menu").classList.add("hidden");
+    });
+
+    // Mobile long press behavior
+    item.addEventListener("touchstart", (e) => {
+      pressTimer = setTimeout(() => {
+        e.preventDefault();
+        item.classList.add("active");
+        document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+          menu.classList.add("hidden");
+        });
+        item.querySelector(".dropdown-menu").classList.remove("hidden");
+      }, 500);
+    });
+
+    item.addEventListener("touchend", () => {
+      clearTimeout(pressTimer);
+    });
+
+    // Click handler for both desktop and mobile
+    item.addEventListener("click", (e) => {
+      if (!e.target.classList.contains("source-checkbox")) {
+        const dropdown = item.querySelector(".dropdown-menu");
+        if (dropdown.classList.contains("hidden")) {
+          document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+            menu.classList.add("hidden");
+          });
+          dropdown.classList.remove("hidden");
+        } else {
+          dropdown.classList.add("hidden");
+        }
+      }
+    });
+  });
+
+  // Close dropdown when clicking elsewhere
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".source-item li")) {
+      document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+        menu.classList.add("hidden");
+      });
+      document.querySelectorAll(".source-item li").forEach((item) => {
+        item.classList.remove("active");
+      });
+    }
+  });
+});
