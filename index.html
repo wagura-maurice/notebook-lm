@@ -156,9 +156,7 @@
   </head>
   <body class="h-screen flex flex-col bg-dark-blue overflow-hidden">
     <!-- Header Section -->
-    <header
-      class="px-4 py-3 bg-dark-blue border-b border-gray-700 min-h-16 lg:h-20 shadow-md"
-    >
+    <header class="px-4 py-3 bg-dark-blue min-h-16 lg:h-20 shadow-md">
       <div class="flex flex-col lg:flex-row h-full lg:items-center mx-auto">
         <div
           class="flex items-center justify-between w-full lg:w-auto lg:flex-1"
@@ -259,8 +257,9 @@
       <!-- Left Column -->
       <div
         id="left-column"
-        class="mobile-tab-content w-full lg:w-64 bg-blue-gray text-white border-r border-gray-700 transition-all duration-300 flex flex-col lg:block hidden"
+        class="mobile-tab-content w-full lg:w-64 bg-blue-gray text-white transition-all duration-300 flex flex-col lg:block hidden m-4"
       >
+        <!-- Column Header -->
         <div
           class="flex items-center justify-between px-4 py-3 border-b border-gray-700 hidden lg:flex"
         >
@@ -274,7 +273,7 @@
         </div>
 
         <!-- Actions -->
-        <div class="p-2 flex items-center gap-2 px-3">
+        <div class="flex items-center gap-2 px-4 py-3">
           <button
             type="button"
             class="flex items-center justify-center flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-medium transition-colors"
@@ -293,41 +292,138 @@
 
         <!-- Select source -->
         <div
-          class="select-source-row px-3 py-2 border-b border-gray-700 flex justify-between items-center"
+          class="select-source-row px-4 py-3 border-b border-gray-700 flex justify-between items-center"
         >
-          <span class="text-sm">Select sources</span>
+          <h3 class="text-sm font-medium text-gray-300">Select sources</h3>
           <input type="checkbox" id="select-all" class="source-checkbox" />
         </div>
 
-        <div class="overflow-y-auto flex-1">
-          <ul class="source-item px-3">
+        <!-- Source Items List -->
+        <div class="overflow-y-auto flex-1 px-4 py-3">
+          <ul class="source-item">
             <li
-              class="py-2 hover:bg-blue-gray-700 rounded cursor-pointer flex items-center"
+              class="group py-2 hover:bg-blue-gray-700 rounded cursor-pointer flex items-center relative"
             >
-              <i class="fas fa-file-pdf ml-2"></i>
-              <span class="ml-2">Introduction to Machine Learning</span>
+              <div class="file-icon-container relative">
+                <i class="fas fa-file-pdf ml-2 text-red-400"></i>
+                <i
+                  class="fa-solid fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                ></i>
+              </div>
+              <span class="ml-2 flex-1">Introduction to Machine Learning</span>
               <input type="checkbox" class="source-checkbox" />
+              <div
+                class="dropdown-menu absolute right-0 top-8 z-10 hidden bg-blue-gray-800 rounded shadow-lg py-1 w-40"
+              >
+                <a
+                  href="#"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
+                  >Open</a
+                >
+                <a
+                  href="#"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
+                  >Rename</a
+                >
+                <a
+                  href="#"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
+                  >Delete</a
+                >
+              </div>
             </li>
             <li
-              class="py-2 hover:bg-blue-gray-700 rounded cursor-pointer flex items-center"
+              class="group py-2 hover:bg-blue-gray-700 rounded cursor-pointer flex items-center relative"
             >
-              <i class="fas fa-file-word ml-2"></i>
-              <span class="ml-2">Mathematical Foundations</span>
+              <div class="file-icon-container relative">
+                <i class="fas fa-file-word ml-2 text-blue-400"></i>
+                <i
+                  class="fa-solid fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                ></i>
+              </div>
+              <span class="ml-2 flex-1">Mathematical Foundations</span>
               <input type="checkbox" class="source-checkbox" />
+              <div
+                class="dropdown-menu absolute right-0 top-8 z-10 hidden bg-blue-gray-800 rounded shadow-lg py-1 w-40"
+              >
+                <a
+                  href="#"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
+                  >Open</a
+                >
+                <a
+                  href="#"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
+                  >Rename</a
+                >
+                <a
+                  href="#"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
+                  >Delete</a
+                >
+              </div>
             </li>
             <li
-              class="py-2 hover:bg-blue-gray-700 rounded cursor-pointer flex items-center"
+              class="group py-2 hover:bg-blue-gray-700 rounded cursor-pointer flex items-center relative"
             >
-              <i class="fas fa-file-excel ml-2"></i>
-              <span class="ml-2">Neural Networks Basics</span>
+              <div class="file-icon-container relative">
+                <i class="fas fa-file-excel ml-2 text-green-400"></i>
+                <i
+                  class="fa-solid fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                ></i>
+              </div>
+              <span class="ml-2 flex-1">Neural Networks Basics</span>
               <input type="checkbox" class="source-checkbox" />
+              <div
+                class="dropdown-menu absolute right-0 top-8 z-10 hidden bg-blue-gray-800 rounded shadow-lg py-1 w-40"
+              >
+                <a
+                  href="#"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
+                  >Open</a
+                >
+                <a
+                  href="#"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
+                  >Rename</a
+                >
+                <a
+                  href="#"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
+                  >Delete</a
+                >
+              </div>
             </li>
             <li
-              class="py-2 hover:bg-blue-gray-700 rounded cursor-pointer flex items-center"
+              class="group py-2 hover:bg-blue-gray-700 rounded cursor-pointer flex items-center relative"
             >
-              <i class="fas fa-file-code ml-2"></i>
-              <span class="ml-2">Advanced Techniques</span>
+              <div class="file-icon-container relative">
+                <i class="fas fa-file-code ml-2 text-purple-400"></i>
+                <i
+                  class="fa-solid fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                ></i>
+              </div>
+              <span class="ml-2 flex-1">Advanced Techniques</span>
               <input type="checkbox" class="source-checkbox" />
+              <div
+                class="dropdown-menu absolute right-0 top-8 z-10 hidden bg-blue-gray-800 rounded shadow-lg py-1 w-40"
+              >
+                <a
+                  href="#"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
+                  >Open</a
+                >
+                <a
+                  href="#"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
+                  >Rename</a
+                >
+                <a
+                  href="#"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
+                  >Delete</a
+                >
+              </div>
             </li>
           </ul>
         </div>
@@ -349,10 +445,67 @@
         </div>
       </div>
 
+      <style>
+        /* Mobile Tab Highlight */
+        @media (max-width: 1023px) {
+          .tab-button.active {
+            background-color: rgba(56, 189, 248, 0.2);
+            color: #38bdf8;
+          }
+
+          .mobile-tab-content {
+            width: 100% !important;
+            min-width: 100% !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+          }
+        }
+
+        /* File Icon with Overlay */
+        .file-icon-container {
+          width: 24px;
+          height: 24px;
+          position: relative;
+        }
+
+        .file-icon-container i.fa-ellipsis-vertical {
+          transition: opacity 0.2s ease;
+          pointer-events: none;
+        }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+          display: none;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .dropdown-menu a {
+          transition: background-color 0.2s ease;
+        }
+
+        /* Mobile Long Press */
+        @media (max-width: 1023px) {
+          .source-item li {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            position: relative;
+          }
+
+          .source-item li.active {
+            background-color: #334155;
+          }
+
+          .source-item li.active .fa-ellipsis-vertical {
+            opacity: 1 !important;
+          }
+        }
+      </style>
+
       <!-- Middle Column -->
       <div
         id="middle-column"
-        class="mobile-tab-content active flex-1 bg-dark-blue text-white overflow-hidden transition-all duration-300 flex flex-col lg:block hidden"
+        class="mobile-tab-content active flex-1 bg-dark-blue text-white overflow-hidden transition-all duration-300 flex flex-col lg:block hidden m-4"
       >
         <div
           class="flex items-center justify-between px-4 py-3 border-b border-gray-700 hidden lg:flex"
@@ -441,7 +594,7 @@
       <!-- Right Column -->
       <div
         id="right-column"
-        class="mobile-tab-content w-full lg:w-72 bg-blue-gray text-white border-l border-gray-700 transition-all duration-300 flex flex-col lg:block hidden"
+        class="mobile-tab-content w-full lg:w-72 bg-blue-gray text-white border-l border-gray-700 transition-all duration-300 flex flex-col lg:block hidden m-4"
       >
         <div
           class="flex items-center justify-between px-4 py-3 border-b border-gray-700 hidden lg:flex"
