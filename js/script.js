@@ -21,6 +21,7 @@ $(document).ready(function () {
   // Initialize
   initLayout();
   setupEventListeners();
+  setupSourceItemInteractions();
 
   // Functions
   function initLayout() {
@@ -141,15 +142,11 @@ $(document).ready(function () {
         "border-radius": "0.75rem",
         "box-shadow": "0 4px 6px -1px rgba(0, 0, 0, 0.25)",
       });
-      $leftColumn.find(".source-item").hide();
-      $leftColumn.find(".source-icon").show();
     } else {
       $leftColumn.css({
         "border-radius": "0.75rem 0 0 0.75rem",
         "box-shadow": "0 4px 6px -1px rgba(0, 0, 0, 0.25)",
       });
-      $leftColumn.find(".source-item").show();
-      $leftColumn.find(".source-icon").hide();
     }
 
     if ($rightColumn.hasClass("collapsed")) {
@@ -157,15 +154,11 @@ $(document).ready(function () {
         "border-radius": "0.75rem",
         "box-shadow": "0 4px 6px -1px rgba(0, 0, 0, 0.25)",
       });
-      $rightColumn.find(".studio-item").hide();
-      $rightColumn.find(".studio-icon").show();
     } else {
       $rightColumn.css({
         "border-radius": "0 0.75rem 0.75rem 0",
         "box-shadow": "0 4px 6px -1px rgba(0, 0, 0, 0.25)",
       });
-      $rightColumn.find(".studio-item").show();
-      $rightColumn.find(".studio-icon").hide();
     }
   }
 
@@ -223,65 +216,81 @@ $(document).ready(function () {
       }
     });
   }
-});
 
-document.addEventListener("DOMContentLoaded", function () {
-  // Handle dropdown toggle for desktop
-  const sourceItems = document.querySelectorAll(".source-item li");
+  function setupSourceItemInteractions() {
+    const sourceItems = document.querySelectorAll(".source-item li");
 
-  sourceItems.forEach((item) => {
-    let pressTimer;
+    sourceItems.forEach((item) => {
+      let pressTimer;
+      const dropdown = item.querySelector(".dropdown-menu");
 
-    // Desktop hover behavior
-    item.addEventListener("mouseenter", () => {
-      clearTimeout(pressTimer);
+      // Desktop hover behavior
+      item.addEventListener("mouseenter", () => {
+        if (!state.isMobile) {
+          clearTimeout(pressTimer);
+          dropdown.classList.remove("hidden");
+        }
+      });
+
+      item.addEventListener("mouseleave", () => {
+        if (!state.isMobile) {
+          dropdown.classList.add("hidden");
+          item.classList.remove("active");
+        }
+      });
+
+      // Mobile long press behavior
+      item.addEventListener("touchstart", (e) => {
+        if (state.isMobile) {
+          pressTimer = setTimeout(() => {
+            e.preventDefault();
+            item.classList.add("active");
+            document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+              menu.classList.add("hidden");
+            });
+            dropdown.classList.remove("hidden");
+          }, 500);
+        }
+      });
+
+      item.addEventListener("touchend", () => {
+        clearTimeout(pressTimer);
+      });
+
+      // Click handler for both desktop and mobile
+      item.addEventListener("click", (e) => {
+        if (!e.target.classList.contains("source-checkbox")) {
+          if (state.isMobile) {
+            // On mobile, regular click should close if open
+            if (!dropdown.classList.contains("hidden")) {
+              dropdown.classList.add("hidden");
+              item.classList.remove("active");
+            }
+          } else {
+            // On desktop, toggle dropdown
+            if (dropdown.classList.contains("hidden")) {
+              document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+                menu.classList.add("hidden");
+              });
+              dropdown.classList.remove("hidden");
+            } else {
+              dropdown.classList.add("hidden");
+            }
+          }
+        }
+      });
     });
 
-    item.addEventListener("mouseleave", () => {
-      item.querySelector(".dropdown-menu").classList.add("hidden");
-    });
-
-    // Mobile long press behavior
-    item.addEventListener("touchstart", (e) => {
-      pressTimer = setTimeout(() => {
-        e.preventDefault();
-        item.classList.add("active");
+    // Close dropdown when clicking elsewhere
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".source-item li")) {
         document.querySelectorAll(".dropdown-menu").forEach((menu) => {
           menu.classList.add("hidden");
         });
-        item.querySelector(".dropdown-menu").classList.remove("hidden");
-      }, 500);
-    });
-
-    item.addEventListener("touchend", () => {
-      clearTimeout(pressTimer);
-    });
-
-    // Click handler for both desktop and mobile
-    item.addEventListener("click", (e) => {
-      if (!e.target.classList.contains("source-checkbox")) {
-        const dropdown = item.querySelector(".dropdown-menu");
-        if (dropdown.classList.contains("hidden")) {
-          document.querySelectorAll(".dropdown-menu").forEach((menu) => {
-            menu.classList.add("hidden");
-          });
-          dropdown.classList.remove("hidden");
-        } else {
-          dropdown.classList.add("hidden");
-        }
+        document.querySelectorAll(".source-item li").forEach((item) => {
+          item.classList.remove("active");
+        });
       }
     });
-  });
-
-  // Close dropdown when clicking elsewhere
-  document.addEventListener("click", (e) => {
-    if (!e.target.closest(".source-item li")) {
-      document.querySelectorAll(".dropdown-menu").forEach((menu) => {
-        menu.classList.add("hidden");
-      });
-      document.querySelectorAll(".source-item li").forEach((item) => {
-        item.classList.remove("active");
-      });
-    }
-  });
+  }
 });
