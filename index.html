@@ -5,11 +5,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Notebook LM</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: {
+          fontFamily: {
+            sans: ["Rubik", "sans-serif"],
+            poppins: ["Poppins", "sans-serif"],
+          },
           extend: {
             colors: {
               "dark-blue": "#0f172a",
@@ -21,140 +33,17 @@
         },
       };
     </script>
+
     <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <style>
-      /* Base Styles */
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
 
-      html,
-      body {
-        height: 100%;
-        width: 100%;
-        overflow: hidden;
-      }
-
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-        background-color: #0f172a;
-        color: white;
-        display: flex;
-        flex-direction: column;
-      }
-
-      /* Column Transitions */
-      #left-column,
-      #middle-column,
-      #right-column {
-        transition: all 0.3s ease;
-      }
-
-      /* Left Column */
-      #left-column {
-        width: 16rem;
-        min-width: 16rem;
-        background-color: #1e293b;
-        border-right: 1px solid #1e293b;
-      }
-
-      #left-column.collapsed {
-        width: 3rem;
-        min-width: 3rem;
-      }
-
-      #left-column.collapsed .overflow-y-auto,
-      #left-column.collapsed h2 {
-        display: none;
-      }
-
-      /* Right Column */
-      #right-column {
-        width: 18rem;
-        min-width: 18rem;
-        background-color: #1e293b;
-        border-left: 1px solid #1e293b;
-      }
-
-      #right-column.collapsed {
-        width: 3rem;
-        min-width: 3rem;
-      }
-
-      #right-column.collapsed .overflow-y-auto,
-      #right-column.collapsed h2 {
-        display: none;
-      }
-
-      /* Collapsed States */
-      .collapsed-left #left-column {
-        width: 3rem;
-        min-width: 3rem;
-      }
-
-      .collapsed-right #right-column {
-        width: 3rem;
-        min-width: 3rem;
-      }
-
-      .collapsed-left #left-column h2,
-      .collapsed-left #left-column .overflow-y-auto,
-      .collapsed-right #right-column h2,
-      .collapsed-right #right-column .overflow-y-auto {
-        display: none;
-      }
-
-      /* Full expand state */
-      .full-expand #left-column,
-      .full-expand #right-column {
-        width: 3rem;
-        min-width: 3rem;
-      }
-
-      .full-expand #left-column h2,
-      .full-expand #left-column .overflow-y-auto,
-      .full-expand #right-column h2,
-      .full-expand #right-column .overflow-y-auto {
-        display: none;
-      }
-
-      /* Column headers in collapsed state */
-      .collapsed-left #left-column .flex,
-      .collapsed-right #right-column .flex,
-      .full-expand #left-column .flex,
-      .full-expand #right-column .flex,
-      #left-column.collapsed .flex,
-      #right-column.collapsed .flex {
-        justify-content: center;
-      }
-
-      /* Mobile View */
-      @media (max-width: 1023px) {
-        .mobile-tab-content:not(.active) {
-          display: none;
-        }
-      }
-
-      @media (min-width: 1024px) {
-        .tab-button {
-          display: none;
-        }
-
-        .mobile-tab-content {
-          display: flex !important;
-          flex-direction: column;
-        }
-      }
-    </style>
+    <!-- Custom CSS -->
+    <link href="./css/style.css" rel="stylesheet" />
   </head>
-  <body class="h-screen flex flex-col bg-dark-blue overflow-hidden">
+  <body class="h-screen flex flex-col bg-dark-blue overflow-hidden font-sans">
     <!-- Header Section -->
     <header class="px-4 py-3 bg-dark-blue min-h-16 lg:h-20 shadow-md">
       <div class="flex flex-col lg:flex-row h-full lg:items-center mx-auto">
@@ -257,7 +146,7 @@
       <!-- Left Column -->
       <div
         id="left-column"
-        class="mobile-tab-content w-full lg:w-64 bg-blue-gray text-white transition-all duration-300 flex flex-col lg:block hidden m-4"
+        class="mobile-tab-content w-full lg:w-64 bg-blue-gray text-white transition-all duration-300 flex flex-col lg:block hidden m-4 rounded-full"
       >
         <!-- Column Header -->
         <div
@@ -273,17 +162,17 @@
         </div>
 
         <!-- Actions -->
-        <div class="flex items-center gap-2 px-4 py-3">
+        <div class="flex items-center gap-2 px-4 py-3 mt-2">
           <button
             type="button"
-            class="flex items-center justify-center flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-medium transition-colors"
+            class="flex items-center justify-center flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 rounded-full text-sm font-medium transition-colors"
           >
             <i class="fas fa-plus mr-2"></i>
             Add
           </button>
           <button
             type="button"
-            class="flex items-center justify-center flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-medium transition-colors"
+            class="flex items-center justify-center flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 rounded-full text-sm font-medium transition-colors"
           >
             <i class="fas fa-search mr-2"></i>
             Discover
@@ -292,7 +181,7 @@
 
         <!-- Select source -->
         <div
-          class="select-source-row px-4 py-3 border-b border-gray-700 flex justify-between items-center"
+          class="select-source-row px-4 py-3 flex justify-between items-center m-2"
         >
           <h3 class="text-sm font-medium text-gray-300">Select sources</h3>
           <input type="checkbox" id="select-all" class="source-checkbox" />
@@ -305,7 +194,7 @@
               class="group py-2 hover:bg-blue-gray-700 rounded cursor-pointer flex items-center relative"
             >
               <div class="file-icon-container relative">
-                <i class="fas fa-file-pdf ml-2 text-red-400"></i>
+                <i class="fas fa-file-pdf fa-lg ml-2 text-red-400"></i>
                 <i
                   class="fa-solid fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity"
                 ></i>
@@ -336,7 +225,7 @@
               class="group py-2 hover:bg-blue-gray-700 rounded cursor-pointer flex items-center relative"
             >
               <div class="file-icon-container relative">
-                <i class="fas fa-file-word ml-2 text-blue-400"></i>
+                <i class="fas fa-file-word fa-lg ml-2 text-blue-400"></i>
                 <i
                   class="fa-solid fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity"
                 ></i>
@@ -367,7 +256,7 @@
               class="group py-2 hover:bg-blue-gray-700 rounded cursor-pointer flex items-center relative"
             >
               <div class="file-icon-container relative">
-                <i class="fas fa-file-excel ml-2 text-green-400"></i>
+                <i class="fas fa-file-excel fa-lg ml-2 text-green-400"></i>
                 <i
                   class="fa-solid fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity"
                 ></i>
@@ -398,7 +287,7 @@
               class="group py-2 hover:bg-blue-gray-700 rounded cursor-pointer flex items-center relative"
             >
               <div class="file-icon-container relative">
-                <i class="fas fa-file-code ml-2 text-purple-400"></i>
+                <i class="fas fa-file-code fa-lg ml-2 text-purple-400"></i>
                 <i
                   class="fa-solid fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity"
                 ></i>
@@ -444,63 +333,6 @@
           </div>
         </div>
       </div>
-
-      <style>
-        /* Mobile Tab Highlight */
-        @media (max-width: 1023px) {
-          .tab-button.active {
-            background-color: rgba(56, 189, 248, 0.2);
-            color: #38bdf8;
-          }
-
-          .mobile-tab-content {
-            width: 100% !important;
-            min-width: 100% !important;
-            margin: 0 !important;
-            border-radius: 0 !important;
-          }
-        }
-
-        /* File Icon with Overlay */
-        .file-icon-container {
-          width: 24px;
-          height: 24px;
-          position: relative;
-        }
-
-        .file-icon-container i.fa-ellipsis-vertical {
-          transition: opacity 0.2s ease;
-          pointer-events: none;
-        }
-
-        /* Dropdown Menu */
-        .dropdown-menu {
-          display: none;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .dropdown-menu a {
-          transition: background-color 0.2s ease;
-        }
-
-        /* Mobile Long Press */
-        @media (max-width: 1023px) {
-          .source-item li {
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-            position: relative;
-          }
-
-          .source-item li.active {
-            background-color: #334155;
-          }
-
-          .source-item li.active .fa-ellipsis-vertical {
-            opacity: 1 !important;
-          }
-        }
-      </style>
 
       <!-- Middle Column -->
       <div
