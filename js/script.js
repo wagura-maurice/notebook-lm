@@ -347,3 +347,147 @@ $(document).ready(function () {
     }
   }
 });
+
+// Initialization for modal
+const modal = document.querySelector(".add-source-modal"); // ensure this script can also handle .discover-source-modal
+const closeButton = document.querySelectorAll(".add-source-modal-close"); // ensure this script can also handle .discover-source-modal-close
+
+const modalClose = () => {
+  modal.classList.remove("fadeIn");
+  modal.classList.add("fadeOut");
+  setTimeout(() => {
+    modal.style.display = "none";
+  }, 500);
+};
+
+for (let i = 0; i < closeButton.length; i++) {
+  const elements = closeButton[i];
+
+  elements.onclick = (e) => modalClose();
+
+  modal.style.display = "none";
+
+  window.onclick = function (event) {
+    if (event.target == modal) modalClose();
+  };
+}
+// Get both modals and their close buttons
+const addSourceModal = document.querySelector(".add-source-modal");
+const discoverSourceModal = document.querySelector(".descover-source-modal");
+const addSourceCloseButtons = document.querySelectorAll(
+  ".add-source-modal-close"
+);
+const discoverSourceCloseButtons = document.querySelectorAll(
+  ".descover-source-modal-close"
+);
+
+// Generic modal functions
+const closeModal = (modal) => {
+  modal.classList.remove("fadeIn");
+  modal.classList.add("fadeOut");
+  setTimeout(() => {
+    modal.style.display = "none";
+  }, 500);
+};
+
+const openModal = (modal) => {
+  modal.classList.remove("fadeOut");
+  modal.classList.add("fadeIn");
+  modal.style.display = "flex";
+};
+
+// Close buttons for Add Source modal
+addSourceCloseButtons.forEach((button) => {
+  button.onclick = () => closeModal(addSourceModal);
+});
+
+// Close buttons for Discover Source modal
+discoverSourceCloseButtons.forEach((button) => {
+  button.onclick = () => closeModal(discoverSourceModal);
+});
+
+// Window click handler for both modals
+window.onclick = function (event) {
+  if (event.target === addSourceModal) {
+    closeModal(addSourceModal);
+  }
+  if (event.target === discoverSourceModal) {
+    closeModal(discoverSourceModal);
+  }
+};
+
+// Functions to open specific modals
+const openAddSourceModal = () => {
+  openModal(addSourceModal);
+};
+
+const openDiscoverSourceModal = () => {
+  openModal(discoverSourceModal);
+};
+
+// Initialize both modals as hidden
+addSourceModal.style.display = "none";
+discoverSourceModal.style.display = "none";
+
+// actions control
+document.getElementById("rename_source").addEventListener("click", function () {
+  // clicking Rename on the dropdown should trigger the script code below:
+  Swal.fire({
+    title: "Rename Source",
+    text: "Enter a new name for the source:",
+    input: "text",
+    inputAttributes: {
+      autocapitalize: "off",
+    },
+    showCancelButton: true,
+    confirmButtonText: "Submit",
+    showLoaderOnConfirm: true,
+    preConfirm: async (login) => {
+      try {
+        const githubUrl = `
+                https://example.domain.com/rename/${login}
+              `;
+        const response = await fetch(githubUrl);
+        if (!response.ok) {
+          return Swal.showValidationMessage(`
+                  ${JSON.stringify(await response.json())}
+                `);
+        }
+        return response.json();
+      } catch (error) {
+        Swal.showValidationMessage(`
+                Request failed: ${error}
+              `);
+      }
+    },
+    allowOutsideClick: () => !Swal.isLoading(),
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.fire({
+        title: `${result.value.login}'s avatar`,
+        imageUrl: result.value.avatar_url,
+      });
+    }
+  });
+});
+
+document.getElementById("delete_source").addEventListener("click", function () {
+  // clicking Delete on the dropdown should trigger the script code below:
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.fire({
+        title: "Deleted!",
+        text: "Your file has been deleted.",
+        icon: "success",
+      });
+    }
+  });
+});
