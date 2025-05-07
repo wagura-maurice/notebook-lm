@@ -221,20 +221,28 @@ $(document).ready(function () {
     const sourceItems = document.querySelectorAll(".source-item li");
 
     sourceItems.forEach((item) => {
+      const fileIcon = item.querySelector(".file-icon-container i:first-child");
+      const ellipsisIcon = item.querySelector(".fa-ellipsis-vertical");
+      const dropdownMenu = item.querySelector(".dropdown-menu");
       let pressTimer;
-      const dropdown = item.querySelector(".dropdown-menu");
+
+      // Make ellipsis icon clickable
+      ellipsisIcon.style.pointerEvents = "auto";
 
       // Desktop hover behavior
       item.addEventListener("mouseenter", () => {
         if (!state.isMobile) {
           clearTimeout(pressTimer);
-          dropdown.classList.remove("hidden");
+          fileIcon.style.visibility = "hidden";
+          ellipsisIcon.style.opacity = "1";
         }
       });
 
       item.addEventListener("mouseleave", () => {
         if (!state.isMobile) {
-          dropdown.classList.add("hidden");
+          fileIcon.style.visibility = "visible";
+          ellipsisIcon.style.opacity = "0";
+          dropdownMenu.classList.add("hidden");
           item.classList.remove("active");
         }
       });
@@ -248,7 +256,7 @@ $(document).ready(function () {
             document.querySelectorAll(".dropdown-menu").forEach((menu) => {
               menu.classList.add("hidden");
             });
-            dropdown.classList.remove("hidden");
+            dropdownMenu.classList.remove("hidden");
           }, 500);
         }
       });
@@ -257,24 +265,36 @@ $(document).ready(function () {
         clearTimeout(pressTimer);
       });
 
-      // Click handler for both desktop and mobile
+      // Click handler for ellipsis icon
+      ellipsisIcon.addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+          if (menu !== dropdownMenu) menu.classList.add("hidden");
+        });
+        dropdownMenu.classList.toggle("hidden");
+      });
+
+      // Click handler for list item (excluding checkbox)
       item.addEventListener("click", (e) => {
-        if (!e.target.classList.contains("source-checkbox")) {
+        if (
+          !e.target.classList.contains("source-checkbox") &&
+          e.target !== ellipsisIcon
+        ) {
           if (state.isMobile) {
             // On mobile, regular click should close if open
-            if (!dropdown.classList.contains("hidden")) {
-              dropdown.classList.add("hidden");
+            if (!dropdownMenu.classList.contains("hidden")) {
+              dropdownMenu.classList.add("hidden");
               item.classList.remove("active");
             }
           } else {
             // On desktop, toggle dropdown
-            if (dropdown.classList.contains("hidden")) {
+            if (dropdownMenu.classList.contains("hidden")) {
               document.querySelectorAll(".dropdown-menu").forEach((menu) => {
                 menu.classList.add("hidden");
               });
-              dropdown.classList.remove("hidden");
+              dropdownMenu.classList.remove("hidden");
             } else {
-              dropdown.classList.add("hidden");
+              dropdownMenu.classList.add("hidden");
             }
           }
         }
