@@ -462,7 +462,7 @@ header {
     color: #38bdf8;
   }
 
-  #left-column .source-item li.active .fa-ellipsis-vertical {
+  #left-column .source-item li.active .file-icon-container .fa-ellipsis-vertical {
     opacity: 1 !important;
   }
 }
@@ -475,6 +475,13 @@ header {
   .mobile-tab-content {
     display: flex !important;
     flex-direction: column;
+  }
+}
+
+/* Hide file icon and show ellipsis icon on active item for mobile */
+@media (max-width: 1023px) {
+  #left-column .source-item li.active .file-icon-container i:first-child {
+    display: none;
   }
 }
 

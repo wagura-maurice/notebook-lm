@@ -266,16 +266,10 @@ $(document).ready(function () {
       });
 
       // Click handler for ellipsis icon
-      ellipsisIcon.addEventListener("click", (e) => {
+ ellipsisIcon.addEventListener("click", (e) => {
         e.stopPropagation();
         document.querySelectorAll(".dropdown-menu").forEach((menu) => {
           if (menu !== dropdownMenu) menu.classList.add("hidden");
-        });
-        dropdownMenu.classList.toggle("hidden");
-      });
-
-      // Click handler for list item (excluding checkbox)
-      item.addEventListener("click", (e) => {
         if (
           !e.target.classList.contains("source-checkbox") &&
           e.target !== ellipsisIcon
@@ -286,18 +280,28 @@ $(document).ready(function () {
               dropdownMenu.classList.add("hidden");
               item.classList.remove("active");
             }
-          } else {
-            // On desktop, toggle dropdown
-            if (dropdownMenu.classList.contains("hidden")) {
-              document.querySelectorAll(".dropdown-menu").forEach((menu) => {
-                menu.classList.add("hidden");
-              });
-              dropdownMenu.classList.remove("hidden");
-            } else {
-              dropdownMenu.classList.add("hidden");
-            }
-          }
-        }
+ if (state.isMobile) {
+ // On mobile, regular click should close if open
+ if (!dropdownMenu.classList.contains("hidden")) {
+ dropdownMenu.classList.add("hidden");
+ item.classList.remove("active");
+ }
+ }
+      });
+ dropdownMenu.classList.toggle("hidden");
+      });
+
+      // Click handler for list item (excluding checkbox and ellipsis icon)
+ item.addEventListener("click", (e) => {
+ if (!e.target.classList.contains("source-checkbox") && e.target !== ellipsisIcon && !ellipsisIcon.contains(e.target)) {
+ if (!state.isMobile) {
+ // On desktop, regular click should close if open
+ if (!dropdownMenu.classList.contains("hidden")) {
+ dropdownMenu.classList.add("hidden");
+ item.classList.remove("active");
+ }
+ }
+ }
       });
     });
 
