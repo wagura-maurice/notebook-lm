@@ -34,6 +34,9 @@
       };
     </script>
 
+    <!-- Sweet Alert 2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Font Awesome -->
     <link
       rel="stylesheet"
@@ -162,9 +165,11 @@
         </div>
 
         <!-- Actions -->
-        <div class="flex items-center gap-2 px-4 py-3 mt-2">
+        <div class="overflow-y-auto flex items-center gap-2 px-4 py-3 mt-2">
           <button
             type="button"
+            id="addSourceBtn"
+            onclick="openAddSourceModal()"
             class="flex items-center justify-center flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 rounded-full text-sm font-medium transition-colors"
           >
             <i class="fas fa-plus mr-2"></i>
@@ -172,6 +177,8 @@
           </button>
           <button
             type="button"
+            id="discoverSourceBtn"
+            onclick="openDiscoverSourceModal()"
             class="flex items-center justify-center flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 rounded-full text-sm font-medium transition-colors"
           >
             <i class="fas fa-search mr-2"></i>
@@ -181,7 +188,7 @@
 
         <!-- Select source -->
         <div
-          class="select-source-row px-4 py-3 flex justify-between items-center m-2"
+          class="overflow-y-auto select-source-row px-4 py-3 flex justify-between items-center m-2"
         >
           <h3 class="text-sm font-medium text-gray-300">Select sources</h3>
           <input type="checkbox" id="select-all" class="source-checkbox" />
@@ -204,20 +211,15 @@
               <div
                 class="dropdown-menu absolute right-0 top-8 z-10 hidden bg-blue-950 rounded shadow-lg py-1 w-40"
               >
-                <a
-                  href="#"
+                <span
+                  id="rename_source"
                   class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
-                  >Open</a
+                  >Rename</span
                 >
-                <a
-                  href="#"
+                <span
+                  id="delete_source"
                   class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
-                  >Rename</a
-                >
-                <a
-                  href="#"
-                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
-                  >Delete</a
+                  >Delete</span
                 >
               </div>
             </li>
@@ -235,11 +237,6 @@
               <div
                 class="dropdown-menu absolute right-0 top-8 z-10 hidden bg-blue-950 rounded shadow-lg py-1 w-40"
               >
-                <a
-                  href="#"
-                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
-                  >Open</a
-                >
                 <a
                   href="#"
                   class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
@@ -269,11 +266,6 @@
                 <a
                   href="#"
                   class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
-                  >Open</a
-                >
-                <a
-                  href="#"
-                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
                   >Rename</a
                 >
                 <a
@@ -300,11 +292,6 @@
                 <a
                   href="#"
                   class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
-                  >Open</a
-                >
-                <a
-                  href="#"
-                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
                   >Rename</a
                 >
                 <a
@@ -317,19 +304,50 @@
           </ul>
         </div>
 
+        <!-- Collapsed Actions view -->
+        <div class="source-icon hidden flex flex-col gap-1 p-2">
+          <!-- Add Source Button -->
+          <div
+            class="w-full text-center py-3 hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
+            onclick="openAddSourceModal()"
+            title="Add Source"
+          >
+            <i class="fas fa-plus block text-lg"></i>
+            <div class="text-xs mt-1">Add</div>
+          </div>
+
+          <!-- Discover Sources Button -->
+          <div
+            class="w-full text-center py-3 hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
+            onclick="openDiscoverSourceModal()"
+            title="Discover"
+          >
+            <i class="fas fa-search block text-lg"></i>
+            <div class="text-xs mt-1">Discover</div>
+          </div>
+        </div>
+
         <!-- Collapsed icon view -->
         <div class="source-icon hidden">
           <div
-            class="w-full text-center py-3 hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
+            class="w-full text-center hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
           >
-            <i class="fas fa-file-alt block text-lg"></i>
-            <div class="text-xs mt-1">Sources</div>
+            <i class="fas fa-file-pdf block text-lg"></i>
           </div>
           <div
-            class="w-full text-center py-3 hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
+            class="w-full text-center hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
           >
-            <i class="fas fa-book block text-lg"></i>
-            <div class="text-xs mt-1">Docs</div>
+            <i class="fas fa-file-word block text-lg"></i>
+          </div>
+          <div
+            class="w-full text-center hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
+          >
+            <i class="fas fa-file-excel block text-lg"></i>
+          </div>
+          <div
+            class="w-full text-center hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
+          >
+            <i class="fas fa-file-code block text-lg"></i>
           </div>
         </div>
       </div>
@@ -487,6 +505,80 @@
             >
               <i class="fas fa-file-contract block text-lg"></i>
               <div class="text-xs mt-1">Summary</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- the code for the model to be shown by the even of clicking the addSourceBtn -->
+    <!-- Add sources modal -->
+    <div
+      tabindex="-1"
+      aria-hidden="true"
+      class="hidden add-source-modal overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full"
+    >
+      <div class="relative p-4 w-full max-w-xl h-full md:h-auto">
+        <!-- Modal content -->
+        <div
+          class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5"
+        >
+          <!-- Modal header -->
+          <div class="flex justify-between mb-4 rounded-t sm:mb-5">
+            <div class="text-gray-900 md:text-xl dark:text-white">
+              <h3 class="font-bold">Add sources</h3>
+              <p class="font-medium">
+                Sources let NotebookLM base its responses on the information
+                that matters most to you. (Examples: marketing plans, course
+                reading, research notes, meeting transcripts, sales documents,
+                etc.)
+              </p>
+            </div>
+            <div>
+              <button
+                type="button"
+                class="add-source-modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex dark:hover:bg-gray-600 dark:hover:text-white"
+              >
+                <i class="fa-solid fa-xmark"></i>
+                <span class="sr-only">Close modal</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- the code for the model to be shown by the even of clicking the discoverSourceBtn -->
+    <!-- Discover sources modal -->
+    <div
+      tabindex="-1"
+      aria-hidden="true"
+      class="hidden descover-source-modal overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full"
+    >
+      <div class="relative p-4 w-full max-w-xl h-full md:h-auto">
+        <!-- Modal content -->
+        <div
+          class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5"
+        >
+          <!-- Modal header -->
+          <div class="flex justify-between mb-4 rounded-t sm:mb-5">
+            <div class="text-gray-900 md:text-xl dark:text-white">
+              <h3 class="font-bold">Discover sources</h3>
+              <p class="font-medium">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Corrupti deleniti vitae explicabo voluptas, cum, quisquam
+                eveniet earum nisi quas iure libero? Cum pariatur quasi error
+                saepe non atque sapiente facere?
+              </p>
+            </div>
+            <div>
+              <button
+                type="button"
+                class="descover-source-modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex dark:hover:bg-gray-600 dark:hover:text-white"
+              >
+                <i class="fa-solid fa-xmark"></i>
+                <span class="sr-only">Close modal</span>
+              </button>
             </div>
           </div>
         </div>
