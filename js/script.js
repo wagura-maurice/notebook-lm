@@ -554,3 +554,52 @@ document.addEventListener("click", function () {
     menu.classList.add("hidden");
   });
 });
+
+// ------------------------------------------------------------------------------------
+
+// Toggle notes menu dropdown
+document
+  .getElementById("notes-menu-button")
+  .addEventListener("click", function (e) {
+    e.stopPropagation();
+    document.getElementById("notes-menu-dropdown").classList.toggle("hidden");
+  });
+
+// Close dropdown when clicking elsewhere
+document.addEventListener("click", function () {
+  document.getElementById("notes-menu-dropdown").classList.add("hidden");
+});
+
+// Handle menu options
+document
+  .getElementById("convert-all-notes")
+  .addEventListener("click", function (e) {
+    e.preventDefault();
+    alert("Convert all notes to sources functionality would go here");
+    document.getElementById("notes-menu-dropdown").classList.add("hidden");
+  });
+
+document
+  .getElementById("delete-all-notes")
+  .addEventListener("click", function (e) {
+    e.preventDefault();
+    if (confirm("Are you sure you want to delete all notes?")) {
+      alert("Delete all notes functionality would go here");
+    }
+    document.getElementById("notes-menu-dropdown").classList.add("hidden");
+  });
+
+// Handle quick note buttons
+document.querySelectorAll(".quick-note-btn").forEach((button) => {
+  button.addEventListener("click", function () {
+    const noteType = this.getAttribute("data-type");
+    // In a real app, this would create a new note of the specified type
+    alert(`Creating new ${noteType.replace("-", " ")} note`);
+  });
+});
+
+// Handle add note button
+document.getElementById("add-note-btn").addEventListener("click", function () {
+  // In a real app, this would open a new note editor
+  alert("Add new note functionality would go here");
+});

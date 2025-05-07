@@ -568,3 +568,20 @@ header {
     transform: translateY(-10px);
   }
 }
+
+.quick-note-btn {
+  @apply bg-blue-gray-600 hover:bg-blue-gray-500 text-white text-xs p-2 rounded flex items-center justify-center truncate;
+}
+
+.note-item {
+  transition: background-color 0.2s ease;
+}
+
+@media (max-width: 1024px) {
+  .note-item div {
+    display: none;
+  }
+  .note-item {
+    justify-content: center;
+  }
+}
