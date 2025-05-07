@@ -212,13 +212,13 @@
                 class="dropdown-menu absolute right-0 top-8 z-10 hidden bg-blue-950 rounded shadow-lg py-1 w-40"
               >
                 <span
-                  id="rename_source"
-                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
+                  onclick="renameSource(1)"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700 cursor-pointer"
                   >Rename</span
                 >
                 <span
-                  id="delete_source"
-                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
+                  onclick="deleteSource(1)"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700 cursor-pointer"
                   >Delete</span
                 >
               </div>
@@ -237,15 +237,15 @@
               <div
                 class="dropdown-menu absolute right-0 top-8 z-10 hidden bg-blue-950 rounded shadow-lg py-1 w-40"
               >
-                <a
-                  href="#"
-                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
-                  >Rename</a
+                <span
+                  onclick="renameSource(2)"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700 cursor-pointer"
+                  >Rename</span
                 >
-                <a
-                  href="#"
-                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
-                  >Delete</a
+                <span
+                  onclick="deleteSource(2)"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700 cursor-pointer"
+                  >Delete</span
                 >
               </div>
             </li>
@@ -263,15 +263,15 @@
               <div
                 class="dropdown-menu absolute right-0 top-8 z-10 hidden bg-blue-950 rounded shadow-lg py-1 w-40"
               >
-                <a
-                  href="#"
-                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
-                  >Rename</a
+                <span
+                  onclick="renameSource(3)"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700 cursor-pointer"
+                  >Rename</span
                 >
-                <a
-                  href="#"
-                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
-                  >Delete</a
+                <span
+                  onclick="deleteSource(3)"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700 cursor-pointer"
+                  >Delete</span
                 >
               </div>
             </li>
@@ -289,15 +289,15 @@
               <div
                 class="dropdown-menu absolute right-0 top-8 z-10 hidden bg-blue-950 rounded shadow-lg py-1 w-40"
               >
-                <a
-                  href="#"
-                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
-                  >Rename</a
+                <span
+                  onclick="renameSource(4)"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700 cursor-pointer"
+                  >Rename</span
                 >
-                <a
-                  href="#"
-                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700"
-                  >Delete</a
+                <span
+                  onclick="deleteSource(4)"
+                  class="block px-4 py-2 text-sm hover:bg-blue-gray-700 cursor-pointer"
+                  >Delete</span
                 >
               </div>
             </li>
@@ -514,36 +514,150 @@
     <!-- Modals -->
     <!-- the code for the model to be shown by the even of clicking the addSourceBtn -->
     <!-- Add sources modal -->
-    <div
+    <!--     <div
       tabindex="-1"
       aria-hidden="true"
-      class="hidden add-source-modal overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full"
+      class="hidden add-source-modal overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full bg-black bg-opacity-50"
+    > -->
+    <div
+      class="fixed hidden add-source-modal inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
     >
       <div class="relative p-4 w-full max-w-xl h-full md:h-auto">
         <!-- Modal content -->
-        <div
-          class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5"
-        >
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
           <!-- Modal header -->
-          <div class="flex justify-between mb-4 rounded-t sm:mb-5">
-            <div class="text-gray-900 md:text-xl dark:text-white">
-              <h3 class="font-bold">Add sources</h3>
-              <p class="font-medium">
+          <div
+            class="flex justify-between items-start p-4 md:p-5 border-b rounded-t dark:border-gray-600"
+          >
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+                Add sources
+              </h3>
+              <p class="text-gray-500 dark:text-gray-400 mt-1">
                 Sources let NotebookLM base its responses on the information
-                that matters most to you. (Examples: marketing plans, course
-                reading, research notes, meeting transcripts, sales documents,
-                etc.)
+                that matters most to you.<br />
+                (Examples: marketing plans, course reading, research notes,
+                meeting transcripts, sales documents, etc.)
               </p>
             </div>
-            <div>
+            <button
+              type="button"
+              class="add-source-modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+            >
+              <i class="fa-solid fa-xmark w-5 h-5"></i>
+              <span class="sr-only">Close modal</span>
+            </button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="p-4 md:p-5 space-y-4">
+            <!-- Upload sources card -->
+            <div
+              class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <i
+                class="fas fa-cloud-upload-alt text-4xl text-gray-400 dark:text-gray-300 mb-3"
+              ></i>
+              <h4 class="text-lg font-medium text-gray-900 dark:text-white">
+                Upload sources
+              </h4>
+              <p class="text-gray-500 dark:text-gray-400 mb-3">
+                Drag and drop or choose file to upload
+              </p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                Supported file types: PDF, txt, Markdown, Audio (e.g. mp3)
+              </p>
+              <input type="file" class="hidden" id="file-upload" multiple />
               <button
                 type="button"
-                class="add-source-modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex dark:hover:bg-gray-600 dark:hover:text-white"
+                onclick="document.getElementById('file-upload').click()"
+                class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium"
               >
-                <i class="fa-solid fa-xmark"></i>
-                <span class="sr-only">Close modal</span>
+                Select Files
               </button>
             </div>
+
+            <!-- Google Drive integration -->
+            <div class="grid grid-cols-3 gap-3">
+              <div
+                class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <i class="fab fa-google-drive text-2xl text-blue-500 mb-2"></i>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                  Google Drive
+                </p>
+              </div>
+              <div
+                class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <i class="fas fa-file-word text-2xl text-blue-400 mb-2"></i>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                  Google Docs
+                </p>
+              </div>
+              <div
+                class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <i
+                  class="fas fa-file-powerpoint text-2xl text-orange-500 mb-2"
+                ></i>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                  Google Slides
+                </p>
+              </div>
+            </div>
+
+            <!-- Other options -->
+            <div class="grid grid-cols-2 gap-3">
+              <div
+                class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <i class="fas fa-link text-2xl text-blue-400 mb-2"></i>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                  Website
+                </p>
+              </div>
+              <div
+                class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <i class="fab fa-youtube text-2xl text-red-500 mb-2"></i>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                  YouTube
+                </p>
+              </div>
+            </div>
+
+            <!-- Paste text option -->
+            <div
+              class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div class="flex items-center">
+                <i class="fas fa-paste text-2xl text-purple-500 mr-3"></i>
+                <div>
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">
+                    Paste text
+                  </p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    Copied text
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal footer -->
+          <div
+            class="flex items-center justify-between p-4 md:p-5 border-t border-gray-200 dark:border-gray-600"
+          >
+            <span class="text-sm font-medium text-gray-500 dark:text-gray-400"
+              >Source limit 12/50</span
+            >
+            <button
+              type="button"
+              class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white rounded-lg text-sm font-medium"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       </div>
@@ -551,33 +665,267 @@
     <!-- the code for the model to be shown by the even of clicking the discoverSourceBtn -->
     <!-- Discover sources modal -->
     <div
-      tabindex="-1"
-      aria-hidden="true"
-      class="hidden descover-source-modal overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full"
+      class="fixed hidden discover-source-modal inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
     >
-      <div class="relative p-4 w-full max-w-xl h-full md:h-auto">
+      <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
         <!-- Modal content -->
-        <div
-          class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5"
-        >
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
           <!-- Modal header -->
-          <div class="flex justify-between mb-4 rounded-t sm:mb-5">
-            <div class="text-gray-900 md:text-xl dark:text-white">
-              <h3 class="font-bold">Discover sources</h3>
-              <p class="font-medium">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Corrupti deleniti vitae explicabo voluptas, cum, quisquam
-                eveniet earum nisi quas iure libero? Cum pariatur quasi error
-                saepe non atque sapiente facere?
+          <div
+            class="flex justify-between items-start p-4 md:p-5 border-b rounded-t dark:border-gray-600"
+          >
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+                Discover Sources
+              </h3>
+              <p class="text-gray-500 dark:text-gray-400 mt-1">
+                Browse and select from available sources to add to your notebook
               </p>
             </div>
-            <div>
+            <button
+              type="button"
+              class="discover-source-modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+            >
+              <i class="fa-solid fa-xmark w-5 h-5"></i>
+              <span class="sr-only">Close modal</span>
+            </button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="p-4 md:p-5">
+            <!-- Search bar -->
+            <div class="relative mb-4">
+              <div
+                class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+              >
+                <i class="fas fa-search text-gray-500 dark:text-gray-400"></i>
+              </div>
+              <input
+                type="text"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                placeholder="Search sources..."
+              />
+            </div>
+
+            <!-- Source list -->
+            <div
+              class="border border-gray-200 dark:border-gray-700 rounded-lg divide-y divide-gray-200 dark:divide-gray-700 max-h-96 overflow-y-auto"
+            >
+              <!-- Source item 1 -->
+              <div
+                class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                    <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                    <div>
+                      <h4 class="font-medium text-gray-900 dark:text-white">
+                        Assessing Reliability and Credibility in Information
+                        Sci...
+                      </h4>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        PDF • 2.4 MB • Last opened 3 days ago
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+
+              <!-- Source item 2 -->
+              <div
+                class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                    <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                    <div>
+                      <h4 class="font-medium text-gray-900 dark:text-white">
+                        EDWIN COC.pdf
+                      </h4>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        PDF • 1.8 MB • Certificate of Completion
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+
+              <!-- Source item 3 -->
+              <div
+                class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                    <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                    <div>
+                      <h4 class="font-medium text-gray-900 dark:text-white">
+                        EDWIN ID.pdf
+                      </h4>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        PDF • 0.5 MB • Identification document
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+
+              <!-- Source item 4 -->
+              <div
+                class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                    <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                    <div>
+                      <h4 class="font-medium text-gray-900 dark:text-white">
+                        Edwin CO CV.pdf
+                      </h4>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        PDF • 3.2 MB • Curriculum Vitae
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+
+              <!-- Source item 5 -->
+              <div
+                class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                    <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                    <div>
+                      <h4 class="font-medium text-gray-900 dark:text-white">
+                        Edwin Naya (Event pdf)
+                      </h4>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        PDF • 4.1 MB • Event documentation
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+
+              <!-- Source item 6 -->
+              <div
+                class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                    <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                    <div>
+                      <h4 class="font-medium text-gray-900 dark:text-white">
+                        First Experts - Resources for Reporting - Research
+                        Sci...
+                      </h4>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        PDF • 5.7 MB • Research materials
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+
+              <!-- Source item 7 -->
+              <div
+                class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                    <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                    <div>
+                      <h4 class="font-medium text-gray-900 dark:text-white">
+                        Grey literature - Wikipedia
+                      </h4>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        PDF • 1.2 MB • Information science
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+
+              <!-- Source item 8 -->
+              <div
+                class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                    <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                    <div>
+                      <h4 class="font-medium text-gray-900 dark:text-white">
+                        PSC2_FORM_~JRSY_2016.pdf
+                      </h4>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        PDF • 0.8 MB • Application form
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal footer -->
+          <div
+            class="flex items-center justify-between p-4 md:p-5 border-t border-gray-200 dark:border-gray-600"
+          >
+            <span class="text-sm font-medium text-gray-500 dark:text-gray-400"
+              >8 sources found</span
+            >
+            <div class="flex space-x-2">
               <button
                 type="button"
-                class="descover-source-modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex dark:hover:bg-gray-600 dark:hover:text-white"
+                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white rounded-lg text-sm font-medium"
               >
-                <i class="fa-solid fa-xmark"></i>
-                <span class="sr-only">Close modal</span>
+                Cancel
+              </button>
+              <button
+                type="button"
+                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium"
+              >
+                Add Selected (0)
               </button>
             </div>
           </div>
