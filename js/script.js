@@ -349,130 +349,159 @@ $(document).ready(function () {
 });
 
 // Initialization for modal
-const modal = document.querySelector(".add-source-modal"); // ensure this script can also handle .discover-source-modal
-const closeButton = document.querySelectorAll(".add-source-modal-close"); // ensure this script can also handle .discover-source-modal-close
+document.addEventListener("DOMContentLoaded", function () {
+  const addSourceModal = document.querySelector(".add-source-modal");
+  const discoverSourceModal = document.querySelector(".discover-source-modal");
 
-const modalClose = () => {
-  modal.classList.remove("fadeIn");
-  modal.classList.add("fadeOut");
-  setTimeout(() => {
-    modal.style.display = "none";
-  }, 500);
-};
-
-for (let i = 0; i < closeButton.length; i++) {
-  const elements = closeButton[i];
-
-  elements.onclick = (e) => modalClose();
-
-  modal.style.display = "none";
-
-  window.onclick = function (event) {
-    if (event.target == modal) modalClose();
-  };
-}
-// Get both modals and their close buttons
-const addSourceModal = document.querySelector(".add-source-modal");
-const discoverSourceModal = document.querySelector(".descover-source-modal");
-const addSourceCloseButtons = document.querySelectorAll(
-  ".add-source-modal-close"
-);
-const discoverSourceCloseButtons = document.querySelectorAll(
-  ".descover-source-modal-close"
-);
-
-// Generic modal functions
-const closeModal = (modal) => {
-  modal.classList.remove("fadeIn");
-  modal.classList.add("fadeOut");
-  setTimeout(() => {
-    modal.style.display = "none";
-  }, 500);
-};
-
-const openModal = (modal) => {
-  modal.classList.remove("fadeOut");
-  modal.classList.add("fadeIn");
-  modal.style.display = "flex";
-};
-
-// Close buttons for Add Source modal
-addSourceCloseButtons.forEach((button) => {
-  button.onclick = () => closeModal(addSourceModal);
-});
-
-// Close buttons for Discover Source modal
-discoverSourceCloseButtons.forEach((button) => {
-  button.onclick = () => closeModal(discoverSourceModal);
-});
-
-// Window click handler for both modals
-window.onclick = function (event) {
-  if (event.target === addSourceModal) {
-    closeModal(addSourceModal);
+  // Generic open/close modal functions
+  function openModal(modal) {
+    modal.classList.remove("fade-out");
+    modal.classList.add("fade-in");
+    modal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
   }
-  if (event.target === discoverSourceModal) {
-    closeModal(discoverSourceModal);
+
+  function closeModal(modal) {
+    modal.classList.remove("fade-in");
+    modal.classList.add("fade-out");
+
+    // Wait for animation to finish before hiding
+    modal.addEventListener("animationend", function onAnimationEnd() {
+      if (modal.classList.contains("fade-out")) {
+        modal.classList.add("hidden");
+        modal.removeEventListener("animationend", onAnimationEnd);
+      }
+      document.body.style.overflow = "";
+    });
   }
-};
 
-// Functions to open specific modals
-const openAddSourceModal = () => {
-  openModal(addSourceModal);
-};
+  // Assign global functions
+  window.openAddSourceModal = () => openModal(addSourceModal);
+  window.openDiscoverSourceModal = () => openModal(discoverSourceModal);
 
-const openDiscoverSourceModal = () => {
-  openModal(discoverSourceModal);
-};
+  window.closeAddSourceModal = () => closeModal(addSourceModal);
+  window.closeDiscoverSourceModal = () => closeModal(discoverSourceModal);
+
+  // Close buttons
+  document.querySelectorAll(".add-source-modal-close").forEach((btn) => {
+    btn.addEventListener("click", closeAddSourceModal);
+  });
+
+  document.querySelectorAll(".discover-source-modal-close").forEach((btn) => {
+    btn.addEventListener("click", closeDiscoverSourceModal);
+  });
+
+  // Outside click
+  [addSourceModal, discoverSourceModal].forEach((modal) => {
+    modal.addEventListener("click", function (e) {
+      if (e.target === modal) closeModal(modal);
+    });
+  });
+
+  // File upload handler
+  document
+    .getElementById("file-upload")
+    .addEventListener("change", function () {
+      if (this.files.length > 0) {
+        console.log("Files selected:", this.files);
+        // Handle upload logic here
+      }
+    });
+
+  // Source selection in Discover modal
+  const addButtons = document.querySelectorAll(
+    ".discover-source-modal .p-3.hover\\:bg-gray-50.dark\\:hover\\:bg-gray-700 button"
+  );
+
+  addButtons.forEach((button) => {
+    button.addEventListener("click", function () {
+      const item = this.closest(
+        ".p-3.hover\\:bg-gray-50.dark\\:hover\\:bg-gray-700"
+      );
+      if (item.classList.contains("bg-blue-50")) {
+        item.classList.remove("bg-blue-50", "dark:bg-blue-900");
+        this.textContent = "Add";
+      } else {
+        item.classList.add("bg-blue-50", "dark:bg-blue-900");
+        this.textContent = "Added";
+      }
+      updateSelectedCount();
+    });
+  });
+
+  function updateSelectedCount() {
+    const selectedCount = document.querySelectorAll(
+      ".discover-source-modal .bg-blue-50"
+    ).length;
+
+    const addButton = document.querySelector(
+      ".discover-source-modal .bg-blue-600"
+    );
+    if (addButton) addButton.textContent = `Add Selected (${selectedCount})`;
+  }
+});
 
 // Initialize both modals as hidden
 addSourceModal.style.display = "none";
 discoverSourceModal.style.display = "none";
 
 // actions control
-document.getElementById("rename_source").addEventListener("click", function () {
-  // clicking Rename on the dropdown should trigger the script code below:
+// Function to handle rename action
+function renameSource(sourceId) {
   Swal.fire({
     title: "Rename Source",
     text: "Enter a new name for the source:",
     input: "text",
+    /* inputValue: document
+      .querySelector(`[data-source-id="${sourceId}"]`)
+      .textContent.trim(), */
     inputAttributes: {
       autocapitalize: "off",
     },
     showCancelButton: true,
-    confirmButtonText: "Submit",
+    confirmButtonText: "Rename",
     showLoaderOnConfirm: true,
-    preConfirm: async (login) => {
-      try {
-        const githubUrl = `
-                https://example.domain.com/rename/${login}
-              `;
-        const response = await fetch(githubUrl);
-        if (!response.ok) {
-          return Swal.showValidationMessage(`
-                  ${JSON.stringify(await response.json())}
-                `);
-        }
-        return response.json();
-      } catch (error) {
-        Swal.showValidationMessage(`
-                Request failed: ${error}
-              `);
+    preConfirm: (newName) => {
+      if (!newName) {
+        Swal.showValidationMessage("Name cannot be empty");
+        return false;
       }
+      return fetch(`/api/sources/${sourceId}/rename`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name: newName }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(response.statusText);
+          }
+          return response.json();
+        })
+        .catch((error) => {
+          Swal.showValidationMessage(`Request failed: ${error}`);
+        });
     },
     allowOutsideClick: () => !Swal.isLoading(),
   }).then((result) => {
     if (result.isConfirmed) {
+      // Update the UI with the new name
+      const sourceElement = document.querySelector(
+        `[data-source-id="${sourceId}"]`
+      );
+      sourceElement.textContent = result.value.name;
       Swal.fire({
-        title: `${result.value.login}'s avatar`,
-        imageUrl: result.value.avatar_url,
+        title: "Success!",
+        text: "Source renamed successfully",
+        icon: "success",
       });
     }
   });
-});
+}
 
-document.getElementById("delete_source").addEventListener("click", function () {
-  // clicking Delete on the dropdown should trigger the script code below:
+// Function to handle delete action
+function deleteSource(sourceId) {
   Swal.fire({
     title: "Are you sure?",
     text: "You won't be able to revert this!",
@@ -483,11 +512,45 @@ document.getElementById("delete_source").addEventListener("click", function () {
     confirmButtonText: "Yes, delete it!",
   }).then((result) => {
     if (result.isConfirmed) {
-      Swal.fire({
-        title: "Deleted!",
-        text: "Your file has been deleted.",
-        icon: "success",
-      });
+      fetch(`/api/sources/${sourceId}`, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(response.statusText);
+          }
+          return response.json();
+        })
+        .then(() => {
+          // Remove the item from the DOM
+          document
+            .querySelector(`[data-source-id="${sourceId}"]`)
+            .closest("li")
+            .remove();
+          Swal.fire("Deleted!", "Your source has been deleted.", "success");
+        })
+        .catch((error) => {
+          Swal.fire("Error!", `Failed to delete source: ${error}`, "error");
+        });
     }
+  });
+}
+
+// Toggle dropdown visibility when clicking the ellipsis icon
+document.querySelectorAll(".dropdown-trigger").forEach((trigger) => {
+  trigger.addEventListener("click", function (e) {
+    e.stopPropagation();
+    const dropdown = this.closest("li").querySelector(".dropdown-menu");
+    document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+      if (menu !== dropdown) menu.classList.add("hidden");
+    });
+    dropdown.classList.toggle("hidden");
+  });
+});
+
+// Close dropdowns when clicking elsewhere
+document.addEventListener("click", function () {
+  document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+    menu.classList.add("hidden");
   });
 });
