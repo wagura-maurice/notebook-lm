@@ -232,18 +232,15 @@ $(document).ready(function () {
       // Desktop hover behavior
       item.addEventListener("mouseenter", () => {
         if (!state.isMobile) {
-          clearTimeout(pressTimer);
-          fileIcon.style.visibility = "hidden";
+          fileIcon.style.opacity = "0";
           ellipsisIcon.style.opacity = "1";
         }
       });
 
       item.addEventListener("mouseleave", () => {
-        if (!state.isMobile) {
-          fileIcon.style.visibility = "visible";
+        if (!state.isMobile && !item.classList.contains("active")) {
+          fileIcon.style.opacity = "1";
           ellipsisIcon.style.opacity = "0";
-          dropdownMenu.classList.add("hidden");
-          item.classList.remove("active");
         }
       });
 
@@ -252,6 +249,7 @@ $(document).ready(function () {
         if (state.isMobile) {
           pressTimer = setTimeout(() => {
             e.preventDefault();
+            sourceItems.forEach((i) => i.classList.remove("active"));
             item.classList.add("active");
             document.querySelectorAll(".dropdown-menu").forEach((menu) => {
               menu.classList.add("hidden");
@@ -266,42 +264,46 @@ $(document).ready(function () {
       });
 
       // Click handler for ellipsis icon
- ellipsisIcon.addEventListener("click", (e) => {
+      ellipsisIcon.addEventListener("click", (e) => {
         e.stopPropagation();
-        document.querySelectorAll(".dropdown-menu").forEach((menu) => {
-          if (menu !== dropdownMenu) menu.classList.add("hidden");
-        if (
-          !e.target.classList.contains("source-checkbox") &&
-          e.target !== ellipsisIcon
-        ) {
-          if (state.isMobile) {
-            // On mobile, regular click should close if open
-            if (!dropdownMenu.classList.contains("hidden")) {
-              dropdownMenu.classList.add("hidden");
-              item.classList.remove("active");
-            }
- if (state.isMobile) {
- // On mobile, regular click should close if open
- if (!dropdownMenu.classList.contains("hidden")) {
- dropdownMenu.classList.add("hidden");
- item.classList.remove("active");
- }
- }
-      });
- dropdownMenu.classList.toggle("hidden");
+
+        // Close all other dropdowns
+        sourceItems.forEach((i) => {
+          if (i !== item) {
+            i.classList.remove("active");
+            const menu = i.querySelector(".dropdown-menu");
+            if (menu) menu.classList.add("hidden");
+          }
+        });
+
+        // Toggle current dropdown
+        item.classList.toggle("active");
+        dropdownMenu.classList.toggle("hidden");
+
+        if (!dropdownMenu.classList.contains("hidden")) {
+          // Position the dropdown correctly
+          const rect = ellipsisIcon.getBoundingClientRect();
+          dropdownMenu.style.top = `${rect.bottom}px`;
+          dropdownMenu.style.right = "0";
+        }
       });
 
       // Click handler for list item (excluding checkbox and ellipsis icon)
- item.addEventListener("click", (e) => {
- if (!e.target.classList.contains("source-checkbox") && e.target !== ellipsisIcon && !ellipsisIcon.contains(e.target)) {
- if (!state.isMobile) {
- // On desktop, regular click should close if open
- if (!dropdownMenu.classList.contains("hidden")) {
- dropdownMenu.classList.add("hidden");
- item.classList.remove("active");
- }
- }
- }
+      item.addEventListener("click", (e) => {
+        if (
+          !e.target.classList.contains("source-checkbox") &&
+          e.target !== ellipsisIcon &&
+          !dropdownMenu.contains(e.target)
+        ) {
+          // Handle normal click on item
+          sourceItems.forEach((i) => {
+            if (i !== item) {
+              i.classList.remove("active");
+              const menu = i.querySelector(".dropdown-menu");
+              if (menu) menu.classList.add("hidden");
+            }
+          });
+        }
       });
     });
 
