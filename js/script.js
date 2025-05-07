@@ -255,6 +255,9 @@ $(document).ready(function () {
               menu.classList.add("hidden");
             });
             dropdownMenu.classList.remove("hidden");
+
+            // Position the dropdown correctly
+            positionDropdown(item, dropdownMenu);
           }, 500);
         }
       });
@@ -282,13 +285,11 @@ $(document).ready(function () {
 
         if (!dropdownMenu.classList.contains("hidden")) {
           // Position the dropdown correctly
-          const rect = ellipsisIcon.getBoundingClientRect();
-          dropdownMenu.style.top = `${rect.bottom}px`;
-          dropdownMenu.style.right = "0";
+          positionDropdown(item, dropdownMenu);
         }
       });
 
-      // Click handler for list item (excluding checkbox and ellipsis icon)
+      // Click handler for list item
       item.addEventListener("click", (e) => {
         if (
           !e.target.classList.contains("source-checkbox") &&
@@ -318,5 +319,31 @@ $(document).ready(function () {
         });
       }
     });
+
+    // Helper function to position dropdown correctly
+    function positionDropdown(item, dropdown) {
+      const itemRect = item.getBoundingClientRect();
+      const containerRect = item
+        .closest(".overflow-y-auto")
+        .getBoundingClientRect();
+
+      // Calculate available space below the item
+      const spaceBelow = containerRect.bottom - itemRect.bottom;
+      const dropdownHeight = dropdown.offsetHeight;
+
+      if (spaceBelow < dropdownHeight) {
+        // If not enough space below, show above the item
+        dropdown.style.top = "auto";
+        dropdown.style.bottom = "100%";
+        dropdown.style.transform = "translateY(-4px)";
+      } else {
+        // Default: show below the item
+        dropdown.style.top = "100%";
+        dropdown.style.bottom = "auto";
+        dropdown.style.transform = "translateY(4px)";
+      }
+
+      dropdown.style.right = "0";
+    }
   }
 });
