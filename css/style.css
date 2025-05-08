@@ -569,19 +569,31 @@ header {
   }
 }
 
-.quick-note-btn {
-  @apply bg-blue-gray-600 hover:bg-blue-gray-500 text-white text-xs p-2 rounded flex items-center justify-center truncate;
+/* Right Column specific fixes */
+#right-column {
+  overflow-x: hidden;
 }
 
 .note-item {
-  transition: background-color 0.2s ease;
+  align-items: flex-start;
+  padding: 0.5rem;
 }
 
-@media (max-width: 1024px) {
-  .note-item div {
-    display: none;
-  }
-  .note-item {
-    justify-content: center;
-  }
+.note-item > div {
+  flex: 1;
+  min-width: 0; /* Prevent flex item from growing beyond container */
+}
+
+.note-item .font-medium {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.note-item .text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.bg-blue-gray-700 {
+  border-radius: 0;
 }
