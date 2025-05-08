@@ -1,4 +1,4 @@
-// script.js
+// js/collection.js
 $(document).ready(function () {
   // DOM Elements
   const $container = $("#columns-container");
@@ -453,8 +453,8 @@ function renameSource(sourceId) {
     text: "Enter a new name for the source:",
     input: "text",
     /* inputValue: document
-      .querySelector(`[data-source-id="${sourceId}"]`)
-      .textContent.trim(), */
+        .querySelector(`[data-source-id="${sourceId}"]`)
+        .textContent.trim(), */
     inputAttributes: {
       autocapitalize: "off",
     },
