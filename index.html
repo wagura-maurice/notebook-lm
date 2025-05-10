@@ -1,15 +1,14 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Notebook LM - Index Page</title>
+    <title>NotebookLM - Study Guide</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap"
       rel="stylesheet"
     />
 
@@ -19,23 +18,22 @@
       tailwind.config = {
         theme: {
           fontFamily: {
-            sans: ["Rubik", "sans-serif"],
-            poppins: ["Poppins", "sans-serif"],
+            sans: ["Google Sans", "Roboto", "sans-serif"],
           },
           extend: {
             colors: {
-              "dark-blue": "#0f172a",
-              "blue-gray": "#1e293b",
-              "accent-blue": "#38bdf8",
-              "purple-500": "#8b5cf6",
+              "dark-bg": "#1a1b1e",
+              "card-bg": "#27292d",
+              "card-hover": "#2c2e33",
+              "accent-blue": "#8ab4f8",
+              "text-primary": "#e8eaed",
+              "text-secondary": "#9aa0a6",
+              "border-color": "#3c4043",
             },
           },
         },
       };
     </script>
-
-    <!-- Sweet Alert 2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Font Awesome -->
     <link
@@ -46,9 +44,9 @@
     <!-- Custom CSS -->
     <link href="./css/index.css" rel="stylesheet" />
   </head>
+  <!-- <body class="h-screen flex flex-col overflow-hidden"> -->
   <body class="h-screen flex flex-col bg-dark-blue overflow-hidden font-sans">
     <!-- Header Section -->
-    <!-- with mobile navigation included -->
     <header class="px-4 py-3 bg-dark-blue min-h-16 lg:h-20 shadow-md">
       <div class="flex flex-col lg:flex-row h-full lg:items-center mx-auto">
         <div
@@ -108,24 +106,177 @@
           >
             <i class="fas fa-cog fa-md"></i>
           </button>
+          <div class="relative h-10 w-10">
+            <img
+              src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=6366f1&color=fff&rounded=true&size=40"
+              class="h-full w-full rounded-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+            />
+            <div
+              class="absolute inset-0 rounded-full border-2 border-green-500 pointer-events-none"
+            ></div>
+          </div>
         </div>
       </div>
     </header>
 
-    <!-- have a similar look an feel as the notebook lm product by google -->
-
     <!-- Main Content -->
-    <div class="flex flex-1 overflow-hidden" id="columns-container">
-      <!-- add content similar to -->
+    <main class="flex-1 overflow-auto py-8 px-4 md:px-8">
+      <div class="container mx-auto max-w-6xl">
+        <!-- Welcome Message -->
+        <h1 class="text-4xl font-medium text-text-primary mb-8">
+          Welcome to NotebookLM
+        </h1>
 
-      <!-- listing of the collection in form of 3 card per row. the card need to ve rounded an have a title and then a description text  a date an the authers by at the footer and ina small text format. -->
+        <!-- Action Bar -->
+        <div class="flex justify-between items-center mb-6">
+          <!-- Create New Button -->
+          <button
+            class="create-button flex items-center px-4 py-2 rounded-full border border-border-color text-accent-blue"
+          >
+            <i class="fas fa-plus mr-2"></i>
+            <span>Create new</span>
+          </button>
+
+          <!-- View Options -->
+          <div class="flex items-center space-x-2">
+            <div class="view-toggle flex rounded bg-card-bg p-1">
+              <button class="active p-1 px-2 rounded">
+                <i class="fas fa-th"></i>
+              </button>
+              <button class="p-1 px-2 rounded">
+                <i class="fas fa-list"></i>
+              </button>
+            </div>
+            <div class="relative">
+              <button
+                class="flex items-center space-x-1 px-3 py-1 rounded border border-border-color"
+              >
+                <span>Most recent</span>
+                <i class="fas fa-caret-down"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notebooks Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Notebook Card 1 -->
+          <div
+            class="card bg-card-bg rounded-lg overflow-hidden hover:bg-card-hover border border-border-color"
+          >
+            <div class="p-5">
+              <div class="flex justify-between mb-3">
+                <i class="far fa-file-alt notebook-icon"></i>
+                <div class="relative">
+                  <button
+                    class="text-text-secondary hover:text-text-primary focus:outline-none"
+                  >
+                    <i class="fas fa-ellipsis-v"></i>
+                  </button>
+                </div>
+              </div>
+              <h3 class="font-medium text-lg mb-2">
+                Kiago Edwin Rwaro: Clinical Officer CV
+              </h3>
+              <p class="text-text-secondary text-sm mb-8 line-clamp-2">
+                Professional background and qualifications for a clinical
+                officer position.
+              </p>
+              <div class="text-xs text-text-secondary">
+                <p>2 May 2025 • 11 sources</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notebook Card 2 -->
+          <div
+            class="card bg-card-bg rounded-lg overflow-hidden hover:bg-card-hover border border-border-color"
+          >
+            <div class="p-5">
+              <div class="flex justify-between mb-3">
+                <i class="far fa-edit notebook-icon"></i>
+                <div class="relative">
+                  <button
+                    class="text-text-secondary hover:text-text-primary focus:outline-none"
+                  >
+                    <i class="fas fa-ellipsis-v"></i>
+                  </button>
+                </div>
+              </div>
+              <h3 class="font-medium text-lg mb-2">
+                Kenya Public Service Employment Application
+              </h3>
+              <p class="text-text-secondary text-sm mb-8 line-clamp-2">
+                Application details and requirements for Kenya's public service
+                positions.
+              </p>
+              <div class="text-xs text-text-secondary">
+                <p>3 May 2025 • 5 sources</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notebook Card 3 -->
+          <div
+            class="card bg-card-bg rounded-lg overflow-hidden hover:bg-card-hover border border-border-color"
+          >
+            <div class="p-5">
+              <div class="flex justify-between mb-3">
+                <i class="far fa-file-alt notebook-icon"></i>
+                <div class="relative">
+                  <button
+                    class="text-text-secondary hover:text-text-primary focus:outline-none"
+                  >
+                    <i class="fas fa-ellipsis-v"></i>
+                  </button>
+                </div>
+              </div>
+              <h3 class="font-medium text-lg mb-2">
+                Communications and PR Strategy
+              </h3>
+              <p class="text-text-secondary text-sm mb-8 line-clamp-2">
+                Comprehensive communications plan for public relations in
+                healthcare.
+              </p>
+              <div class="text-xs text-text-secondary">
+                <p>1 May 2025 • 3 sources</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Create New Notebook Modal (Hidden by default) -->
+    <div
+      class="modal hidden fixed inset-0 z-50 flex items-center justify-center"
+    >
+      <div class="modal-content rounded-lg max-w-md w-full p-6">
+        <h2 class="text-xl font-medium mb-4">Create new notebook</h2>
+        <div class="mb-4">
+          <input
+            type="text"
+            placeholder="Notebook title"
+            class="w-full p-2 rounded bg-dark-bg border border-border-color text-text-primary focus:outline-none focus:border-accent-blue"
+          />
+        </div>
+        <div class="flex justify-end space-x-3">
+          <button
+            class="px-4 py-2 rounded text-text-secondary hover:bg-card-hover"
+          >
+            Cancel
+          </button>
+          <button
+            class="px-4 py-2 rounded bg-accent-blue text-dark-bg font-medium"
+          >
+            Create
+          </button>
+        </div>
+      </div>
     </div>
-
-    <!-- Modals -->
-    <!-- the code for the model to be shown when creating a new collection -->
 
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="js/script.js"></script>
+    <script src="js/index.js"></script>
   </body>
 </html>

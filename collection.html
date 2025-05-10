@@ -304,7 +304,7 @@
           </ul>
         </div>
 
-        <!-- Collapsed Actions view -->
+        <!-- Collapsed Source Actions view -->
         <div class="source-icon hidden flex flex-col gap-1 p-2">
           <!-- Add Source Button -->
           <div
@@ -327,7 +327,7 @@
           </div>
         </div>
 
-        <!-- Collapsed icon view -->
+        <!-- Collapsed Source icon view -->
         <div class="source-icon hidden">
           <div
             class="w-full text-center hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
@@ -355,7 +355,7 @@
       <!-- Middle Column -->
       <div
         id="middle-column"
-        class="mobile-tab-content active flex-1 bg-dark-blue text-white overflow-hidden transition-all duration-300 flex flex-col lg:block hidden m-4"
+        class="mobile-tab-content active flex-1 bg-blue-gray text-white overflow-hidden transition-all duration-300 flex flex-col lg:block hidden m-4"
       >
         <div
           class="flex items-center justify-between px-4 py-3 border-b border-gray-700 hidden lg:flex"
@@ -428,9 +428,9 @@
         <div class="p-4 border-t border-gray-700">
           <div class="relative">
             <textarea
-              class="w-full bg-blue-gray rounded-lg p-3 pr-12 text-white resize-none focus:ring-2 focus:ring-accent-blue focus:outline-none"
+              class="w-full bg-dark-blue rounded-lg p-3 pr-12 text-white resize-none focus:ring-2 focus:ring-accent-blue focus:outline-none"
               placeholder="Ask a question..."
-              rows="2"
+              rows="3"
             ></textarea>
             <button
               class="absolute right-2 bottom-2 text-accent-blue hover:text-white p-2 rounded-full transition-colors"
@@ -485,7 +485,8 @@
         </div>
 
         <!-- Quick Access Buttons -->
-        <div class="overflow-y-auto flex items-center px-4 py-3">
+        <!-- <div class="overflow-y-auto flex items-center px-4 py-3"> -->
+        <div class="overflow-y-auto">
           <div
             class="grid grid-cols-2 gap-2 px-4 py-3 mb-3 border-b border-gray-700"
           >
@@ -584,27 +585,8 @@
           </div>
         </div>
 
-        <!-- Collapsed icon view -->
-        <div class="studio-icon hidden">
-          <div
-            class="w-full text-center py-3 hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
-          >
-            <i class="fas fa-sticky-note block text-lg"></i>
-          </div>
-          <div
-            class="w-full text-center py-3 hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
-          >
-            <i class="fas fa-layer-group block text-lg"></i>
-          </div>
-          <div
-            class="w-full text-center py-3 hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
-          >
-            <i class="fas fa-file-alt block text-lg"></i>
-          </div>
-        </div>
-
-        <!-- Collapsed Actions view -->
-        <div class="source-icon hidden flex flex-col gap-1 p-2">
+        <!-- Collapsed Studio Actions view -->
+        <div class="studio-icon hidden flex flex-col gap-1 p-2">
           <!-- Add Note Button -->
           <div
             class="w-full text-center py-3 hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
@@ -616,22 +598,22 @@
           </div>
         </div>
 
-        <!-- Collapsed icon view -->
-        <div class="source-icon hidden">
+        <!-- Collapsed studio icon view -->
+        <div class="studio-icon hidden">
           <div
             class="w-full text-center hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
           >
-            <i class="fas fa-file-pdf block text-lg"></i>
+            <i class="fas fa-sticky-note block text-lg"></i>
           </div>
           <div
             class="w-full text-center hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
           >
-            <i class="fas fa-file-word block text-lg"></i>
+            <i class="fas fa-layer-group block text-lg"></i>
           </div>
           <div
             class="w-full text-center hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
           >
-            <i class="fas fa-file-excel block text-lg"></i>
+            <i class="fas fa-file-alt block text-lg"></i>
           </div>
           <div
             class="w-full text-center hover:bg-blue-gray-700 rounded-lg cursor-pointer transition-colors"
