@@ -37,6 +37,20 @@ header {
   }
 }
 
+/* Preloader Styles */
+#preloader {
+  transition: opacity 0.5s ease;
+}
+
+.animation-delay-100 {
+  animation-delay: 0.1s;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}
+
+/* Card Styles */
 .card {
   transition: all 0.2s ease;
 }
@@ -51,6 +65,7 @@ header {
   font-size: 1.2rem;
 }
 
+/* Button Styles */
 .create-button {
   transition: all 0.2s ease;
 }
@@ -62,13 +77,52 @@ header {
 
 .view-toggle button.active {
   background-color: #3c4043;
+  color: #e8eaed;
 }
 
+/* Modal Styles */
 .modal {
   background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal-content {
-  background-color: #27292d;
+  background-color: transparent; /* #27292d; */
   border: 1px solid #3c4043;
+  max-width: 90%;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .modal-content {
+    max-width: 28rem;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .notebook-list-item div[class*="col-span-"] {
+    font-size: 0.75rem;
+  }
+
+  #list-view .grid-cols-12 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+}
+
+/* Animation for loading dots */
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce 2s infinite;
 }

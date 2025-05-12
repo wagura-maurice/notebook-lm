@@ -489,6 +489,10 @@ header {
     border: none !important;
   }
 
+  #left-column .p-2 {
+    visibility: hidden;
+  }
+
   .tab-button.active {
     background-color: rgba(56, 189, 248, 0.2);
     color: #38bdf8;
