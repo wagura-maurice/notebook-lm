@@ -13,7 +13,8 @@
     />
 
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <script src="js/tailwindcss.js"></script>
     <script>
       tailwind.config = {
         theme: {
@@ -29,6 +30,11 @@
               "text-primary": "#e8eaed",
               "text-secondary": "#9aa0a6",
               "border-color": "#3c4043",
+              "loading-dot": "#8ab4f8",
+            },
+            animation: {
+              "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+              "bounce-slow": "bounce 2s infinite",
             },
           },
         },
@@ -36,84 +42,68 @@
     </script>
 
     <!-- Font Awesome -->
-    <link
+    <!-- <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
+    /> -->
+
+    <link rel="stylesheet" href="css/font-awesome.min.css" />
 
     <!-- Custom CSS -->
     <link href="./css/index.css" rel="stylesheet" />
   </head>
-  <!-- <body class="h-screen flex flex-col overflow-hidden"> -->
-  <body class="h-screen flex flex-col bg-dark-blue overflow-hidden font-sans">
+  <body class="h-screen flex flex-col bg-dark-bg overflow-hidden font-sans">
+    <!-- Preloader -->
+    <div
+      id="preloader"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-dark-bg"
+    >
+      <div class="text-center">
+        <div class="flex justify-center space-x-2 mb-4">
+          <div
+            class="w-3 h-3 rounded-full bg-loading-dot animate-bounce-slow"
+          ></div>
+          <div
+            class="w-3 h-3 rounded-full bg-loading-dot animate-bounce-slow animation-delay-100"
+          ></div>
+          <div
+            class="w-3 h-3 rounded-full bg-loading-dot animate-bounce-slow animation-delay-200"
+          ></div>
+        </div>
+        <p class="text-text-primary">Loading...</p>
+      </div>
+    </div>
+
     <!-- Header Section -->
-    <header class="px-4 py-3 bg-dark-blue min-h-16 lg:h-20 shadow-md">
-      <div class="flex flex-col lg:flex-row h-full lg:items-center mx-auto">
-        <div
-          class="flex items-center justify-between w-full lg:w-auto lg:flex-1"
-        >
-          <!-- Logo -->
+    <header class="px-4 py-3 bg-dark-bg border-b border-border-color">
+      <div class="flex items-center justify-between mx-auto container">
+        <!-- Logo and Title -->
+        <div class="flex items-center space-x-3">
           <div class="flex items-center">
             <img
               src="./images/logo-Microidea-white.svg"
               alt="Logo"
               class="h-10 w-10 lg:h-12 lg:w-12 rounded-full mr-3"
             />
-          </div>
-
-          <!-- Mobile Icons -->
-          <div class="lg:hidden flex items-center space-x-3">
-            <button
-              class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
-            >
-              <i class="fas fa-share-alt fa-md"></i>
-            </button>
-            <button
-              class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
-            >
-              <i class="fas fa-cog fa-md"></i>
-            </button>
-            <div class="relative h-8 w-8">
-              <img
-                src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=6366f1&color=fff&rounded=true&size=40"
-                class="h-full w-full rounded-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
-              />
-              <div
-                class="absolute inset-0 rounded-full border-2 border-green-500 pointer-events-none"
-              ></div>
-            </div>
+            <h1 class="text-xl font-medium text-text-primary ml-2">
+              NotebookLM
+            </h1>
           </div>
         </div>
 
-        <!-- Title -->
-        <h1
-          class="text-center lg:text-left text-lg lg:text-2xl font-bold text-white hover:text-accent-blue transition-colors mt-2 lg:mt-0 lg:mx-4 lg:flex-1"
-        >
-          NotebookLM Pro
-        </h1>
-
-        <!-- Desktop Icons -->
-        <div
-          class="hidden lg:flex items-center justify-end space-x-3 lg:flex-1"
-        >
+        <!-- Settings and User Menu -->
+        <div class="flex items-center space-x-4">
           <button
-            class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
+            class="text-text-secondary hover:text-text-primary p-2 rounded-full hover:bg-card-bg transition-colors"
           >
-            <i class="fas fa-share-alt fa-md"></i>
+            <i class="fas fa-cog"></i>
           </button>
-          <button
-            class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
-          >
-            <i class="fas fa-cog fa-md"></i>
-          </button>
-          <div class="relative h-10 w-10">
+          <div class="h-9 w-9">
             <img
-              src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=6366f1&color=fff&rounded=true&size=40"
+              src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=8ab4f8&color=202124&rounded=true&size=36"
               class="h-full w-full rounded-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+              alt="User avatar"
             />
-            <div
-              class="absolute inset-0 rounded-full border-2 border-green-500 pointer-events-none"
-            ></div>
           </div>
         </div>
       </div>
@@ -131,7 +121,7 @@
         <div class="flex justify-between items-center mb-6">
           <!-- Create New Button -->
           <button
-            class="create-button flex items-center px-4 py-2 rounded-full border border-border-color text-accent-blue"
+            class="create-button flex items-center px-4 py-2 rounded-full border border-border-color text-accent-blue hover:bg-accent-blue hover:text-dark-bg transition-colors"
           >
             <i class="fas fa-plus mr-2"></i>
             <span>Create new</span>
@@ -140,29 +130,145 @@
           <!-- View Options -->
           <div class="flex items-center space-x-2">
             <div class="view-toggle flex rounded bg-card-bg p-1">
-              <button class="active p-1 px-2 rounded">
+              <button class="grid-view p-1 px-2 rounded hover:bg-card-hover">
                 <i class="fas fa-th"></i>
               </button>
-              <button class="p-1 px-2 rounded">
+              <button
+                class="list-view active p-1 px-2 rounded hover:bg-card-hover"
+              >
                 <i class="fas fa-list"></i>
               </button>
             </div>
-            <div class="relative">
+            <div class="relative inline-block text-left">
               <button
-                class="flex items-center space-x-1 px-3 py-1 rounded border border-border-color"
+                class="flex items-center space-x-1 px-3 py-1 rounded border border-gray-300 hover:bg-gray-100 focus:outline-none"
+                onclick="toggleDropdown()"
               >
-                <span>Most recent</span>
+                <span id="sort-label">Most recent</span>
                 <i class="fas fa-caret-down"></i>
               </button>
+              <div
+                id="sort-menu"
+                class="hidden absolute z-10 mt-1 w-40 bg-white border border-gray-200 rounded shadow-lg"
+              >
+                <ul class="py-1 text-sm text-gray-700">
+                  <li>
+                    <a
+                      href="#"
+                      class="block px-4 py-2 hover:bg-gray-100"
+                      onclick="selectSort('Most recent')"
+                      >Most recent</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="block px-4 py-2 hover:bg-gray-100"
+                      onclick="selectSort('A-Z')"
+                      >A-Z</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="block px-4 py-2 hover:bg-gray-100"
+                      onclick="selectSort('Z-A')"
+                      >Z-A</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="block px-4 py-2 hover:bg-gray-100"
+                      onclick="selectSort('Oldest')"
+                      >Oldest</a
+                    >
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Notebooks Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- List View -->
+        <div id="list-view" class="w-full">
+          <div
+            class="grid grid-cols-12 text-text-secondary text-sm border-b border-border-color pb-2 mb-2"
+          >
+            <div class="col-span-6 pl-4">Title</div>
+            <div class="col-span-2 text-center">Sources</div>
+            <div class="col-span-2 text-center">Created</div>
+            <div class="col-span-2 text-center">Role</div>
+            <div class="col-span-2 text-center">Action</div>
+          </div>
+
+          <!-- Notebook List Items -->
+          <div class="notebook-list-item">
+            <div
+              class="grid grid-cols-12 items-center text-text-primary text-sm py-3 hover:bg-card-hover rounded transition-colors cursor-pointer"
+            >
+              <div class="col-span-6 pl-4 flex items-center">
+                <i class="far fa-file-alt notebook-icon mr-3"></i>
+                <span>Kiago Edwin Rwaro: Clinical Officer CV</span>
+              </div>
+              <div class="col-span-2 text-center">11 Sources</div>
+              <div class="col-span-2 text-center">2 May 2025</div>
+              <div class="col-span-2 text-center">Owner</div>
+              <div class="col-span-1 text-right pr-4">
+                <button class="text-text-secondary hover:text-text-primary">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="notebook-list-item">
+            <div
+              class="grid grid-cols-12 items-center text-text-primary text-sm py-3 hover:bg-card-hover rounded transition-colors cursor-pointer"
+            >
+              <div class="col-span-6 pl-4 flex items-center">
+                <i class="far fa-edit notebook-icon mr-3"></i>
+                <span>Kenya Public Service Employment Application Form</span>
+              </div>
+              <div class="col-span-2 text-center">5 Sources</div>
+              <div class="col-span-2 text-center">3 May 2025</div>
+              <div class="col-span-2 text-center">Owner</div>
+              <div class="col-span-1 text-right">
+                <button class="text-text-secondary hover:text-text-primary">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="notebook-list-item">
+            <div
+              class="grid grid-cols-12 items-center text-text-primary text-sm py-3 hover:bg-card-hover rounded transition-colors cursor-pointer"
+            >
+              <div class="col-span-6 pl-4 flex items-center">
+                <i class="far fa-file-alt notebook-icon mr-3"></i>
+                <span>Tenant Communications and Payments System</span>
+              </div>
+              <div class="col-span-2 text-center">3 Sources</div>
+              <div class="col-span-2 text-center">3 May 2025</div>
+              <div class="col-span-2 text-center">Owner</div>
+              <div class="col-span-2 text-center">
+                <button class="text-text-secondary hover:text-text-primary">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grid View (Hidden) -->
+        <div
+          id="grid-view"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 hidden"
+        >
           <!-- Notebook Card 1 -->
           <div
-            class="card bg-card-bg rounded-lg overflow-hidden hover:bg-card-hover border border-border-color"
+            class="card bg-card-bg rounded-lg overflow-hidden hover:bg-card-hover border border-border-color transition-all"
           >
             <div class="p-5">
               <div class="flex justify-between mb-3">
@@ -190,7 +296,7 @@
 
           <!-- Notebook Card 2 -->
           <div
-            class="card bg-card-bg rounded-lg overflow-hidden hover:bg-card-hover border border-border-color"
+            class="card bg-card-bg rounded-lg overflow-hidden hover:bg-card-hover border border-border-color transition-all"
           >
             <div class="p-5">
               <div class="flex justify-between mb-3">
@@ -204,7 +310,7 @@
                 </div>
               </div>
               <h3 class="font-medium text-lg mb-2">
-                Kenya Public Service Employment Application
+                Kenya Public Service Employment Application Form
               </h3>
               <p class="text-text-secondary text-sm mb-8 line-clamp-2">
                 Application details and requirements for Kenya's public service
@@ -218,7 +324,7 @@
 
           <!-- Notebook Card 3 -->
           <div
-            class="card bg-card-bg rounded-lg overflow-hidden hover:bg-card-hover border border-border-color"
+            class="card bg-card-bg rounded-lg overflow-hidden hover:bg-card-hover border border-border-color transition-all"
           >
             <div class="p-5">
               <div class="flex justify-between mb-3">
@@ -232,14 +338,14 @@
                 </div>
               </div>
               <h3 class="font-medium text-lg mb-2">
-                Communications and PR Strategy
+                Tenant Communications and Payments System
               </h3>
               <p class="text-text-secondary text-sm mb-8 line-clamp-2">
                 Comprehensive communications plan for public relations in
                 healthcare.
               </p>
               <div class="text-xs text-text-secondary">
-                <p>1 May 2025 • 3 sources</p>
+                <p>3 May 2025 • 3 sources</p>
               </div>
             </div>
           </div>
@@ -249,25 +355,51 @@
 
     <!-- Create New Notebook Modal (Hidden by default) -->
     <div
-      class="modal hidden fixed inset-0 z-50 flex items-center justify-center"
+      class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4"
     >
-      <div class="modal-content rounded-lg max-w-md w-full p-6">
-        <h2 class="text-xl font-medium mb-4">Create new notebook</h2>
+      <div class="modal-overlay absolute inset-0 bg-black bg-opacity-70"></div>
+      <div
+        class="modal-content rounded-lg max-w-md w-full p-6 relative z-10 bg-card-bg border border-border-color"
+      >
+        <h2 class="text-xl font-medium mb-4 text-text-primary">
+          Create new notebook
+        </h2>
         <div class="mb-4">
+          <label
+            class="block text-text-secondary text-sm mb-2"
+            for="notebook-title"
+          >
+            Title
+          </label>
           <input
             type="text"
-            placeholder="Notebook title"
+            id="notebook-title"
+            placeholder="Enter notebook title"
             class="w-full p-2 rounded bg-dark-bg border border-border-color text-text-primary focus:outline-none focus:border-accent-blue"
           />
         </div>
+        <div class="mb-6">
+          <label
+            class="block text-text-secondary text-sm mb-2"
+            for="notebook-description"
+          >
+            Description (optional)
+          </label>
+          <textarea
+            id="notebook-description"
+            rows="3"
+            placeholder="Add a description..."
+            class="w-full p-2 rounded bg-dark-bg border border-border-color text-text-primary focus:outline-none focus:border-accent-blue"
+          ></textarea>
+        </div>
         <div class="flex justify-end space-x-3">
           <button
-            class="px-4 py-2 rounded text-text-secondary hover:bg-card-hover"
+            class="px-4 py-2 rounded text-text-secondary hover:bg-card-hover transition-colors"
           >
             Cancel
           </button>
           <button
-            class="px-4 py-2 rounded bg-accent-blue text-dark-bg font-medium"
+            class="px-4 py-2 rounded bg-accent-blue text-dark-bg font-medium hover:bg-opacity-90 transition-colors"
           >
             Create
           </button>
@@ -276,7 +408,8 @@
     </div>
 
     <!-- JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> -->
+    <script src="js/jquery.min.js"></script>
     <script src="js/index.js"></script>
   </body>
 </html>

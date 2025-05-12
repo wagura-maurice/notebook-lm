@@ -14,7 +14,8 @@
     />
 
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <script src="js/tailwindcss.js"></script>
     <script>
       tailwind.config = {
         theme: {
@@ -35,7 +36,7 @@
     </script>
 
     <!-- Sweet Alert 2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/sweetalert2.js"></script>
 
     <!-- Font Awesome -->
     <link
@@ -43,10 +44,18 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
 
+    <!-- <link rel="stylesheet" href="css/font-awesome.min.css" /> -->
+
     <!-- Custom CSS -->
     <link href="./css/collection.css" rel="stylesheet" />
   </head>
-  <body class="h-screen flex flex-col bg-dark-blue overflow-hidden font-sans">
+  <body
+    class="lg:h-screen flex flex-col bg-dark-blue overflow-hidden font-sans"
+  >
+    <!-- only in desktop screens, is the view a full page. else when in mobile scrren scrolling will be needed alot acroll the 3 tabed navigation logic that will now have to be included in order to delver the neede responsiveners  -->
+
+    <!-- also have a preloader logic that havs a purple background with a white logo in the middle of the screen, this should be a full page loader that will be shown when the page is loading and will be hidden when the page is fully loaded. this should be done using tailwind css and jquery logic to show and hide the loader -->
+    <!-- Preloader -->
     <!-- Header Section -->
     <header class="px-4 py-3 bg-dark-blue min-h-16 lg:h-20 shadow-md">
       <div class="flex flex-col lg:flex-row h-full lg:items-center mx-auto">
@@ -313,7 +322,7 @@
             title="Add Source"
           >
             <i class="fas fa-plus block text-lg"></i>
-            <div class="text-xs mt-1">Add</div>
+            <div class="text-xs mt-1">Add Source</div>
           </div>
 
           <!-- Discover Sources Button -->
@@ -326,6 +335,10 @@
             <div class="text-xs mt-1">Discover</div>
           </div>
         </div>
+
+        <!-- ensure this actions buttons are not visible when in mobile screen mode, remove them from dome via css or something -->
+
+        <!-- the above Collapsed items are showing when not supposed too, i.e in mobile screen mode. whiles it not supposed to be the case -->
 
         <!-- Collapsed Source icon view -->
         <div class="source-icon hidden">
@@ -425,6 +438,8 @@
             </div>
           </div>
         </div>
+
+        <!-- the above chat area should be scrollable in both mobile and desktop views -->
         <div class="p-4 border-t border-gray-700">
           <div class="relative">
             <textarea
@@ -439,6 +454,8 @@
             </button>
           </div>
         </div>
+
+        <!-- in mobile screen view ensure the text area input is alway at the bottom so the screen no matter the screen size -->
       </div>
 
       <!-- Right Column -->
@@ -458,7 +475,7 @@
           </button>
         </div>
 
-        <!-- Select source -->
+        <!-- Studio note -->
         <div
           class="overflow-y-auto select-source-row px-4 py-3 flex justify-between items-center"
         >
@@ -598,6 +615,8 @@
           </div>
         </div>
 
+        <!-- should have a bounder separator for the add notes part an the notes listing just like it is in the left column ui -->
+
         <!-- Collapsed studio icon view -->
         <div class="studio-icon hidden">
           <div
@@ -622,9 +641,25 @@
           </div>
         </div>
       </div>
+
+      <!-- Collapsed right side column should look an behave like the left in terms of displaying the add note an the icons listing -->
     </div>
 
-    <!-- Modals -->
+    <!-- Modals injection logic using the tailwind logic mention here and using tailwind css in the processing of how it come into the display-->
+
+    <!-- ensur to have the follwing modals on top of what there 
+
+    1) modal for renaming a source, it should show an input tag with the current name as the value an the input being editable an on the modal we can cancel or submit the name change. using just tailwind css and jquery js logic in imprimenting the logic
+
+    2) modal source for deleting a source, it should show firs a confrimation with the workning an the cancle or contitue button so the user can give consent to action, use tailwind css an jquery for this event.
+
+    3) modal for showin the addin of new sources, this hould be very feature frenty and should hav ethe ablity to tigger modal for:
+      3.1) modal for pasting website or YouTube links into the sources.
+      3.2) modal for pasting raw text or simplay just inpuring it
+
+      e.t.c this ar modals that will be tigger from the add source modal iteslef, so thik of them a modal called while inside another modal
+
+    4) modal for Discovery this model should be aredy be working with the selected files in the  Sources column -->
     <!-- the code for the model to be shown by the even of clicking the addSourceBtn -->
     <!-- Add sources modal -->
     <!--     <div
@@ -1046,8 +1081,10 @@
       </div>
     </div>
 
+    <!-- with the above model ensure that they are always centred horizontally and vertically based on the screen in view, i.e mobile or desktop mode etc whichever is the case -->
+
     <!-- JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="js/jquery.min.js"></script>
     <script src="js/collection.js"></script>
   </body>
 </html>
