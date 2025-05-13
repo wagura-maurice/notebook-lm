@@ -1,49 +1,49 @@
-/* ==================== */
+/* ============================================ */
 /* === BASE STYLES === */
-/* ==================== */
+/* ============================================ */
 body {
   font-family: "Rubik", sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #0f172a; /* dark-blue */
+  background-color: #0f172a;
   color: white;
   height: 100vh;
   overflow: hidden;
 }
 
-/* ==================== */
+/* ============================================ */
 /* === PRELOADER === */
-/* ==================== */
+/* ============================================ */
 #preloader {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #8b5cf6; /* purple-500 */
+  background-color: #8b5cf6;
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* ==================== */
+/* ============================================ */
 /* === HEADER === */
-/* ==================== */
+/* ============================================ */
 header {
-  background-color: #0f172a; /* dark-blue */
+  background-color: #0f172a;
   min-height: 4rem;
   padding: 0.75rem 1rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* ==================== */
+/* ============================================ */
 /* === MOBILE TABS === */
-/* ==================== */
+/* ============================================ */
 .lg\:hidden.flex {
   display: flex;
   border-bottom: 1px solid #334155;
-  background-color: #1e293b; /* blue-gray */
+  background-color: #1e293b;
   position: sticky;
   top: 4rem;
   z-index: 10;
@@ -56,10 +56,11 @@ header {
   font-weight: 500;
   color: #cbd5e1;
   position: relative;
+  cursor: pointer;
 }
 
 .tab-button.active {
-  color: #38bdf8; /* accent-blue */
+  color: #38bdf8;
 }
 
 .tab-button.active::after {
@@ -69,12 +70,12 @@ header {
   left: 0;
   right: 0;
   height: 2px;
-  background-color: #38bdf8; /* accent-blue */
+  background-color: #38bdf8;
 }
 
-/* ==================== */
+/* ============================================ */
 /* === COLUMNS CONTAINER === */
-/* ==================== */
+/* ============================================ */
 #columns-container {
   display: flex;
   flex: 1;
@@ -83,12 +84,12 @@ header {
   padding: 0.5rem;
 }
 
-/* ==================== */
-/* === LEFT COLUMN - SOURCES === */
-/* ==================== */
+/* -------------------------------------------- */
+/* --- LEFT COLUMN - SOURCES --- */
+/* -------------------------------------------- */
 #left-column {
   width: 100%;
-  background-color: #1e293b; /* blue-gray */
+  background-color: #1e293b;
   color: white;
   transition: all 0.3s ease;
   display: flex;
@@ -98,7 +99,37 @@ header {
     0 2px 4px -1px rgba(147, 51, 234, 0.1);
 }
 
-/* Source items styles */
+.expanded-content > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #334155;
+}
+
+.source-list {
+  touch-action: pan-y;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.source-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.source-list::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.source-list::-webkit-scrollbar-thumb {
+  background: #64748b;
+  border-radius: 4px;
+}
+
+.source-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
 .source-item {
   padding: 0.5rem 0.75rem;
   border-radius: 0.25rem;
@@ -109,10 +140,9 @@ header {
 }
 
 .source-item:hover {
-  background-color: #1e293b; /* blue-gray */
+  background-color: #1e293b;
 }
 
-/* Source icons and menu toggle */
 .source-icon {
   transition: opacity 0.2s ease;
 }
@@ -131,38 +161,16 @@ header {
   opacity: 1;
 }
 
-/* Source dropdown menu */
-.source-menu {
-  z-index: 30;
-  position: absolute;
-  right: 0.75rem;
-  top: 2.5rem;
-  background-color: #1e293b; /* blue-gray */
-  border-radius: 0.25rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border: 1px solid #334155;
-  width: 10rem;
+.source-item .processing-btn ~ .source-menu-toggle {
+  display: none !important;
 }
 
-.source-menu a {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-  color: white;
-}
-
-.source-menu a:hover {
-  background-color: #1e293b; /* blue-gray */
-}
-
-/* ==================== */
-/* === MIDDLE COLUMN - CHAT === */
-/* ==================== */
+/* -------------------------------------------- */
+/* --- MIDDLE COLUMN - CHAT --- */
+/* -------------------------------------------- */
 #middle-column {
   flex: 1;
-  background-color: #1e293b; /* blue-gray */
+  background-color: #1e293b;
   color: white;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -173,7 +181,6 @@ header {
     0 2px 4px -1px rgba(147, 51, 234, 0.1);
 }
 
-/* Chat messages container */
 #chat-messages {
   padding: 1rem;
   overflow-y: auto;
@@ -182,7 +189,6 @@ header {
   gap: 1rem;
 }
 
-/* Message bubbles */
 .message-bubble {
   max-width: 80%;
   padding: 0.5rem 1rem;
@@ -197,15 +203,20 @@ header {
 }
 
 .message-bubble.user {
-  background-color: #8b5cf6; /* purple-500 */
+  background-color: #8b5cf6;
   border-bottom-right-radius: 0;
   align-self: flex-end;
 }
 
-/* Chat input area */
+.message-time {
+  font-size: 0.75rem;
+  text-align: right;
+  margin-top: 0.25rem;
+}
+
 #chat-input {
   width: 100%;
-  background-color: #0f172a; /* dark-blue */
+  background-color: #0f172a;
   border-radius: 0.5rem;
   padding: 0.75rem;
   color: white;
@@ -215,15 +226,15 @@ header {
 }
 
 #chat-input:focus {
-  box-shadow: 0 0 0 2px #38bdf8; /* accent-blue */
+  box-shadow: 0 0 0 2px #38bdf8;
 }
 
-/* ==================== */
-/* === RIGHT COLUMN - STUDIO === */
-/* ==================== */
+/* -------------------------------------------- */
+/* --- RIGHT COLUMN - STUDIO --- */
+/* -------------------------------------------- */
 #right-column {
   width: 100%;
-  background-color: #1e293b; /* blue-gray */
+  background-color: #1e293b;
   color: white;
   border-left: 1px solid #334155;
   transition: all 0.3s ease;
@@ -234,17 +245,41 @@ header {
     0 2px 4px -1px rgba(147, 51, 234, 0.1);
 }
 
-/* Notes items */
+.note-list-container {
+  max-height: calc(100% - 150px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  scrollbar-width: thin;
+  scrollbar-color: #334155 #1e293b;
+}
+
+.note-list-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.note-list-container::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.note-list-container::-webkit-scrollbar-thumb {
+  background: #64748b;
+  border-radius: 4px;
+}
+
+.note-list-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
 .note-item {
   position: relative;
   transition: all 0.2s ease;
 }
 
 .note-item:hover {
-  background-color: #1e293b; /* blue-gray */
+  background-color: #1e293b;
 }
 
-/* Note icons and menu toggle */
 .note-icon {
   transition: opacity 0.2s ease;
 }
@@ -265,21 +300,28 @@ header {
   opacity: 1;
 }
 
-/* Note dropdown menu */
-.note-menu {
-  z-index: 30;
+/* ============================================ */
+/* === DROPDOWN MENUS === */
+/* ============================================ */
+.dropdown-menu {
+  display: none;
   position: absolute;
   right: 0.75rem;
   top: 2.5rem;
-  background-color: #1e293b; /* blue-gray */
+  z-index: 30;
+  background-color: #1e293b;
   border-radius: 0.25rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
   border: 1px solid #334155;
   width: 10rem;
 }
 
-.note-menu a {
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-menu a {
   display: flex;
   align-items: center;
   padding: 0.5rem 0.75rem;
@@ -287,13 +329,39 @@ header {
   color: white;
 }
 
-.note-menu a:hover {
-  background-color: #1e293b; /* blue-gray */
+.dropdown-menu a:hover {
+  background-color: #1e293b;
 }
 
-/* ==================== */
+.source-menu {
+  display: none;
+  position: absolute;
+  right: 0.75rem;
+  top: 2.5rem;
+  z-index: 30;
+}
+
+.source-menu.show {
+  display: block;
+}
+
+.note-menu {
+  display: none;
+  position: absolute;
+  right: 0.75rem;
+  top: 2.5rem;
+  z-index: 30;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.note-menu.show {
+  display: block;
+}
+
+/* ============================================ */
 /* === MODALS === */
-/* ==================== */
+/* ============================================ */
 .modal {
   position: fixed;
   top: 0;
@@ -301,7 +369,7 @@ header {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.7);
-  z-index: 1000;
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -310,16 +378,18 @@ header {
 .modal > div {
   position: relative;
   z-index: 1001;
-  background-color: #1e293b; /* blue-gray */
+  background-color: #1e293b;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  max-width: 28rem;
+  width: 100%;
   padding: 1.5rem;
 }
 
-/* ==================== */
+/* ============================================ */
 /* === CUSTOM CHECKBOX === */
-/* ==================== */
+/* ============================================ */
 .source-checkbox {
   appearance: none;
   width: 1rem;
@@ -331,8 +401,8 @@ header {
 }
 
 .source-checkbox:checked {
-  background-color: #38bdf8; /* accent-blue */
-  border-color: #38bdf8; /* accent-blue */
+  background-color: #38bdf8;
+  border-color: #38bdf8;
 }
 
 .source-checkbox:checked::after {
@@ -347,13 +417,13 @@ header {
   transform: translate(-50%, -50%);
 }
 
-/* ==================== */
+/* ============================================ */
 /* === PROCESSING BUTTON === */
-/* ==================== */
+/* ============================================ */
 .processing-btn {
   background: none;
   border: none;
-  color: #38bdf8; /* accent-blue */
+  color: #38bdf8;
   cursor: pointer;
   padding: 0.25rem;
 }
@@ -366,62 +436,9 @@ header {
   animation: spin 1s linear;
 }
 
-/* ==================== */
-/* === COLLAPSED COLUMNS === */
-/* ==================== */
-#left-column.collapsed,
-#right-column.collapsed {
-  width: 4rem !important;
-  min-width: 4rem;
-  overflow: hidden;
-}
-
-#left-column.collapsed .expanded-content,
-#right-column.collapsed .expanded-content {
-  display: none !important;
-}
-
-.collapsed-content {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  padding: 0.5rem 0;
-}
-
-#left-column.collapsed .collapsed-content,
-#right-column.collapsed .collapsed-content {
-  display: flex !important;
-}
-
-/* ==================== */
-/* === SCROLLBARS === */
-/* ==================== */
-.overflow-y-auto {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
-}
-
-.overflow-y-auto::-webkit-scrollbar {
-  width: 8px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-track {
-  background: #1e293b; /* slate-800 */
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb {
-  background: #64748b; /* slate-500 */
-  border-radius: 4px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8; /* slate-400 */
-}
-
-/* ==================== */
+/* ============================================ */
 /* === ANIMATIONS === */
-/* ==================== */
+/* ============================================ */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -458,10 +475,81 @@ header {
   }
 }
 
-/* ==================== */
+.animation-delay-100 {
+  animation-delay: 0.1s;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}
+
+/* ============================================ */
+/* === COLLAPSED COLUMNS === */
+/* ============================================ */
+#left-column.collapsed,
+#right-column.collapsed {
+  width: 4rem;
+  min-width: 4rem;
+  overflow: hidden;
+}
+
+#left-column.collapsed .expanded-content,
+#right-column.collapsed .expanded-content {
+  display: none;
+}
+
+#left-column.collapsed .collapsed-content,
+#right-column.collapsed .collapsed-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.collapsed-content button {
+  width: 100%;
+  padding: 0.75rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #cbd5e1;
+  transition: color 0.2s ease;
+}
+
+.collapsed-content button:hover {
+  color: #38bdf8;
+}
+
+.collapsed-content .border-t {
+  width: 80%;
+  margin: 0.25rem auto;
+  border-color: #334155;
+}
+
+.collapsed-content span {
+  display: none;
+}
+
+.collapsed-content i {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.collapsed-content {
+  overflow: hidden;
+}
+
+.collapsed-content:hover {
+  overflow-y: auto;
+}
+
+.collapsed-content > div {
+  scroll-behavior: smooth;
+}
+
+/* ============================================ */
 /* === RESPONSIVE STYLES === */
-/* ==================== */
-/* Desktop layout */
+/* ============================================ */
 @media (min-width: 1024px) {
   #columns-container {
     display: flex;
@@ -484,39 +572,69 @@ header {
   }
 
   .mobile-tab-content {
-    display: flex !important;
+    display: flex;
   }
 
   .lg\:hidden.flex {
-    display: none !important;
+    display: none;
   }
 }
 
-/* Mobile layout */
 @media (max-width: 1023px) {
-  /* Hide all columns by default */
   .mobile-tab-content {
-    display: none !important;
-    width: 100% !important;
+    display: none;
+    width: 100%;
+    height: calc(100vh - 8rem); /* Adjust for header and tab height */
+    position: absolute;
+    top: 8rem; /* Header (4rem) + tabs (4rem) */
+    left: 0;
+    transition: opacity 0.3s ease;
   }
 
-  /* Show active tab content */
   .mobile-tab-content.active {
-    display: flex !important;
+    display: flex;
+    opacity: 1;
+    z-index: 1;
   }
 
-  /* Full width columns on mobile */
+  .mobile-tab-content.inactive {
+    display: none;
+    opacity: 0;
+    z-index: -1;
+  }
+
   #left-column,
   #middle-column,
   #right-column {
-    width: 100% !important;
+    width: 100%;
   }
 
-  /* Hide collapse/expand buttons on mobile */
   #collapse-left,
   #collapse-right,
   #expand-left,
   #expand-right {
-    display: none !important;
+    display: none;
   }
+}
+
+/* ============================================ */
+/* === UTILITY STYLES === */
+/* ============================================ */
+.scrollbar-transparent {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.scrollbar-transparent::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-transparent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-transparent::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 3px;
 }
