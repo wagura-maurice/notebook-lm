@@ -83,15 +83,25 @@
         >
           <!-- Logo -->
           <div class="flex items-center">
-            <img
-              src="./images/logo-Microidea-white.svg"
-              alt="Logo"
-              class="h-10 w-10 lg:h-12 lg:w-12 rounded-full mr-3"
-            />
+            <a href="/">
+              <img
+                src="./images/logo-Microidea-white.svg"
+                alt="Logo"
+                class="h-10 w-10 lg:h-12 lg:w-12 rounded-full mr-3"
+              />
+            </a>
           </div>
 
           <!-- Mobile Icons -->
           <div class="lg:hidden flex items-center space-x-3">
+            <!-- Home Button -->
+            <a
+              href="/"
+              class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
+            >
+              <i class="fa-solid fa-house fa-md"></i>
+            </a>
+
             <button
               class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
             >
@@ -125,6 +135,14 @@
         <div
           class="hidden lg:flex items-center justify-end space-x-3 lg:flex-1"
         >
+          <!-- Home Button -->
+          <a
+            href="/"
+            class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
+          >
+            <i class="fa-solid fa-house fa-md"></i>
+          </a>
+
           <button
             class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
           >
@@ -176,7 +194,7 @@
       <!-- Left Column - Sources -->
       <div
         id="left-column"
-        class="mobile-tab-content w-full lg:w-72 bg-slate-800 text-white transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(147,51,234,0.3),0_2px_4px_-1px_rgba(147,51,234,0.1)] lg:block hidden"
+        class="mobile-tab-content w-full lg:w-16 lg:hover:w-72 bg-slate-800 text-white transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(147,51,234,0.3),0_2px_4px_-1px_rgba(147,51,234,0.1)] lg:block hidden"
       >
         <!-- Expanded view -->
         <div class="expanded-content">
@@ -227,115 +245,119 @@
             />
           </div>
 
-          <!-- Source Items List -->
-          <div class="overflow-y-auto flex-1">
-            <ul class="source-list">
-              <!-- PDF Source -->
-              <li
-                class="group py-2 px-3 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
-              >
-                <div class="relative mr-3 w-6 h-6">
-                  <i
-                    class="fas fa-file-pdf text-red-400 group-hover:opacity-0 transition-opacity source-icon"
-                  ></i>
-                  <i
-                    class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center source-menu-toggle"
-                  ></i>
-                </div>
-                <span class="flex-1 truncate"
-                  >Introduction to Machine Learning</span
+          <div class="h-screen flex flex-col">
+            <div class="overflow-y-auto flex-1">
+              <ul class="source-list">
+                <!-- PDF Source -->
+                <li
+                  class="group py-2 px-3 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
                 >
-                <input type="checkbox" class="ml-2 source-checkbox" />
-                <div
-                  class="dropdown-menu hidden absolute right-3 top-10 z-20 bg-slate-800 rounded shadow-lg py-1 w-40 border border-slate-700"
-                >
-                  <a
-                    href="#"
-                    class="flex items-center px-3 py-2 text-sm text-white hover:bg-slate-700"
+                  <div class="relative mr-3 w-6 h-6">
+                    <i
+                      class="fas fa-file-pdf text-red-400 group-hover:opacity-0 transition-opacity source-icon"
+                    ></i>
+                    <i
+                      class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center source-menu-toggle"
+                    ></i>
+                  </div>
+                  <span class="flex-1 truncate"
+                    >Introduction to Machine Learning</span
                   >
-                    <i class="fas fa-pencil-alt mr-2"></i> Rename
-                  </a>
-                  <a
-                    href="#"
-                    class="flex items-center px-3 py-2 text-sm text-white hover:bg-slate-700"
+                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <div
+                    class="source-menu hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
                   >
-                    <i class="fas fa-trash-alt mr-2"></i> Delete
-                  </a>
-                </div>
-              </li>
+                    <a
+                      href="#"
+                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                    >
+                      <i class="fas fa-pencil-alt mr-2"></i> Rename
+                    </a>
+                    <a
+                      href="#"
+                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                    >
+                      <i class="fas fa-trash-alt mr-2"></i> Delete
+                    </a>
+                  </div>
+                </li>
 
-              <!-- Word Document Source -->
-              <li
-                class="group py-2 px-3 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
-              >
-                <div class="relative mr-3 w-6 h-6">
-                  <i
-                    class="fas fa-file-word text-blue-400 group-hover:opacity-0 transition-opacity source-icon"
-                  ></i>
-                  <i
-                    class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center source-menu-toggle"
-                  ></i>
-                </div>
-                <span class="flex-1 truncate">Data Analysis Techniques</span>
-                <input type="checkbox" class="ml-2 source-checkbox" />
-                <div
-                  class="dropdown-menu hidden absolute right-3 top-10 z-20 bg-slate-800 rounded shadow-lg py-1 w-40 border border-slate-700"
+                <!-- Word Document Source (Processing State) -->
+                <li
+                  class="group py-2 px-3 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
                 >
-                  <a
-                    href="#"
-                    class="flex items-center px-3 py-2 text-sm text-white hover:bg-slate-700"
+                  <div class="relative mr-3 w-6 h-6">
+                    <i
+                      class="fas fa-file-word text-blue-400 group-hover:opacity-0 transition-opacity source-icon"
+                    ></i>
+                  </div>
+                  <span class="flex-1 truncate">Data Analysis Techniques</span>
+                  <button
+                    class="ml-2 processing-btn"
+                    title="Process document"
+                    data-processing="false"
                   >
-                    <i class="fas fa-pencil-alt mr-2"></i> Rename
-                  </a>
-                  <a
-                    href="#"
-                    class="flex items-center px-3 py-2 text-sm text-white hover:bg-slate-700"
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                  </button>
+                  <div
+                    class="source-menu hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
                   >
-                    <i class="fas fa-trash-alt mr-2"></i> Delete
-                  </a>
-                </div>
-              </li>
+                    <a
+                      href="#"
+                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                    >
+                      <i class="fas fa-pencil-alt mr-2"></i> Rename
+                    </a>
+                    <a
+                      href="#"
+                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                    >
+                      <i class="fas fa-trash-alt mr-2"></i> Delete
+                    </a>
+                  </div>
+                </li>
 
-              <!-- Text Document Source -->
-              <li
-                class="group py-2 px-3 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
-              >
-                <div class="relative mr-3 w-6 h-6">
-                  <i
-                    class="fas fa-file-alt text-green-400 group-hover:opacity-0 transition-opacity source-icon"
-                  ></i>
-                  <i
-                    class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center source-menu-toggle"
-                  ></i>
-                </div>
-                <span class="flex-1 truncate">Research Methodology</span>
-                <input type="checkbox" class="ml-2 source-checkbox" />
-                <div
-                  class="dropdown-menu hidden absolute right-3 top-10 z-20 bg-slate-800 rounded shadow-lg py-1 w-40 border border-slate-700"
+                <!-- Text Document Source -->
+                <li
+                  class="group py-2 px-3 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
                 >
-                  <a
-                    href="#"
-                    class="flex items-center px-3 py-2 text-sm text-white hover:bg-slate-700"
+                  <div class="relative mr-3 w-6 h-6">
+                    <i
+                      class="fas fa-file-alt text-green-400 group-hover:opacity-0 transition-opacity source-icon"
+                    ></i>
+                    <i
+                      class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center source-menu-toggle"
+                    ></i>
+                  </div>
+                  <span class="flex-1 truncate">Research Methodology</span>
+                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <div
+                    class="source-menu hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
                   >
-                    <i class="fas fa-pencil-alt mr-2"></i> Rename
-                  </a>
-                  <a
-                    href="#"
-                    class="flex items-center px-3 py-2 text-sm text-white hover:bg-slate-700"
-                  >
-                    <i class="fas fa-trash-alt mr-2"></i> Delete
-                  </a>
-                </div>
-              </li>
-            </ul>
+                    <a
+                      href="#"
+                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                    >
+                      <i class="fas fa-pencil-alt mr-2"></i> Rename
+                    </a>
+                    <a
+                      href="#"
+                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                    >
+                      <i class="fas fa-trash-alt mr-2"></i> Delete
+                    </a>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
-        <!-- Collapsed view -->
-        <div class="collapsed-content hidden">
-          <!-- Collapsed header with reversed chevron -->
+        <!-- Collapsed view for the left column side-->
+        <div class="collapsed-content hidden flex flex-col h-full w-[4rem]">
+          <!-- Fixed header (not scrollable) -->
           <div
-            class="w-full flex items-center justify-center px-2 py-3 border-b border-slate-700"
+            class="w-full flex items-center justify-center px-2 border-b border-slate-700 flex-shrink-0"
           >
             <button
               id="expand-left"
@@ -345,32 +367,37 @@
             </button>
           </div>
 
-          <button
-            class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
-          >
-            <i class="fas fa-plus text-xl"></i>
-          </button>
-          <button
-            class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
-          >
-            <i class="fas fa-search text-xl"></i>
-          </button>
-          <div class="border-t border-slate-700 w-full my-2"></div>
-          <button
-            class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
-          >
-            <i class="fas fa-file-pdf text-xl text-red-400"></i>
-          </button>
-          <button
-            class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
-          >
-            <i class="fas fa-file-word text-xl text-blue-400"></i>
-          </button>
-          <button
-            class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
-          >
-            <i class="fas fa-file-alt text-xl text-green-400"></i>
-          </button>
+          <!-- Scrollable content area -->
+          <div class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent">
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-plus text-xl"></i>
+            </button>
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-search text-xl"></i>
+            </button>
+            <div class="border-t border-slate-700 w-full my-2"></div>
+
+            <!-- Scrollable file icons -->
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-file-pdf text-xl text-red-400"></i>
+            </button>
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-file-word text-xl text-blue-400"></i>
+            </button>
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-file-alt text-xl text-green-400"></i>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -397,10 +424,22 @@
           <!-- AI message -->
           <div class="flex justify-start">
             <div
-              class="max-w-[80%] bg-blue-500 px-4 py-2 rounded-xl rounded-bl-none shadow"
+              class="max-w-[80%] bg-blue-500 px-4 py-2 rounded-xl rounded-bl-none shadow relative group"
             >
               <div class="text-white">Hello, how can I help you today?</div>
-              <div class="text-xs text-blue-100 text-right mt-1">10:30 AM</div>
+              <div class="flex justify-between items-center mt-2">
+                <button
+                  class="text-blue-100 hover:text-white text-sm flex items-center add-to-note-btn"
+                >
+                  <i class="fas fa-plus-circle mr-1"></i> Add to note
+                </button>
+                <div class="text-xs text-blue-100">10:30 AM</div>
+                <button
+                  class="text-blue-100 hover:text-white text-sm flex items-center copy-message-btn"
+                >
+                  <i class="fas fa-copy mr-1"></i> Copy
+                </button>
+              </div>
             </div>
           </div>
 
@@ -421,7 +460,7 @@
           <!-- AI message -->
           <div class="flex justify-start">
             <div
-              class="max-w-[80%] bg-blue-500 px-4 py-2 rounded-xl rounded-bl-none shadow"
+              class="max-w-[80%] bg-blue-500 px-4 py-2 rounded-xl rounded-bl-none shadow relative group"
             >
               <div class="text-white">
                 I'd be happy to help with that! Based on your sources, I see you
@@ -430,7 +469,19 @@
                 document, or do you have specific questions about machine
                 learning?
               </div>
-              <div class="text-xs text-blue-100 text-right mt-1">10:33 AM</div>
+              <div class="flex justify-between items-center mt-2">
+                <button
+                  class="text-blue-100 hover:text-white text-sm flex items-center add-to-note-btn"
+                >
+                  <i class="fas fa-plus-circle mr-1"></i> Add to note
+                </button>
+                <div class="text-xs text-blue-100">10:33 AM</div>
+                <button
+                  class="text-blue-100 hover:text-white text-sm flex items-center copy-message-btn"
+                >
+                  <i class="fas fa-copy mr-1"></i> Copy
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -454,10 +505,12 @@
         </div>
       </div>
 
+      <!-- when the middle-column's expand-middle is clicked ensure the middle collis collaped make ensure the  -->
+
       <!-- Right Column - Studio -->
       <div
         id="right-column"
-        class="mobile-tab-content w-full lg:w-80 bg-slate-800 text-white border-l border-slate-700 transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(147,51,234,0.3),0_2px_4px_-1px_rgba(147,51,234,0.1)] lg:block hidden"
+        class="mobile-tab-content w-full lg:w-16 lg:hover:w-80 bg-slate-800 text-white border-l border-slate-700 transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(147,51,234,0.3),0_2px_4px_-1px_rgba(147,51,234,0.1)] lg:block hidden"
       >
         <!-- Expanded view -->
         <div class="expanded-content">
@@ -540,86 +593,96 @@
           </div>
 
           <!-- Notes List -->
-          <div class="overflow-y-auto flex-1 px-2 py-3">
-            <div
-              class="flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item group"
-            >
-              <div class="relative mr-3 w-6 h-6 mt-1">
-                <i
-                  class="fas fa-sticky-note text-sky-400 group-hover:opacity-0 transition-opacity note-icon"
-                ></i>
-                <i
-                  class="fas fa-ellipsis-horizontal absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center note-menu-toggle"
-                ></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="font-medium truncate">
-                  Information Source Assessment Guide
-                </div>
-                <div class="text-xs text-slate-400 truncate">
-                  Assessing and Utilizing Information Sources...
-                </div>
-              </div>
+          <div class="h-screen flex flex-col">
+            <div class="overflow-y-auto flex-1 px-2 py-3 note-list-container">
+              <!-- Note Item 1 -->
               <div
-                class="note-menu hidden absolute right-3 mt-8 bg-slate-800 rounded shadow-lg py-1 w-48 border border-slate-700 z-20"
+                class="relative flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item group mb-2"
               >
-                <a
-                  href="#"
-                  class="flex items-center px-3 py-2 text-sm text-white hover:bg-slate-700"
-                >
-                  <i class="fas fa-plus-circle mr-2"></i> Add to sources
-                </a>
-                <a
-                  href="#"
-                  class="flex items-center px-3 py-2 text-sm text-white hover:bg-slate-700"
-                >
-                  <i class="fas fa-trash-alt mr-2"></i> Delete note
-                </a>
-              </div>
-            </div>
+                <div class="relative mr-3 w-6 h-6 mt-1 flex-shrink-0">
+                  <i
+                    class="fas fa-sticky-note text-sky-400 note-icon transition-opacity duration-200"
+                  ></i>
+                  <i
+                    class="fas fa-ellipsis-horizontal absolute inset-0 text-white opacity-0 note-menu-toggle transition-opacity duration-200 flex items-center justify-center"
+                  ></i>
+                </div>
+                <div class="flex-1 min-w-0 overflow-hidden">
+                  <div class="font-medium truncate">
+                    Information Source Assessment Guide
+                  </div>
+                  <div class="text-xs text-slate-400 truncate">
+                    Assessing and Utilizing Information Sources...
+                  </div>
+                </div>
 
-            <div
-              class="flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item group"
-            >
-              <div class="relative mr-3 w-6 h-6 mt-1">
-                <i
-                  class="fas fa-sticky-note text-amber-400 group-hover:opacity-0 transition-opacity note-icon"
-                ></i>
-                <i
-                  class="fas fa-ellipsis-horizontal absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center note-menu-toggle"
-                ></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="font-medium truncate">Study Guide Outline</div>
-                <div class="text-xs text-slate-400 truncate">
-                  Key topics to cover for semester exam...
+                <!-- Dropdown Menu -->
+                <div
+                  class="note-menu hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                >
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                  >
+                    <i class="fas fa-plus-circle mr-3 text-sm"></i> Add to
+                    sources
+                  </a>
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                  >
+                    <i class="fas fa-trash-alt mr-3 text-sm"></i> Delete note
+                  </a>
                 </div>
               </div>
+
+              <!-- Note Item 2 -->
               <div
-                class="note-menu hidden absolute right-3 mt-8 bg-slate-800 rounded shadow-lg py-1 w-48 border border-slate-700 z-20"
+                class="relative flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item group mb-2"
               >
-                <a
-                  href="#"
-                  class="flex items-center px-3 py-2 text-sm text-white hover:bg-slate-700"
+                <div class="relative mr-3 w-6 h-6 mt-1 flex-shrink-0">
+                  <i
+                    class="fas fa-sticky-note text-amber-400 note-icon transition-opacity duration-200"
+                  ></i>
+                  <i
+                    class="fas fa-ellipsis-horizontal absolute inset-0 text-white opacity-0 note-menu-toggle transition-opacity duration-200 flex items-center justify-center"
+                  ></i>
+                </div>
+                <div class="flex-1 min-w-0 overflow-hidden">
+                  <div class="font-medium truncate">Study Guide Outline</div>
+                  <div class="text-xs text-slate-400 truncate">
+                    Key topics to cover for semester exam...
+                  </div>
+                </div>
+
+                <!-- Dropdown Menu -->
+                <div
+                  class="note-menu hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
                 >
-                  <i class="fas fa-plus-circle mr-2"></i> Add to sources
-                </a>
-                <a
-                  href="#"
-                  class="flex items-center px-3 py-2 text-sm text-white hover:bg-slate-700"
-                >
-                  <i class="fas fa-trash-alt mr-2"></i> Delete note
-                </a>
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                  >
+                    <i class="fas fa-plus-circle mr-3 text-sm"></i> Add to
+                    sources
+                  </a>
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                  >
+                    <i class="fas fa-trash-alt mr-3 text-sm"></i> Delete note
+                  </a>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Collapsed view (shown when collapsed) -->
-        <div class="collapsed-content hidden">
+        <div class="collapsed-content hidden flex flex-col h-full w-[4rem]">
           <!-- Collapsed header with reversed chevron -->
           <div
-            class="w-full flex items-center justify-center px-2 py-3 border-b border-slate-700"
+            class="w-full flex items-center justify-center px-2 border-b border-slate-700 flex-shrink-0"
           >
             <button
               id="expand-right"
@@ -629,32 +692,40 @@
             </button>
           </div>
 
-          <button
-            class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
-          >
-            <i class="fas fa-plus text-xl"></i>
-          </button>
-          <div class="border-t border-slate-700 w-full my-2"></div>
-          <button
-            class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
-          >
-            <i class="fas fa-sticky-note text-xl text-sky-400"></i>
-          </button>
-          <button
-            class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
-          >
-            <i class="fas fa-book text-xl text-amber-400"></i>
-          </button>
-          <button
-            class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
-          >
-            <i class="fas fa-file-alt text-xl text-emerald-400"></i>
-          </button>
+          <!-- Scrollable content container with full-width invisible scrollbar -->
+          <div class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent">
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-plus text-xl"></i>
+            </button>
+            <div class="border-t border-slate-700 w-full my-2"></div>
+
+            <!-- File icons - scrollable section -->
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-sticky-note text-xl text-sky-400"></i>
+            </button>
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-book text-xl text-amber-400"></i>
+            </button>
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-file-alt text-xl text-emerald-400"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Modals -->
+    <!-- Add Source Modal -->
+    <!-- Discover Source Modal -->
+    <!-- Rename Source Modal -->
     <div
       class="fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
       id="rename-modal"
@@ -680,7 +751,11 @@
       </div>
     </div>
 
+    <!-- Delete Note Modal -->
+
     <!-- Add Note Modal -->
+
+    <!-- Delete Note Modal -->
     <div
       class="fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
       id="add-note-modal"
@@ -705,6 +780,7 @@
         </div>
       </div>
     </div>
+
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="js/collection.js"></script>
