@@ -454,6 +454,7 @@ header {
 
 .processing-btn:hover {
   color: #7dd3fc;
+  /* animation: spin 1s linear; */
 }
 
 .processing-btn.active i {
@@ -794,3 +795,62 @@ header {
 /* === DELETE SOURCE === */
 /* ============================================ */
 /* (No additional CSS content for Delete Source modal) */
+
+/* Edit Note Content Styles */
+.edit-note-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#edit-note-content {
+  min-height: 200px;
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #64748b #1e293b;
+}
+
+#edit-note-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+#edit-note-content::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+#edit-note-content::-webkit-scrollbar-thumb {
+  background: #64748b;
+  border-radius: 4px;
+}
+
+#edit-note-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ============================================ */
+
+/* Ensure proper spacing and transitions */
+.group:hover .text-blue-100 {
+  z-index: 10; /* Ensure time appears above other elements when centered */
+}
+
+/* Mobile touch support */
+@media (max-width: 640px) {
+  .group:active .flex.justify-between {
+    opacity: 1 !important;
+  }
+  .group:active .text-blue-100 {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* ============================================ */
+@media (max-width: 640px) {
+  .group:active .add-to-note-btn,
+  .group:active .copy-message-btn {
+    opacity: 1 !important;
+  }
+}
