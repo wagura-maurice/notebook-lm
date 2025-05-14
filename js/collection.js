@@ -115,7 +115,7 @@ $(document).ready(function () {
 /* ============================================ */
 /* === SOURCE ACTIONS === */
 /* ============================================ */
-$(document).ready(function () {
+/* $(document).ready(function () {
   // Show the add source modal
   $("#addSourceBtn").on("click", function () {
     $("#add-source-modal").removeClass("hidden");
@@ -210,6 +210,119 @@ $(document).ready(function () {
     }
     $("#delete-source-modal").addClass("hidden");
   });
+}); */
+/* ============================================ */
+/* === SOURCE ACTIONS === */
+/* ============================================ */
+$(document).ready(function () {
+  // Show the add source modal
+  $("#addSourceBtn").on("click", function () {
+    $("#add-source-modal").removeClass("hidden");
+  });
+
+  $("#addSourceIcon").on("click", function () {
+    $("#add-source-modal").removeClass("hidden");
+  });
+
+  // Save a new source
+  $('#add-source-modal button:contains("Add Source")').on("click", function () {
+    const sourceInput = $("#source-input");
+    if (!sourceInput.length) {
+      console.error("Element #source-input not found in DOM");
+      return;
+    }
+
+    const sourceText = sourceInput.val().trim();
+
+    if (sourceText !== "") {
+      const newSource = $(`
+        <li class="group py-2 px-3 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item">
+          <div class="relative mr-3 w-6 h-6">
+            <i class="fas fa-file-alt text-green-400 group-hover:opacity-0 transition-opacity source-icon"></i>
+            <i class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center source-menu-toggle"></i>
+          </div>
+          <span class="flex-1 truncate">${sourceText.substring(0, 30)}${
+        sourceText.length > 30 ? "..." : ""
+      }</span>
+          <input type="checkbox" class="ml-2 source-checkbox" />
+          <div class="source-menu hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30">
+            <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+              <i class="fas fa-pencil-alt mr-2"></i> Rename
+            </a>
+            <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+              <i class="fas fa-trash-alt mr-2"></i> Delete
+            </a>
+          </div>
+        </li>
+      `);
+
+      $(".source-list").prepend(newSource);
+      sourceInput.val("");
+      $("#add-source-modal").addClass("hidden");
+    }
+  });
+
+  // Show the discover source modal
+  $("#discoverSourceBtn").on("click", function () {
+    $("#discover-source-modal").removeClass("hidden");
+  });
+
+  $("#discoverSourceIcon").on("click", function () {
+    $("#discover-source-modal").removeClass("hidden");
+  });
+
+  // Handle discover search action
+  $('#discover-source-modal button:contains("Search")').on(
+    "click",
+    function () {
+      const searchText = $("#discover-input").val().trim();
+      if (searchText !== "") {
+        console.log("Searching for sources: " + searchText);
+        // Placeholder: Add logic to fetch and display sources
+        $("#discover-input").val("");
+        $("#discover-source-modal").addClass("hidden");
+      }
+    }
+  );
+
+  // Initiate source rename
+  $(document).on("click", '.source-menu a:contains("Rename")', function (e) {
+    e.preventDefault();
+    const sourceItem = $(this).closest(".source-item");
+    const currentName = sourceItem.find(".truncate").text();
+
+    $("#rename-input").val(currentName);
+    $("#rename-modal").removeClass("hidden");
+    $("#rename-modal").data("source-item", sourceItem);
+  });
+
+  // Save renamed source
+  $('#rename-modal button:contains("Save")').on("click", function () {
+    const newName = $("#rename-input").val();
+    const sourceItem = $("#rename-modal").data("source-item");
+
+    if (newName && sourceItem) {
+      sourceItem.find(".truncate").text(newName);
+    }
+    $("#rename-modal").addClass("hidden");
+  });
+
+  // Show delete source confirmation
+  $(document).on("click", '.source-menu a:contains("Delete")', function (e) {
+    e.preventDefault();
+    const sourceItem = $(this).closest(".source-item");
+    $("#delete-source-modal").removeClass("hidden");
+    $("#delete-source-modal").data("source-item", sourceItem);
+  });
+
+  // Confirm source deletion
+  $('#delete-source-modal button:contains("Delete")').on("click", function () {
+    const sourceItem = $("#delete-source-modal").data("source-item");
+    if (sourceItem) {
+      sourceItem.remove();
+    }
+    $("#delete-source-modal").addClass("hidden");
+  });
 });
 
 /* ============================================ */
@@ -218,6 +331,10 @@ $(document).ready(function () {
 $(document).ready(function () {
   // Show the add note modal
   $("#add-note-btn").on("click", function () {
+    $("#add-note-modal").removeClass("hidden");
+  });
+
+  $("#add-note-icon").on("click", function () {
     $("#add-note-modal").removeClass("hidden");
   });
 
@@ -588,14 +705,14 @@ $(document).ready(function () {
 
     // Create the edit form for the note with WYSIWYG editor
     const editForm = $(`
-  <div class="edit-note-content flex flex-col h-full p-4">
-    <div class="flex items-center justify-between mb-4">
+  <div class="edit-note-content flex flex-col h-full">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700">
       <h3 class="text-lg font-semibold">Edit Note</h3>
       <button id="back-to-notes" class="text-sky-400 hover:text-sky-300">
         <i class="fas fa-arrow-left mr-2"></i>Back
       </button>
     </div>
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col px-4 py-3 overflow-hidden">
       <input
         type="text"
         id="edit-note-title"
@@ -615,16 +732,15 @@ $(document).ready(function () {
           <button class="wysiwyg-btn" data-command="justifyRight" title="Align Right"><i class="fas fa-align-right"></i></button>
           <button class="wysiwyg-btn" data-command="insertOrderedList" title="Numbered List"><i class="fas fa-list-ol"></i></button>
           <button class="wysiwyg-btn" data-command="insertUnorderedList" title="Bullet List"><i class="fas fa-list-ul"></i></button>
-          <button class="wysiwyg-btn" data-command="createLink" title="Insert Link"><i class="fas fa-link"></i></button>
-          <button class="wysiwyg-btn" data-command="unlink" title="Remove Link"><i class="fas fa-unlink"></i></button>
         </div>
       </div>
       
-      <!-- Editable Content Area -->
+      <!-- Editable Content Area with fixed height and scrolling -->
       <div 
         id="edit-note-content" 
-        class="w-full flex-1 bg-slate-700 text-white border border-t-0 border-slate-600 rounded-b px-3 py-2 overflow-auto focus:outline-none focus:ring-2 focus:ring-sky-400" 
+        class="w-full flex-1 min-h-[200px] max-h-[calc(100vh-300px)] bg-slate-700 text-white border border-t-0 border-slate-600 rounded-b px-3 py-2 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-sky-400" 
         contenteditable="true"
+        style="min-height: 200px; max-height: calc(100vh - 300px);"
       >${content}</div>
       
       <!-- Pill-style joined buttons -->
@@ -701,10 +817,11 @@ $(document).ready(function () {
       const updatedContent = $("#edit-note-content").html();
 
       // Call your save function here
-      saveNote(noteId, updatedTitle, updatedContent);
+      // saveNote(noteId, updatedTitle, updatedContent); // to be defined
 
       // Return to notes list
-      showNotesList();
+      $("#right-column").empty().append(originalContent);
+      $("#right-column").removeClass("collapsed");
     });
 
     // Cancel button action
@@ -876,24 +993,26 @@ $(document).ready(function () {
     const btn = $(this);
     const icon = btn.find("i");
 
-    if (btn.data("processing") === "false") {
-      btn.data("processing", "true");
-      btn.addClass("active");
+    // if (btn.data("processing") === "false") {
+    btn.data("processing", "true");
+    btn.addClass("active");
 
-      let spinCount = 0;
-      const spinInterval = setInterval(() => {
-        icon.css("animation", "none");
-        void icon[0].offsetWidth;
-        icon.css("animation", "spin 1s linear");
-        spinCount++;
+    let spinCount = 0;
+    const spinInterval = setInterval(() => {
+      icon.css("animation", "none");
+      void icon[0].offsetWidth;
+      icon.css("animation", "spin 1s linear");
+      spinCount++;
 
-        if (spinCount >= 5) {
-          clearInterval(spinInterval);
-          btn.removeClass("active");
-          btn.data("processing", "false");
-        }
-      }, 1000);
-    }
+      if (spinCount >= 5) {
+        clearInterval(spinInterval);
+        btn.removeClass("active");
+        btn.data("processing", "false");
+
+        alert("Processing complete!");
+      }
+    }, 1000);
+    // }
   });
 });
 
