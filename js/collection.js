@@ -2,15 +2,15 @@
 /* === DOCUMENT READY === */
 /* ============================================ */
 $(document).ready(function () {
-  // Initialize preloader
+  // Fade out the preloader after 1 second
   setTimeout(function () {
     $("#preloader").fadeOut();
   }, 1000);
 
-  // Initialize mobile tabs
+  // Initialize mobile tab navigation
   setupMobileTabs();
 
-  // Initialize modals
+  // Initialize modal functionality
   initModals();
 });
 
@@ -18,29 +18,29 @@ $(document).ready(function () {
 /* === COLUMN TOGGLES === */
 /* ============================================ */
 $(document).ready(function () {
-  // Collapse left column
+  // Toggle collapse/expand for the left column (Sources)
   $("#collapse-left").on("click", function () {
     $("#left-column").toggleClass("collapsed");
     $("#left-column .source-menu").addClass("hidden");
   });
 
-  // Collapse right column
+  // Toggle collapse/expand for the right column (Studio)
   $("#collapse-right").on("click", function () {
     $("#right-column").toggleClass("collapsed");
     $("#right-column .note-menu").addClass("hidden");
   });
 
-  // Expand left column
+  // Expand the left column (Sources)
   $("#expand-left").on("click", function () {
     $("#left-column").removeClass("collapsed");
   });
 
-  // Expand right column
+  // Expand the right column (Studio)
   $("#expand-right").on("click", function () {
     $("#right-column").removeClass("collapsed");
   });
 
-  // Expand/collapse all columns
+  // Expand or collapse all columns based on current state
   $("#expand-middle").on("click", function () {
     const isLeftCollapsed = $("#left-column").hasClass("collapsed");
     const isRightCollapsed = $("#right-column").hasClass("collapsed");
@@ -61,45 +61,45 @@ $(document).ready(function () {
 /* === DROPDOWN MENUS === */
 /* ============================================ */
 $(document).ready(function () {
-  // Source menu dropdown with positioning
+  // Handle source menu dropdown with positioning
   $(document).on("click", ".source-menu-toggle", function (e) {
     e.stopPropagation();
     e.preventDefault();
 
-    // Hide all other dropdowns
+    // Hide all other source dropdowns
     $(".source-menu").removeClass("show").addClass("hidden");
 
-    // Get source item position
+    // Get the position of the source item
     const sourceItem = $(this).closest(".source-item");
     const sourceItemRect = sourceItem[0].getBoundingClientRect();
 
-    // Get dropdown menu
+    // Get the dropdown menu
     const dropdown = sourceItem.find(".source-menu");
 
-    // Position dropdown
+    // Position the dropdown relative to the source item
     dropdown.css({
       top: sourceItemRect.top + 40,
       left: sourceItemRect.right - 160,
       position: "fixed",
     });
 
-    // Toggle current dropdown
+    // Toggle the visibility of the current dropdown
     dropdown.toggleClass("hidden show");
   });
 
-  // Note menu dropdown
+  // Handle note menu dropdown
   $(document).on("click", ".note-menu-toggle", function (e) {
     e.stopPropagation();
     $(this).closest(".note-item").find(".note-menu").toggleClass("hidden show");
   });
 
-  // Notes menu dropdown
+  // Handle notes menu dropdown
   $("#notes-menu-button").on("click", function (e) {
     e.stopPropagation();
     $("#notes-menu-dropdown").toggleClass("hidden");
   });
 
-  // Close dropdowns when clicking outside
+  // Close all dropdowns when clicking outside
   $(document).on("click", function (e) {
     if (
       !$(e.target).closest(".source-menu").length &&
@@ -116,12 +116,12 @@ $(document).ready(function () {
 /* === SOURCE ACTIONS === */
 /* ============================================ */
 $(document).ready(function () {
-  // Add source button
+  // Show the add source modal
   $("#addSourceBtn").on("click", function () {
     $("#add-source-modal").removeClass("hidden");
   });
 
-  // Save new source
+  // Save a new source
   $('#add-source-modal button:contains("Add Source")').on("click", function () {
     const sourceText = $("#source-input").val().trim();
 
@@ -153,12 +153,12 @@ $(document).ready(function () {
     }
   });
 
-  // Discover source button
+  // Show the discover source modal
   $("#discoverSourceBtn").on("click", function () {
     $("#discover-source-modal").removeClass("hidden");
   });
 
-  // Handle discover search (placeholder functionality)
+  // Handle discover search action
   $('#discover-source-modal button:contains("Search")').on(
     "click",
     function () {
@@ -172,7 +172,7 @@ $(document).ready(function () {
     }
   );
 
-  // Rename source
+  // Initiate source rename
   $(document).on("click", '.source-menu a:contains("Rename")', function (e) {
     e.preventDefault();
     const sourceItem = $(this).closest(".source-item");
@@ -194,7 +194,7 @@ $(document).ready(function () {
     $("#rename-modal").addClass("hidden");
   });
 
-  // Delete source (show confirmation modal)
+  // Show delete source confirmation
   $(document).on("click", '.source-menu a:contains("Delete")', function (e) {
     e.preventDefault();
     const sourceItem = $(this).closest(".source-item");
@@ -216,12 +216,12 @@ $(document).ready(function () {
 /* === NOTE ACTIONS === */
 /* ============================================ */
 $(document).ready(function () {
-  // Add note button
+  // Show the add note modal
   $("#add-note-btn").on("click", function () {
     $("#add-note-modal").removeClass("hidden");
   });
 
-  // Save new note
+  // Save a new note
   $('#add-note-modal button:contains("Save Note")').on("click", function () {
     const noteText = $("#note-input").val();
 
@@ -230,7 +230,7 @@ $(document).ready(function () {
         <div class="relative flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item group mb-2">
           <div class="relative mr-3 w-6 h-6 mt-1 flex-shrink-0">
             <i class="fas fa-sticky-note text-sky-400 note-icon transition-opacity duration-200"></i>
-            <i class="fas fa-ellipsis-horizontal absolute inset-0 text-white opacity-0 note-menu-toggle transition-opacity duration-200 flex items-center justify-center"></i>
+            <i class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 note-menu-toggle transition-opacity duration-200 flex items-center justify-center"></i>
           </div>
           <div class="flex-1 min-w-0 overflow-hidden">
             <div class="font-medium truncate">${noteText.substring(0, 30)}${
@@ -242,6 +242,9 @@ $(document).ready(function () {
             )}${noteText.length > 50 ? "..." : ""}</div>
           </div>
           <div class="note-menu hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30">
+            <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+              <i class="fa-solid fa-eye mr-2"></i> Show note
+            </a>
             <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
               <i class="fas fa-plus-circle mr-3 text-sm"></i> Add to sources
             </a>
@@ -258,7 +261,7 @@ $(document).ready(function () {
     }
   });
 
-  // Delete note (show confirmation modal)
+  // Show delete note confirmation
   $(document).on("click", '.note-menu a:contains("Delete")', function (e) {
     e.preventDefault();
     const noteItem = $(this).closest(".note-item");
@@ -277,55 +280,482 @@ $(document).ready(function () {
 });
 
 /* ============================================ */
+/* === SOURCE ITEM INTERACTIONS === */
+/* ============================================ */
+/* $(document).ready(function () {
+  // Handle source item click to toggle active state
+  $(document).on("click", ".source-item", function (e) {
+    // Prevent action if clicking on the dropdown menu
+    if ($(e.target).closest(".source-menu").length) return;
+
+    // Remove active class from all other sources
+    $(".source-item").not(this).removeClass("active");
+
+    // Toggle active class on the clicked source
+    $(this).toggleClass("active");
+
+    // Update icon visibility based on active state
+    if ($(this).hasClass("active")) {
+      $(this).find(".source-icon").css("opacity", "0");
+      $(this).find(".source-menu-toggle").css("opacity", "1");
+    } else {
+      $(this).find(".source-icon").css("opacity", "1");
+      $(this).find(".source-menu-toggle").css("opacity", "0");
+      $(this).find(".source-menu").addClass("hidden");
+    }
+  });
+
+  // Handle ellipsis icon click to show menu
+  $(document).on("click", ".source-menu-toggle", function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const sourceItem = $(this).closest(".source-item");
+    const sourceMenu = sourceItem.find(".source-menu");
+
+    // Close all other open menus before toggling the current one
+    $(".source-menu").not(sourceMenu).addClass("hidden");
+
+    // Position the dropdown menu
+    const sourceItemRect = sourceItem[0].getBoundingClientRect();
+    sourceMenu.css({
+      top: sourceItemRect.top + 40,
+      left: sourceItemRect.right - 160,
+      position: "fixed",
+    });
+
+    // Toggle the visibility of the current menu
+    sourceMenu.toggleClass("hidden show");
+
+    // Rebind event listeners to the menu items to ensure functionality
+    sourceMenu
+      .find(".menu-option")
+      .off("click")
+      .on("click", function (e) {
+        e.preventDefault();
+      });
+  });
+
+  // Handle "Show source" action
+  $(document).on("click", '.source-menu a:contains("Show")', function (e) {
+    e.preventDefault();
+    const sourceItem = $(this).closest(".source-item");
+    const sourceName = sourceItem.find(".truncate").text();
+
+    // Sample data for demonstration (replace with actual data retrieval logic)
+    const summary = `This library resource offers guidance on how to find experts for reporting purposes. It suggests looking to various institutions such as universities, professional associations, and government offices for potential sources, advising users to consider diverse perspectives. The guide also highlights useful tools like expert search engines and specific databases, while providing crucial tips on evaluating expert sources to ensure credibility and avoid misleading information.`;
+    const keyTopics = [
+      "Find experts",
+      "Research guides",
+      "Expert search engines",
+      "Evaluate sources",
+    ];
+    const metadata = {
+      Created: "2025-01-15",
+      "Last Modified": "2025-05-14",
+      "Source Type": "Library Guide",
+      "AI Confidence": "92%",
+    };
+
+    // Hide the source menu
+    $(".source-menu").addClass("hidden");
+
+    // Store the original content of the left column
+    const originalContent = $("#left-column").children().detach();
+
+    // Create the source view
+    const sourceView = $(`
+      <div class="source-view flex flex-col h-full p-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold">${sourceName}</h3>
+          <button id="back-to-sources" class="text-sky-400 hover:text-sky-300">
+            <i class="fas fa-arrow-left mr-2"></i>Back
+          </button>
+        </div>
+        <div class="flex-1 flex flex-col overflow-y-auto">
+          <div class="bg-slate-700 rounded-lg p-4 mb-4">
+            <h4 class="text-sm font-medium text-sky-400 mb-2">Summary</h4>
+            <p class="text-sm text-slate-300">${summary}</p>
+          </div>
+          <div class="bg-slate-700 rounded-lg p-4 mb-4">
+            <h4 class="text-sm font-medium text-sky-400 mb-2">Key Topics</h4>
+            <ul class="list-disc list-inside text-sm text-slate-300">
+              ${keyTopics.map((topic) => `<li>${topic}</li>`).join("")}
+            </ul>
+          </div>
+          <div class="bg-slate-700 rounded-lg p-4">
+            <h4 class="text-sm font-medium text-sky-400 mb-2">Metadata</h4>
+            <dl class="text-sm text-slate-300">
+              ${Object.entries(metadata)
+                .map(
+                  ([key, value]) => `
+                <div class="flex justify-between mb-1">
+                  <dt>${key}:</dt>
+                  <dd>${value}</dd>
+                </div>
+              `
+                )
+                .join("")}
+            </dl>
+          </div>
+        </div>
+      </div>
+    `);
+
+    // Append the source view to the left column
+    $("#left-column").append(sourceView);
+
+    // Handle "Back" button to restore the original content and rebind events
+    $("#back-to-sources").on("click", function () {
+      $("#left-column").empty().append(originalContent);
+      $("#left-column").removeClass("collapsed");
+      // Reinitialize dropdown behavior after restoring content
+      $(".source-menu-toggle")
+        .off("click")
+        .on("click", function (e) {
+          e.stopPropagation();
+          e.preventDefault();
+
+          const sourceItem = $(this).closest(".source-item");
+          const sourceMenu = sourceItem.find(".source-menu");
+
+          $(".source-menu").not(sourceMenu).addClass("hidden");
+
+          const sourceItemRect = sourceItem[0].getBoundingClientRect();
+          sourceMenu.css({
+            top: sourceItemRect.top + 40,
+            left: sourceItemRect.right - 160,
+            position: "fixed",
+          });
+
+          sourceMenu.toggleClass("hidden show");
+        });
+    });
+  });
+
+  // Close menu when clicking outside
+  $(document).on("click", function (e) {
+    if (
+      !$(e.target).closest(".source-menu").length &&
+      !$(e.target).closest(".source-menu-toggle").length
+    ) {
+      $(".source-menu").addClass("hidden");
+    }
+  });
+}); */
+
+/* ============================================ */
+/* === SOURCE ITEM INTERACTIONS === */
+/* ============================================ */
+$(document).ready(function () {
+  // Handle source item click to toggle active state
+  $(document).on("click", ".source-item", function (e) {
+    // Prevent action if clicking on the dropdown menu or ellipsis icon
+    if (
+      $(e.target).closest(".source-menu").length ||
+      $(e.target).hasClass("source-menu-toggle") ||
+      $(e.target).closest(".source-menu-toggle").length
+    ) {
+      return;
+    }
+
+    // Remove active class from all other sources
+    $(".source-item").not(this).removeClass("active");
+
+    // Toggle active class on the clicked source
+    $(this).toggleClass("active");
+
+    // Update icon visibility based on active state
+    if ($(this).hasClass("active")) {
+      $(this).find(".source-icon").css("opacity", "0");
+      $(this).find(".source-menu-toggle").css("opacity", "1");
+    } else {
+      $(this).find(".source-icon").css("opacity", "1");
+      $(this).find(".source-menu-toggle").css("opacity", "0");
+      $(this).find(".source-menu").addClass("hidden");
+    }
+  });
+
+  // Handle ellipsis icon click to show menu
+  $(document).on("click", ".source-menu-toggle", function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const sourceItem = $(this).closest(".source-item");
+    const sourceMenu = sourceItem.find(".source-menu");
+
+    // Close all other open menus before toggling the current one
+    $(".source-menu").not(sourceMenu).addClass("hidden");
+
+    // Position the dropdown menu
+    const sourceItemRect = sourceItem[0].getBoundingClientRect();
+    sourceMenu.css({
+      top: sourceItemRect.top + 40,
+      left: sourceItemRect.right - 160,
+      position: "fixed",
+    });
+
+    // Toggle the visibility of the current menu
+    sourceMenu.toggleClass("hidden show");
+
+    // Ensure the source item is active
+    $(".source-item")
+      .not(sourceItem)
+      .removeClass("active")
+      .find(".source-icon")
+      .css("opacity", "1")
+      .end()
+      .find(".source-menu-toggle")
+      .css("opacity", "0");
+
+    sourceItem
+      .addClass("active")
+      .find(".source-icon")
+      .css("opacity", "0")
+      .end()
+      .find(".source-menu-toggle")
+      .css("opacity", "1");
+  });
+
+  // Close menu when clicking outside
+  $(document).on("click", function (e) {
+    if (
+      !$(e.target).closest(".source-menu").length &&
+      !$(e.target).closest(".source-menu-toggle").length
+    ) {
+      $(".source-menu").addClass("hidden");
+      $(".source-item")
+        .removeClass("active")
+        .find(".source-icon")
+        .css("opacity", "1")
+        .end()
+        .find(".source-menu-toggle")
+        .css("opacity", "0");
+    }
+  });
+});
+
+/* ============================================ */
 /* === NOTE ITEM INTERACTIONS === */
 /* ============================================ */
 $(document).ready(function () {
-  // Handle note item hover/click
-  $(document).on("mouseenter click", ".note-item", function (e) {
-    $(".note-menu.show").not($(this).find(".note-menu")).removeClass("show");
-    $(this).addClass("active");
+  // Handle note item click to toggle active state
+  $(document).on("click", ".note-item", function (e) {
+    // Prevent action if clicking on the dropdown menu
+    if ($(e.target).closest(".note-menu").length) return;
 
-    if (
-      $(e.target).closest(".note-menu-toggle").length ||
-      e.type === "mouseenter"
-    ) {
-      $(this).find(".note-menu").addClass("show");
+    // Remove active class from all other notes
+    $(".note-item").not(this).removeClass("active");
+
+    // Toggle active class on the clicked note
+    $(this).toggleClass("active");
+
+    // Update icon visibility based on active state
+    if ($(this).hasClass("active")) {
+      $(this).find(".note-icon").css("opacity", "0");
+      $(this).find(".note-menu-toggle").css("opacity", "1");
+    } else {
+      $(this).find(".note-icon").css("opacity", "1");
+      $(this).find(".note-menu-toggle").css("opacity", "0");
+      $(this).find(".note-menu").addClass("hidden");
     }
   });
 
-  // Handle mouse leave
-  $(document).on("mouseleave", ".note-item", function () {
-    if (!$(this).hasClass("keep-open")) {
-      $(this).removeClass("active");
-      $(this).find(".note-menu").removeClass("show");
-    }
+  // Handle ellipsis icon click to show menu
+  $(document).on("click", ".note-menu-toggle", function (e) {
+    e.stopPropagation();
+    const noteItem = $(this).closest(".note-item");
+    const noteMenu = noteItem.find(".note-menu");
+
+    // Close all other open menus before toggling the current one
+    $(".note-menu").not(noteMenu).addClass("hidden");
+
+    // Toggle the visibility of the current menu
+    noteMenu.toggleClass("hidden");
   });
 
-  // Keep menu open when interacting
-  $(document).on("mouseenter", ".note-menu", function () {
-    $(this).closest(".note-item").addClass("keep-open");
-  });
-
-  $(document).on("mouseleave", ".note-menu", function () {
-    $(this).closest(".note-item").removeClass("keep-open");
-    $(this).removeClass("show");
-  });
-
-  // Close menus when clicking elsewhere
-  $(document).on("click", function (e) {
-    if (!$(e.target).closest(".note-item").length) {
-      $(".note-menu").removeClass("show");
-      $(".note-item").removeClass("active keep-open");
-    }
-  });
-
-  // Handle menu option clicks
-  $(document).on("click", ".menu-option", function (e) {
+  // Handle "Show note" action
+  $(document).on("click", '.note-menu a:contains("Show note")', function (e) {
     e.preventDefault();
-    const action = $(this).text().trim();
-    console.log(action + " clicked");
-    if (action !== "Delete" && action !== "Delete note") {
-      $(".note-menu").removeClass("show");
+    const noteItem = $(this).closest(".note-item");
+    const title = noteItem.find(".font-medium.truncate").text();
+    const content = noteItem.find(".text-xs.text-slate-400.truncate").text();
+
+    $("#right-column .note-menu").addClass("hidden");
+
+    // Store the original content of the right column
+    const originalContent = $("#right-column").children().detach();
+
+    // Create the edit form for the note with WYSIWYG editor
+    const editForm = $(`
+  <div class="edit-note-content flex flex-col h-full p-4">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-semibold">Edit Note</h3>
+      <button id="back-to-notes" class="text-sky-400 hover:text-sky-300">
+        <i class="fas fa-arrow-left mr-2"></i>Back
+      </button>
+    </div>
+    <div class="flex-1 flex flex-col">
+      <input
+        type="text"
+        id="edit-note-title"
+        value="${title}"
+        class="w-full bg-slate-700 text-white border border-slate-600 rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-sky-400"
+        placeholder="Note Title"
+      />
+      
+      <!-- WYSIWYG Toolbar -->
+      <div class="bg-slate-800 border border-slate-600 rounded-t p-2 flex flex-wrap gap-2 items-center">
+        <div class="flex pr-2 mr-2">
+          <button class="wysiwyg-btn" data-command="bold" title="Bold"><i class="fas fa-bold"></i></button>
+          <button class="wysiwyg-btn" data-command="italic" title="Italic"><i class="fas fa-italic"></i></button>
+          <button class="wysiwyg-btn" data-command="underline" title="Underline"><i class="fas fa-underline"></i></button>
+          <button class="wysiwyg-btn" data-command="justifyLeft" title="Align Left"><i class="fas fa-align-left"></i></button>
+          <button class="wysiwyg-btn" data-command="justifyCenter" title="Align Center"><i class="fas fa-align-center"></i></button>
+          <button class="wysiwyg-btn" data-command="justifyRight" title="Align Right"><i class="fas fa-align-right"></i></button>
+          <button class="wysiwyg-btn" data-command="insertOrderedList" title="Numbered List"><i class="fas fa-list-ol"></i></button>
+          <button class="wysiwyg-btn" data-command="insertUnorderedList" title="Bullet List"><i class="fas fa-list-ul"></i></button>
+          <button class="wysiwyg-btn" data-command="createLink" title="Insert Link"><i class="fas fa-link"></i></button>
+          <button class="wysiwyg-btn" data-command="unlink" title="Remove Link"><i class="fas fa-unlink"></i></button>
+        </div>
+      </div>
+      
+      <!-- Editable Content Area -->
+      <div 
+        id="edit-note-content" 
+        class="w-full flex-1 bg-slate-700 text-white border border-t-0 border-slate-600 rounded-b px-3 py-2 overflow-auto focus:outline-none focus:ring-2 focus:ring-sky-400" 
+        contenteditable="true"
+      >${content}</div>
+      
+      <!-- Pill-style joined buttons -->
+      <div class="mt-4 flex justify-center">
+        <div class="inline-flex">
+          <button
+            id="save-note-changes"
+            class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded-l-full"
+          >
+            Save
+          </button>
+          <button
+            id="cancel-note-changes"
+            class="bg-slate-600 hover:bg-slate-500 text-white px-6 py-2 rounded-r-full"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+`);
+
+    // Initialize WYSIWYG functionality
+    editForm.find(".wysiwyg-btn").on("click", function (e) {
+      e.preventDefault();
+      const command = $(this).data("command");
+
+      if (command === "createLink") {
+        const url = prompt("Enter the link URL:");
+        if (url) document.execCommand(command, false, url);
+      } else {
+        document.execCommand(command, false, null);
+      }
+
+      // Focus back on the editor
+      $("#edit-note-content").focus();
+    });
+
+    // Style for WYSIWYG buttons
+    editForm.find(".wysiwyg-btn").css({
+      background: "transparent",
+      color: "#94a3b8",
+      border: "none",
+      padding: "4px 8px",
+      margin: "0 2px",
+      "border-radius": "4px",
+      cursor: "pointer",
+    });
+
+    // Hover effect for WYSIWYG buttons
+    editForm.find(".wysiwyg-btn").hover(
+      function () {
+        $(this).css("background-color", "#334155");
+      },
+      function () {
+        $(this).css("background-color", "transparent");
+      }
+    );
+
+    // Add active state for WYSIWYG buttons
+    editForm
+      .find(".wysiwyg-btn")
+      .on("mousedown", function () {
+        $(this).css("background-color", "#1e293b");
+      })
+      .on("mouseup mouseleave", function () {
+        $(this).css("background-color", "transparent");
+      });
+
+    // Save note function
+    editForm.find("#save-note-changes").on("click", function () {
+      const updatedTitle = $("#edit-note-title").val();
+      const updatedContent = $("#edit-note-content").html();
+
+      // Call your save function here
+      saveNote(noteId, updatedTitle, updatedContent);
+
+      // Return to notes list
+      showNotesList();
+    });
+
+    // Cancel button action
+    editForm.find("#cancel-note-changes").on("click", function () {
+      if (confirm("Discard changes?")) {
+        // showNotesList();
+        $("#right-column").empty().append(originalContent);
+        $("#right-column").removeClass("collapsed");
+      }
+    });
+
+    // Append the edit form to the right column
+    $("#right-column").append(editForm);
+
+    // Handle "Back" button to restore the original content
+    $("#back-to-notes").on("click", function () {
+      $("#right-column").empty().append(originalContent);
+      $("#right-column").removeClass("collapsed");
+    });
+
+    // Handle "Save" button to update the note
+    $("#save-note-changes").on("click", function () {
+      const newTitle = $("#edit-note-title").val().trim();
+      const newContent = $("#edit-note-content").val().trim();
+
+      if (newTitle && newContent) {
+        noteItem
+          .find(".font-medium.truncate")
+          .text(
+            newTitle.substring(0, 30) + (newTitle.length > 30 ? "..." : "")
+          );
+        noteItem
+          .find(".text-xs.text-slate-400.truncate")
+          .text(
+            newContent.substring(0, 50) + (newContent.length > 50 ? "..." : "")
+          );
+      }
+
+      // Restore the original content
+      $("#right-column").empty().append(originalContent);
+      $("#right-column").removeClass("collapsed");
+    });
+  });
+
+  // Close menu when clicking outside
+  $(document).on("click", function (e) {
+    if (
+      !$(e.target).closest(".note-menu").length &&
+      !$(e.target).closest(".note-menu-toggle").length
+    ) {
+      $(".note-menu").addClass("hidden");
     }
   });
 });
@@ -334,7 +764,7 @@ $(document).ready(function () {
 /* === CHAT FUNCTIONALITY === */
 /* ============================================ */
 $(document).ready(function () {
-  // Send chat message
+  // Send chat message when send button is clicked
   $("#send-message").on("click", function () {
     const messageText = $("#chat-input").val().trim();
 
@@ -403,7 +833,7 @@ $(document).ready(function () {
 /* === MESSAGE ACTIONS === */
 /* ============================================ */
 $(document).ready(function () {
-  // Add to note button
+  // Add message to note
   $(document).on("click", ".add-to-note-btn", function () {
     const messageContent = $(this)
       .closest(".bg-blue-500")
@@ -413,7 +843,7 @@ $(document).ready(function () {
     alert("Message added to notes!");
   });
 
-  // Copy message button
+  // Copy message to clipboard
   $(document).on("click", ".copy-message-btn", function () {
     const messageContent = $(this)
       .closest(".bg-blue-500")
@@ -435,12 +865,12 @@ $(document).ready(function () {
 /* === UTILITY FUNCTIONS === */
 /* ============================================ */
 $(document).ready(function () {
-  // Select all sources checkbox
+  // Toggle all source checkboxes
   $("#select-all").on("change", function () {
     $(".source-checkbox").prop("checked", $(this).prop("checked"));
   });
 
-  // Processing button functionality
+  // Handle processing button animation
   $(document).on("click", ".processing-btn", function (e) {
     e.stopPropagation();
     const btn = $(this);
@@ -546,3 +976,33 @@ function initModals() {
     e.stopPropagation();
   });
 }
+
+/* ============================================ */
+/* === ADD SOURCE === */
+/* ============================================ */
+/* (No additional JS content for Add Source modal) */
+
+/* ============================================ */
+/* === DISCOVER SOURCE === */
+/* ============================================ */
+/* (No additional JS content for Discover Source modal) */
+
+/* ============================================ */
+/* === RENAME SOURCE === */
+/* ============================================ */
+/* (No additional JS content for Rename Source modal) */
+
+/* ============================================ */
+/* === ADD NOTE === */
+/* ============================================ */
+/* (No additional JS content for Add Note modal) */
+
+/* ============================================ */
+/* === DELETE NOTE === */
+/* ============================================ */
+/* (No additional JS content for Delete Note modal) */
+
+/* ============================================ */
+/* === DELETE SOURCE === */
+/* ============================================ */
+/* (No additional JS content for Delete Source modal) */
