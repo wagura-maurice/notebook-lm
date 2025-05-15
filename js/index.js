@@ -1,38 +1,84 @@
 // js/index.js
-document.addEventListener("DOMContentLoaded", function () {
-  // Hide preloader after 5 seconds
+// Preloader
+$(document).ready(function () {
   setTimeout(function () {
-    const preloader = document.getElementById("preloader");
-    if (preloader) {
-      preloader.style.opacity = "0";
-      setTimeout(() => (preloader.style.display = "none"), 500);
-    }
-  }, 5000);
+    $("#preloader").fadeOut();
+  }, 1000);
+});
 
-  // Toggle modal
+// Modal logic
+function closeAllModals() {
+  document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  // --- Create New Notebook Modal ---
   const createButton = document.querySelector(".create-button");
-  const modal = document.querySelector(".modal");
+  const notebookModal = document.querySelector(".modal");
 
-  if (createButton && modal) {
-    createButton.addEventListener("click", function () {
-      modal.classList.toggle("hidden");
+  if (createButton && notebookModal) {
+    createButton.addEventListener("click", function (e) {
+      closeAllModals();
+      notebookModal.classList.remove("hidden");
     });
-
-    // Close modal when clicking outside
-    modal.addEventListener("click", function (e) {
-      if (e.target.classList.contains("modal-overlay")) {
-        modal.classList.add("hidden");
-      }
-    });
-
-    // Close button
-    const cancelButton = modal.querySelector("button:first-of-type");
-    if (cancelButton) {
-      cancelButton.addEventListener("click", function () {
-        modal.classList.add("hidden");
-      });
-    }
   }
+
+  // Overlay click closes the modal (for all overlays)
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function (e) {
+      // Find parent modal and hide it
+      const modal = overlay.closest('.modal');
+      if (modal) modal.classList.add('hidden');
+    });
+  });
+
+  // Cancel/close button closes the modal (for all close buttons)
+  document.querySelectorAll('.modal-close').forEach(btn => {
+    btn.addEventListener('click', function (e) {
+      // Find parent modal and hide it
+      const modal = btn.closest('.modal');
+      if (modal) modal.classList.add('hidden');
+    });
+  });
+
+  // Prevent modal content click from closing modal (for all modal content blocks)
+  document.querySelectorAll('.modal > div:not(.modal-overlay)').forEach(content => {
+    content.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+  });
+
+  // Escape key closes modal
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      closeAllModals();
+    }
+  });
+
+  // --- Dropdown actions (Rename, Share, Delete) ---
+  document.body.addEventListener('click', function (e) {
+    // Rename
+    if (e.target.closest('.dropdown-menu a') && e.target.textContent.includes('Rename')) {
+      e.preventDefault();
+      closeAllModals();
+      const renameModal = document.getElementById('rename-modal');
+      if (renameModal) renameModal.classList.remove('hidden');
+    }
+    // Share
+    if (e.target.closest('.dropdown-menu a') && e.target.textContent.includes('Share')) {
+      e.preventDefault();
+      closeAllModals();
+      const shareModal = document.getElementById('share-modal');
+      if (shareModal) shareModal.classList.remove('hidden');
+    }
+    // Delete
+    if (e.target.closest('.dropdown-menu a') && e.target.textContent.includes('Delete')) {
+      e.preventDefault();
+      closeAllModals();
+      const deleteModal = document.getElementById('delete-modal');
+      if (deleteModal) deleteModal.classList.remove('hidden');
+    }
+  });
 
   // View toggle buttons
   const gridView = document.getElementById("grid-view");
@@ -45,58 +91,66 @@ document.addEventListener("DOMContentLoaded", function () {
       gridView.classList.remove("hidden");
       listView.classList.add("hidden");
       gridButton.classList.add("active");
+      gridButton.classList.add("text-accent-blue");
+      gridButton.classList.remove("text-text-secondary");
       listButton.classList.remove("active");
+      listButton.classList.remove("text-accent-blue");
+      listButton.classList.add("text-text-secondary");
     });
 
     listButton.addEventListener("click", function () {
       listView.classList.remove("hidden");
       gridView.classList.add("hidden");
       listButton.classList.add("active");
+      listButton.classList.add("text-accent-blue");
+      listButton.classList.remove("text-text-secondary");
       gridButton.classList.remove("active");
+      gridButton.classList.remove("text-accent-blue");
+      gridButton.classList.add("text-text-secondary");
     });
   }
 
-  // Create notebook form submission
-  const createFormButton = document.querySelector(
-    ".modal-content button:last-of-type"
-  );
-  if (createFormButton) {
-    createFormButton.addEventListener("click", function (e) {
-      e.preventDefault();
-      const title = document.getElementById("notebook-title").value;
-      const description = document.getElementById("notebook-description").value;
+  // Toggle dropdowns for ellipsis buttons
+  const ellipsisButtons = document.querySelectorAll(".fa-ellipsis-vertical");
+  ellipsisButtons.forEach((button) => {
+    button.parentElement.addEventListener("click", function (e) {
+      e.stopPropagation();
+      const dropdown = this.nextElementSibling;
+      dropdown.classList.toggle("hidden");
 
-      if (title.trim() === "") {
-        alert("Please enter a notebook title");
-        return;
-      }
-
-      // Here you would typically send the data to your backend
-      console.log("Creating notebook:", { title, description });
-      modal.classList.add("hidden");
-
-      // Reset form
-      document.getElementById("notebook-title").value = "";
-      document.getElementById("notebook-description").value = "";
+      // Close all other dropdowns
+      document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+        if (menu !== dropdown) {
+          menu.classList.add("hidden");
+        }
+      });
     });
-  }
+  });
+
+  // Close dropdowns when clicking elsewhere
+  document.addEventListener("click", function () {
+    document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+      menu.classList.add("hidden");
+    });
+  });
 });
 
 function toggleDropdown() {
   document.getElementById("sort-menu").classList.toggle("hidden");
+  event.stopPropagation();
 }
 
 function selectSort(option) {
   document.getElementById("sort-label").textContent = option;
   document.getElementById("sort-menu").classList.add("hidden");
-  // Implement sorting logic here
+  // Sorting logic would go here
 }
 
-// Optional: Close dropdown if clicked outside
+// Close dropdown when clicking outside
 document.addEventListener("click", function (event) {
   const dropdown = document.getElementById("sort-menu");
   const button = event.target.closest("button");
-  if (!button && !dropdown.contains(event.target)) {
+  if (dropdown && !dropdown.contains(event.target) && !button) {
     dropdown.classList.add("hidden");
   }
 });
