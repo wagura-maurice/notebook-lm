@@ -1,42 +1,26 @@
 /* ============================================ */
-/* === BASE STYLES === */
+/* === GLOBAL STYLES === */
 /* ============================================ */
+/* Base resets, font, and color settings for the entire application */
 body {
   font-family: "Rubik", sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #0f172a;
+  background-color: #0f172a; /* Slate-900 */
   color: white;
-}
-
-@media (max-width: 1024px) {
-  body {
-    height: auto !important;
-    overflow: auto !important;
-  }
-  #columns-container {
-    padding-top: 7.5rem !important; /* header + mobile tabs */
-    height: auto !important;
-    min-height: 0 !important;
-  }
-  .mobile-tab-content {
-    display: none;
-  }
-  .mobile-tab-content.active {
-    display: block;
-  }
 }
 
 /* ============================================ */
 /* === PRELOADER === */
 /* ============================================ */
+/* Styles for the preloader overlay displayed during app initialization */
 #preloader {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #8b5cf6;
+  background-color: #8b5cf6; /* Purple-500 */
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -46,8 +30,9 @@ body {
 /* ============================================ */
 /* === HEADER === */
 /* ============================================ */
+/* Styles for the main header, including logo and navigation icons */
 header {
-  background-color: #0f172a;
+  background-color: #0f172a; /* Slate-900 */
   min-height: 4rem;
   padding: 0.75rem 1rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -56,10 +41,11 @@ header {
 /* ============================================ */
 /* === MOBILE TABS === */
 /* ============================================ */
+/* Styles for mobile tab navigation bar at the top of the app */
 .lg\:hidden.flex {
   display: flex;
-  border-bottom: 1px solid #334155;
-  background-color: #1e293b;
+  border-bottom: 1px solid #334155; /* Slate-700 */
+  background-color: #1e293b; /* Slate-800 */
   position: sticky;
   top: 4rem;
   z-index: 10;
@@ -70,13 +56,13 @@ header {
   padding: 0.75rem 0;
   text-align: center;
   font-weight: 500;
-  color: #cbd5e1;
+  color: #cbd5e1; /* Slate-300 */
   position: relative;
   cursor: pointer;
 }
 
 .tab-button.active {
-  color: #38bdf8;
+  color: #38bdf8; /* Sky-400 */
 }
 
 .tab-button.active::after {
@@ -86,12 +72,13 @@ header {
   left: 0;
   right: 0;
   height: 2px;
-  background-color: #38bdf8;
+  background-color: #38bdf8; /* Sky-400 */
 }
 
 /* ============================================ */
 /* === COLUMNS CONTAINER === */
 /* ============================================ */
+/* Layout for the main columns: Sources (left), Chat (middle), Studio (right) */
 #columns-container {
   display: flex;
   flex: 1;
@@ -101,20 +88,21 @@ header {
 }
 
 /* -------------------------------------------- */
-/* --- LEFT COLUMN - SOURCES --- */
+/* --- LEFT COLUMN (SOURCES) --- */
 /* -------------------------------------------- */
+/* Styles for the left sidebar containing the source list */
 #left-column {
   width: 100%;
-  background-color: #1e293b;
+  background-color: #1e293b; /* Slate-800 */
   color: white;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px -1px rgba(147, 51, 234, 0.3),
-    0 2px 4px -1px rgba(147, 51, 234, 0.1);
+    0 2px 4px -1px rgba(147, 51, 234, 0.1); /* Purple shadow */
   position: relative;
-  overflow: visible; /* Ensure overflow doesn't hide dropdown */
+  overflow: visible;
 }
 
 .expanded-content > div:first-child {
@@ -122,46 +110,67 @@ header {
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid #334155; /* Slate-700 */
 }
 
-.source-list {
-  touch-action: pan-y;
+/* =================================================== */
+/* Source list container styles for scrollable notes */
+.source-list-container {
+  max-height: calc(100% - 150px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  scrollbar-width: thin;
+  scrollbar-color: #334155 #1e293b; /* Slate-700 and Slate-800 */
   position: relative;
-  z-index: 1;
 }
 
-.source-list::-webkit-scrollbar {
+.source-list-container::-webkit-scrollbar {
   width: 8px;
 }
 
-.source-list::-webkit-scrollbar-track {
-  background: #1e293b;
+.source-list-container::-webkit-scrollbar-track {
+  background: #1e293b; /* Slate-800 */
 }
 
-.source-list::-webkit-scrollbar-thumb {
-  background: #64748b;
+.source-list-container::-webkit-scrollbar-thumb {
+  background: #64748b; /* Slate-600 */
   border-radius: 4px;
 }
 
-.source-list::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+.source-list-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* Slate-400 */
 }
 
+/* Source item styles for individual source entries */
 .source-item {
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
   position: relative;
-  z-index: 1;
+  transition: all 0.2s ease;
+}
+
+.source-menu-dropdown,
+.notes-menu-dropdown {
+  position: fixed !important;
+  z-index: 100;
+  min-width: 12rem;
+  transform-origin: top right;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.source-menu-dropdown.show,
+.notes-menu-dropdown.show {
+  opacity: 1;
+  visibility: visible;
 }
 
 .source-item:hover {
-  background-color: #1e293b;
+  background-color: #1e293b; /* Slate mian-800 */
+}
+
+.source-item.active {
+  background-color: #1e293b; /* Slate-800 */
 }
 
 .source-icon {
@@ -169,29 +178,27 @@ header {
 }
 
 .source-menu-toggle {
-  opacity: 0;
   transition: opacity 0.2s ease;
   cursor: pointer;
 }
 
-.source-item:hover .source-icon {
-  opacity: 0;
+.source-item:hover .source-icon,
+.source-item.active .source-icon {
+  opacity: 0 !important;
 }
 
-.source-item:hover .source-menu-toggle {
-  opacity: 1;
-}
-
-.source-item .processing-btn ~ .source-menu-toggle {
-  display: none !important;
+.source-item:hover .source-menu-toggle,
+.source-item.active .source-menu-toggle {
+  opacity: 1 !important;
 }
 
 /* -------------------------------------------- */
-/* --- MIDDLE COLUMN - CHAT --- */
+/* --- MIDDLE COLUMN (CHAT) --- */
 /* -------------------------------------------- */
+/* Styles for the main chat area, including messages and input */
 #middle-column {
   flex: 1;
-  background-color: #1e293b;
+  background-color: #1e293b; /* Slate-800 */
   color: white;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -199,7 +206,7 @@ header {
   flex-direction: column;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px -1px rgba(147, 51, 234, 0.3),
-    0 2px 4px -1px rgba(147, 51, 234, 0.1);
+    0 2px 4px -1px rgba(147, 51, 234, 0.1); /* Purple shadow */
 }
 
 #chat-messages {
@@ -210,6 +217,7 @@ header {
   gap: 1rem;
 }
 
+/* Chat bubble styles for AI and user messages */
 .message-bubble {
   max-width: 80%;
   padding: 0.5rem 1rem;
@@ -218,13 +226,14 @@ header {
 }
 
 .message-bubble.ai {
-  background-color: #3b82f6;
+  background-color: #3b82f6; /* Blue-500 */
   border-bottom-left-radius: 0;
   align-self: flex-start;
   position: relative;
 }
+
 .message-bubble.ai::after {
-  content: '';
+  content: "";
   position: absolute;
   left: -8px;
   bottom: 10px;
@@ -232,21 +241,21 @@ header {
   height: 28px;
   background: none;
   border-bottom-right-radius: 16px 14px;
-  box-shadow: -2px 2px 2px 0 rgba(59,130,246,0.10);
+  box-shadow: -2px 2px 2px 0 rgba(59, 130, 246, 0.1);
   clip-path: polygon(0 0, 100% 40%, 100% 60%, 0 100%);
-  background-color: #3b82f6;
+  background-color: #3b82f6; /* Blue-500 */
   z-index: 0;
 }
 
-
 .message-bubble.user {
-  background-color: #8b5cf6;
+  background-color: #8b5cf6; /* Purple-500 */
   border-bottom-right-radius: 0;
   align-self: flex-end;
   position: relative;
 }
+
 .message-bubble.user::after {
-  content: '';
+  content: "";
   position: absolute;
   right: -8px;
   bottom: 10px;
@@ -254,12 +263,11 @@ header {
   height: 28px;
   background: none;
   border-bottom-left-radius: 16px 14px;
-  box-shadow: 2px 2px 2px 0 rgba(139,92,246,0.10);
+  box-shadow: 2px 2px 2px 0 rgba(139, 92, 246, 0.1);
   clip-path: polygon(100% 0, 0 40%, 0 60%, 100% 100%);
-  background-color: #8b5cf6;
+  background-color: #8b5cf6; /* Purple-500 */
   z-index: 0;
 }
-
 
 .message-time {
   font-size: 0.75rem;
@@ -267,9 +275,10 @@ header {
   margin-top: 0.25rem;
 }
 
+/* Chat input styles */
 #chat-input {
   width: 100%;
-  background-color: #0f172a;
+  background-color: #0f172a; /* Slate-900 */
   border-radius: 0.5rem;
   padding: 0.75rem;
   color: white;
@@ -279,32 +288,34 @@ header {
 }
 
 #chat-input:focus {
-  box-shadow: 0 0 0 2px #38bdf8;
+  box-shadow: 0 0 0 2px #38bdf8; /* Sky-400 */
 }
 
 /* -------------------------------------------- */
-/* --- RIGHT COLUMN - STUDIO --- */
+/* --- RIGHT COLUMN (STUDIO) --- */
 /* -------------------------------------------- */
+/* Styles for the right sidebar containing notes */
 #right-column {
   width: 100%;
-  background-color: #1e293b;
+  background-color: #1e293b; /* Slate-800 */
   color: white;
-  border-left: 1px solid #334155;
+  border-left: 1px solid #334155; /* Slate-700 */
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px -1px rgba(147, 51, 234, 0.3),
-    0 2px 4px -1px rgba(147, 51, 234, 0.1);
+    0 2px 4px -1px rgba(147, 51, 234, 0.1); /* Purple shadow */
 }
 
+/* Note list container styles for scrollable notes */
 .note-list-container {
   max-height: calc(100% - 150px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
   scrollbar-width: thin;
-  scrollbar-color: #334155 #1e293b;
+  scrollbar-color: #334155 #1e293b; /* Slate-700 and Slate-800 */
 }
 
 .note-list-container::-webkit-scrollbar {
@@ -312,25 +323,30 @@ header {
 }
 
 .note-list-container::-webkit-scrollbar-track {
-  background: #1e293b;
+  background: #1e293b; /* Slate-800 */
 }
 
 .note-list-container::-webkit-scrollbar-thumb {
-  background: #64748b;
+  background: #64748b; /* Slate-600 */
   border-radius: 4px;
 }
 
 .note-list-container::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #94a3b8; /* Slate-400 */
 }
 
+/* Note item styles for individual note entries */
 .note-item {
   position: relative;
   transition: all 0.2s ease;
 }
 
 .note-item:hover {
-  background-color: #1e293b;
+  background-color: #1e293b; /* Slate mian-800 */
+}
+
+.note-item.active {
+  background-color: #1e293b; /* Slate-800 */
 }
 
 .note-icon {
@@ -344,28 +360,29 @@ header {
 
 .note-item:hover .note-icon,
 .note-item.active .note-icon {
-  opacity: 0;
+  opacity: 0 !important;
 }
 
 .note-item:hover .note-menu-toggle,
 .note-item.active .note-menu-toggle {
-  opacity: 1;
+  opacity: 1 !important;
 }
 
 /* ============================================ */
 /* === DROPDOWN MENUS === */
 /* ============================================ */
+/* Styles for dropdown menus used in sources, notes, and studio */
 .dropdown-menu {
   display: none;
   position: absolute;
   right: 0.75rem;
   top: 2.5rem;
   z-index: 30;
-  background-color: #1e293b;
+  background-color: #1e293b; /* Slate-800 */
   border-radius: 0.25rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border: 1px solid #334155;
+  border: 1px solid #334155; /* Slate-700 */
   width: 10rem;
 }
 
@@ -382,55 +399,13 @@ header {
 }
 
 .dropdown-menu a:hover {
-  background-color: #1e293b;
-}
-
-.source-menu {
-  display: none;
-  z-index: 50;
-  background-color: #1e293b;
-  border-radius: 0.25rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  border: 1px solid #334155;
-  min-width: 180px;
-  padding: 0.25rem 0;
-}
-
-.source-menu.show {
-  display: block;
-}
-
-.source-menu a {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-  color: white;
-  text-decoration: none;
-}
-
-.source-menu a:hover {
-  background-color: #334155;
-}
-
-.note-menu {
-  display: none;
-  position: absolute;
-  right: 0.75rem;
-  top: 2.5rem;
-  z-index: 30;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-.note-menu.show {
-  display: block;
+  background-color: #1e293b; /* Slate-800 */
 }
 
 /* ============================================ */
 /* === MODALS === */
 /* ============================================ */
+/* Styles for modal overlays and content (e.g., Add Source, Delete Note) */
 .modal {
   position: fixed;
   top: 0;
@@ -455,7 +430,7 @@ header {
 .modal > div:not(.modal-overlay) {
   position: relative;
   z-index: 1002 !important;
-  background-color: #1e293b;
+  background-color: #1e293b; /* Slate-800 */
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -464,59 +439,42 @@ header {
   padding: 1.5rem;
 }
 
-/* ============================================ */
-/* === CUSTOM CHECKBOX === */
-/* ============================================ */
-.source-checkbox {
-  appearance: none;
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid #64748b;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  position: relative;
+/* Edit note content styles for the note editing modal */
+.edit-note-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-.source-checkbox:checked {
-  background-color: #38bdf8;
-  border-color: #38bdf8;
+#edit-note-content {
+  min-height: 200px;
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #64748b #1e293b; /* Slate-600 and Slate-800 */
 }
 
-.source-checkbox:checked::after {
-  content: "\f00c";
-  font-family: "Font Awesome 6 Free";
-  font-weight: 900;
-  position: absolute;
-  color: white;
-  font-size: 0.6rem;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+#edit-note-content::-webkit-scrollbar {
+  width: 8px;
 }
 
-/* ============================================ */
-/* === PROCESSING BUTTON === */
-/* ============================================ */
-.processing-btn {
-  background: none;
-  border: none;
-  color: #38bdf8;
-  cursor: pointer;
-  padding: 0.25rem;
+#edit-note-content::-webkit-scrollbar-track {
+  background: #1e293b; /* Slate-800 */
 }
 
-.processing-btn:hover {
-  color: #7dd3fc;
-  /* animation: spin 1s linear; */
+#edit-note-content::-webkit-scrollbar-thumb {
+  background: #64748b; /* Slate-600 */
+  border-radius: 4px;
 }
 
-.processing-btn.active i {
-  animation: spin 1s linear;
+#edit-note-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* Slate-400 */
 }
 
 /* ============================================ */
-/* === ANIMATIONS === */
+/* === BUTTONS & INTERACTIONS === */
 /* ============================================ */
+/* Animations and styles for buttons and interactive elements */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -561,73 +519,55 @@ header {
   animation-delay: 0.2s;
 }
 
+.processing-btn {
+  background: none;
+  border: none;
+  color: #38bdf8; /* Sky-400 */
+  cursor: pointer;
+}
+
+.processing-btn:hover {
+  color: #7dd3fc; /* Sky-300 */
+}
+
+.processing-btn.active i {
+  animation: spin 1s linear;
+}
+
 /* ============================================ */
-/* === COLLAPSED COLUMNS === */
+/* === CUSTOM CHECKBOX === */
 /* ============================================ */
-#left-column.collapsed,
-#right-column.collapsed {
-  width: 4rem;
-  min-width: 4rem;
-  overflow: hidden;
+.source-checkbox {
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #64748b;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  position: relative;
 }
 
-#left-column.collapsed .expanded-content,
-#right-column.collapsed .expanded-content {
-  display: none;
+.source-checkbox:checked {
+  background-color: #38bdf8;
+  border-color: #38bdf8;
 }
 
-#left-column.collapsed .collapsed-content,
-#right-column.collapsed .collapsed-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0.5rem 0;
-}
-
-.collapsed-content button {
-  width: 100%;
-  padding: 0.75rem 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #cbd5e1;
-  transition: color 0.2s ease;
-}
-
-.collapsed-content button:hover {
-  color: #38bdf8;
-}
-
-.collapsed-content .border-t {
-  width: 80%;
-  margin: 0.25rem auto;
-  border-color: #334155;
-}
-
-.collapsed-content span {
-  display: none;
-}
-
-.collapsed-content i {
-  font-size: 1.25rem;
-  margin: 0;
-}
-
-.collapsed-content {
-  overflow: hidden;
-}
-
-.collapsed-content:hover {
-  overflow-y: auto;
-}
-
-.collapsed-content > div {
-  scroll-behavior: smooth;
+.source-checkbox:checked::after {
+  content: "\f00c";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  position: absolute;
+  color: white;
+  font-size: 0.6rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 /* ============================================ */
 /* === RESPONSIVE STYLES === */
 /* ============================================ */
+/* Responsive tweaks for desktop (1024px and above) */
 @media (min-width: 1024px) {
   #columns-container {
     display: flex;
@@ -658,6 +598,7 @@ header {
   }
 }
 
+/* Responsive tweaks for mobile (below 1024px) */
 @media (max-width: 1023px) {
   .mobile-tab-content {
     display: none;
@@ -695,9 +636,28 @@ header {
   }
 }
 
+/* Mobile touch support (below 640px) */
+@media (max-width: 640px) {
+  .group:active .flex.justify-between {
+    opacity: 1 !important;
+  }
+
+  .group:active .text-blue-100 {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .group:active .add-to-note-btn,
+  .group:active .copy-message-btn {
+    opacity: 1 !important;
+  }
+}
+
 /* ============================================ */
 /* === UTILITY STYLES === */
 /* ============================================ */
+/* Utility classes for scrollbars and other reusable styles */
 .scrollbar-transparent {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
@@ -717,193 +677,7 @@ header {
   border-radius: 3px;
 }
 
-/* ============================================ */
-/* === NOTE ITEM STYLES === */
-/* ============================================ */
-.note-item.active {
-  background-color: #1e293b; /* slate-800 */
-}
-
-/* Note icon transitions */
-.note-icon {
-  transition: opacity 0.2s ease;
-}
-
-.note-menu-toggle {
-  transition: opacity 0.2s ease;
-  cursor: pointer;
-}
-
-/* Hide sticky note icon when active */
-.note-item.active .note-icon {
-  opacity: 0 !important;
-}
-
-/* Show ellipsis icon when active */
-.note-item.active .note-menu-toggle {
-  opacity: 1 !important;
-}
-
-/* ============================================ */
-/* === SOURCE VIEW STYLES === */
-/* ============================================ */
-/* .source-view {
-  background-color: #1e293b;
-  color: white;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 20;
-  overflow-y: auto;
-  padding: 1rem;
-}
-
-.source-view h3 {
-  color: white;
-}
-
-.source-view h4 {
-  color: #38bdf8;
-}
-
-.source-view p,
-.source-view ul,
-.source-view dl {
-  color: #cbd5e1;
-} */
-
-/* ============================================ */
-/* === SOURCE MENU STYLES === */
-/* ============================================ */
-.source-menu {
-  display: none;
-  position: absolute;
-  right: 0.75rem;
-  top: 2.5rem;
-  z-index: 50;
-  background-color: #1e293b;
-  border-radius: 0.25rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  border: 1px solid #334155;
-  width: 10rem;
-  padding: 0.25rem 0;
-}
-
-.source-menu.show {
-  display: block;
-}
-
-.source-menu a {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-  color: white;
-  text-decoration: none;
-}
-
-.source-menu a:hover {
-  background-color: #334155;
-}
-
-.source-menu-toggle {
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-
-.source-item:hover .source-menu-toggle,
-.source-item.active .source-menu-toggle {
-  opacity: 1;
-}
-
-/* ============================================ */
-/* === ADD SOURCE === */
-/* ============================================ */
-/* (No additional CSS content for Add Source modal) */
-
-/* ============================================ */
-/* === DISCOVER SOURCE === */
-/* ============================================ */
-/* (No additional CSS content for Discover Source modal) */
-
-/* ============================================ */
-/* === RENAME SOURCE === */
-/* ============================================ */
-/* (No additional CSS content for Rename Source modal) */
-
-/* ============================================ */
-/* === ADD NOTE === */
-/* ============================================ */
-/* (No additional CSS content for Add Note modal) */
-
-/* ============================================ */
-/* === DELETE NOTE === */
-/* ============================================ */
-/* (No additional CSS content for Delete Note modal) */
-
-/* ============================================ */
-/* === DELETE SOURCE === */
-/* ============================================ */
-/* (No additional CSS content for Delete Source modal) */
-
-/* Edit Note Content Styles */
-.edit-note-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-#edit-note-content {
-  min-height: 200px;
-  max-height: calc(100vh - 300px);
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #64748b #1e293b;
-}
-
-#edit-note-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-#edit-note-content::-webkit-scrollbar-track {
-  background: #1e293b;
-}
-
-#edit-note-content::-webkit-scrollbar-thumb {
-  background: #64748b;
-  border-radius: 4px;
-}
-
-#edit-note-content::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* ============================================ */
-
-/* Ensure proper spacing and transitions */
+/* Ensure proper spacing for interactive elements */
 .group:hover .text-blue-100 {
-  z-index: 10; /* Ensure time appears above other elements when centered */
-}
-
-/* Mobile touch support */
-@media (max-width: 640px) {
-  .group:active .flex.justify-between {
-    opacity: 1 !important;
-  }
-  .group:active .text-blue-100 {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-}
-
-/* ============================================ */
-@media (max-width: 640px) {
-  .group:active .add-to-note-btn,
-  .group:active .copy-message-btn {
-    opacity: 1 !important;
-  }
+  z-index: 10; /* Ensure time appears above other elements */
 }
