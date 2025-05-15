@@ -66,8 +66,9 @@ $(document).ready(function () {
 $(document).ready(function () {
   // Handle source menu dropdown with positioning
   $(document).on("click", ".source-menu-toggle", function (e) {
+    // alert("Source menu toggle clicked"); this is for debugging an i see its being triggered
     e.stopPropagation();
-    e.preventDefault();
+    // e.preventDefault();
 
     // Hide all other source dropdowns
     $(".source-menu").removeClass("show").addClass("hidden");
@@ -79,15 +80,17 @@ $(document).ready(function () {
     // Get the dropdown menu
     const dropdown = sourceItem.find(".source-menu");
 
-    // Position the dropdown relative to the source item
+    // Position the dropdown directly below the icon, like note menus
+    const triggerOffset = $(this).offset();
+    const triggerHeight = $(this).outerHeight();
     dropdown.css({
-      top: sourceItemRect.top + 40,
-      left: sourceItemRect.right - 160,
+      top: triggerOffset.top + triggerHeight,
+      left: triggerOffset.left,
       position: "fixed",
+      "min-width": $(this).outerWidth() + 140, // ensure width is similar to note menu
     });
-
-    // Toggle the visibility of the current dropdown
-    dropdown.toggleClass("hidden show");
+    // Show only this dropdown
+    dropdown.removeClass("hidden").addClass("show");
   });
 
   // Handle note menu dropdown
