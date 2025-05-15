@@ -11,7 +11,10 @@ $(document).ready(function () {
   setupMobileTabs();
 
   // Initialize modal functionality
-  initModals();
+  // Ensure modal handlers are attached after DOM is ready
+  $(function () {
+    initModals();
+  });
 });
 
 /* ============================================ */
@@ -90,13 +93,37 @@ $(document).ready(function () {
   // Handle note menu dropdown
   $(document).on("click", ".note-menu-toggle", function (e) {
     e.stopPropagation();
-    $(this).closest(".note-item").find(".note-menu").toggleClass("hidden show");
+    // Hide all other note dropdowns
+    $(".note-menu").removeClass("show").addClass("hidden");
+    // Find the current note menu
+    const noteItem = $(this).closest(".note-item");
+    const dropdown = noteItem.find(".note-menu");
+    // Position the dropdown directly below the trigger
+    const triggerOffset = $(this).offset();
+    const triggerHeight = $(this).outerHeight();
+    dropdown.css({
+      top: triggerOffset.top + triggerHeight,
+      left: triggerOffset.left,
+      position: "fixed",
+    });
+    // Show the dropdown
+    dropdown.toggleClass("hidden show");
   });
 
   // Handle notes menu dropdown
   $("#notes-menu-button").on("click", function (e) {
     e.stopPropagation();
     $("#notes-menu-dropdown").toggleClass("hidden");
+  });
+
+  // Hide notes menu dropdown when clicking outside
+  $(document).on("click", function (e) {
+    if (
+      !$(e.target).closest("#notes-menu-dropdown").length &&
+      !$(e.target).closest("#notes-menu-button").length
+    ) {
+      $("#notes-menu-dropdown").addClass("hidden");
+    }
   });
 
   // Close all dropdowns when clicking outside
@@ -747,16 +774,18 @@ $(document).ready(function () {
       <div class="mt-4 flex justify-center">
         <div class="inline-flex">
           <button
-            id="save-note-changes"
-            class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded-l-full"
-          >
-            Save
-          </button>
-          <button
             id="cancel-note-changes"
-            class="bg-slate-600 hover:bg-slate-500 text-white px-6 py-2 rounded-r-full"
+            class="px-5 py-2 rounded-l-full text-gray-400 bg-slate-700 hover:bg-slate-600 border border-r-0 border-gray-600 focus:outline-none focus:ring-2 focus:ring-sky-400 transition-colors"
+            aria-label="Cancel editing note"
           >
             Cancel
+          </button>
+          <button
+            id="save-note-changes"
+            class="px-5 py-2 rounded-r-full bg-accent-blue text-white hover:bg-sky-500 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-sky-400 transition-colors"
+            aria-label="Save note changes"
+          >
+            Save
           </button>
         </div>
       </div>
@@ -843,9 +872,9 @@ $(document).ready(function () {
     });
 
     // Handle "Save" button to update the note
-    $("#save-note-changes").on("click", function () {
+    editForm.find("#save-note-changes").on("click", function () {
       const newTitle = $("#edit-note-title").val().trim();
-      const newContent = $("#edit-note-content").val().trim();
+      const newContent = $("#edit-note-content").html().trim();
 
       if (newTitle && newContent) {
         noteItem
@@ -1073,6 +1102,7 @@ function initModals() {
   // Close modal with close button
   $(document).on("click", ".modal-close", function (e) {
     e.preventDefault();
+    e.stopPropagation();
     $(this).closest(".modal").addClass("hidden");
   });
 
@@ -1091,9 +1121,9 @@ function initModals() {
   });
 
   // Prevent closing when clicking inside modal
-  $(".modal > div").on("click", function (e) {
+  /* $(".modal > div").on("click", function (e) {
     e.stopPropagation();
-  });
+  }); */
 }
 
 /* ============================================ */
