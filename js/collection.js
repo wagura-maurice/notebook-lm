@@ -76,39 +76,125 @@ function setupMobileTabs() {
 /* === COLUMN TOGGLES === */
 /* ============================================ */
 /* Handles collapse/expand functionality for columns */
+// Function to check if any special panels are active
+function arePanelsActive() {
+  return (
+    $(".view-source-content").length > 0 || $(".edit-note-content").length > 0
+  );
+}
+
+function updateMiddleColumnState() {
+  const middleColumn = $("#middle-column");
+  const leftColumn = $("#left-column");
+  const rightColumn = $("#right-column");
+
+  // Check if panels are active and update middle column accordingly
+  if (arePanelsActive()) {
+    middleColumn.addClass("panel-active");
+    middleColumn.removeClass("expanded contracted");
+  } else {
+    middleColumn.removeClass("panel-active");
+  }
+
+  // Update middle column expansion based on side columns
+  if (leftColumn.hasClass("collapsed") || rightColumn.hasClass("collapsed")) {
+    middleColumn.addClass("expanded");
+  } else {
+    middleColumn.removeClass("expanded");
+  }
+}
+
 function initColumnToggles() {
+  // Left column collapse/expand
   $("#collapse-left").on("click", function () {
-    $("#left-column").toggleClass("collapsed");
-    $("#left-column .source-menu-dropdown").addClass("hidden");
+    const leftColumn = $("#left-column");
+    leftColumn.toggleClass("collapsed");
+    leftColumn.find(".expanded-content").toggleClass("hidden");
+    leftColumn.find(".collapsed-content").toggleClass("hidden");
+    leftColumn.find(".source-menu-dropdown").addClass("hidden");
+    updateMiddleColumnState();
   });
 
+  // Right column collapse/expand
   $("#collapse-right").on("click", function () {
-    $("#right-column").toggleClass("collapsed");
-    $("#right-column .notes-menu-dropdown").addClass("hidden");
+    const rightColumn = $("#right-column");
+    rightColumn.toggleClass("collapsed");
+    rightColumn.find(".expanded-content").toggleClass("hidden");
+    rightColumn.find(".collapsed-content").toggleClass("hidden");
+    rightColumn.find(".notes-menu-dropdown").addClass("hidden");
+    updateMiddleColumnState();
   });
 
+  // Left column expand from collapsed state
   $("#expand-left").on("click", function () {
-    $("#left-column").removeClass("collapsed");
+    const leftColumn = $("#left-column");
+    leftColumn.removeClass("collapsed");
+    leftColumn.find(".expanded-content").removeClass("hidden");
+    leftColumn.find(".collapsed-content").addClass("hidden");
+    updateMiddleColumnState();
   });
 
+  // Right column expand from collapsed state
   $("#expand-right").on("click", function () {
-    $("#right-column").removeClass("collapsed");
+    const rightColumn = $("#right-column");
+    rightColumn.removeClass("collapsed");
+    rightColumn.find(".expanded-content").removeClass("hidden");
+    rightColumn.find(".collapsed-content").addClass("hidden");
+    updateMiddleColumnState();
   });
 
+  // Middle column expand/contract
   $("#expand-middle").on("click", function () {
-    const isLeftCollapsed = $("#left-column").hasClass("collapsed");
-    const isRightCollapsed = $("#right-column").hasClass("collapsed");
+    const middleColumn = $("#middle-column");
+    const leftColumn = $("#left-column");
+    const rightColumn = $("#right-column");
 
-    if (isLeftCollapsed || isRightCollapsed) {
-      $("#left-column").removeClass("collapsed");
-      $("#right-column").removeClass("collapsed");
+    if (
+      !leftColumn.hasClass("collapsed") &&
+      !rightColumn.hasClass("collapsed")
+    ) {
+      // If side columns are expanded, collapse them
+      leftColumn
+        .addClass("collapsed")
+        .find(".expanded-content")
+        .addClass("hidden");
+      leftColumn.find(".collapsed-content").removeClass("hidden");
+      rightColumn
+        .addClass("collapsed")
+        .find(".expanded-content")
+        .addClass("hidden");
+      rightColumn.find(".collapsed-content").removeClass("hidden");
+      middleColumn.addClass("expanded");
       $(this).html('<i class="fas fa-compress-alt"></i>');
     } else {
-      $("#left-column").addClass("collapsed");
-      $("#right-column").addClass("collapsed");
+      // If any side column is collapsed, expand them
+      leftColumn
+        .removeClass("collapsed")
+        .find(".expanded-content")
+        .removeClass("hidden");
+      leftColumn.find(".collapsed-content").addClass("hidden");
+      rightColumn
+        .removeClass("collapsed")
+        .find(".expanded-content")
+        .removeClass("hidden");
+      rightColumn.find(".collapsed-content").addClass("hidden");
+      middleColumn.removeClass("expanded");
       $(this).html('<i class="fas fa-expand-alt"></i>');
     }
+
+    updateMiddleColumnState();
   });
+
+  // Middle column manual resize
+  $("#middle-column").on("dblclick", function () {
+    // Check if any special panels are active
+    if (!arePanelsActive()) {
+      $(this).toggleClass("contracted");
+    }
+  });
+
+  // Initial state update
+  updateMiddleColumnState();
 }
 
 /* ============================================ */
@@ -478,12 +564,38 @@ function initSourceItemInteractions() {
             </button>
           </div>
           <div class="flex-1 flex flex-col px-4 py-3 overflow-hidden">
-            <div class="text-xl font-semibold mb-4">${title}</div>
-            <div class="flex-1 overflow-y-auto text-slate-300 space-y-4">
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-              <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-              <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-              <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <!-- Title Section -->
+            <h3 class="font-medium text-sky-400 mb-4">${title} - Title Name</h3>
+            
+            <!-- Summary Section -->
+            <div class="source-content-section">
+              <h4 class="text-sm font-semibold text-slate-300 mb-2">Summary</h4>
+              <p class="text-sm text-slate-400">This document provides a comprehensive overview of key concepts and methodologies in the field. It covers fundamental principles and practical applications while exploring various aspects of the subject matter.</p>
+            </div>
+            
+            <!-- Key Topics Section -->
+            <div class="source-content-section">
+              <h4 class="text-sm font-semibold text-slate-300 mb-2">Key Topics</h4>
+              <div class="source-topics-list">
+                <span class="source-topic-tag">Methodology</span>
+                <span class="source-topic-tag">Analysis</span>
+                <span class="source-topic-tag">Research</span>
+                <span class="source-topic-tag">Data Collection</span>
+                <span class="source-topic-tag">Results</span>
+              </div>
+            </div>
+            
+            <!-- Main Content Area -->
+            <div class="source-content-section flex-1 overflow-hidden">
+              <h4 class="text-sm font-semibold text-slate-300 mb-2">Content</h4>
+              <div class="source-content-area flex-1 overflow-y-auto text-slate-300 space-y-4 pr-2" style="max-height: calc(100vh - 400px);">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
+                <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur.</p>
+              </div>
             </div>
           </div>
         </div>
