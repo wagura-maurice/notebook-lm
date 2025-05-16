@@ -769,41 +769,83 @@
       <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full p-0">
         <!-- Modal Header -->
         <div class="flex items-center px-8 pt-8 pb-4">
-          <button id="source-modal-back" class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none">
+          <button
+            id="source-modal-back"
+            class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
+          >
             <i class="fas fa-arrow-left text-xl"></i>
           </button>
-          <h3 id="source-modal-title" class="text-2xl font-semibold text-white flex-1">Add Source</h3>
+          <h3
+            id="source-modal-title"
+            class="text-2xl font-semibold text-white flex-1"
+          >
+            Add Source
+          </h3>
         </div>
         <div class="px-8 pb-8">
           <!-- Step 1: Picker UI -->
           <div id="source-modal-step-picker">
             <div class="space-y-6">
-              <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" id="upload-source-card">
-                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 dark:text-gray-300 mb-3"></i>
-                <h4 class="text-lg font-medium text-gray-900 dark:text-white">Upload sources</h4>
-                <p class="text-gray-500 dark:text-gray-400 mb-3">Drag and drop or choose file to upload</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Supported file types: PDF, txt, Markdown, Audio (e.g. mp3)</p>
+              <div
+                class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                id="upload-source-card"
+              >
+                <i
+                  class="fas fa-cloud-upload-alt text-4xl text-gray-400 dark:text-gray-300 mb-3"
+                ></i>
+                <h4 class="text-lg font-medium text-gray-900 dark:text-white">
+                  Upload sources
+                </h4>
+                <p class="text-gray-500 dark:text-gray-400 mb-3">
+                  Drag and drop or choose file to upload
+                </p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Supported file types: PDF, txt, Markdown, Audio (e.g. mp3)
+                </p>
                 <input type="file" class="hidden" id="file-upload" multiple />
-                <button type="button" id="file-upload-btn" class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium">
+                <button
+                  type="button"
+                  id="file-upload-btn"
+                  class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium"
+                >
                   Select Files
                 </button>
               </div>
               <div class="grid grid-cols-2 gap-3">
-                <div id="website-source-card" class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <div
+                  id="website-source-card"
+                  class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
                   <i class="fas fa-link text-2xl text-blue-400 mb-2"></i>
-                  <p class="text-sm font-medium text-gray-900 dark:text-white">Website</p>
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">
+                    Website
+                  </p>
                 </div>
-                <div id="youtube-source-card" class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <div
+                  id="youtube-source-card"
+                  class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
                   <i class="fab fa-youtube text-2xl text-red-500 mb-2"></i>
-                  <p class="text-sm font-medium text-gray-900 dark:text-white">YouTube</p>
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">
+                    YouTube
+                  </p>
                 </div>
               </div>
-              <div id="paste-source-card" class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <div
+                id="paste-source-card"
+                class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
                 <div class="flex items-center">
                   <i class="fas fa-paste text-2xl text-purple-500 mr-3"></i>
                   <div>
-                    <p class="text-sm font-medium text-gray-900 dark:text-white">Paste text</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Copied text</p>
+                    <p
+                      class="text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Paste text
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                      Copied text
+                    </p>
                   </div>
                 </div>
               </div>
@@ -812,56 +854,115 @@
 
           <!-- Step 2: Website -->
           <div id="source-modal-step-website" class="hidden">
-            <label class="block mb-2 text-base text-white">Paste in a web URL below to upload as a source in NotebookLM.</label>
-            <div class="flex items-center bg-dark-blue rounded border border-gray-700 mb-4">
-              <span class="px-3 text-gray-400"><i class="fas fa-link"></i></span>
-              <input type="text" id="website-url-input" class="flex-1 bg-transparent border-0 focus:ring-0 text-white p-3" placeholder="Paste URL*" />
+            <label class="block mb-2 text-base text-white"
+              >Paste in a web URL below to upload as a source in
+              NotebookLM.</label
+            >
+            <div
+              class="flex items-center bg-dark-blue rounded border border-gray-700 mb-4"
+            >
+              <span class="px-3 text-gray-400"
+                ><i class="fas fa-link"></i
+              ></span>
+              <input
+                type="text"
+                id="website-url-input"
+                class="flex-1 bg-transparent border-0 focus:ring-0 text-white p-3"
+                placeholder="Paste URL*"
+              />
             </div>
             <div class="text-gray-400 text-sm mb-4">
               <div class="font-semibold mb-1">Notes</div>
               <ul class="list-disc pl-5">
-                <li>Only the visible text on the website will be imported at this moment</li>
+                <li>
+                  Only the visible text on the website will be imported at this
+                  moment
+                </li>
                 <li>Paid articles are not supported</li>
               </ul>
             </div>
-            <button id="insert-website-btn" class="w-full mt-4 px-4 py-2 rounded bg-accent-blue text-white font-semibold disabled:opacity-50" disabled>Insert</button>
+            <button
+              id="insert-website-btn"
+              class="w-full mt-4 px-4 py-2 rounded bg-accent-blue text-white font-semibold disabled:opacity-50"
+              disabled
+            >
+              Insert
+            </button>
           </div>
 
           <!-- Step 3: YouTube -->
           <div id="source-modal-step-youtube" class="hidden">
-            <label class="block mb-2 text-base text-white">Paste in a YouTube URL below to upload as a source in NotebookLM.</label>
-            <div class="flex items-center bg-dark-blue rounded border border-gray-700 mb-4">
-              <span class="px-3 text-gray-400"><i class="fab fa-youtube"></i></span>
-              <input type="text" id="youtube-url-input" class="flex-1 bg-transparent border-0 focus:ring-0 text-white p-3" placeholder="Paste YouTube URL*" />
+            <label class="block mb-2 text-base text-white"
+              >Paste in a YouTube URL below to upload as a source in
+              NotebookLM.</label
+            >
+            <div
+              class="flex items-center bg-dark-blue rounded border border-gray-700 mb-4"
+            >
+              <span class="px-3 text-gray-400"
+                ><i class="fab fa-youtube"></i
+              ></span>
+              <input
+                type="text"
+                id="youtube-url-input"
+                class="flex-1 bg-transparent border-0 focus:ring-0 text-white p-3"
+                placeholder="Paste YouTube URL*"
+              />
             </div>
             <div class="text-gray-400 text-sm mb-4">
               <div class="font-semibold mb-1">Notes</div>
               <ul class="list-disc pl-5">
-                <li>Only the text transcript will be imported at this moment</li>
+                <li>
+                  Only the text transcript will be imported at this moment
+                </li>
                 <li>Only public YouTube videos are supported</li>
                 <li>Recently uploaded videos may not be available to import</li>
-                <li>If upload fails, <a href="#" class="underline text-blue-400">learn more</a> for common reasons.</li>
+                <li>
+                  If upload fails,
+                  <a href="#" class="underline text-blue-400">learn more</a> for
+                  common reasons.
+                </li>
               </ul>
             </div>
-            <button id="insert-youtube-btn" class="w-full mt-4 px-4 py-2 rounded bg-accent-blue text-white font-semibold disabled:opacity-50" disabled>Insert</button>
+            <button
+              id="insert-youtube-btn"
+              class="w-full mt-4 px-4 py-2 rounded bg-accent-blue text-white font-semibold disabled:opacity-50"
+              disabled
+            >
+              Insert
+            </button>
           </div>
 
           <!-- Step 4: Paste Text -->
           <div id="source-modal-step-paste" class="hidden">
-            <label class="block mb-2 text-base text-white">Paste your copied text below to upload as a source in NotebookLM</label>
-            <textarea id="paste-text-input" class="w-full bg-dark-blue border border-gray-700 text-white rounded p-3 mb-4 h-32" placeholder="Paste text here*"></textarea>
+            <label class="block mb-2 text-base text-white"
+              >Paste your copied text below to upload as a source in
+              NotebookLM</label
+            >
+            <textarea
+              id="paste-text-input"
+              class="w-full bg-dark-blue border border-gray-700 text-white rounded p-3 mb-4 h-32"
+              placeholder="Paste text here*"
+            ></textarea>
             <div class="text-gray-400 text-sm mb-4">
               <div class="font-semibold mb-1">Notes</div>
               <ul class="list-disc pl-5">
                 <li>Only the pasted text will be used as a source</li>
               </ul>
             </div>
-            <button id="insert-paste-btn" class="w-full mt-4 px-4 py-2 rounded bg-accent-blue text-white font-semibold disabled:opacity-50" disabled>Insert</button>
+            <button
+              id="insert-paste-btn"
+              class="w-full mt-4 px-4 py-2 rounded bg-accent-blue text-white font-semibold disabled:opacity-50"
+              disabled
+            >
+              Insert
+            </button>
           </div>
-
         </div>
         <div class="flex justify-end gap-0 px-8 pb-8" id="source-modal-footer">
-          <button class="px-4 py-2 rounded text-gray-300 hover:bg-blue-gray modal-close border border-gray-600">
+          <button
+            class="px-4 py-2 rounded text-gray-300 hover:bg-blue-gray modal-close border border-gray-600"
+          >
             Cancel
           </button>
         </div>
@@ -873,25 +974,256 @@
       class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
       id="discover-source-modal"
     >
-      <div class="bg-blue-gray rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-lg font-semibold text-white mb-4">Discover Source</h3>
-        <input
-          type="text"
-          class="w-full p-2 rounded bg-dark-blue border border-gray-700 text-white mb-4"
-          placeholder="Search for sources..."
-          id="discover-input"
-        />
-        <div class="flex justify-end gap-0">
+      <div
+        class="relative bg-white rounded-lg shadow dark:bg-gray-800 max-w-2xl w-full"
+      >
+        <!-- Modal header -->
+        <div
+          class="flex justify-between items-start p-4 md:p-5 border-b rounded-t dark:border-gray-600"
+        >
+          <div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+              Discover Sources
+            </h3>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">
+              Browse and select from available sources to add to your notebook
+            </p>
+          </div>
           <button
-            class="px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-600"
+            type="button"
+            class="discover-source-modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
           >
-            Cancel
+            <i class="fa-solid fa-xmark w-5 h-5"></i>
+            <span class="sr-only">Close modal</span>
           </button>
-          <button
-            class="px-4 py-2 rounded-r-full bg-accent-blue text-white border border-gray-600"
+        </div>
+        <!-- Modal body -->
+        <div class="p-4 md:p-5">
+          <!-- Search bar -->
+          <div class="relative mb-4">
+            <div
+              class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+            >
+              <i class="fas fa-search text-gray-500 dark:text-gray-400"></i>
+            </div>
+            <input
+              type="text"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+              placeholder="Search sources..."
+            />
+          </div>
+          <!-- Source list -->
+          <div
+            class="border border-gray-200 dark:border-gray-700 rounded-lg divide-y divide-gray-200 dark:divide-gray-700 max-h-96 overflow-y-auto"
           >
-            Search
-          </button>
+            <!-- Source item 1 -->
+            <div
+              class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                  <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                  <div>
+                    <h4 class="font-medium text-gray-900 dark:text-white">
+                      Assessing Reliability and Credibility in Information
+                      Sci...
+                    </h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      PDF • 2.4 MB • Last opened 3 days ago
+                    </p>
+                  </div>
+                </div>
+                <button
+                  class="discover-add-remove-btn add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+            <!-- Source item 2 -->
+            <div
+              class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                  <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                  <div>
+                    <h4 class="font-medium text-gray-900 dark:text-white">
+                      EDWIN COC.pdf
+                    </h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      PDF • 1.8 MB • Certificate of Completion
+                    </p>
+                  </div>
+                </div>
+                <button
+                  class="discover-add-remove-btn add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+            <!-- Source item 3 -->
+            <div
+              class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                  <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                  <div>
+                    <h4 class="font-medium text-gray-900 dark:text-white">
+                      EDWIN ID.pdf
+                    </h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      PDF • 0.5 MB • Identification document
+                    </p>
+                  </div>
+                </div>
+                <button
+                  class="discover-add-remove-btn add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+            <!-- Source item 4 -->
+            <div
+              class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                  <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                  <div>
+                    <h4 class="font-medium text-gray-900 dark:text-white">
+                      Edwin CO CV.pdf
+                    </h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      PDF • 3.2 MB • Curriculum Vitae
+                    </p>
+                  </div>
+                </div>
+                <button
+                  class="discover-add-remove-btn add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+            <!-- Source item 5 -->
+            <div
+              class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                  <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                  <div>
+                    <h4 class="font-medium text-gray-900 dark:text-white">
+                      Edwin Naya (Event pdf)
+                    </h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      PDF • 4.1 MB • Event documentation
+                    </p>
+                  </div>
+                </div>
+                <button
+                  class="discover-add-remove-btn add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+            <!-- Source item 6 -->
+            <div
+              class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                  <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                  <div>
+                    <h4 class="font-medium text-gray-900 dark:text-white">
+                      First Experts - Resources for Reporting - Research Sci...
+                    </h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      PDF • 5.7 MB • Research materials
+                    </p>
+                  </div>
+                </div>
+                <button
+                  class="discover-add-remove-btn add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+            <!-- Source item 7 -->
+            <div
+              class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                  <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                  <div>
+                    <h4 class="font-medium text-gray-900 dark:text-white">
+                      Grey literature - Wikipedia
+                    </h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      PDF • 1.2 MB • Information science
+                    </p>
+                  </div>
+                </div>
+                <button
+                  class="discover-add-remove-btn add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+            <!-- Source item 8 -->
+            <div
+              class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                  <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                  <div>
+                    <h4 class="font-medium text-gray-900 dark:text-white">
+                      PSC2_FORM_~JRSY_2016.pdf
+                    </h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      PDF • 0.8 MB • Application form
+                    </p>
+                  </div>
+                </div>
+                <button
+                  class="discover-add-remove-btn add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Modal footer -->
+        <div
+          class="flex items-center justify-between p-4 md:p-5 border-t border-gray-200 dark:border-gray-600"
+        >
+          <span class="text-sm font-medium text-gray-500 dark:text-gray-400"
+            >8 sources found</span
+          >
+          <div class="flex space-x-2">
+            <button
+              type="button"
+              class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white rounded-lg text-sm font-medium"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium"
+            >
+              Add Selected (0)
+            </button>
+          </div>
         </div>
       </div>
     </div>
