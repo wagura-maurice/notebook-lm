@@ -283,14 +283,123 @@ function initDropdownMenus() {
   });
 }
 
-/* ============================================ */
 /* === SOURCE ACTIONS === */
 /* ============================================ */
 /* Handles adding, discovering, renaming, and deleting sources */
 function initSourceActions() {
+  // Utility: show/hide steps
+  function showStep(step) {
+    $('#source-modal-step-picker, #source-modal-step-website, #source-modal-step-youtube, #source-modal-step-paste').addClass('hidden');
+    $('#source-modal-back').addClass('hidden');
+    if (step === 'picker') {
+      $('#source-modal-title').text('Add Source');
+      $('#source-modal-step-picker').removeClass('hidden');
+    } else if (step === 'website') {
+      $('#source-modal-title').text('Paste URL');
+      $('#source-modal-step-website').removeClass('hidden');
+      $('#source-modal-back').removeClass('hidden');
+    } else if (step === 'youtube') {
+      $('#source-modal-title').text('YouTube URL');
+      $('#source-modal-step-youtube').removeClass('hidden');
+      $('#source-modal-back').removeClass('hidden');
+    } else if (step === 'paste') {
+      $('#source-modal-title').text('Paste copied text');
+      $('#source-modal-step-paste').removeClass('hidden');
+      $('#source-modal-back').removeClass('hidden');
+    }
+  }
+
+  // Open modal
+  $('#add-source-btn').click(function() {
+    $('#add-source-modal').removeClass('hidden');
+    showStep('picker');
+    clearInputs();
+  });
+
+  // Cancel button closes modal
+  $('#source-modal-footer .modal-close').click(function() {
+    $('#add-source-modal').addClass('hidden');
+    showStep('picker');
+    clearInputs();
+  });
+
+  // Step navigation
+  $('#website-source-card').click(function() { showStep('website'); });
+  $('#youtube-source-card').click(function() { showStep('youtube'); });
+  $('#paste-source-card').click(function() { showStep('paste'); });
+  $('#source-modal-back').click(function() { showStep('picker'); clearInputs(); });
+
+  // Insert button validation
+  $('#website-url-input').on('input', function() {
+    $('#insert-website-btn').prop('disabled', !$(this).val().trim());
+  });
+  $('#youtube-url-input').on('input', function() {
+    $('#insert-youtube-btn').prop('disabled', !$(this).val().trim());
+  });
+  $('#paste-text-input').on('input', function() {
+    $('#insert-paste-btn').prop('disabled', !$(this).val().trim());
+  });
+
+  // Insert actions
+  $('#insert-website-btn').click(function() {
+    const url = $('#website-url-input').val().trim();
+    if (url) {
+      addSource(url, 'website', url);
+      $('#add-source-modal').addClass('hidden');
+      showStep('picker');
+      clearInputs();
+    }
+  });
+  $('#insert-youtube-btn').click(function() {
+    const url = $('#youtube-url-input').val().trim();
+    if (url) {
+      addSource(url, 'youtube', url);
+      $('#add-source-modal').addClass('hidden');
+      showStep('picker');
+      clearInputs();
+    }
+  });
+  $('#insert-paste-btn').click(function() {
+    const text = $('#paste-text-input').val().trim();
+    if (text) {
+      addSource(text, 'text', text);
+      $('#add-source-modal').addClass('hidden');
+      showStep('picker');
+      clearInputs();
+    }
+  });
+
+  // File upload
+  $('#file-upload-btn').click(function() {
+    $('#file-upload').click();
+  });
+  $('#file-upload').change(function(e) {
+    const files = e.target.files;
+    if (files.length > 0) {
+      for (let file of files) {
+        addSource(file.name, 'file', file);
+      }
+      $('#add-source-modal').addClass('hidden');
+      showStep('picker');
+      clearInputs();
+    }
+  });
+
+  // Utility: clear all step inputs
+  function clearInputs() {
+    $('#website-url-input').val('');
+    $('#youtube-url-input').val('');
+    $('#paste-text-input').val('');
+    $('#insert-website-btn, #insert-youtube-btn, #insert-paste-btn').prop('disabled', true);
+  }
+
+  // Allow opening modal from other triggers
   $("#addSourceBtn, #addSourceIcon").on("click", function () {
     $("#add-source-modal").removeClass("hidden");
+    showStep('picker');
+    clearInputs();
   });
+}
 
   $('#add-source-modal button:contains("Add Source")').on("click", function () {
     const sourceInput = $("#source-input");
@@ -386,7 +495,6 @@ function initSourceActions() {
     }
     $("#delete-source-modal").addClass("hidden");
   });
-}
 
 /* ============================================ */
 /* === NOTE ACTIONS === */
