@@ -524,12 +524,22 @@ $(document).ready(function () {
       if ($item.hasClass("selected")) {
         // Deselect
         $item.removeClass("selected bg-blue-50 dark:bg-blue-900");
-        $btn.removeClass("remove-btn bg-red-600 hover:bg-red-700 text-white").addClass("add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300").text("Add");
+        $btn
+          .removeClass("remove-btn bg-red-600 hover:bg-red-700 text-white")
+          .addClass(
+            "add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+          )
+          .text("Add");
         selectedSources.delete(sourceId);
       } else {
         // Select
         $item.addClass("selected bg-blue-50 dark:bg-blue-900");
-        $btn.removeClass("add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300").addClass("remove-btn bg-red-600 hover:bg-red-700 text-white").text("Remove");
+        $btn
+          .removeClass(
+            "add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+          )
+          .addClass("remove-btn bg-red-600 hover:bg-red-700 text-white")
+          .text("Remove");
         selectedSources.add(sourceId);
       }
       updateAddSelectedCount();
