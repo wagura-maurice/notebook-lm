@@ -289,136 +289,150 @@ function initDropdownMenus() {
 function initSourceActions() {
   // Utility: show/hide steps
   function showStep(step) {
-    $('#source-modal-step-picker, #source-modal-step-website, #source-modal-step-youtube, #source-modal-step-paste').addClass('hidden');
-    $('#source-modal-back').addClass('hidden');
-    if (step === 'picker') {
-      $('#source-modal-title').text('Add Source');
-      $('#source-modal-step-picker').removeClass('hidden');
-    } else if (step === 'website') {
-      $('#source-modal-title').text('Paste URL');
-      $('#source-modal-step-website').removeClass('hidden');
-      $('#source-modal-back').removeClass('hidden');
-    } else if (step === 'youtube') {
-      $('#source-modal-title').text('YouTube URL');
-      $('#source-modal-step-youtube').removeClass('hidden');
-      $('#source-modal-back').removeClass('hidden');
-    } else if (step === 'paste') {
-      $('#source-modal-title').text('Paste copied text');
-      $('#source-modal-step-paste').removeClass('hidden');
-      $('#source-modal-back').removeClass('hidden');
+    $(
+      "#source-modal-step-picker, #source-modal-step-website, #source-modal-step-youtube, #source-modal-step-paste"
+    ).addClass("hidden");
+    $("#source-modal-back").addClass("hidden");
+    if (step === "picker") {
+      $("#source-modal-title").text("Add Source");
+      $("#source-modal-step-picker").removeClass("hidden");
+    } else if (step === "website") {
+      $("#source-modal-title").text("Paste URL");
+      $("#source-modal-step-website").removeClass("hidden");
+      $("#source-modal-back").removeClass("hidden");
+    } else if (step === "youtube") {
+      $("#source-modal-title").text("YouTube URL");
+      $("#source-modal-step-youtube").removeClass("hidden");
+      $("#source-modal-back").removeClass("hidden");
+    } else if (step === "paste") {
+      $("#source-modal-title").text("Paste copied text");
+      $("#source-modal-step-paste").removeClass("hidden");
+      $("#source-modal-back").removeClass("hidden");
     }
   }
 
   // Open modal
-  $('#add-source-btn').click(function() {
-    $('#add-source-modal').removeClass('hidden');
-    showStep('picker');
+  $("#add-source-btn").click(function () {
+    $("#add-source-modal").removeClass("hidden");
+    showStep("picker");
     clearInputs();
   });
 
   // Cancel button closes modal
-  $('#source-modal-footer .modal-close').click(function() {
-    $('#add-source-modal').addClass('hidden');
-    showStep('picker');
+  $("#source-modal-footer .modal-close").click(function () {
+    $("#add-source-modal").addClass("hidden");
+    showStep("picker");
     clearInputs();
   });
 
   // Step navigation
-  $('#website-source-card').click(function() { showStep('website'); });
-  $('#youtube-source-card').click(function() { showStep('youtube'); });
-  $('#paste-source-card').click(function() { showStep('paste'); });
-  $('#source-modal-back').click(function() { showStep('picker'); clearInputs(); });
+  $("#website-source-card").click(function () {
+    showStep("website");
+  });
+  $("#youtube-source-card").click(function () {
+    showStep("youtube");
+  });
+  $("#paste-source-card").click(function () {
+    showStep("paste");
+  });
+  $("#source-modal-back").click(function () {
+    showStep("picker");
+    clearInputs();
+  });
 
   // Insert button validation
-  $('#website-url-input').on('input', function() {
-    $('#insert-website-btn').prop('disabled', !$(this).val().trim());
+  $("#website-url-input").on("input", function () {
+    $("#insert-website-btn").prop("disabled", !$(this).val().trim());
   });
-  $('#youtube-url-input').on('input', function() {
-    $('#insert-youtube-btn').prop('disabled', !$(this).val().trim());
+  $("#youtube-url-input").on("input", function () {
+    $("#insert-youtube-btn").prop("disabled", !$(this).val().trim());
   });
-  $('#paste-text-input').on('input', function() {
-    $('#insert-paste-btn').prop('disabled', !$(this).val().trim());
+  $("#paste-text-input").on("input", function () {
+    $("#insert-paste-btn").prop("disabled", !$(this).val().trim());
   });
 
   // Insert actions
-  $('#insert-website-btn').click(function() {
-    const url = $('#website-url-input').val().trim();
+  $("#insert-website-btn").click(function () {
+    const url = $("#website-url-input").val().trim();
     if (url) {
-      addSource(url, 'website', url);
-      $('#add-source-modal').addClass('hidden');
-      showStep('picker');
+      addSource(url, "website", url);
+      $("#add-source-modal").addClass("hidden");
+      showStep("picker");
       clearInputs();
     }
   });
-  $('#insert-youtube-btn').click(function() {
-    const url = $('#youtube-url-input').val().trim();
+  $("#insert-youtube-btn").click(function () {
+    const url = $("#youtube-url-input").val().trim();
     if (url) {
-      addSource(url, 'youtube', url);
-      $('#add-source-modal').addClass('hidden');
-      showStep('picker');
+      addSource(url, "youtube", url);
+      $("#add-source-modal").addClass("hidden");
+      showStep("picker");
       clearInputs();
     }
   });
-  $('#insert-paste-btn').click(function() {
-    const text = $('#paste-text-input').val().trim();
+  $("#insert-paste-btn").click(function () {
+    const text = $("#paste-text-input").val().trim();
     if (text) {
-      addSource(text, 'text', text);
-      $('#add-source-modal').addClass('hidden');
-      showStep('picker');
+      addSource(text, "text", text);
+      $("#add-source-modal").addClass("hidden");
+      showStep("picker");
       clearInputs();
     }
   });
 
   // File upload
-  $('#file-upload-btn').click(function() {
-    $('#file-upload').click();
+  $("#file-upload-btn").click(function () {
+    $("#file-upload").click();
   });
-  $('#file-upload').change(function(e) {
+  $("#file-upload").change(function (e) {
     const files = e.target.files;
     if (files.length > 0) {
       for (let file of files) {
-        addSource(file.name, 'file', file);
+        addSource(file.name, "file", file);
       }
-      $('#add-source-modal').addClass('hidden');
-      showStep('picker');
+      $("#add-source-modal").addClass("hidden");
+      showStep("picker");
       clearInputs();
     }
   });
 
   // Utility: clear all step inputs
   function clearInputs() {
-    $('#website-url-input').val('');
-    $('#youtube-url-input').val('');
-    $('#paste-text-input').val('');
-    $('#insert-website-btn, #insert-youtube-btn, #insert-paste-btn').prop('disabled', true);
+    $("#website-url-input").val("");
+    $("#youtube-url-input").val("");
+    $("#paste-text-input").val("");
+    $("#insert-website-btn, #insert-youtube-btn, #insert-paste-btn").prop(
+      "disabled",
+      true
+    );
   }
 
   // Allow opening modal from other triggers
   $("#addSourceBtn, #addSourceIcon").on("click", function () {
     $("#add-source-modal").removeClass("hidden");
-    showStep('picker');
+    showStep("picker");
     clearInputs();
   });
 }
 
-  $('#add-source-modal button:contains("Add Source")').on("click", function () {
-    const sourceInput = $("#source-input");
-    if (!sourceInput.length) {
-      console.error("Element #source-input not found in DOM");
-      return;
-    }
+$('#add-source-modal button:contains("Add Source")').on("click", function () {
+  const sourceInput = $("#source-input");
+  if (!sourceInput.length) {
+    console.error("Element #source-input not found in DOM");
+    return;
+  }
 
-    const sourceText = sourceInput.val().trim();
-    if (sourceText !== "") {
-      const newSource = $(`
+  const sourceText = sourceInput.val().trim();
+  if (sourceText !== "") {
+    const newSource = $(`
         <li class="group py-2 px-3 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item">
           <div class="relative mr-3 w-6 h-6">
             <i class="fas fa-file-alt text-green-400 group-hover:opacity-0 transition-opacity source-icon"></i>
             <i class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center source-menu-toggle"></i>
           </div>
           <span class="flex-1 truncate">${sourceText.substring(0, 30)}${
-        sourceText.length > 30 ? "..." : ""
-      }</span>
+      sourceText.length > 30 ? "..." : ""
+    }</span>
           <input type="checkbox" class="ml-2 source-checkbox" />
           <div class="source-menu hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30">
             <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
@@ -431,70 +445,150 @@ function initSourceActions() {
         </li>
       `);
 
-      $(".source-list").prepend(newSource);
-      sourceInput.val("");
-      $("#add-source-modal").addClass("hidden");
-    }
-  });
+    $(".source-list").prepend(newSource);
+    sourceInput.val("");
+    $("#add-source-modal").addClass("hidden");
+  }
+});
 
-  $("#discoverSourceBtn, #discoverSourceIcon").on("click", function () {
-    $("#discover-source-modal").removeClass("hidden");
-  });
+$("#discoverSourceBtn, #discoverSourceIcon").on("click", function () {
+  $("#discover-source-modal").removeClass("hidden");
+});
 
-  $('#discover-source-modal button:contains("Search")').on(
+$('#discover-source-modal button:contains("Search")').on("click", function () {
+  const searchText = $("#discover-input").val().trim();
+  if (searchText !== "") {
+    console.log("Searching for sources: " + searchText);
+    $("#discover-input").val("");
+    $("#discover-source-modal").addClass("hidden");
+  }
+});
+
+$(document).on(
+  "click",
+  '.source-menu-dropdown a:contains("Rename")',
+  function (e) {
+    e.preventDefault();
+    const sourceItem = $(this).closest(".source-item");
+    const currentName = sourceItem.find(".truncate").text();
+
+    $("#rename-input").val(currentName);
+    $("#rename-modal").removeClass("hidden");
+    $("#rename-modal").data("source-item", sourceItem);
+  }
+);
+
+$('#rename-modal button:contains("Save")').on("click", function () {
+  const newName = $("#rename-input").val();
+  const sourceItem = $("#rename-modal").data("source-item");
+
+  if (newName && sourceItem) {
+    sourceItem.find(".truncate").text(newName);
+  }
+  $("#rename-modal").addClass("hidden");
+});
+
+$(document).on(
+  "click",
+  '.source-menu-dropdown a:contains("Delete")',
+  function (e) {
+    e.preventDefault();
+    const sourceItem = $(this).closest(".source-item");
+    $("#delete-source-modal").removeClass("hidden");
+    $("#delete-source-modal").data("source-item", sourceItem);
+  }
+);
+
+$('#delete-source-modal button:contains("Delete")').on("click", function () {
+  const sourceItem = $("#delete-source-modal").data("source-item");
+  if (sourceItem) {
+    sourceItem.remove();
+  }
+  $("#delete-source-modal").addClass("hidden");
+});
+
+/* ============================================ */
+/* === DISCOVER SOURCES MODAL LOGIC === */
+$(document).ready(function () {
+  // Selection logic for discover sources modal
+  let selectedSources = new Set();
+
+  // Toggle selection: Add <-> Remove button logic for each item
+  $(document).on(
     "click",
+    "#discover-source-modal .discover-add-remove-btn",
     function () {
-      const searchText = $("#discover-input").val().trim();
-      if (searchText !== "") {
-        console.log("Searching for sources: " + searchText);
-        $("#discover-input").val("");
+      const $btn = $(this);
+      const $item = $btn.closest(".p-3");
+      const sourceId = $item.index(); // Use index as a unique ID for static demo
+      if ($item.hasClass("selected")) {
+        // Deselect
+        $item.removeClass("selected bg-blue-50 dark:bg-blue-900");
+        $btn.removeClass("remove-btn bg-red-600 hover:bg-red-700 text-white").addClass("add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300").text("Add");
+        selectedSources.delete(sourceId);
+      } else {
+        // Select
+        $item.addClass("selected bg-blue-50 dark:bg-blue-900");
+        $btn.removeClass("add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300").addClass("remove-btn bg-red-600 hover:bg-red-700 text-white").text("Remove");
+        selectedSources.add(sourceId);
+      }
+      updateAddSelectedCount();
+    }
+  );
+
+  // Update the Add Selected button count
+  function updateAddSelectedCount() {
+    const count = selectedSources.size;
+    $('#discover-source-modal button:contains("Add Selected")').text(
+      `Add Selected (${count})`
+    );
+  }
+
+  // Cancel and close logic
+  $(document).on(
+    "click",
+    '#discover-source-modal .discover-source-modal-close, #discover-source-modal button:contains("Cancel")',
+    function () {
+      $("#discover-source-modal").addClass("hidden");
+      selectedSources.clear();
+      $("#discover-source-modal .p-3.selected").removeClass(
+        "selected bg-blue-50 dark:bg-blue-900"
+      );
+      $("#discover-source-modal .p-3 button").text("Add");
+      updateAddSelectedCount();
+      $('#discover-source-modal input[type="text"]').val("");
+      $("#discover-source-modal .p-3").show();
+    }
+  );
+
+  // Add Selected action (placeholder)
+  $(document).on(
+    "click",
+    '#discover-source-modal button:contains("Add Selected")',
+    function () {
+      if (selectedSources.size > 0) {
+        // Placeholder: you can replace this with your actual logic
+        alert(`${selectedSources.size} source(s) added!`);
         $("#discover-source-modal").addClass("hidden");
+        selectedSources.clear();
+        updateAddSelectedCount();
       }
     }
   );
 
+  // Search/filter logic
   $(document).on(
-    "click",
-    '.source-menu-dropdown a:contains("Rename")',
-    function (e) {
-      e.preventDefault();
-      const sourceItem = $(this).closest(".source-item");
-      const currentName = sourceItem.find(".truncate").text();
-
-      $("#rename-input").val(currentName);
-      $("#rename-modal").removeClass("hidden");
-      $("#rename-modal").data("source-item", sourceItem);
+    "input",
+    '#discover-source-modal input[type="text"]',
+    function () {
+      const query = $(this).val().toLowerCase();
+      $("#discover-source-modal .p-3").each(function () {
+        const text = $(this).text().toLowerCase();
+        $(this).toggle(text.includes(query));
+      });
     }
   );
-
-  $('#rename-modal button:contains("Save")').on("click", function () {
-    const newName = $("#rename-input").val();
-    const sourceItem = $("#rename-modal").data("source-item");
-
-    if (newName && sourceItem) {
-      sourceItem.find(".truncate").text(newName);
-    }
-    $("#rename-modal").addClass("hidden");
-  });
-
-  $(document).on(
-    "click",
-    '.source-menu-dropdown a:contains("Delete")',
-    function (e) {
-      e.preventDefault();
-      const sourceItem = $(this).closest(".source-item");
-      $("#delete-source-modal").removeClass("hidden");
-      $("#delete-source-modal").data("source-item", sourceItem);
-    }
-  );
-
-  $('#delete-source-modal button:contains("Delete")').on("click", function () {
-    const sourceItem = $("#delete-source-modal").data("source-item");
-    if (sourceItem) {
-      sourceItem.remove();
-    }
-    $("#delete-source-modal").addClass("hidden");
-  });
+});
 
 /* ============================================ */
 /* === NOTE ACTIONS === */
