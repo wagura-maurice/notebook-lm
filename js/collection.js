@@ -395,11 +395,119 @@ function initSourceActions() {
 function initNoteActions() {
   $("#add-note-btn, #add-note-icon").on("click", function () {
     $("#add-note-modal").removeClass("hidden");
+    
+    // Initialize WYSIWYG editor when modal opens
+    $(".wysiwyg-btn").css({
+      background: "transparent",
+      color: "#94a3b8",
+      border: "none",
+      padding: "4px 8px",
+      margin: "0 2px",
+      "border-radius": "4px",
+      cursor: "pointer",
+    });
+
+    $(".wysiwyg-btn").hover(
+      function() {
+        $(this).css("background-color", "#334155");
+      },
+      function() {
+        $(this).css("background-color", "transparent");
+      }
+    );
+
+    $(".wysiwyg-btn").on("mousedown", function() {
+      $(this).css("background-color", "#1e293b");
+    }).on("mouseup mouseleave", function() {
+      $(this).css("background-color", "transparent");
+    });
+
+    // Initialize toolbar buttons
+    $(".wysiwyg-btn").on("click", function() {
+      const command = $(this).data("command");
+      const value = $(this).data("value");
+      const textarea = $("#note-content");
+      
+      if (command === "createLink") {
+        const url = prompt("Enter the link URL:");
+        if (url) {
+          const text = textarea.val();
+          const start = textarea[0].selectionStart;
+          const end = textarea[0].selectionEnd;
+          const before = text.substring(0, start);
+          const selected = text.substring(start, end);
+          const after = text.substring(end, text.length);
+          textarea.val(before + `[${selected}](${url})` + after);
+        }
+      } else if (command === "formatBlock") {
+        const text = textarea.val();
+        const start = textarea[0].selectionStart;
+        const end = textarea[0].selectionEnd;
+        const before = text.substring(0, start);
+        const selected = text.substring(start, end);
+        const after = text.substring(end, text.length);
+        
+        switch(value) {
+          case 'h1':
+            textarea.val(before + `# ${selected}\n` + after);
+            break;
+          case 'h2':
+            textarea.val(before + `## ${selected}\n` + after);
+            break;
+          case 'h3':
+            textarea.val(before + `### ${selected}\n` + after);
+            break;
+        }
+      } else if (command === "bold") {
+        const text = textarea.val();
+        const start = textarea[0].selectionStart;
+        const end = textarea[0].selectionEnd;
+        const before = text.substring(0, start);
+        const selected = text.substring(start, end);
+        const after = text.substring(end, text.length);
+        textarea.val(before + `**${selected}**` + after);
+      } else if (command === "italic") {
+        const text = textarea.val();
+        const start = textarea[0].selectionStart;
+        const end = textarea[0].selectionEnd;
+        const before = text.substring(0, start);
+        const selected = text.substring(start, end);
+        const after = text.substring(end, text.length);
+        textarea.val(before + `*${selected}*` + after);
+      } else if (command === "underline") {
+        const text = textarea.val();
+        const start = textarea[0].selectionStart;
+        const end = textarea[0].selectionEnd;
+        const before = text.substring(0, start);
+        const selected = text.substring(start, end);
+        const after = text.substring(end, text.length);
+        textarea.val(before + `__${selected}__` + after);
+      } else if (command === "insertUnorderedList") {
+        const text = textarea.val();
+        const start = textarea[0].selectionStart;
+        const end = textarea[0].selectionEnd;
+        const before = text.substring(0, start);
+        const selected = text.substring(start, end);
+        const after = text.substring(end, text.length);
+        textarea.val(before + `* ${selected}\n` + after);
+      } else if (command === "insertOrderedList") {
+        const text = textarea.val();
+        const start = textarea[0].selectionStart;
+        const end = textarea[0].selectionEnd;
+        const before = text.substring(0, start);
+        const selected = text.substring(start, end);
+        const after = text.substring(end, text.length);
+        textarea.val(before + `1. ${selected}\n` + after);
+      }
+      textarea.focus();
+    });
   });
 
   $('#add-note-modal button:contains("Save Note")').on("click", function () {
-    const noteText = $("#note-input").val();
-    if (noteText.trim() !== "") {
+    const noteTitle = $("#note-title").val();
+    const noteContent = $("#note-content").html();
+    
+    if (noteTitle.trim() !== "" && noteContent.trim() !== "") {
       const newNote = $(`
         <div class="relative flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item group mb-2">
           <div class="relative mr-3 w-6 h-6 mt-1 flex-shrink-0">
@@ -407,13 +515,11 @@ function initNoteActions() {
             <i class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 note-menu-toggle transition-opacity duration-200 flex items-center justify-center"></i>
           </div>
           <div class="flex-1 min-w-0 overflow-hidden">
-            <div class="font-medium truncate">${noteText.substring(0, 30)}${
-        noteText.length > 30 ? "..." : ""
-      }</div>
-            <div class="text-xs text-slate-400 truncate">${noteText.substring(
+            <div class="font-medium truncate">${noteTitle}</div>
+            <div class="text-xs text-slate-400 truncate">${noteContent.substring(
               0,
               50
-            )}${noteText.length > 50 ? "..." : ""}</div>
+            )}${noteContent.length > 50 ? "..." : ""}</div>
           </div>
           <div class="notes-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30">
             <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
@@ -430,7 +536,8 @@ function initNoteActions() {
       `);
 
       $(".note-list-container").prepend(newNote);
-      $("#note-input").val("");
+      $("#note-title").val("");
+      $("#note-content").html("");
       $("#add-note-modal").addClass("hidden");
     }
   });
