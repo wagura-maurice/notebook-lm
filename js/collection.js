@@ -395,7 +395,7 @@ function initSourceActions() {
 function initNoteActions() {
   $("#add-note-btn, #add-note-icon").on("click", function () {
     $("#add-note-modal").removeClass("hidden");
-    
+
     // Initialize WYSIWYG editor when modal opens
     $(".wysiwyg-btn").css({
       background: "transparent",
@@ -408,26 +408,28 @@ function initNoteActions() {
     });
 
     $(".wysiwyg-btn").hover(
-      function() {
+      function () {
         $(this).css("background-color", "#334155");
       },
-      function() {
+      function () {
         $(this).css("background-color", "transparent");
       }
     );
 
-    $(".wysiwyg-btn").on("mousedown", function() {
-      $(this).css("background-color", "#1e293b");
-    }).on("mouseup mouseleave", function() {
-      $(this).css("background-color", "transparent");
-    });
+    $(".wysiwyg-btn")
+      .on("mousedown", function () {
+        $(this).css("background-color", "#1e293b");
+      })
+      .on("mouseup mouseleave", function () {
+        $(this).css("background-color", "transparent");
+      });
 
     // Initialize toolbar buttons
-    $(".wysiwyg-btn").on("click", function() {
+    $(".wysiwyg-btn").on("click", function () {
       const command = $(this).data("command");
       const value = $(this).data("value");
       const textarea = $("#note-content");
-      
+
       if (command === "createLink") {
         const url = prompt("Enter the link URL:");
         if (url) {
@@ -446,15 +448,15 @@ function initNoteActions() {
         const before = text.substring(0, start);
         const selected = text.substring(start, end);
         const after = text.substring(end, text.length);
-        
-        switch(value) {
-          case 'h1':
+
+        switch (value) {
+          case "h1":
             textarea.val(before + `# ${selected}\n` + after);
             break;
-          case 'h2':
+          case "h2":
             textarea.val(before + `## ${selected}\n` + after);
             break;
-          case 'h3':
+          case "h3":
             textarea.val(before + `### ${selected}\n` + after);
             break;
         }
@@ -506,7 +508,7 @@ function initNoteActions() {
   $('#add-note-modal button:contains("Save Note")').on("click", function () {
     const noteTitle = $("#note-title").val();
     const noteContent = $("#note-content").html();
-    
+
     if (noteTitle.trim() !== "" && noteContent.trim() !== "") {
       const newNote = $(`
         <div class="relative flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item group mb-2">
