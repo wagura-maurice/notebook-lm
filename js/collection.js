@@ -718,7 +718,7 @@ function initNoteActions() {
   });
 
   $('#add-note-modal button:contains("Save Note")').on("click", function () {
-    const noteTitle = $("#note-title").val();
+    const noteTitle = $("#note-title-input").val();
     const noteContent = $("#note-content").html();
 
     if (noteTitle.trim() !== "" && noteContent.trim() !== "") {
@@ -750,7 +750,7 @@ function initNoteActions() {
       `);
 
       $(".note-list-container").prepend(newNote);
-      $("#note-title").val("");
+      $("#note-title-input").val("");
       $("#note-content").html("");
       $("#add-note-modal").addClass("hidden");
     }
@@ -1133,7 +1133,7 @@ function initChatFunctionality() {
         <div class="flex justify-end">
           <div class="max-w-[80%] bg-purple-500 px-4 py-2 rounded-xl rounded-br-none shadow">
             <div class="text-white">${messageText}</div>
-            <div class="text-xs text-purple-100 text-right mt-1">
+            <div class="text-xs text-gray-300 text-right">
               ${new Date().toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -1156,14 +1156,14 @@ function initChatFunctionality() {
                 20
               )}..."</div>
               <div class="flex justify-between items-center mt-2">
-                <button class="text-blue-100 hover:text-white text-sm flex items-center add-to-note-btn">
-                  <i class="fas fa-plus-circle mr-1"></i> Add to note
-                </button>
-                <div class="text-xs text-blue-100">${new Date().toLocaleTimeString(
+                <div class="text-xs text-gray-300">${new Date().toLocaleTimeString(
                   [],
                   { hour: "2-digit", minute: "2-digit" }
                 )}</div>
-                <button class="text-blue-100 hover:text-white text-sm flex items-center copy-message-btn">
+                <button class="text-gray-300 hover:text-white text-sm flex items-center add-to-note-btn">
+                  <i class="fas fa-plus-circle mr-1"></i> Add to note
+                </button>
+                <button class="text-gray-300 hover:text-white text-sm flex items-center copy-message-btn">
                   <i class="fas fa-copy mr-1"></i> Copy
                 </button>
               </div>
