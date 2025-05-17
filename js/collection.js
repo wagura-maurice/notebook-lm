@@ -16,6 +16,28 @@ $(document).ready(function () {
   initMessageActions();
   initUtilities();
   initModals();
+
+  // Chat suggestions scroll logic
+  const chatSuggestions = document.getElementById("chat-suggestions");
+  const leftBtn = document.getElementById("chat-suggestions-left");
+  const rightBtn = document.getElementById("chat-suggestions-right");
+  // Fix flex shrink/collapse bug on scroll
+  if (chatSuggestions && chatSuggestions.parentElement) {
+    chatSuggestions.parentElement.style.minWidth = "0";
+    chatSuggestions.parentElement.style.flexShrink = "0";
+    chatSuggestions.parentElement.style.overflowX = "auto";
+  }
+  if (chatSuggestions && leftBtn && rightBtn) {
+    leftBtn.addEventListener("click", function () {
+      chatSuggestions.parentElement.scrollBy({
+        left: -150,
+        behavior: "smooth",
+      });
+    });
+    rightBtn.addEventListener("click", function () {
+      chatSuggestions.parentElement.scrollBy({ left: 150, behavior: "smooth" });
+    });
+  }
 });
 
 /* ============================================ */
@@ -1273,3 +1295,46 @@ function initModals() {
     }
   });
 }
+
+/* ============================================ */
+document.addEventListener("DOMContentLoaded", function () {
+  const suggestions = document.getElementById("chat-suggestions");
+  const leftBtn = document.getElementById("chat-suggestions-left");
+  const rightBtn = document.getElementById("chat-suggestions-right");
+  const scrollContainer = suggestions?.parentElement;
+
+  function updateChevronVisibility() {
+    if (!scrollContainer) return;
+    // Hide left if at start
+    if (scrollContainer.scrollLeft <= 2) {
+      leftBtn.style.display = "none";
+    } else {
+      leftBtn.style.display = "";
+    }
+    // Hide right if at end
+    if (
+      scrollContainer.scrollWidth -
+        scrollContainer.clientWidth -
+        scrollContainer.scrollLeft <=
+      2
+    ) {
+      rightBtn.style.display = "none";
+    } else {
+      rightBtn.style.display = "";
+    }
+  }
+
+  if (leftBtn && rightBtn && scrollContainer) {
+    leftBtn.addEventListener("click", () => {
+      scrollContainer.scrollBy({ left: -200, behavior: "smooth" });
+      setTimeout(updateChevronVisibility, 300);
+    });
+    rightBtn.addEventListener("click", () => {
+      scrollContainer.scrollBy({ left: 200, behavior: "smooth" });
+      setTimeout(updateChevronVisibility, 300);
+    });
+    scrollContainer.addEventListener("scroll", updateChevronVisibility);
+    window.addEventListener("resize", updateChevronVisibility);
+    updateChevronVisibility();
+  }
+});
