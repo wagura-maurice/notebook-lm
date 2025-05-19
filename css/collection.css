@@ -95,19 +95,19 @@ header {
 }
 
 /* Resizable middle column */
-#middle-column.expanded {
+/* #middle-column.expanded {
   flex: 2;
 }
 
 #middle-column.contracted {
   flex: 0.8;
-}
+} */
 
 /* Disable middle column expansion when panels are active */
-#middle-column.panel-active {
+/* #middle-column.panel-active {
   flex: 1 !important;
   pointer-events: none;
-}
+} */
 
 /* Source view content styling */
 .source-content-section {
