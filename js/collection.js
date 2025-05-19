@@ -333,6 +333,12 @@ function initSourceActions() {
     }
   }
 
+  $("#shareCollectionBtn").click(function () {
+    $("#share-collection-modal").removeClass("hidden");
+    showStep("picker");
+    clearInputs();
+  });
+
   // Open modal
   $("#add-source-btn").click(function () {
     $("#add-source-modal").removeClass("hidden");
