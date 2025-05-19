@@ -8,7 +8,7 @@ $(document).ready(function () {
 
 // Modal logic
 function closeAllModals() {
-  document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+  document.querySelectorAll(".modal").forEach((m) => m.classList.add("hidden"));
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -24,29 +24,31 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Overlay click closes the modal (for all overlays)
-  document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    overlay.addEventListener('click', function (e) {
+  document.querySelectorAll(".modal-overlay").forEach((overlay) => {
+    overlay.addEventListener("click", function (e) {
       // Find parent modal and hide it
-      const modal = overlay.closest('.modal');
-      if (modal) modal.classList.add('hidden');
+      const modal = overlay.closest(".modal");
+      if (modal) modal.classList.add("hidden");
     });
   });
 
   // Cancel/close button closes the modal (for all close buttons)
-  document.querySelectorAll('.modal-close').forEach(btn => {
-    btn.addEventListener('click', function (e) {
+  document.querySelectorAll(".modal-close").forEach((btn) => {
+    btn.addEventListener("click", function (e) {
       // Find parent modal and hide it
-      const modal = btn.closest('.modal');
-      if (modal) modal.classList.add('hidden');
+      const modal = btn.closest(".modal");
+      if (modal) modal.classList.add("hidden");
     });
   });
 
   // Prevent modal content click from closing modal (for all modal content blocks)
-  document.querySelectorAll('.modal > div:not(.modal-overlay)').forEach(content => {
-    content.addEventListener('click', function(e) {
-      e.stopPropagation();
+  document
+    .querySelectorAll(".modal > div:not(.modal-overlay)")
+    .forEach((content) => {
+      content.addEventListener("click", function (e) {
+        e.stopPropagation();
+      });
     });
-  });
 
   // Escape key closes modal
   document.addEventListener("keydown", function (e) {
@@ -56,27 +58,44 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // --- Dropdown actions (Rename, Share, Delete) ---
-  document.body.addEventListener('click', function (e) {
+  document.body.addEventListener("click", function (e) {
     // Rename
-    if (e.target.closest('.dropdown-menu a') && e.target.textContent.includes('Rename')) {
+    if (
+      e.target.closest(".dropdown-menu a") &&
+      e.target.textContent.includes("Rename")
+    ) {
       e.preventDefault();
       closeAllModals();
-      const renameModal = document.getElementById('rename-modal');
-      if (renameModal) renameModal.classList.remove('hidden');
+      const renameCollectionModal = document.getElementById(
+        "rename-collection-modal"
+      );
+      if (renameCollectionModal)
+        renameCollectionModal.classList.remove("hidden");
     }
     // Share
-    if (e.target.closest('.dropdown-menu a') && e.target.textContent.includes('Share')) {
+    if (
+      e.target.closest(".dropdown-menu a") &&
+      e.target.textContent.includes("Share")
+    ) {
       e.preventDefault();
       closeAllModals();
-      const shareModal = document.getElementById('share-modal');
-      if (shareModal) shareModal.classList.remove('hidden');
+      const shareCollectionModal = document.getElementById(
+        "share-collection-modal"
+      );
+      if (shareCollectionModal) shareCollectionModal.classList.remove("hidden");
     }
     // Delete
-    if (e.target.closest('.dropdown-menu a') && e.target.textContent.includes('Delete')) {
+    if (
+      e.target.closest(".dropdown-menu a") &&
+      e.target.textContent.includes("Delete")
+    ) {
       e.preventDefault();
       closeAllModals();
-      const deleteModal = document.getElementById('delete-modal');
-      if (deleteModal) deleteModal.classList.remove('hidden');
+      const deleteCollectionModal = document.getElementById(
+        "delete-collection-modal"
+      );
+      if (deleteCollectionModal)
+        deleteCollectionModal.classList.remove("hidden");
     }
   });
 
