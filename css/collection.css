@@ -798,3 +798,138 @@ header {
 .group:hover .text-blue-100 {
   z-index: 10; /* Ensure time appears above other elements */
 }
+
+/* ============================================ */
+/* === ENHANCED RESPONSIVE STYLES === */
+/* ============================================ */
+
+/* Base mobile adjustments (below 640px) */
+@media (max-width: 639px) {
+  /* Header adjustments */
+  header {
+    padding: 0.5rem;
+    min-height: 3.5rem;
+  }
+
+  /* Mobile tabs */
+  .lg\:hidden.flex {
+    top: 3.5rem;
+  }
+
+  /* Chat input */
+  #chat-input {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  /* Chat suggestions */
+  #chat-suggestions button {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  /* Source/note items */
+  .source-item,
+  .note-item {
+    padding: 0.5rem;
+  }
+}
+
+/* Tablet adjustments (640px - 1023px) */
+@media (min-width: 640px) and (max-width: 1023px) {
+  /* Middle column expansion */
+  #middle-column {
+    flex: 1.5;
+  }
+
+  /* Chat suggestions */
+  #chat-suggestions {
+    gap: 0.5rem;
+  }
+
+  /* Modal sizes */
+  .modal > div:not(.modal-overlay) {
+    max-width: 90%;
+  }
+}
+
+/* Desktop adjustments (1024px and above) */
+@media (min-width: 1024px) {
+  /* Column width refinements */
+  #left-column {
+    width: 25%;
+    min-width: 250px;
+  }
+
+  #right-column {
+    width: 25%;
+    min-width: 250px;
+  }
+
+  #middle-column {
+    flex: 2;
+  }
+
+  /* Better hover states for desktop */
+  .source-item:hover .source-menu-toggle,
+  .note-item:hover .note-menu-toggle {
+    opacity: 1 !important;
+  }
+}
+
+/* Large desktop screens (1440px and above) */
+@media (min-width: 1440px) {
+  #left-column {
+    width: 300px;
+  }
+
+  #right-column {
+    width: 300px;
+  }
+
+  #middle-column {
+    flex: 3;
+  }
+}
+
+/* Improved touch targets for mobile */
+@media (max-width: 1023px) {
+  .tab-button {
+    padding: 1rem 0;
+  }
+
+  .source-item,
+  .note-item {
+    padding: 0.75rem;
+  }
+
+  button,
+  [type="button"],
+  [type="reset"],
+  [type="submit"] {
+    min-height: 44px; /* Better touch target size */
+  }
+}
+
+/* Better scrollbar visibility */
+@media (hover: hover) {
+  .scrollbar-transparent::-webkit-scrollbar-thumb {
+    background-color: rgba(71, 85, 105, 0.5);
+  }
+
+  .scrollbar-transparent:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(71, 85, 105, 0.7);
+  }
+}
+
+/* Improved modal responsiveness */
+@media (max-width: 767px) {
+  .modal > div:not(.modal-overlay) {
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+
+  .modal-footer button {
+    padding: 0.75rem 1rem;
+  }
+}
