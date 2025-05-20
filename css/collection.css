@@ -548,6 +548,33 @@ header {
   padding: 1.5rem;
 }
 
+/* Add your custom styles below this line */
+
+#jump-to-bottom-btn {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 100px;
+  z-index: 40;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  padding: 10px 24px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+#jump-to-bottom-btn.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+#jump-to-bottom-btn:hover {
+  background: #4f46e5;
+}
+
 /* Edit note content styles for the note editing modal */
 .edit-note-content {
   display: flex;
