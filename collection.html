@@ -438,7 +438,30 @@
         <div
           class="overflow-y-auto flex-1 px-5 py-3 space-y-4 scrollbar-transparent"
           id="chat-messages"
+          style="position: relative"
         >
+          <!-- Jump to Bottom Button -->
+          <button
+            id="jump-to-bottom-btn"
+            style="
+              position: fixed;
+              left: 50%;
+              transform: translateX(-50%);
+              bottom: 100px;
+              z-index: 40;
+              background: #6366f1;
+              color: white;
+              border-radius: 9999px;
+              padding: 10px 24px;
+              font-weight: 600;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+              transition: opacity 0.3s;
+            "
+            class="hover:bg-indigo-700 focus:outline-none"
+          >
+            <i class="fa-regular fa-circle-down ml-2"></i>
+            Jump to Bottom
+          </button>
           <!-- AI message -->
           <div class="flex justify-start">
             <div
@@ -1878,5 +1901,47 @@
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="js/collection.js"></script>
+    <script>
+      (function () {
+        const chatMessages = document.getElementById("chat-messages");
+        const jumpBtn = document.getElementById("jump-to-bottom-btn");
+
+        function atBottom() {
+          // 2px tolerance for floating point errors
+          return (
+            chatMessages.scrollHeight -
+              chatMessages.scrollTop -
+              chatMessages.clientHeight <
+            2
+          );
+        }
+
+        function toggleJumpBtn() {
+          if (!atBottom()) {
+            jumpBtn.classList.add("show");
+          } else {
+            jumpBtn.classList.remove("show");
+          }
+        }
+
+        chatMessages.addEventListener("scroll", toggleJumpBtn);
+
+        // Initial check
+        setTimeout(toggleJumpBtn, 500);
+
+        jumpBtn.addEventListener("click", function () {
+          chatMessages.scrollTo({
+            top: chatMessages.scrollHeight,
+            behavior: "smooth",
+          });
+        });
+
+        // Also handle new messages (MutationObserver)
+        const observer = new MutationObserver(() => {
+          setTimeout(toggleJumpBtn, 100);
+        });
+        observer.observe(chatMessages, { childList: true, subtree: true });
+      })();
+    </script>
   </body>
 </html>
