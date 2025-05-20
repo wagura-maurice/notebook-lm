@@ -41,13 +41,6 @@ header {
 /* ============================================ */
 /* === COLUMN LAYOUT === */
 /* ============================================ */
-/* Styles for the three-column layout */
-#columns-container {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
 #left-column,
 #right-column {
   background-color: #1e293b; /* Slate-800 */
@@ -198,11 +191,9 @@ header {
 /* ============================================ */
 /* Layout for the main columns: Sources (left), Chat (middle), Studio (right) */
 #columns-container {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  gap: 0.5rem;
-  padding: 0.5rem;
+  /* display: flex; */
+  /* flex: 1; */
+  /* overflow: hidden; */
 }
 
 /* -------------------------------------------- */
@@ -723,7 +714,7 @@ header {
     width: 100%;
     height: calc(100vh - 8rem); /* Adjust for header and tab height */
     position: absolute;
-    top: 8rem; /* Header (4rem) + tabs (4rem) */
+    /* top: 8rem; /* Header (4rem) + tabs (4rem) */
     left: 0;
     transition: opacity 0.3s ease;
   }
@@ -932,29 +923,5 @@ header {
 
   .modal-footer button {
     padding: 0.75rem 1rem;
-  }
-}
-
-/* Adjust layout for mobile tabs */
-@media (max-width: 1023px) {
-  #columns-container {
-    flex-direction: column;
-    gap: 0;
-    padding: 0;
-  }
-
-  .mobile-tab-content {
-    display: none;
-    height: calc(100vh - 3.5rem); /* Adjust based on your header height */
-  }
-
-  .mobile-tab-content.active {
-    display: flex;
-  }
-
-  /* Mobile tabs styling */
-  #columns-container > .flex.lg\:hidden {
-    order: -1; /* Ensure tabs appear first */
-    margin-bottom: 0.5rem;
   }
 }
