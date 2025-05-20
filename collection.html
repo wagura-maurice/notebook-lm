@@ -13,7 +13,8 @@
     />
 
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <script src="js/tailwindcss.js"></script>
     <script>
       tailwind.config = {
         theme: {
@@ -43,10 +44,11 @@
     </script>
 
     <!-- Font Awesome -->
-    <link
+    <!-- <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
+    /> -->
+    <link rel="stylesheet" href="css/font-awesome.min.css" />
 
     <!-- Custom CSS -->
     <link href="./css/collection.css" rel="stylesheet" />
@@ -156,7 +158,7 @@
     </header>
 
     <!-- Mobile Tabs -->
-    <!-- <div
+    <div
       class="lg:hidden flex border-b border-gray-700 bg-blue-gray sticky top-16 z-10"
     >
       <button
@@ -177,41 +179,243 @@
       >
         <i class="fas fa-sliders-h mr-2"></i><span>Studio</span>
       </button>
-    </div> -->
+    </div>
 
     <!-- Main Content -->
-    <div class="flex flex-1 overflow-hidden gap-2 p-2" id="columns-container">
-      <!-- Mobile Tabs (only visible on mobile) -->
-      <div
-        class="lg:hidden flex border-b border-gray-700 bg-blue-gray sticky top-0 z-10 w-full"
-      >
-        <button
-          class="tab-button flex-1 py-3 text-center font-medium"
-          data-tab="left-column"
-        >
-          <i class="fas fa-book mr-2"></i><span>Sources</span>
-        </button>
-        <button
-          class="tab-button active flex-1 py-3 text-center font-medium"
-          data-tab="middle-column"
-        >
-          <i class="fas fa-comments mr-2"></i><span>Chat</span>
-        </button>
-        <button
-          class="tab-button flex-1 py-3 text-center font-medium"
-          data-tab="right-column"
-        >
-          <i class="fas fa-sliders-h mr-2"></i><span>Studio</span>
-        </button>
-      </div>
-
+    <div
+      class="flex flex-1 overflow-hidden gap-2 lg:p-2"
+      id="columns-container"
+    >
       <!-- Left Column - Sources -->
       <div
         id="left-column"
         class="mobile-tab-content w-full lg:w-72 bg-slate-800 text-white transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(147,51,234,0.3),0_2px_4px_-1px_rgba(147,51,234,0.1)] lg:block hidden"
       >
-        <!-- Rest of your left column content remains the same -->
-        ...
+        <!-- Expanded view -->
+        <div class="expanded-content">
+          <!-- Header -->
+          <div
+            class="flex items-center justify-between px-5 py-3 border-b border-slate-700"
+          >
+            <h2 class="text-lg font-semibold">Sources</h2>
+            <button
+              id="collapse-left"
+              class="text-white text-lg hover:text-sky-400"
+            >
+              <i class="fas fa-chevron-left"></i>
+            </button>
+          </div>
+
+          <!-- Actions -->
+          <div
+            class="flex items-center gap-2 px-5 py-3 border-b border-slate-700 actions-row"
+          >
+            <button
+              type="button"
+              id="addSourceBtn"
+              class="flex items-center justify-center flex-1 py-2 px-3 bg-sky-500 hover:bg-sky-600 rounded-full text-sm font-medium transition-colors"
+            >
+              <i class="fas fa-plus mr-2"></i>
+              <span>Add</span>
+            </button>
+            <button
+              type="button"
+              id="discoverSourceBtn"
+              class="flex items-center justify-center flex-1 py-2 px-3 bg-sky-500 hover:bg-sky-600 rounded-full text-sm font-medium transition-colors"
+            >
+              <i class="fas fa-search mr-2"></i>
+              <span>Discover</span>
+            </button>
+          </div>
+
+          <!-- Select source -->
+          <div
+            class="px-5 py-3 flex justify-between items-center border-b border-slate-700 select-source-row"
+          >
+            <h3 class="text-sm font-medium text-slate-300">Select sources</h3>
+            <input
+              type="checkbox"
+              id="select-all"
+              class="ml-2 source-checkbox"
+            />
+          </div>
+
+          <!-- Sources List -->
+          <div class="h-screen flex flex-col">
+            <div class="overflow-y-auto flex-1 px-2 py-3 source-list-container">
+              <ul class="source-list">
+                <!-- PDF Source -->
+                <li
+                  class="group py-2 px-3 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                >
+                  <div class="relative mr-3 w-6 h-6">
+                    <i
+                      class="fas fa-file-pdf text-red-400 group-hover:opacity-0 transition-opacity source-icon"
+                    ></i>
+                    <i
+                      class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center source-menu-toggle"
+                    ></i>
+                  </div>
+                  <span class="flex-1 truncate"
+                    >Introduction to Machine Learning</span
+                  >
+                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <div
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                  >
+                    <a
+                      href="#"
+                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                    >
+                      <i class="fa-solid fa-eye mr-2"></i> Show source
+                    </a>
+                    <a
+                      href="#"
+                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                    >
+                      <i class="fas fa-pencil-alt mr-2"></i> Rename source
+                    </a>
+                    <a
+                      href="#"
+                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                    >
+                      <i class="fas fa-trash-alt mr-2"></i> Delete source
+                    </a>
+                  </div>
+                </li>
+
+                <!-- Word Document Source (Processing State) -->
+                <li
+                  class="group py-2 px-3 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                >
+                  <div class="relative mr-3 w-6 h-6">
+                    <i
+                      class="fas fa-file-word text-blue-400 group-hover:opacity-0 transition-opacity source-icon"
+                    ></i>
+                    <!-- <i
+                      class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center source-menu-toggle"
+                    ></i> -->
+                  </div>
+                  <span class="flex-1 truncate">Data Analysis Techniques</span>
+                  <button
+                    class="ml-2 processing-btn"
+                    title="Process document"
+                    data-processing="false"
+                  >
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                  </button>
+                  <div
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                  >
+                    <a
+                      href="#"
+                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                    >
+                      <i class="fa-solid fa-eye mr-2"></i> Show source
+                    </a>
+                    <a
+                      href="#"
+                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                    >
+                      <i class="fas fa-pencil-alt mr-2"></i> Rename source
+                    </a>
+                    <a
+                      href="#"
+                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                    >
+                      <i class="fas fa-trash-alt mr-2"></i> Delete source
+                    </a>
+                  </div>
+                </li>
+
+                <!-- Text Document Source -->
+                <li
+                  class="group py-2 px-3 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                >
+                  <div class="relative mr-3 w-6 h-6">
+                    <i
+                      class="fas fa-file-alt text-green-400 group-hover:opacity-0 transition-opacity source-icon"
+                    ></i>
+                    <i
+                      class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center source-menu-toggle"
+                    ></i>
+                  </div>
+                  <span class="flex-1 truncate">Research Methodology</span>
+                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <div
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                  >
+                    <a
+                      href="#"
+                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                    >
+                      <i class="fa-solid fa-eye mr-2"></i> Show source
+                    </a>
+                    <a
+                      href="#"
+                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                    >
+                      <i class="fas fa-pencil-alt mr-2"></i> Rename source
+                    </a>
+                    <a
+                      href="#"
+                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                    >
+                      <i class="fas fa-trash-alt mr-2"></i> Delete source
+                    </a>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Collapsed view for the left column side-->
+        <div class="collapsed-content hidden flex flex-col h-full w-[4rem]">
+          <!-- Fixed header (not scrollable) -->
+          <div
+            class="w-full flex items-center justify-center py-3 px-2 border-b border-slate-700 flex-shrink-0"
+          >
+            <button
+              id="expand-left"
+              class="text-white text-lg hover:text-sky-400"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+
+          <!-- Scrollable content area -->
+          <div class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent">
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-plus text-xl" id="addSourceIcon"></i>
+            </button>
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-search text-xl" id="discoverSourceIcon"></i>
+            </button>
+            <div class="border-t border-slate-700 w-full my-2"></div>
+
+            <!-- Scrollable file icons -->
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-file-pdf text-xl text-red-400"></i>
+            </button>
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-file-word text-xl text-blue-400"></i>
+            </button>
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-file-alt text-xl text-green-400"></i>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Middle Column - Chat -->
@@ -219,8 +423,280 @@
         id="middle-column"
         class="mobile-tab-content active flex-1 bg-slate-800 text-white overflow-hidden transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(147,51,234,0.3),0_2px_4px_-1px_rgba(147,51,234,0.1)]"
       >
-        <!-- Rest of your middle column content remains the same -->
-        ...
+        <!-- Header (visible only on desktop) -->
+        <div
+          class="flex items-center justify-between px-5 py-3 border-b border-slate-700 hidden lg:flex"
+        >
+          <h2 class="text-lg font-semibold">Chat</h2>
+          <button
+            class="text-white text-lg hover:text-sky-400"
+            id="expand-middle"
+          >
+            <i class="fas fa-expand-alt"></i>
+          </button>
+        </div>
+
+        <!-- Chat messages -->
+        <div
+          class="overflow-y-auto flex-1 px-5 py-3 space-y-4 scrollbar-transparent"
+          id="chat-messages"
+        >
+          <!-- AI message -->
+          <div class="flex justify-start">
+            <div
+              class="max-w-[80%] bg-blue-500 px-4 py-2 rounded-xl rounded-bl-none shadow relative group"
+            >
+              <div class="text-white">Hello, how can I help you today?</div>
+              <div class="flex justify-between items-center mt-2">
+                <div class="text-xs text-gray-300">10:30 AM</div>
+                <button
+                  class="text-gray-300 hover:text-white text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
+                >
+                  <i class="fas fa-plus-circle mr-1"></i> Add to note
+                </button>
+                <button
+                  class="text-gray-300 hover:text-white text-sm flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
+                >
+                  <i class="fas fa-copy mr-1"></i> Copy
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- User message -->
+          <div class="flex justify-end">
+            <div
+              class="max-w-[80%] bg-purple-500 px-4 py-2 rounded-xl rounded-br-none shadow"
+            >
+              <div class="text-white">
+                I'm looking for information about machine learning.
+              </div>
+              <div class="text-xs text-gray-300 text-right">10:32 AM</div>
+            </div>
+          </div>
+
+          <!-- AI message -->
+          <div class="flex justify-start">
+            <div
+              class="max-w-[80%] bg-blue-500 px-4 py-2 rounded-xl rounded-bl-none shadow relative group"
+            >
+              <div class="text-white">
+                I'd be happy to help with that! Based on your sources, I see you
+                have "Introduction to Machine Learning" document available.
+                Would you like me to summarize the key concepts from that
+                document, or do you have specific questions about machine
+                learning?
+              </div>
+              <div class="flex justify-between items-center mt-2">
+                <div class="text-xs text-gray-300">10:33 AM</div>
+                <button
+                  class="text-gray-300 hover:text-white text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
+                >
+                  <i class="fas fa-plus-circle mr-1"></i> Add to note
+                </button>
+                <button
+                  class="text-gray-300 hover:text-white text-sm flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
+                >
+                  <i class="fas fa-copy mr-1"></i> Copy
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- User message -->
+          <div class="flex justify-end">
+            <div
+              class="max-w-[80%] bg-purple-500 px-4 py-2 rounded-xl rounded-br-none shadow"
+            >
+              <div class="text-white">
+                I'm looking for information about machine learning.
+              </div>
+              <div class="text-xs text-gray-300 text-right">10:32 AM</div>
+            </div>
+          </div>
+
+          <!-- AI message -->
+          <div class="flex justify-start">
+            <div
+              class="max-w-[80%] bg-blue-500 px-4 py-2 rounded-xl rounded-bl-none shadow relative group"
+            >
+              <div class="text-white">
+                I'd be happy to help with that! Based on your sources, I see you
+                have "Introduction to Machine Learning" document available.
+                Would you like me to summarize the key concepts from that
+                document, or do you have specific questions about machine
+                learning?
+              </div>
+              <div class="flex justify-between items-center mt-2">
+                <div class="text-xs text-gray-300">10:33 AM</div>
+                <button
+                  class="text-gray-300 hover:text-white text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
+                >
+                  <i class="fas fa-plus-circle mr-1"></i> Add to note
+                </button>
+                <button
+                  class="text-gray-300 hover:text-white text-sm flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
+                >
+                  <i class="fas fa-copy mr-1"></i> Copy
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- User message -->
+          <div class="flex justify-end">
+            <div
+              class="max-w-[80%] bg-purple-500 px-4 py-2 rounded-xl rounded-br-none shadow"
+            >
+              <div class="text-white">
+                I'm looking for information about machine learning.
+              </div>
+              <div class="text-xs text-gray-300 text-right">10:32 AM</div>
+            </div>
+          </div>
+
+          <!-- AI message -->
+          <div class="flex justify-start">
+            <div
+              class="max-w-[80%] bg-blue-500 px-4 py-2 rounded-xl rounded-bl-none shadow relative group"
+            >
+              <div class="text-white">
+                I'd be happy to help with that! Based on your sources, I see you
+                have "Introduction to Machine Learning" document available.
+                Would you like me to summarize the key concepts from that
+                document, or do you have specific questions about machine
+                learning?
+              </div>
+              <div class="flex justify-between items-center mt-2">
+                <div class="text-xs text-gray-300">10:33 AM</div>
+                <button
+                  class="text-gray-300 hover:text-white text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
+                >
+                  <i class="fas fa-plus-circle mr-1"></i> Add to note
+                </button>
+                <button
+                  class="text-gray-300 hover:text-white text-sm flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
+                >
+                  <i class="fas fa-copy mr-1"></i> Copy
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- User message -->
+          <div class="flex justify-end">
+            <div
+              class="max-w-[80%] bg-purple-500 px-4 py-2 rounded-xl rounded-br-none shadow"
+            >
+              <div class="text-white">
+                I'm looking for information about machine learning.
+              </div>
+              <div class="text-xs text-gray-300 text-right">10:32 AM</div>
+            </div>
+          </div>
+
+          <!-- AI message -->
+          <div class="flex justify-start">
+            <div
+              class="max-w-[80%] bg-blue-500 px-4 py-2 rounded-xl rounded-bl-none shadow relative group"
+            >
+              <div class="text-white">
+                I'd be happy to help with that! Based on your sources, I see you
+                have "Introduction to Machine Learning" document available.
+                Would you like me to summarize the key concepts from that
+                document, or do you have specific questions about machine
+                learning?
+              </div>
+              <div class="flex justify-between items-center mt-2">
+                <div class="text-xs text-gray-300">10:33 AM</div>
+                <button
+                  class="text-gray-300 hover:text-white text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
+                >
+                  <i class="fas fa-plus-circle mr-1"></i> Add to note
+                </button>
+                <button
+                  class="text-gray-300 hover:text-white text-sm flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
+                >
+                  <i class="fas fa-copy mr-1"></i> Copy
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Suggestions Bar -->
+        <div class="bg-slate-800 px-4 py-2 border-b border-slate-700">
+          <div class="flex items-center h-12 max-w-full overflow-hidden p-1">
+            <!-- Left scroll button -->
+            <button
+              id="chat-suggestions-left"
+              class="shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-slate-700 text-gray-300 hover:bg-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-blue mr-2"
+            >
+              <i class="fas fa-chevron-left text-sm"></i>
+            </button>
+
+            <!-- Suggestions container -->
+            <div class="flex-1 overflow-x-auto scrollbar-transparent mt-3">
+              <div
+                id="chat-suggestions"
+                class="flex gap-2 h-full items-center px-2"
+              >
+                <!-- Suggestion pills -->
+                <button
+                  class="h-9 px-4 bg-slate-700 text-white rounded-full text-sm font-medium hover:bg-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-blue whitespace-nowrap"
+                >
+                  Who is Golden Nyasulu?
+                </button>
+                <button
+                  class="h-9 px-4 bg-slate-700 text-white rounded-full text-sm font-medium hover:bg-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-blue whitespace-nowrap"
+                >
+                  What is the Pisa Declaration?
+                </button>
+                <button
+                  class="h-9 px-4 bg-slate-700 text-white rounded-full text-sm font-medium hover:bg-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-blue whitespace-nowrap"
+                >
+                  Where does Kenninla Osula work?
+                </button>
+                <button
+                  class="h-9 px-4 bg-slate-700 text-white rounded-full text-sm font-medium hover:bg-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-blue whitespace-nowrap"
+                >
+                  How to improve productivity?
+                </button>
+                <button
+                  class="h-9 px-4 bg-slate-700 text-white rounded-full text-sm font-medium hover:bg-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-blue whitespace-nowrap"
+                >
+                  Best practices for remote work
+                </button>
+              </div>
+            </div>
+
+            <!-- Right scroll button -->
+            <button
+              id="chat-suggestions-right"
+              class="shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-slate-700 text-gray-300 hover:bg-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-blue ml-2"
+            >
+              <i class="fas fa-chevron-right text-sm"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Chat Input (positioned directly below suggestions) -->
+        <div class="p-3 border-t border-slate-700 bg-slate-800">
+          <div class="relative">
+            <textarea
+              id="chat-input"
+              class="w-full bg-slate-900 rounded-lg p-3 pr-12 text-white resize-none focus:ring-2 focus:ring-sky-500 focus:outline-none"
+              placeholder="Start typing..."
+              rows="2"
+            ></textarea>
+            <button
+              id="send-message"
+              class="absolute right-3 bottom-3 text-sky-400 hover:text-white p-1 rounded-full transition-colors"
+            >
+              <i class="fas fa-paper-plane text-lg"></i>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Right Column - Studio -->
@@ -228,8 +704,241 @@
         id="right-column"
         class="mobile-tab-content w-full lg:w-16 lg:hover:w-80 bg-slate-800 text-white border-l border-slate-700 transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(147,51,234,0.3),0_2px_4px_-1px_rgba(147,51,234,0.1)] lg:block hidden"
       >
-        <!-- Rest of your right column content remains the same -->
-        ...
+        <!-- Expanded view -->
+        <div class="expanded-content">
+          <!-- Header -->
+          <div
+            class="flex items-center justify-between px-5 py-3 border-b border-slate-700"
+          >
+            <h2 class="text-lg font-semibold">Studio</h2>
+            <button
+              id="collapse-right"
+              class="text-white text-lg hover:text-sky-400"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+
+          <!-- Add Note Button -->
+          <div class="px-5 py-3 border-b border-slate-700">
+            <button
+              type="button"
+              id="add-note-btn"
+              class="w-full flex items-center justify-center py-2 px-3 bg-sky-500 hover:bg-sky-600 rounded-full text-sm font-medium transition-colors"
+            >
+              <i class="fas fa-plus mr-2"></i>
+              <span>Add Note</span>
+            </button>
+          </div>
+
+          <!-- Quick Notes -->
+          <div
+            class="grid grid-cols-2 gap-2 px-5 py-3 border-b border-slate-700"
+          >
+            <button
+              class="flex items-center justify-center py-2 px-2 bg-slate-700 hover:bg-slate-600 rounded text-sm transition-colors quick-note-btn"
+            >
+              <i class="fa-solid fa-graduation-cap mr-2"></i>
+              <span>Study guide</span>
+            </button>
+            <button
+              class="flex items-center justify-center py-2 px-2 bg-slate-700 hover:bg-slate-600 rounded text-sm transition-colors quick-note-btn"
+            >
+              <i class="fas fa-file-alt mr-2"></i>
+              <span>Briefing doc</span>
+            </button>
+            <button
+              class="flex items-center justify-center py-2 px-2 bg-slate-700 hover:bg-slate-600 rounded text-sm transition-colors quick-note-btn"
+            >
+              <i class="fas fa-book mr-2"></i>
+              <span>FAQ</span>
+            </button>
+            <button
+              class="flex items-center justify-center py-2 px-2 bg-slate-700 hover:bg-slate-600 rounded text-sm transition-colors quick-note-btn"
+            >
+              <i class="fa-solid fa-bolt mr-2"></i>
+              <span>Timeline</span>
+            </button>
+          </div>
+
+          <!-- Notes header -->
+          <div
+            class="flex justify-between items-center px-5 py-3 border-b border-slate-700"
+          >
+            <h3 class="font-medium text-sky-400">Notes</h3>
+            <div class="relative">
+              <button
+                id="notes-menu-button"
+                class="text-white hover:text-sky-400"
+              >
+                <i class="fas fa-ellipsis-vertical"></i>
+              </button>
+              <div
+                id="notes-menu-dropdown"
+                class="hidden absolute right-0 mt-2 w-48 bg-slate-800 rounded-md shadow-lg z-10 border border-slate-700"
+              >
+                <div class="py-1">
+                  <a
+                    href="#"
+                    class="flex items-center px-3 py-2 text-sm text-white hover:bg-slate-700"
+                  >
+                    <i class="fas fa-exchange-alt mr-2"></i> Convert all to
+                    sources
+                  </a>
+                  <a
+                    href="#"
+                    class="flex items-center px-3 py-2 text-sm text-white hover:bg-slate-700"
+                  >
+                    <i class="fas fa-trash-alt mr-2"></i> Delete all notes
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notes List -->
+          <div class="h-screen flex flex-col">
+            <div class="overflow-y-auto flex-1 px-5 py-3 note-list-container">
+              <!-- Note Item 1 -->
+              <div
+                class="relative flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item group mb-2"
+              >
+                <div class="relative mr-3 w-6 h-6 mt-1 flex-shrink-0">
+                  <!-- Default sticky note icon (shown when not active) -->
+                  <i
+                    class="fas fa-sticky-note text-sky-400 note-icon transition-opacity duration-200"
+                  ></i>
+                  <!-- Ellipsis icon (shown when note is active/clicked) -->
+                  <i
+                    class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 note-menu-toggle transition-opacity duration-200 flex items-center justify-center cursor-pointer"
+                  ></i>
+                </div>
+                <div class="flex-1 min-w-0 overflow-hidden">
+                  <div class="font-medium truncate">
+                    Information Source Assessment Guide
+                  </div>
+                  <div class="text-xs text-slate-400 truncate">
+                    Assessing and Utilizing Information Sources...
+                  </div>
+                </div>
+
+                <!-- Dropdown Menu -->
+                <div
+                  class="notes-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                >
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                  >
+                    <i class="fa-solid fa-eye mr-2"></i> Show note
+                  </a>
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                  >
+                    <i class="fas fa-plus-circle mr-3 text-sm"></i> Add to
+                    sources
+                  </a>
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                  >
+                    <i class="fas fa-trash-alt mr-3 text-sm"></i> Delete note
+                  </a>
+                </div>
+              </div>
+
+              <!-- Note Item 2 -->
+              <div
+                class="relative flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item group mb-2"
+              >
+                <div class="relative mr-3 w-6 h-6 mt-1 flex-shrink-0">
+                  <!-- Default sticky note icon (shown when not active) -->
+                  <i
+                    class="fas fa-sticky-note text-amber-400 note-icon transition-opacity duration-200"
+                  ></i>
+                  <!-- Ellipsis icon (shown when note is active/clicked) -->
+                  <i
+                    class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 note-menu-toggle transition-opacity duration-200 flex items-center justify-center cursor-pointer"
+                  ></i>
+                </div>
+                <div class="flex-1 min-w-0 overflow-hidden">
+                  <div class="font-medium truncate">Study Guide Outline</div>
+                  <div class="text-xs text-slate-400 truncate">
+                    Key topics to cover for semester exam...
+                  </div>
+                </div>
+
+                <!-- Dropdown Menu -->
+                <div
+                  class="notes-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                >
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                  >
+                    <i class="fa-solid fa-eye mr-2"></i> Show note
+                  </a>
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                  >
+                    <i class="fas fa-plus-circle mr-3 text-sm"></i> Add to
+                    sources
+                  </a>
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                  >
+                    <i class="fas fa-trash-alt mr-3 text-sm"></i> Delete note
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Collapsed view (shown when collapsed) -->
+        <div class="collapsed-content hidden flex flex-col h-full w-[4rem]">
+          <!-- Collapsed header with reversed chevron -->
+          <div
+            class="w-full flex items-center justify-center py-3 px-2 border-b border-slate-700 flex-shrink-0"
+          >
+            <button
+              id="expand-right"
+              class="text-white text-lg hover:text-sky-400"
+            >
+              <i class="fas fa-chevron-left"></i>
+            </button>
+          </div>
+
+          <!-- Scrollable content container with full-width invisible scrollbar -->
+          <div class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent">
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-plus text-xl" id="add-note-icon"></i>
+            </button>
+            <div class="border-t border-slate-700 w-full my-2"></div>
+
+            <!-- File icons - scrollable section -->
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-sticky-note text-xl text-sky-400"></i>
+            </button>
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-book text-xl text-amber-400"></i>
+            </button>
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              <i class="fas fa-file-alt text-xl text-emerald-400"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1169,7 +1878,8 @@
     </div>
 
     <!-- JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> -->
+    <script src="js/jquery.min.js"></script>
     <script src="js/collection.js"></script>
   </body>
 </html>
