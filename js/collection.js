@@ -1560,3 +1560,46 @@ document.addEventListener("DOMContentLoaded", () => {
   updateChevronVisibility();
   suggestionsContainer.addEventListener("scroll", updateChevronVisibility);
 });
+
+// ================================
+
+(function () {
+  const chatMessages = document.getElementById("chat-messages");
+  const jumpBtn = document.getElementById("jump-to-bottom-btn");
+
+  function atBottom() {
+    // 2px tolerance for floating point errors
+    return (
+      chatMessages.scrollHeight -
+        chatMessages.scrollTop -
+        chatMessages.clientHeight <
+      2
+    );
+  }
+
+  function toggleJumpBtn() {
+    if (!atBottom()) {
+      jumpBtn.classList.add("show");
+    } else {
+      jumpBtn.classList.remove("show");
+    }
+  }
+
+  chatMessages.addEventListener("scroll", toggleJumpBtn);
+
+  // Initial check
+  setTimeout(toggleJumpBtn, 500);
+
+  jumpBtn.addEventListener("click", function () {
+    chatMessages.scrollTo({
+      top: chatMessages.scrollHeight,
+      behavior: "smooth",
+    });
+  });
+
+  // Also handle new messages (MutationObserver)
+  const observer = new MutationObserver(() => {
+    setTimeout(toggleJumpBtn, 100);
+  });
+  observer.observe(chatMessages, { childList: true, subtree: true });
+})();
