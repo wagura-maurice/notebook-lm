@@ -799,7 +799,7 @@ const SourceActions = {
 
     const viewForm = $(`
       <div class="view-source-content flex flex-col h-full">
-        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700 sm:mt-0 mt-4">
           <h3 class="text-lg font-semibold">View Source</h3>
           <button id="back-to-sources" class="text-sky-400 hover:text-sky-300">
             <i class="fas fa-arrow-left mr-2"></i>Back
@@ -1090,7 +1090,7 @@ const NoteActions = {
 
     const editForm = $(`
       <div class="edit-note-content flex flex-col h-full">
-        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700 sm:mt-0 mt-4">
           <h3 class="text-lg font-semibold">Edit Note</h3>
           <button id="back-to-notes" class="text-sky-400 hover:text-sky-300">
             <i class="fas fa-arrow-left mr-2"></i>Back
