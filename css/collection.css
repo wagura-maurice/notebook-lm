@@ -79,13 +79,13 @@ body {
 }
 
 /* Expanded Content */
-.expanded-content > div:first-child {
+/* .expanded-content > div:first-child {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--slate-700);
-}
+} */
 
 /* ============================================ */
 /* === HEADER & NAVIGATION === */
@@ -853,4 +853,56 @@ header {
   .modal-footer button {
     padding: 0.75rem 1rem;
   }
+}
+
+/* =================================== */
+/* Add these styles to your collection.css file */
+@media (max-width: 767px) {
+  .modal {
+    align-items: flex-start; /* Align to top instead of center */
+    padding-top: 1rem; /* Add some top padding */
+    padding-bottom: 1rem; /* Add bottom padding */
+    overflow-y: auto; /* Enable scrolling for the modal container */
+  }
+
+  .modal > div:not(.modal-overlay) {
+    margin: 1rem auto; /* Center with auto margins */
+    max-height: calc(100vh - 2rem); /* Limit height to viewport minus padding */
+    overflow-y: auto; /* Enable scrolling for modal content */
+    transform: none !important; /* Remove any transforms that might affect positioning */
+  }
+
+  /* Modal header adjustments */
+  .modal > div:not(.modal-overlay) > div:first-child {
+    position: sticky;
+    top: 0;
+    background-color: var(--slate-800);
+    z-index: 10;
+  }
+
+  /* Modal body adjustments */
+  .modal > div:not(.modal-overlay) > div:nth-child(2) {
+    padding-bottom: 1rem; /* Add bottom padding */
+  }
+
+  /* Modal footer adjustments */
+  .modal > div:not(.modal-overlay) > div:last-child {
+    position: sticky;
+    bottom: 0;
+    background-color: var(--slate-800);
+    z-index: 10;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
+/* Additional improvements for all screen sizes */
+.modal {
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+.modal > div:not(.modal-overlay) {
+  max-height: 90vh; /* Limit modal height on all screens */
+  display: flex;
+  flex-direction: column;
 }
