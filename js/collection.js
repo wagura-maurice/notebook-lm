@@ -1153,7 +1153,7 @@ const NoteActions = {
               style="min-height: 200px; max-height: calc(100vh - 300px);"
             >${content}</div>
           </div>
-          <div class="mt-4 flex justify-center">
+          <div class="p-4 flex justify-center">
             <div class="inline-flex">
               <button
                 id="cancel-note-changes"
