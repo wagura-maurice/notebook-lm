@@ -450,6 +450,8 @@ const DropdownMenus = {
 /* === MODULE: SOURCE ACTIONS === */
 /* ============================================ */
 const SourceActions = {
+  selectedSources: new Set(), // Move this here from being inside a function
+
   init: function () {
     this.bindEvents();
     this.setupDiscoverSources();
@@ -733,15 +735,54 @@ const SourceActions = {
   },
 
   setupDiscoverSources: function () {
-    let selectedSources = new Set();
-
     // Helper to get a unique ID for each source item (fallback to index if no data-id)
     function getSourceId($item) {
       return $item.data("id") !== undefined ? $item.data("id") : $item.index();
     }
 
     $(document)
-      .off("click", "#discover-source-modal .discover-add-remove-btn")
+      .on(
+        "click",
+        '#discover-source-modal .discover-source-modal-close, #discover-source-modal button:contains("Cancel")',
+        function () {
+          $("#discover-source-modal").addClass("hidden");
+          SourceActions.selectedSources.clear(); // Changed from this.selectedSources
+          $("#discover-source-modal .p-3.selected").removeClass(
+            "selected bg-blue-50 dark:bg-blue-900"
+          );
+          $("#discover-source-modal .p-3 button")
+            .removeClass("remove-btn bg-red-600 hover:bg-red-700 text-white")
+            .addClass(
+              "add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+            )
+            .text("Add");
+          SourceActions.updateAddSelectedCount(); // Changed from this.updateAddSelectedCount
+          $('#discover-source-modal input[type="text"]').val("");
+          $("#discover-source-modal .p-3").show();
+        }
+      )
+      .on(
+        "click",
+        '#discover-source-modal button:contains("Add Selected")',
+        function () {
+          if (SourceActions.selectedSources.size > 0) {
+            // Changed from this.selectedSources
+            alert(`${SourceActions.selectedSources.size} source(s) added!`); // Changed from this.selectedSources
+            $("#discover-source-modal").addClass("hidden");
+            SourceActions.selectedSources.clear(); // Changed from this.selectedSources
+            SourceActions.updateAddSelectedCount(); // Changed from this.updateAddSelectedCount
+            $("#discover-source-modal .p-3.selected").removeClass(
+              "selected bg-blue-50 dark:bg-blue-900"
+            );
+            $("#discover-source-modal .p-3 button")
+              .removeClass("remove-btn bg-red-600 hover:bg-red-700 text-white")
+              .addClass(
+                "add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              )
+              .text("Add");
+          }
+        }
+      )
       .on(
         "click",
         "#discover-source-modal .discover-add-remove-btn",
@@ -758,7 +799,7 @@ const SourceActions = {
                 "add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
               )
               .text("Add");
-            selectedSources.delete(sourceId);
+            SourceActions.selectedSources.delete(sourceId); // Changed from this.selectedSources
           } else {
             $item.addClass("selected bg-blue-50 dark:bg-blue-900");
             $btn
@@ -767,69 +808,15 @@ const SourceActions = {
               )
               .addClass("remove-btn bg-red-600 hover:bg-red-700 text-white")
               .text("Remove");
-            selectedSources.add(sourceId);
+            SourceActions.selectedSources.add(sourceId); // Changed from this.selectedSources
           }
-          this.updateAddSelectedCount();
-        }.bind(this)
-      )
-      .off(
-        "click",
-        '#discover-source-modal .discover-source-modal-close, #discover-source-modal button:contains("Cancel")'
-      )
-      .on(
-        "click",
-        '#discover-source-modal .discover-source-modal-close, #discover-source-modal button:contains("Cancel")',
-        function () {
-          $("#discover-source-modal").addClass("hidden");
-          selectedSources.clear();
-          $("#discover-source-modal .p-3.selected").removeClass(
-            "selected bg-blue-50 dark:bg-blue-900"
-          );
-          $("#discover-source-modal .p-3 button")
-            .removeClass("remove-btn bg-red-600 hover:bg-red-700 text-white")
-            .addClass(
-              "add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-            )
-            .text("Add");
-          this.updateAddSelectedCount();
-          $('#discover-source-modal input[type="text"]').val("");
-          $("#discover-source-modal .p-3").show();
-        }.bind(this)
-      )
-      .off("click", '#discover-source-modal button:contains("Add Selected")')
-      .on(
-        "click",
-        '#discover-source-modal button:contains("Add Selected")',
-        function () {
-          if (selectedSources.size > 0) {
-            alert(`${selectedSources.size} source(s) added!`);
-            $("#discover-source-modal").addClass("hidden");
-            selectedSources.clear();
-            this.updateAddSelectedCount();
-            $("#discover-source-modal .p-3.selected").removeClass(
-              "selected bg-blue-50 dark:bg-blue-900"
-            );
-            $("#discover-source-modal .p-3 button")
-              .removeClass("remove-btn bg-red-600 hover:bg-red-700 text-white")
-              .addClass(
-                "add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-              )
-              .text("Add");
-          }
-        }.bind(this)
-      )
-      .off("input", '#discover-source-modal input[type="text"]')
-      .on("input", '#discover-source-modal input[type="text"]', function () {
-        const query = $(this).val().toLowerCase();
-        $("#discover-source-modal .p-3").each(function () {
-          const text = $(this).text().toLowerCase();
-          $(this).toggle(text.includes(query));
-        });
-      });
+          SourceActions.updateAddSelectedCount(); // Changed from this.updateAddSelectedCount
+        }
+      );
   },
 
   updateAddSelectedCount: function () {
-    const count = $("#discover-source-modal .p-3.selected").length;
+    const count = SourceActions.selectedSources.size; // Changed from this.selectedSources
     $('#discover-source-modal button:contains("Add Selected")').text(
       `Add Selected (${count})`
     );
