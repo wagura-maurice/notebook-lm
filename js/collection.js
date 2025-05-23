@@ -1199,21 +1199,19 @@ const NoteActions = {
               style="min-height: 200px; max-height: calc(100vh - 300px);"
             >${content}</div>
           </div>
-          <div class="m-4 flex justify-center">
-            <div class="inline-flex">
+          <div class="flex justify-end gap-0 p-4" id="add-note-modal-footer">
+            <div class="flex justify-end gap-0">
               <button
+                class="px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-600"
                 id="cancel-note-changes"
-                class="px-5 py-2 rounded-l-full text-gray-400 bg-slate-700 hover:bg-slate-600 border border-r-0 border-gray-600 focus:outline-none focus:ring-2 focus:ring-sky-400 transition-colors"
-                aria-label="Cancel editing note"
               >
                 Cancel
               </button>
               <button
+                class="px-4 py-2 rounded-r-full bg-accent-blue text-white border border-gray-600"
                 id="save-note-changes"
-                class="px-5 py-2 rounded-r-full bg-accent-blue text-white hover:bg-sky-500 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-sky-400 transition-colors"
-                aria-label="Save note changes"
               >
-                Save
+                Update
               </button>
             </div>
           </div>
