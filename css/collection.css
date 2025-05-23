@@ -253,7 +253,7 @@ header {
   background: none;
   border-bottom-right-radius: 16px 14px;
   box-shadow: -2px 2px 2px 0 rgba(59, 130, 246, 0.1);
-  clip-path: polygon(0 0, 100% 40%, 100% 60%, 0 100%);
+  clip-path: polygon(0 0, 100% 50%, 100% 60%, 0 100%);
   background-color: var(--blue-500);
   z-index: 0;
 }
@@ -274,7 +274,7 @@ header {
   background: none;
   border-bottom-left-radius: 16px 14px;
   box-shadow: 2px 2px 2px 0 rgba(139, 92, 246, 0.1);
-  clip-path: polygon(100% 0, 0 40%, 0 60%, 100% 100%);
+  clip-path: polygon(100% 0, 0 50%, 0 60%, 100% 100%);
   background-color: var(--purple-500);
   z-index: 0;
 }
@@ -807,24 +807,34 @@ header {
     display: flex !important;
   }
 
-  #left-column,
-  #middle-column,
-  #right-column {
-    display: flex !important;
+  #columns-container {
+    display: flex;
+    width: 100%;
   }
 
   #left-column {
     width: 25%;
-    min-width: 250px;
+    min-width: 0;
+    max-width: none;
+    flex: 0 0 25%;
+    display: flex !important;
+    flex-direction: column;
   }
-
+  #middle-column {
+    width: 50%;
+    min-width: 0;
+    max-width: none;
+    flex: 0 0 50%;
+    display: flex !important;
+    flex-direction: column;
+  }
   #right-column {
     width: 25%;
-    min-width: 250px;
-  }
-
-  #middle-column {
-    flex: 2;
+    min-width: 0;
+    max-width: none;
+    flex: 0 0 25%;
+    display: flex !important;
+    flex-direction: column;
   }
 
   .source-item:hover .source-menu-toggle,
