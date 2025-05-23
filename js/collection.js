@@ -822,7 +822,7 @@ const SourceActions = {
     const originalContent = $(SELECTORS.leftColumn).children().detach();
 
     const viewForm = $(`
-      <div class="flex flex-col h-full expanded-content">
+      <div class="flex flex-col h-full expanded-content view-source-content">
         <div class="flex items-center justify-between px-5 py-3 border-b border-slate-700">
           <h3 class="text-lg font-semibold">View Source</h3>
           <button id="back-to-sources" class="text-sky-400 text-lg hover:text-sky-400">
@@ -832,12 +832,12 @@ const SourceActions = {
         <div class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent">
           <h3 class="font-medium text-sky-400 text-center py-3">${title}</h3>
           
-          <div class="source-content-section">
+          <div class="source-content-section p-4">
             <h4 class="text-sm font-semibold text-slate-300 mb-2">Summary</h4>
             <p class="text-sm text-slate-400">This document provides a comprehensive overview of key concepts and methodologies in the field. It covers fundamental principles and practical applications while exploring various aspects of the subject matter.</p>
           </div>
           
-          <div class="source-content-section">
+          <div class="source-content-section p-4">
             <h4 class="text-sm font-semibold text-slate-300 mb-2">Key Topics</h4>
             <div class="source-topics-list">
               <span class="source-topic-tag">Methodology</span>
@@ -848,7 +848,7 @@ const SourceActions = {
             </div>
           </div>
           
-          <div class="source-content-section flex-1 overflow-hidden">
+          <div class="source-content-section p-4 flex-1 overflow-hidden">
             <h4 class="text-sm font-semibold text-slate-300 mb-2">Content</h4>
             <div class="flex-1 overflow-y-auto text-slate-400 space-y-4">
               <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
@@ -1113,40 +1113,46 @@ const NoteActions = {
     const originalContent = $(SELECTORS.rightColumn).children().detach();
 
     const editForm = $(`
-      <div class="edit-note-content flex flex-col h-full">
-        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700">
+      <div class="flex flex-col h-full expanded-content edit-note-content">
+        <div class="flex items-center justify-between px-5 py-3 border-b border-slate-700">
           <h3 class="text-lg font-semibold">Edit Note</h3>
-          <button id="back-to-notes" class="text-sky-400 hover:text-sky-300">
-            <i class="fas fa-arrow-left mr-2"></i>Back
+          <button id="back-to-notes" class="text-sky-400 text-lg hover:text-sky-400">
+            <i class="fas fa-arrow-left"></i>
           </button>
         </div>
-        <div class="flex-1 flex flex-col px-4 py-3 overflow-hidden">
-          <input
-            type="text"
-            id="edit-note-title"
-            value="${title}"
-            class="w-full bg-slate-700 text-white border border-slate-600 rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-sky-400"
-            placeholder="Note Title"
-          />
-          <div class="bg-slate-800 border border-slate-600 rounded-t p-2 flex flex-wrap gap-2 items-center">
-            <div class="flex pr-2 mr-2">
-              <button class="wysiwyg-btn" data-command="bold" title="Bold"><i class="fas fa-bold"></i></button>
-              <button class="wysiwyg-btn" data-command="italic" title="Italic"><i class="fas fa-italic"></i></button>
-              <button class="wysiwyg-btn" data-command="underline" title="Underline"><i class="fas fa-underline"></i></button>
-              <button class="wysiwyg-btn" data-command="justifyLeft" title="Align Left"><i class="fas fa-align-left"></i></button>
-              <button class="wysiwyg-btn" data-command="justifyCenter" title="Align Center"><i class="fas fa-align-center"></i></button>
-              <button class="wysiwyg-btn" data-command="justifyRight" title="Align Right"><i class="fas fa-align-right"></i></button>
-              <button class="wysiwyg-btn" data-command="insertOrderedList" title="Numbered List"><i class="fas fa-list-ol"></i></button>
-              <button class="wysiwyg-btn" data-command="insertUnorderedList" title="Bullet List"><i class="fas fa-list-ul"></i></button>
-              <button class="wysiwyg-btn" data-command="createLink" title="Insert Link"><i class="fas fa-link"></i></button>
-            </div>
+        <div class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent">
+          <div class="note-content-section p-4">
+            <h4 class="text-sm font-semibold text-slate-300 mb-2">Title</h4>
+            <input
+              type="text"
+              id="edit-note-title"
+              value="${title}"
+              class="w-full bg-slate-700 text-white border border-slate-600 rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              placeholder="Note Title"
+            />
           </div>
-          <div 
-            id="edit-note-content" 
-            class="w-full flex-1 min-h-[200px] max-h-[calc(100vh-300px)] bg-slate-700 text-white border border-t-0 border-slate-600 rounded-b px-3 py-2 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-sky-400" 
-            contenteditable="true"
-            style="min-height: 200px; max-height: calc(100vh - 300px);"
-          >${content}</div>
+          <div class="note-content-section p-4">
+            <h4 class="text-sm font-semibold text-slate-300 mb-2">Content</h4>
+            <div class="bg-slate-800 border border-slate-600 rounded-t p-2 flex flex-wrap gap-2 items-center">
+              <div class="flex pr-2 mr-2">
+                <button class="wysiwyg-btn" data-command="bold" title="Bold"><i class="fas fa-bold"></i></button>
+                <button class="wysiwyg-btn" data-command="italic" title="Italic"><i class="fas fa-italic"></i></button>
+                <button class="wysiwyg-btn" data-command="underline" title="Underline"><i class="fas fa-underline"></i></button>
+                <button class="wysiwyg-btn" data-command="justifyLeft" title="Align Left"><i class="fas fa-align-left"></i></button>
+                <button class="wysiwyg-btn" data-command="justifyCenter" title="Align Center"><i class="fas fa-align-center"></i></button>
+                <button class="wysiwyg-btn" data-command="justifyRight" title="Align Right"><i class="fas fa-align-right"></i></button>
+                <button class="wysiwyg-btn" data-command="insertOrderedList" title="Numbered List"><i class="fas fa-list-ol"></i></button>
+                <button class="wysiwyg-btn" data-command="insertUnorderedList" title="Bullet List"><i class="fas fa-list-ul"></i></button>
+                <button class="wysiwyg-btn" data-command="createLink" title="Insert Link"><i class="fas fa-link"></i></button>
+              </div>
+            </div>
+            <div 
+              id="edit-note-content" 
+              class="w-full flex-1 min-h-[200px] max-h-[calc(100vh-300px)] bg-slate-700 text-white border border-t-0 border-slate-600 rounded-b px-3 py-2 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-sky-400" 
+              contenteditable="true"
+              style="min-height: 200px; max-height: calc(100vh - 300px);"
+            >${content}</div>
+          </div>
           <div class="mt-4 flex justify-center">
             <div class="inline-flex">
               <button
