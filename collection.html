@@ -2657,58 +2657,77 @@
           <!-- Step 1: Picker UI -->
           <div id="source-modal-step-picker">
             <div class="space-y-6">
+              <!-- Upload Card -->
               <div
                 id="upload-source-card"
-                class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 transition-colors"
+                class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 <i
-                  class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"
+                  class="fas fa-cloud-upload-alt text-4xl text-gray-400 dark:text-gray-300 mb-3"
                 ></i>
-                <h4 class="text-lg font-medium text-gray-900">
+                <h4 class="text-lg font-medium text-gray-900 dark:text-white">
                   Upload sources
                 </h4>
-                <p class="text-gray-500 mb-3">
+                <p class="text-gray-600 dark:text-gray-300 mb-3">
                   Drag and drop or choose file to upload
                 </p>
-                <p class="text-sm text-gray-500">
+                <p class="text-sm text-gray-500 dark:text-gray-400">
                   Supported file types: PDF, txt, Markdown, Audio (e.g. mp3)
                 </p>
                 <input type="file" class="hidden" id="file-upload" multiple />
                 <button
                   type="button"
                   id="file-upload-btn"
-                  class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium"
+                  class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium dark:bg-blue-500 dark:hover:bg-blue-600"
                 >
                   Select Files
                 </button>
               </div>
 
+              <!-- Website/YouTube Options -->
               <div class="grid grid-cols-2 gap-3">
                 <div
                   id="website-source-card"
-                  class="border border-gray-200 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 transition-colors"
+                  class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
-                  <i class="fas fa-link text-2xl text-blue-400 mb-2"></i>
-                  <p class="text-sm font-medium text-gray-900">Website</p>
+                  <i
+                    class="fas fa-link text-2xl text-blue-500 dark:text-blue-400 mb-2"
+                  ></i>
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">
+                    Website
+                  </p>
                 </div>
                 <div
                   id="youtube-source-card"
-                  class="border border-gray-200 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 transition-colors"
+                  class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
-                  <i class="fab fa-youtube text-2xl text-red-500 mb-2"></i>
-                  <p class="text-sm font-medium text-gray-900">YouTube</p>
+                  <i
+                    class="fab fa-youtube text-2xl text-red-500 dark:text-red-400 mb-2"
+                  ></i>
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">
+                    YouTube
+                  </p>
                 </div>
               </div>
 
+              <!-- Paste Text Option (hidden to match screenshot) -->
               <div
                 id="paste-source-card"
-                class="border border-gray-200 rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                class="hidden border border-gray-200 dark:border-gray-700 rounded-lg p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 <div class="flex items-center">
-                  <i class="fas fa-paste text-2xl text-purple-500 mr-3"></i>
+                  <i
+                    class="fas fa-paste text-2xl text-purple-500 dark:text-purple-400 mr-3"
+                  ></i>
                   <div>
-                    <p class="text-sm font-medium text-gray-900">Paste text</p>
-                    <p class="text-xs text-gray-500">Copied text</p>
+                    <p
+                      class="text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Paste text
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                      Copied text
+                    </p>
                   </div>
                 </div>
               </div>
@@ -2878,36 +2897,40 @@
             <div
               class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
             >
-              <i class="fas fa-search text-gray-500"></i>
+              <i class="fas fa-search text-gray-500 dark:text-gray-400"></i>
             </div>
             <input
               type="text"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
+              class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
               placeholder="Search sources..."
             />
           </div>
 
           <!-- Source list -->
           <div
-            class="border border-gray-200 rounded-lg divide-y divide-gray-200 max-h-96 overflow-y-auto py-1 scrollbar-transparent"
+            class="border border-gray-200 dark:border-gray-700 rounded-lg divide-y divide-gray-200 dark:divide-gray-700 max-h-96 overflow-y-auto py-1 scrollbar-transparent"
           >
             <!-- Source item 1 -->
-            <div class="p-3 hover:bg-gray-50 transition-colors">
+            <div
+              class="p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            >
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                  <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                  <i
+                    class="fas fa-file-pdf text-red-500 dark:text-red-400 text-xl"
+                  ></i>
                   <div>
-                    <h4 class="font-medium text-gray-900">
+                    <h4 class="font-medium text-gray-900 dark:text-white">
                       Assessing Reliability and Credibility in Information
                       Sci...
                     </h4>
-                    <p class="text-sm text-gray-500">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
                       PDF • 2.4 MB • Last opened 3 days ago
                     </p>
                   </div>
                 </div>
                 <button
-                  class="discover-add-remove-btn add-btn text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  class="discover-add-remove-btn add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
                 >
                   Add
                 </button>
@@ -2915,19 +2938,25 @@
             </div>
 
             <!-- Source item 2 -->
-            <div class="p-3 hover:bg-gray-50 transition-colors">
+            <div
+              class="p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            >
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                  <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                  <i
+                    class="fas fa-file-pdf text-red-500 dark:text-red-400 text-xl"
+                  ></i>
                   <div>
-                    <h4 class="font-medium text-gray-900">EDWIN COC.pdf</h4>
-                    <p class="text-sm text-gray-500">
+                    <h4 class="font-medium text-gray-900 dark:text-white">
+                      EDWIN COC.pdf
+                    </h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
                       PDF • 1.8 MB • Certificate of Completion
                     </p>
                   </div>
                 </div>
                 <button
-                  class="discover-add-remove-btn add-btn text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  class="discover-add-remove-btn add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
                 >
                   Add
                 </button>
