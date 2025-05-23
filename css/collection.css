@@ -814,18 +814,26 @@ header {
     display: flex !important;
   }
 
+  #columns-container {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
   #left-column {
     width: 25%;
     min-width: 250px;
+    max-width: 25%;
+  }
+
+  #middle-column {
+    flex: 2;
   }
 
   #right-column {
     width: 25%;
     min-width: 250px;
-  }
-
-  #middle-column {
-    flex: 2;
+    max-width: 25%;
   }
 
   .source-item:hover .source-menu-toggle,
@@ -838,11 +846,11 @@ header {
 @media (min-width: 1440px) {
   #left-column,
   #right-column {
-    width: 300px;
+    /* width: 300px; */
   }
 
   #middle-column {
-    flex: 3;
+    /* flex: 3; */
   }
 }
 
