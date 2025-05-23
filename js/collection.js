@@ -822,15 +822,15 @@ const SourceActions = {
     const originalContent = $(SELECTORS.leftColumn).children().detach();
 
     const viewForm = $(`
-      <div class="view-source-content flex flex-col h-full">
-        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700">
+      <div class="flex flex-col h-full expanded-content">
+        <div class="flex items-center justify-between px-5 py-3 border-b border-slate-700">
           <h3 class="text-lg font-semibold">View Source</h3>
-          <button id="back-to-sources" class="text-sky-400 hover:text-sky-300">
-            <i class="fas fa-arrow-left mr-2"></i>Back
+          <button id="back-to-sources" class="text-sky-400 text-lg hover:text-sky-400">
+            <i class="fas fa-arrow-left"></i>
           </button>
         </div>
-        <div class="flex-1 flex flex-col px-4 py-3 overflow-hidden">
-          <h3 class="font-medium text-sky-400 mb-4">${title}</h3>
+        <div class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent">
+          <h3 class="font-medium text-sky-400 text-center py-3">${title}</h3>
           
           <div class="source-content-section">
             <h4 class="text-sm font-semibold text-slate-300 mb-2">Summary</h4>
@@ -850,7 +850,7 @@ const SourceActions = {
           
           <div class="source-content-section flex-1 overflow-hidden">
             <h4 class="text-sm font-semibold text-slate-300 mb-2">Content</h4>
-            <div class="source-content-area flex-1 overflow-y-auto text-slate-300 space-y-4 pr-2" style="max-height: calc(100vh - 400px);">
+            <div class="flex-1 overflow-y-auto text-slate-400 space-y-4">
               <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
               <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
               <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
