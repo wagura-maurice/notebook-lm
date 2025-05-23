@@ -412,12 +412,36 @@ const DropdownMenus = {
   positionDropdown: function ($trigger, $dropdown) {
     const triggerOffset = $trigger.offset();
     const triggerHeight = $trigger.outerHeight();
+    const dropdownHeight = $dropdown.outerHeight();
+    const windowHeight = $(window).height();
+    const spaceBelow = windowHeight - (triggerOffset.top + triggerHeight);
+    const spaceAbove = triggerOffset.top;
+    
+    // Default position below the trigger
+    let top = triggerOffset.top + triggerHeight;
+    let transformOrigin = 'top left';
+    
+    // If not enough space below but enough space above, position above the trigger
+    if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
+      top = triggerOffset.top - dropdownHeight - 8; // 8px gap
+      transformOrigin = 'bottom left';
+    }
+    // If not enough space in either direction, position where there's more space
+    else if (spaceBelow < dropdownHeight && spaceAbove < dropdownHeight) {
+      if (spaceBelow > spaceAbove) {
+        top = triggerOffset.top + triggerHeight;
+      } else {
+        top = triggerOffset.top - dropdownHeight - 8; // 8px gap
+        transformOrigin = 'bottom left';
+      }
+    }
 
     $dropdown.css({
-      top: triggerOffset.top + triggerHeight,
+      top: top,
       left: triggerOffset.left,
-      position: "fixed",
-      "min-width": $trigger.outerWidth() + 140,
+      position: 'fixed',
+      'min-width': $trigger.outerWidth() + 140,
+      'transform-origin': transformOrigin
     });
   },
 };
