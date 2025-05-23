@@ -457,15 +457,17 @@ const SourceActions = {
 
   bindEvents: function () {
     // Modal triggers
-    $("#shareCollectionBtn, #share-collection-btn").on(
-      "click",
-      this.openShareCollectionModal.bind(this)
-    );
+    $("#shareCollectionBtn, #share-collection-btn").on("click", () => {
+      $("#share-collection-modal").removeClass("hidden");
+      this.showStep("picker");
+      this.clearInputs();
+    });
 
-    $("#add-source-btn, #addSourceBtn, #addSourceIcon").on(
-      "click",
-      this.openAddSourceModal.bind(this)
-    );
+    $("#add-source-btn, #addSourceBtn, #addSourceIcon").on("click", () => {
+      $("#add-source-modal").removeClass("hidden");
+      this.showStep("picker");
+      this.clearInputs();
+    });
 
     $("#discoverSourceBtn, #discoverSourceIcon").on(
       "click",
@@ -473,31 +475,74 @@ const SourceActions = {
     );
 
     // Modal navigation
-    $("#source-modal-back").on("click", this.showPickerStep.bind(this));
+    $("#source-modal-back").on("click", () => {
+      this.showStep("picker");
+      this.clearInputs();
+    });
     $("#website-source-card").on("click", () => this.showStep("website"));
     $("#youtube-source-card").on("click", () => this.showStep("youtube"));
     $("#paste-source-card").on("click", () => this.showStep("paste"));
 
     // Input validation
-    $("#website-url-input, #youtube-url-input, #paste-text-input").on(
-      "input",
-      this.validateInputs.bind(this)
-    );
+    $("#website-url-input").on("input", function () {
+      $("#insert-website-btn").prop("disabled", !$(this).val().trim());
+    });
+    $("#youtube-url-input").on("input", function () {
+      $("#insert-youtube-btn").prop("disabled", !$(this).val().trim());
+    });
+    $("#paste-text-input").on("input", function () {
+      $("#insert-paste-btn").prop("disabled", !$(this).val().trim());
+    });
 
     // Insert actions
-    $("#insert-website-btn").on("click", this.insertWebsite.bind(this));
-    $("#insert-youtube-btn").on("click", this.insertYoutube.bind(this));
-    $("#insert-paste-btn").on("click", this.insertPaste.bind(this));
+    $("#insert-website-btn").on("click", () => {
+      const url = $("#website-url-input").val().trim();
+      if (url) {
+        this.addSource(url, "website", url);
+        $("#add-source-modal").addClass("hidden");
+        this.showStep("picker");
+        this.clearInputs();
+      }
+    });
+    $("#insert-youtube-btn").on("click", () => {
+      const url = $("#youtube-url-input").val().trim();
+      if (url) {
+        this.addSource(url, "youtube", url);
+        $("#add-source-modal").addClass("hidden");
+        this.showStep("picker");
+        this.clearInputs();
+      }
+    });
+    $("#insert-paste-btn").on("click", () => {
+      const text = $("#paste-text-input").val().trim();
+      if (text) {
+        this.addSource(text, "text", text);
+        $("#add-source-modal").addClass("hidden");
+        this.showStep("picker");
+        this.clearInputs();
+      }
+    });
 
     // File upload
     $("#file-upload-btn").on("click", () => $("#file-upload").click());
-    $("#file-upload").on("change", this.handleFileUpload.bind(this));
+    $("#file-upload").on("change", (e) => {
+      const files = e.target.files;
+      if (files.length > 0) {
+        for (let file of files) {
+          this.addSource(file.name, "file", file);
+        }
+        $("#add-source-modal").addClass("hidden");
+        this.showStep("picker");
+        this.clearInputs();
+      }
+    });
 
     // Modal close
-    $("#source-modal-footer .modal-close").on(
-      "click",
-      this.closeAddSourceModal.bind(this)
-    );
+    $("#source-modal-footer .modal-close").on("click", () => {
+      $("#add-source-modal").addClass("hidden");
+      this.showStep("picker");
+      this.clearInputs();
+    });
 
     // Source item actions
     $(document)
@@ -528,10 +573,19 @@ const SourceActions = {
     );
 
     // Add source modal submit
-    $('#add-source-modal button:contains("Add Source")').on(
-      "click",
-      this.addSourceFromModal.bind(this)
-    );
+    $('#add-source-modal button:contains("Add Source")').on("click", () => {
+      const sourceInput = $("#source-input");
+      if (!sourceInput.length) {
+        console.error("Element #source-input not found in DOM");
+        return;
+      }
+      const sourceText = sourceInput.val().trim();
+      if (sourceText !== "") {
+        this.addSource(sourceText, "text", sourceText);
+        sourceInput.val("");
+        $("#add-source-modal").addClass("hidden");
+      }
+    });
   },
 
   openShareCollectionModal: function () {
@@ -557,32 +611,26 @@ const SourceActions = {
   },
 
   showStep: function (step) {
-    const steps = {
-      picker: {
-        selector: "#source-modal-step-picker",
-        title: "Add Source",
-      },
-      website: {
-        selector: "#source-modal-step-website",
-        title: "Paste URL",
-        showBack: true,
-      },
-      youtube: {
-        selector: "#source-modal-step-youtube",
-        title: "YouTube URL",
-        showBack: true,
-      },
-      paste: {
-        selector: "#source-modal-step-paste",
-        title: "Paste copied text",
-        showBack: true,
-      },
-    };
-
-    $(".source-modal-step").addClass("hidden");
-    $(steps[step].selector).removeClass("hidden");
-    $("#source-modal-title").text(steps[step].title);
-    $("#source-modal-back").toggleClass("hidden", !steps[step].showBack);
+    $(
+      "#source-modal-step-picker, #source-modal-step-website, #source-modal-step-youtube, #source-modal-step-paste"
+    ).addClass("hidden");
+    $("#source-modal-back").addClass("hidden");
+    if (step === "picker") {
+      $("#source-modal-title").text("Add Source");
+      $("#source-modal-step-picker").removeClass("hidden");
+    } else if (step === "website") {
+      $("#source-modal-title").text("Paste URL");
+      $("#source-modal-step-website").removeClass("hidden");
+      $("#source-modal-back").removeClass("hidden");
+    } else if (step === "youtube") {
+      $("#source-modal-title").text("YouTube URL");
+      $("#source-modal-step-youtube").removeClass("hidden");
+      $("#source-modal-back").removeClass("hidden");
+    } else if (step === "paste") {
+      $("#source-modal-title").text("Paste copied text");
+      $("#source-modal-step-paste").removeClass("hidden");
+      $("#source-modal-back").removeClass("hidden");
+    }
   },
 
   showPickerStep: function () {
@@ -596,9 +644,10 @@ const SourceActions = {
   },
 
   clearInputs: function () {
-    $(
-      "#website-url-input, #youtube-url-input, #paste-text-input, #source-input"
-    ).val("");
+    $("#website-url-input").val("");
+    $("#youtube-url-input").val("");
+    $("#paste-text-input").val("");
+    $("#source-input").val("");
     $("#insert-website-btn, #insert-youtube-btn, #insert-paste-btn").prop(
       "disabled",
       true
@@ -686,14 +735,20 @@ const SourceActions = {
   setupDiscoverSources: function () {
     let selectedSources = new Set();
 
+    // Helper to get a unique ID for each source item (fallback to index if no data-id)
+    function getSourceId($item) {
+      return $item.data("id") !== undefined ? $item.data("id") : $item.index();
+    }
+
     $(document)
+      .off("click", "#discover-source-modal .discover-add-remove-btn")
       .on(
         "click",
         "#discover-source-modal .discover-add-remove-btn",
         function () {
           const $btn = $(this);
           const $item = $btn.closest(".p-3");
-          const sourceId = $item.index();
+          const sourceId = getSourceId($item);
 
           if ($item.hasClass("selected")) {
             $item.removeClass("selected bg-blue-50 dark:bg-blue-900");
@@ -717,7 +772,10 @@ const SourceActions = {
           this.updateAddSelectedCount();
         }.bind(this)
       )
-
+      .off(
+        "click",
+        '#discover-source-modal .discover-source-modal-close, #discover-source-modal button:contains("Cancel")'
+      )
       .on(
         "click",
         '#discover-source-modal .discover-source-modal-close, #discover-source-modal button:contains("Cancel")',
@@ -727,13 +785,18 @@ const SourceActions = {
           $("#discover-source-modal .p-3.selected").removeClass(
             "selected bg-blue-50 dark:bg-blue-900"
           );
-          $("#discover-source-modal .p-3 button").text("Add");
+          $("#discover-source-modal .p-3 button")
+            .removeClass("remove-btn bg-red-600 hover:bg-red-700 text-white")
+            .addClass(
+              "add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+            )
+            .text("Add");
           this.updateAddSelectedCount();
           $('#discover-source-modal input[type="text"]').val("");
           $("#discover-source-modal .p-3").show();
         }.bind(this)
       )
-
+      .off("click", '#discover-source-modal button:contains("Add Selected")')
       .on(
         "click",
         '#discover-source-modal button:contains("Add Selected")',
@@ -743,23 +806,19 @@ const SourceActions = {
             $("#discover-source-modal").addClass("hidden");
             selectedSources.clear();
             this.updateAddSelectedCount();
+            $("#discover-source-modal .p-3.selected").removeClass(
+              "selected bg-blue-50 dark:bg-blue-900"
+            );
+            $("#discover-source-modal .p-3 button")
+              .removeClass("remove-btn bg-red-600 hover:bg-red-700 text-white")
+              .addClass(
+                "add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              )
+              .text("Add");
           }
         }.bind(this)
       )
-
-      .on(
-        "click",
-        '#discover-source-modal button:contains("Search")',
-        function () {
-          const searchText = $("#discover-input").val().trim();
-          if (searchText !== "") {
-            console.log("Searching for sources: " + searchText);
-            $("#discover-input").val("");
-            $("#discover-source-modal").addClass("hidden");
-          }
-        }.bind(this)
-      )
-
+      .off("input", '#discover-source-modal input[type="text"]')
       .on("input", '#discover-source-modal input[type="text"]', function () {
         const query = $(this).val().toLowerCase();
         $("#discover-source-modal .p-3").each(function () {
