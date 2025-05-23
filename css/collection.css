@@ -180,8 +180,8 @@ header {
   background: rgba(30, 41, 59, 0.5);
   /* border: 1px solid rgba(148, 163, 184, 0.1); */
   /* border-radius: 0.5rem; */
-  padding: 1rem;
-  margin-bottom: 1rem;
+  /* padding: 1rem; */
+  /* margin-bottom: 1rem; */
 }
 
 .source-topics-list {
@@ -349,13 +349,15 @@ header {
   background-color: var(--slate-600);
 }
 
-/* Edit Note Content */
-.edit-note-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+.note-content-section {
+  background: rgba(30, 41, 59, 0.5);
+  /* border: 1px solid rgba(148, 163, 184, 0.1); */
+  /* border-radius: 0.5rem; */
+  /* padding: 1rem; */
+  /* margin-bottom: 1rem; */
 }
 
+/* Edit Note Content */
 #edit-note-content {
   min-height: 200px;
   max-height: calc(100vh - 300px);
