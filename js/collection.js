@@ -943,10 +943,7 @@ const NoteActions = {
       .on(
         "click",
         '#notes-menu-dropdown a:contains("Converge all")',
-        /* function () {
-          alert("Add logic to converge all to canvas");
-        } */
-        this.showConvergeAllNotesToCanvasModal.bind(this)
+        this.showOpenCanvasNotesToCanvasModal.bind(this)
       )
       .on(
         "click",
@@ -1127,13 +1124,13 @@ const NoteActions = {
     }
   },
 
-  showConvergeAllNotesToCanvasModal: function (e) {
+  showOpenCanvasNotesToCanvasModal: function (e) {
     // alert("Add logic to converge all notes to canvas");
     e.preventDefault();
     const $noteItems = $(e.currentTarget).closest(".note-list-container");
-    $("#converge-all-notes-modal").removeClass("hidden");
-    // $("#converge-all-notes-modal").data("note-list-container", $noteItems);
-    alert($noteItems.count);
+    $("#open-canvas-notes-modal").removeClass("hidden");
+    // $("#open-canvas-notes-modal").data("note-list-container", $noteItems);
+    // alert($noteItems.count);
   },
 
   showDeleteAllNotesModal: function (e) {
