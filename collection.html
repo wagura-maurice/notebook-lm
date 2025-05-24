@@ -3277,7 +3277,7 @@
       </div>
     </div>
 
-    <!-- Converge All Notes Modal -->
+    <!-- Delete All Notes Modal -->
     <div
       class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
       id="delete-all-notes-modal"
@@ -3336,59 +3336,126 @@
       </div>
     </div>
 
-    <!-- Converge All Notes Modal -->
+    <!-- Open Canvas Notes Modal -->
     <div
-      class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
-      id="converge-all-notes-modal"
+      class="modal fixed hidden inset-0 z-50 bg-black bg-opacity-70"
+      id="open-canvas-notes-modal"
     >
-      <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
+      <!-- Main container - fills nearly entire screen -->
+      <div
+        class="absolute inset-4 bg-gray-900 rounded-lg shadow-xl flex flex-col overflow-hidden"
+      >
         <!-- Modal Header -->
-        <div class="flex justify-between items-start p-4 border-b rounded-t">
-          <div>
+        <div
+          class="flex justify-between items-center p-4 border-b border-gray-700"
+        >
+          <div class="flex items-center">
             <button
-              id="converge-all-notes-modal-back"
+              id="open-canvas-notes-modal-back"
               class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
             >
               <i class="fas fa-arrow-left text-xl"></i>
             </button>
             <h3
-              id="converge-all-notes-modal-title"
-              class="py-4 text-xl font-bold text-white"
+              id="open-canvas-notes-modal-title"
+              class="text-xl font-bold text-white"
             >
-              Converge All Notes
+              Open Canvas Notes
             </h3>
-            <p
-              id="converge-all-notes-modal-description"
-              class="text-gray-300 mt-1"
-            >
-              Are you sure you want to converge all notes? This action cannot be
-              undone.
-            </p>
           </div>
           <button
             type="button"
-            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+            class="text-gray-400 hover:text-white focus:outline-none"
           >
-            <i class="fa-solid fa-xmark p-1"></i>
+            <i class="fa-solid fa-xmark text-xl"></i>
             <span class="sr-only">Close modal</span>
           </button>
         </div>
 
+        <!-- Main Content Area -->
+        <div class="flex flex-1 overflow-hidden">
+          <!-- Left Sidebar (25%) - Chat -->
+          <div class="w-1/4 flex flex-col border-r border-gray-700 bg-gray-800">
+            <!-- Chat Messages -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-4">
+              <div class="bg-gray-700 p-3 rounded-lg text-white">
+                <p>How can I help with your notes today?</p>
+              </div>
+              <!-- More chat messages would go here -->
+            </div>
+
+            <!-- Chat Input -->
+            <div class="p-4 border-t border-gray-700">
+              <div class="relative">
+                <input
+                  type="text"
+                  placeholder="Ask AI to edit, summarize, or generate..."
+                  class="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  class="absolute right-3 top-3 text-gray-400 hover:text-white"
+                >
+                  <i class="fa-solid fa-paper-plane"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Content Area (75%) - Rich Text Editor -->
+          <div class="w-3/4 flex flex-col bg-gray-900">
+            <!-- Toolbar -->
+            <div
+              class="flex items-center p-2 border-b border-gray-700 space-x-2 bg-gray-800"
+            >
+              <button
+                class="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded"
+              >
+                <i class="fas fa-bold"></i>
+              </button>
+              <button
+                class="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded"
+              >
+                <i class="fas fa-italic"></i>
+              </button>
+              <button
+                class="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded"
+              >
+                <i class="fas fa-list-ul"></i>
+              </button>
+              <!-- More formatting buttons -->
+            </div>
+
+            <!-- Rich Text Content (self-scrolling) -->
+            <div
+              id="rich-text-content"
+              contenteditable="true"
+              class="flex-1 p-6 overflow-y-auto text-white focus:outline-none"
+              style="min-height: 0"
+            >
+              <p>Start typing here or highlight text to interact with AI...</p>
+              <p><br /></p>
+              <p>Try selecting some text to see AI options appear.</p>
+            </div>
+          </div>
+        </div>
+
         <!-- Modal Footer -->
         <div
-          class="flex justify-end gap-0 p-4"
-          id="converge-all-notes-modal-footer"
+          class="flex justify-between items-center p-4 border-t border-gray-700 bg-gray-800"
         >
-          <div class="flex justify-end gap-0">
+          <div class="text-gray-400 text-sm">
+            Word Count: <span id="word-count">0</span>
+          </div>
+          <div class="flex space-x-2">
             <button
-              class="px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-600"
+              class="px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 border border-gray-600"
             >
-              Cancel
+              Save Draft
             </button>
             <button
-              class="px-4 py-2 rounded-r-full bg-red-600 text-white border border-gray-600"
+              class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
             >
-              Converge
+              Publish
             </button>
           </div>
         </div>
@@ -3398,5 +3465,32 @@
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="js/collection.js"></script>
+
+    <script>
+      // Basic functionality for the rich text editor
+      document.addEventListener("DOMContentLoaded", function () {
+        const editor = document.getElementById("rich-text-content");
+
+        // Update word count
+        function updateWordCount() {
+          const text = editor.innerText;
+          const wordCount =
+            text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+          document.getElementById("word-count").textContent = wordCount;
+        }
+
+        editor.addEventListener("input", updateWordCount);
+
+        // Handle text selection for AI interactions
+        editor.addEventListener("mouseup", function () {
+          const selection = window.getSelection();
+          if (selection.toString().trim() !== "") {
+            // Show AI options for selected text
+            console.log("Text selected:", selection.toString());
+            // In a real implementation, you'd show a floating toolbar here
+          }
+        });
+      });
+    </script>
   </body>
 </html>
