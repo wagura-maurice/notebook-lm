@@ -935,7 +935,22 @@ const NoteActions = {
     $(document)
       .on(
         "click",
-        '#notes-menu-dropdown a:contains("Delete")',
+        '#notes-menu-dropdown a:contains("Convert all")',
+        function () {
+          alert("Add logic to convert all to sources");
+        }
+      )
+      .on(
+        "click",
+        '#notes-menu-dropdown a:contains("Converge all")',
+        /* function () {
+          alert("Add logic to converge all to canvas");
+        } */
+        this.showConvergeAllNotesToCanvasModal.bind(this)
+      )
+      .on(
+        "click",
+        '#notes-menu-dropdown a:contains("Delete all")',
         this.showDeleteAllNotesModal.bind(this)
       )
       .on(
@@ -958,10 +973,12 @@ const NoteActions = {
       "click",
       this.saveNote.bind(this)
     );
+
     $('#delete-all-notes-modal button:contains("Delete")').on(
       "click",
       this.deleteAllNotes.bind(this)
     );
+
     $('#delete-note-modal button:contains("Delete")').on(
       "click",
       this.deleteNote.bind(this)
@@ -1108,6 +1125,14 @@ const NoteActions = {
       $("#note-content").html("");
       $("#add-note-modal").addClass("hidden");
     }
+  },
+
+  showConvergeAllNotesToCanvasModal: function (e) {
+    // alert("Add logic to converge all notes to canvas");
+    e.preventDefault();
+    // const $noteItems = $(e.currentTarget).closest(".note-list-container");
+    $("#converge-all-notes-modal").removeClass("hidden");
+    // $("#delete-all-notes-modal").data("note-list-container", $noteItems);
   },
 
   showDeleteAllNotesModal: function (e) {
