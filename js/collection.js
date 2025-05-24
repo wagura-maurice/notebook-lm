@@ -1130,9 +1130,10 @@ const NoteActions = {
   showConvergeAllNotesToCanvasModal: function (e) {
     // alert("Add logic to converge all notes to canvas");
     e.preventDefault();
-    // const $noteItems = $(e.currentTarget).closest(".note-list-container");
+    const $noteItems = $(e.currentTarget).closest(".note-list-container");
     $("#converge-all-notes-modal").removeClass("hidden");
-    // $("#delete-all-notes-modal").data("note-list-container", $noteItems);
+    // $("#converge-all-notes-modal").data("note-list-container", $noteItems);
+    alert($noteItems.count);
   },
 
   showDeleteAllNotesModal: function (e) {
