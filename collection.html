@@ -3344,9 +3344,7 @@
       <!-- Main container - fills nearly entire screen -->
       <div class="w-full h-full bg-gray-900 flex flex-col overflow-hidden">
         <!-- Modal Header -->
-        <div
-          class="flex justify-between items-center p-4 border-b border-gray-700"
-        >
+        <div class="flex justify-between items-center p-4">
           <div class="flex items-center">
             <button
               id="open-canvas-notes-modal-back"
@@ -3371,22 +3369,79 @@
         </div>
 
         <!-- Main Content Area -->
-        <div class="flex flex-1 overflow-hidden">
+        <div class="flex flex-1 overflow-hidden gap-x-2 p-4">
           <!-- Left Sidebar (25%) - Chat -->
-          <div class="w-1/4 flex flex-col border-r border-gray-700 bg-gray-800">
+          <div class="w-1/4 flex flex-col bg-gray-900 rounded-lg">
             <!-- Chat Messages -->
-            <div class="flex-1 overflow-y-auto p-4 space-y-4">
-              <div class="bg-gray-700 p-3 rounded-lg text-white">
-                <p>How can I help with your notes today?</p>
+            <div
+              class="flex-1 overflow-y-auto p-4 space-y-4 hide-scrollbar"
+              style="scrollbar-width: none; -ms-overflow-style: none"
+            >
+              <style>
+                .hide-scrollbar::-webkit-scrollbar {
+                  display: none;
+                }
+              </style>
+              <!-- Bot message -->
+              <div class="flex items-start">
+                <div class="bg-gray-700 p-3 rounded-lg text-white max-w-[80%]">
+                  <p>How can I help with your notes today?</p>
+                </div>
               </div>
-              <!-- More chat messages would go here -->
+              <!-- User message -->
+              <div class="flex items-start justify-end">
+                <div class="bg-blue-600 p-3 rounded-lg text-white max-w-[80%]">
+                  <p>Can you summarize my last meeting notes?</p>
+                </div>
+              </div>
+              <!-- Bot message -->
+              <div class="flex items-start">
+                <div class="bg-gray-700 p-3 rounded-lg text-white max-w-[80%]">
+                  <p>Of course! Here is a summary of your last meeting:</p>
+                  <ul class="list-disc pl-5 text-sm mt-1">
+                    <li>Reviewed project timeline and next steps</li>
+                    <li>Assigned action items to team members</li>
+                    <li>Discussed blockers and solutions</li>
+                  </ul>
+                </div>
+              </div>
+              <!-- User message -->
+              <div class="flex items-start justify-end">
+                <div class="bg-blue-600 p-3 rounded-lg text-white max-w-[80%]">
+                  <p>
+                    Thanks! Can you also draft an email update for the team?
+                  </p>
+                </div>
+              </div>
+              <!-- Bot message -->
+              <div class="flex items-start">
+                <div class="bg-gray-700 p-3 rounded-lg text-white max-w-[80%]">
+                  <p>Here's a draft email you can use:</p>
+                  <div class="bg-gray-800 rounded p-2 text-xs mt-1">
+                    <p>Hi team,</p>
+                    <p>
+                      Here’s a quick update from our last meeting. Please review
+                      your action items and let me know if you have any
+                      questions.
+                    </p>
+                    <p>Best,<br />[Your Name]</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Chat Input -->
-            <div class="p-4 border-t border-gray-700">
-              <div class="flex items-center bg-gray-800 rounded-full px-2 py-1 shadow-inner gap-2 w-full min-w-0">
+            <div class="p-4">
+              <div
+                class="flex items-center bg-gray-800 rounded-full px-2 py-1 shadow-inner gap-2 w-full min-w-0"
+              >
                 <!-- Attachment button + hidden file input -->
-                <button type="button" id="canvas-attach-btn" class="text-gray-400 hover:text-blue-500 p-2 rounded-full focus:outline-none flex-shrink-0" aria-label="Attach file">
+                <button
+                  type="button"
+                  id="canvas-attach-btn"
+                  class="text-gray-400 hover:text-blue-500 p-2 rounded-full focus:outline-none flex-shrink-0"
+                  aria-label="Attach file"
+                >
                   <i class="fa fa-paperclip"></i>
                 </button>
                 <input type="file" id="canvas-file-input" class="hidden" />
@@ -3394,59 +3449,190 @@
                 <input
                   type="text"
                   placeholder="Share your story idea and watch it unfold"
-                  class="flex-1 min-w-0 bg-transparent text-white px-2 py-2 focus:outline-none rounded-full border-0"
+                  class="flex-1 min-w-0 bg-transparent text-white px-2 py-2 focus:outline-none rounded-full"
                   autocomplete="off"
                   aria-label="Chat message"
                 />
                 <!-- Send button -->
-                <button type="button" class="text-gray-400 hover:text-blue-500 p-2 rounded-full focus:outline-none flex-shrink-0" aria-label="Send message">
+                <button
+                  type="button"
+                  class="text-gray-400 hover:text-blue-500 p-2 rounded-full focus:outline-none flex-shrink-0"
+                  aria-label="Send message"
+                >
                   <i class="fa fa-paper-plane"></i>
                 </button>
               </div>
-              <script>
-                // File input trigger for attachment button
-                document.addEventListener('DOMContentLoaded', function() {
-                  var attachBtn = document.getElementById('canvas-attach-btn');
-                  var fileInput = document.getElementById('canvas-file-input');
-                  if (attachBtn && fileInput) {
-                    attachBtn.addEventListener('click', function(e) {
-                      fileInput.click();
-                    });
-                  }
-                });
-              </script>
             </div>
           </div>
 
           <!-- Right Content Area (75%) - Rich Text Editor -->
-          <div class="w-3/4 flex flex-col bg-gray-900">
-            <!-- Toolbar -->
+          <div class="w-3/4 flex flex-col bg-gray-900 rounded-lg">
+            <!-- WYSIWYG Toolbar -->
             <div
-              class="flex items-center p-2 border-b border-gray-700 space-x-2 bg-gray-800"
+              id="wysiwyg-toolbar"
+              class="flex flex-wrap items-center gap-1 p-2 bg-gray-700 rounded-t-lg"
             >
               <button
-                class="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded"
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Bold"
+                onclick="execWysiwygCmd('bold')"
               >
                 <i class="fas fa-bold"></i>
               </button>
               <button
-                class="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded"
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Italic"
+                onclick="execWysiwygCmd('italic')"
               >
                 <i class="fas fa-italic"></i>
               </button>
               <button
-                class="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded"
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Underline"
+                onclick="execWysiwygCmd('underline')"
+              >
+                <i class="fas fa-underline"></i>
+              </button>
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Strikethrough"
+                onclick="execWysiwygCmd('strikeThrough')"
+              >
+                <i class="fas fa-strikethrough"></i>
+              </button>
+              <span class="mx-2 border-l border-gray-500 h-5"></span>
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Heading 1"
+                onclick="execWysiwygCmd('formatBlock', '<h1>')"
+              >
+                <i class="fas fa-heading"></i>1
+              </button>
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Heading 2"
+                onclick="execWysiwygCmd('formatBlock', '<h2>')"
+              >
+                <i class="fas fa-heading"></i>2
+              </button>
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Heading 3"
+                onclick="execWysiwygCmd('formatBlock', '<h3>')"
+              >
+                <i class="fas fa-heading"></i>3
+              </button>
+              <span class="mx-2 border-l border-gray-500 h-5"></span>
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Bulleted List"
+                onclick="execWysiwygCmd('insertUnorderedList')"
               >
                 <i class="fas fa-list-ul"></i>
               </button>
-              <!-- More formatting buttons -->
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Numbered List"
+                onclick="execWysiwygCmd('insertOrderedList')"
+              >
+                <i class="fas fa-list-ol"></i>
+              </button>
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Indent"
+                onclick="execWysiwygCmd('indent')"
+              >
+                <i class="fas fa-indent"></i>
+              </button>
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Outdent"
+                onclick="execWysiwygCmd('outdent')"
+              >
+                <i class="fas fa-outdent"></i>
+              </button>
+              <span class="mx-2 border-l border-gray-500 h-5"></span>
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Blockquote"
+                onclick="execWysiwygCmd('formatBlock', '<blockquote>')"
+              >
+                <i class="fas fa-quote-right"></i>
+              </button>
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Code Block"
+                onclick="execWysiwygCmd('formatBlock', '<pre>')"
+              >
+                <i class="fas fa-code"></i>
+              </button>
+              <span class="mx-2 border-l border-gray-500 h-5"></span>
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Insert Link"
+                onclick="insertWysiwygLink()"
+              >
+                <i class="fas fa-link"></i>
+              </button>
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Insert Image"
+                onclick="insertWysiwygImage()"
+              >
+                <i class="fas fa-image"></i>
+              </button>
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Insert Table"
+                onclick="insertWysiwygTable()"
+              >
+                <i class="fas fa-table"></i>
+              </button>
+              <span class="mx-2 border-l border-gray-500 h-5"></span>
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Text Color"
+                onclick="execWysiwygCmd('foreColor', prompt('Text color (name or hex):', '#ffffff'))"
+              >
+                <i class="fas fa-palette"></i>
+              </button>
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Background Color"
+                onclick="execWysiwygCmd('hiliteColor', prompt('Background color (name or hex):', '#22223b'))"
+              >
+                <i class="fas fa-fill-drip"></i>
+              </button>
+              <span class="mx-2 border-l border-gray-500 h-5"></span>
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Undo"
+                onclick="execWysiwygCmd('undo')"
+              >
+                <i class="fas fa-undo"></i>
+              </button>
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Redo"
+                onclick="execWysiwygCmd('redo')"
+              >
+                <i class="fas fa-redo"></i>
+              </button>
+              <button
+                class="p-2 text-gray-300 hover:text-white"
+                aria-label="Clear Formatting"
+                onclick="execWysiwygCmd('removeFormat')"
+              >
+                <i class="fas fa-eraser"></i>
+              </button>
             </div>
 
             <!-- Rich Text Content (self-scrolling) -->
             <div
               id="rich-text-content"
               contenteditable="true"
-              class="flex-1 p-6 overflow-y-auto text-white focus:outline-none"
+              class="flex-1 p-6 overflow-y-auto text-white focus:outline-none bg-gray-900 rounded-b-lg"
+              aria-label="Rich text editor"
             >
               <p>Start typing here or highlight text to interact with AI...</p>
               <p><br /></p>
@@ -3462,30 +3648,102 @@
     <script src="js/collection.js"></script>
 
     <script>
-      // Basic functionality for the rich text editor
+      // --- Open Canvas Modal WYSIWYG Logic ---
       document.addEventListener("DOMContentLoaded", function () {
+        // File input trigger for attachment button
+        const attachBtn = document.getElementById("canvas-attach-btn");
+        const fileInput = document.getElementById("canvas-file-input");
+        if (attachBtn && fileInput) {
+          attachBtn.addEventListener("click", function (e) {
+            fileInput.click();
+          });
+        }
+
+        // WYSIWYG editor logic
         const editor = document.getElementById("rich-text-content");
+        const toolbar = document.getElementById("wysiwyg-toolbar");
+        if (!editor || !toolbar) return;
 
         // Update word count
         function updateWordCount() {
           const text = editor.innerText;
           const wordCount =
             text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
-          document.getElementById("word-count").textContent = wordCount;
+          const wordCountEl = document.getElementById("word-count");
+          if (wordCountEl) wordCountEl.textContent = wordCount;
         }
-
         editor.addEventListener("input", updateWordCount);
 
-        // Handle text selection for AI interactions
+        // Handle text selection for AI interactions (stub)
         editor.addEventListener("mouseup", function () {
           const selection = window.getSelection();
-          if (selection.toString().trim() !== "") {
-            // Show AI options for selected text
-            console.log("Text selected:", selection.toString());
-            // In a real implementation, you'd show a floating toolbar here
+          if (selection && selection.toString().trim() !== "") {
+            // Show AI options for selected text (future)
           }
         });
+
+        // Toolbar button active state
+        function updateToolbarState() {
+          const commands = [
+            { cmd: "bold", icon: "fa-bold" },
+            { cmd: "italic", icon: "fa-italic" },
+            { cmd: "underline", icon: "fa-underline" },
+            { cmd: "strikeThrough", icon: "fa-strikethrough" },
+            { cmd: "insertUnorderedList", icon: "fa-list-ul" },
+            { cmd: "insertOrderedList", icon: "fa-list-ol" },
+          ];
+          commands.forEach(({ cmd, icon }) => {
+            const btn = toolbar.querySelector(`button[onclick*="${cmd}"]`);
+            if (btn) {
+              if (document.queryCommandState(cmd)) {
+                btn.classList.add("bg-gray-600");
+              } else {
+                btn.classList.remove("bg-gray-600");
+              }
+            }
+          });
+        }
+        editor.addEventListener("keyup", updateToolbarState);
+        editor.addEventListener("mouseup", updateToolbarState);
+        toolbar.addEventListener("click", function (e) {
+          setTimeout(updateToolbarState, 0);
+        });
+
+        // WYSIWYG commands
+        window.execWysiwygCmd = function (cmd, value = null) {
+          editor.focus();
+          document.execCommand(cmd, false, value);
+          updateToolbarState();
+        };
+        window.insertWysiwygLink = function () {
+          const url = prompt("Enter the URL:");
+          if (url) window.execWysiwygCmd("createLink", url);
+        };
+        window.insertWysiwygImage = function () {
+          const url = prompt("Enter image URL:");
+          if (url) window.execWysiwygCmd("insertImage", url);
+        };
+        window.insertWysiwygTable = function () {
+          alert("Table insertion is not yet implemented.");
+        };
+
+        // Clean up pasted content (remove inline styles, scripts, etc)
+        editor.addEventListener("paste", function (e) {
+          e.preventDefault();
+          let text = (e.clipboardData || window.clipboardData).getData(
+            "text/plain"
+          );
+          document.execCommand("insertText", false, text);
+        });
+
+        // Undo/redo and clear formatting are handled by execCommand
+        // Ensure caret/selection is preserved after formatting
+        // (execCommand handles this natively in most browsers)
+
+        // Initial toolbar state
+        updateToolbarState();
       });
+      // --- End Open Canvas Modal WYSIWYG Logic ---
     </script>
   </body>
 </html>
