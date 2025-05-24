@@ -935,14 +935,14 @@ const NoteActions = {
     $(document)
       .on(
         "click",
-        '#notes-menu-dropdown a:contains("Convert all")',
+        '#notes-menu-dropdown a:contains("Source all")',
         function () {
-          alert("Add logic to convert all to sources");
+          alert("Add logic to source all notes");
         }
       )
       .on(
         "click",
-        '#notes-menu-dropdown a:contains("Converge all")',
+        '#notes-menu-dropdown a:contains("Canvas all")',
         this.showOpenCanvasNotesToCanvasModal.bind(this)
       )
       .on(
