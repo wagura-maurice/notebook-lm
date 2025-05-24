@@ -1566,6 +1566,13 @@
                       href="#"
                       class="flex items-center px-3 py-2 text-sm text-white hover:bg-slate-700"
                     >
+                      <i class="fas fa-exchange-alt mr-2"></i> Converge all to
+                      canvas
+                    </a>
+                    <a
+                      href="#"
+                      class="flex items-center px-3 py-2 text-sm text-white hover:bg-slate-700"
+                    >
                       <i class="fas fa-trash-alt mr-2"></i> Delete all notes
                     </a>
                   </div>
@@ -3224,9 +3231,7 @@
     >
       <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
         <!-- Modal Header -->
-        <div
-          class="flex justify-between items-start p-4 border-b rounded-t dark:border-gray-600"
-        >
+        <div class="flex justify-between items-start p-4 border-b rounded-t">
           <div>
             <button
               id="delete-note-modal-back"
@@ -3247,7 +3252,7 @@
           </div>
           <button
             type="button"
-            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
           >
             <i class="fa-solid fa-xmark p-1"></i>
             <span class="sr-only">Close modal</span>
@@ -3272,16 +3277,14 @@
       </div>
     </div>
 
-    <!-- Delete All Notes Modal -->
+    <!-- Converge All Notes Modal -->
     <div
       class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
       id="delete-all-notes-modal"
     >
       <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
         <!-- Modal Header -->
-        <div
-          class="flex justify-between items-start p-4 border-b rounded-t dark:border-gray-600"
-        >
+        <div class="flex justify-between items-start p-4 border-b rounded-t">
           <div>
             <button
               id="delete-all-notes-modal-back"
@@ -3293,7 +3296,7 @@
               id="delete-all-notes-modal-title"
               class="py-4 text-xl font-bold text-white"
             >
-              Delete All Notes
+              Delete Note
             </h3>
             <p
               id="delete-all-notes-modal-description"
@@ -3305,7 +3308,7 @@
           </div>
           <button
             type="button"
-            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
           >
             <i class="fa-solid fa-xmark p-1"></i>
             <span class="sr-only">Close modal</span>
@@ -3327,6 +3330,65 @@
               class="px-4 py-2 rounded-r-full bg-red-600 text-white border border-gray-600"
             >
               Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Converge All Notes Modal -->
+    <div
+      class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
+      id="converge-all-notes-modal"
+    >
+      <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-start p-4 border-b rounded-t">
+          <div>
+            <button
+              id="converge-all-notes-modal-back"
+              class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
+            >
+              <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            <h3
+              id="converge-all-notes-modal-title"
+              class="py-4 text-xl font-bold text-white"
+            >
+              Converge All Notes
+            </h3>
+            <p
+              id="converge-all-notes-modal-description"
+              class="text-gray-300 mt-1"
+            >
+              Are you sure you want to converge all notes? This action cannot be
+              undone.
+            </p>
+          </div>
+          <button
+            type="button"
+            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+          >
+            <i class="fa-solid fa-xmark p-1"></i>
+            <span class="sr-only">Close modal</span>
+          </button>
+        </div>
+
+        <!-- Modal Footer -->
+        <div
+          class="flex justify-end gap-0 p-4"
+          id="converge-all-notes-modal-footer"
+        >
+          <div class="flex justify-end gap-0">
+            <button
+              class="px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-600"
+            >
+              Cancel
+            </button>
+            <button
+              class="px-4 py-2 rounded-r-full bg-red-600 text-white border border-gray-600"
+            >
+              Converge
             </button>
           </div>
         </div>
