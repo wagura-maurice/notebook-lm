@@ -3338,13 +3338,11 @@
 
     <!-- Open Canvas Notes Modal -->
     <div
-      class="modal fixed hidden inset-0 z-50 bg-black bg-opacity-70"
+      class="modal fixed hidden inset-0 z-50 bg-black bg-opacity-70 w-screen h-screen"
       id="open-canvas-notes-modal"
     >
       <!-- Main container - fills nearly entire screen -->
-      <div
-        class="absolute inset-4 bg-gray-900 rounded-lg shadow-xl flex flex-col overflow-hidden"
-      >
+      <div class="w-full h-full bg-gray-900 flex flex-col overflow-hidden">
         <!-- Modal Header -->
         <div
           class="flex justify-between items-center p-4 border-b border-gray-700"
@@ -3430,33 +3428,11 @@
               id="rich-text-content"
               contenteditable="true"
               class="flex-1 p-6 overflow-y-auto text-white focus:outline-none"
-              style="min-height: 0"
             >
               <p>Start typing here or highlight text to interact with AI...</p>
               <p><br /></p>
               <p>Try selecting some text to see AI options appear.</p>
             </div>
-          </div>
-        </div>
-
-        <!-- Modal Footer -->
-        <div
-          class="flex justify-between items-center p-4 border-t border-gray-700 bg-gray-800"
-        >
-          <div class="text-gray-400 text-sm">
-            Word Count: <span id="word-count">0</span>
-          </div>
-          <div class="flex space-x-2">
-            <button
-              class="px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 border border-gray-600"
-            >
-              Save Draft
-            </button>
-            <button
-              class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-            >
-              Publish
-            </button>
           </div>
         </div>
       </div>
