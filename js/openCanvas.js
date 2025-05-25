@@ -129,40 +129,52 @@ explainBtn.addEventListener("click", () => {
   if (!currentSelection) return;
 
   const mockExplanation = `
-            <p><strong>Explanation for:</strong> "${currentSelection.text}"</p>
-            <p>This text appears at line ${currentSelection.lineNumber} in your document. Here's what it means in context...</p>
-            <p><em>This is a simulated AI response. In a real implementation, this would connect to an actual AI API.</em></p>
-        `;
-  showAIResponse(mockExplanation);
+    <p><strong>Explanation for:</strong> "${currentSelection.text}"</p>
+    <p>This text appears at line ${currentSelection.lineNumber} in your document. Here's what it means in context...</p>
+    <p><em>This is a simulated AI response. In a real implementation, this would connect to an actual AI API.</em></p>
+  `;
+
+  // Insert the explanation at the end of the current selection in the Quill editor
+  const range = quill.getSelection();
+  if (range) {
+    quill.clipboard.dangerouslyPasteHTML(range.index + range.length, mockExplanation);
+  }
 });
 
 expandBtn.addEventListener("click", () => {
   if (!currentSelection) return;
 
   const mockExpansion = `
-            <p><strong>Expanded content for:</strong> "${currentSelection.text}"</p>
-            <p>Here's additional context and elaboration that could be inserted at position ${currentSelection.startIndex}...</p>
-            <p><em>In a real implementation, this expanded content would be inserted directly into the document at the selection point.</em></p>
-        `;
-  showAIResponse(mockExpansion);
+    <p><strong>Expanded content for:</strong> "${currentSelection.text}"</p>
+    <p>Here's additional context and elaboration that could be inserted at position ${currentSelection.startIndex}...</p>
+    <p><em>In a real implementation, this expanded content would be inserted directly into the document at the selection point.</em></p>
+  `;
+
+  // Insert the expansion at the end of the current selection in the Quill editor
+  const range = quill.getSelection();
+  if (range) {
+    quill.clipboard.dangerouslyPasteHTML(range.index + range.length, mockExpansion);
+  }
 });
 
 summarizeBtn.addEventListener("click", () => {
   if (!currentSelection) return;
 
   const mockSummary = `
-            <p><strong>Summary:</strong></p>
-            <p>Key points from the selected text: "${currentSelection.text.substring(
-              0,
-              50
-            )}..."</p>
-            <ul>
-                <li>Main concept identified</li>
-                <li>Context preserved</li>
-                <li>Position tracked (Line ${currentSelection.lineNumber})</li>
-            </ul>
-        `;
-  showAIResponse(mockSummary);
+    <p><strong>Summary:</strong></p>
+    <p>Key points from the selected text: "${currentSelection.text.substring(0, 50)}..."</p>
+    <ul>
+      <li>Main concept identified</li>
+      <li>Context preserved</li>
+      <li>Position tracked (Line ${currentSelection.lineNumber})</li>
+    </ul>
+  `;
+
+  // Insert the summary at the end of the current selection in the Quill editor
+  const range = quill.getSelection();
+  if (range) {
+    quill.clipboard.dangerouslyPasteHTML(range.index + range.length, mockSummary);
+  }
 });
 
 improveBtn.addEventListener("click", () => {
