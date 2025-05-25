@@ -4,54 +4,50 @@ Quill.register({
   'modules/table-better': QuillTableBetter
 }, true);
 
-// Initialize Quill editor
-const quill = new Quill("#editor", {
-  theme: "snow",
+const toolbarOptions = [
+  // Basic text styles
+  ['bold', 'italic', 'underline', 'strike'],
+  // Block elements
+  ['blockquote', 'code-block'],
+  // Headers
+  [{ header: 1 }, { header: 2 }],
+  [{ header: [1, 2, 3, 4, 5, 6, false] }],
+  // Lists
+  [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
+  // Scripts
+  [{ script: 'sub' }, { script: 'super' }],
+  // Indent and direction
+  [{ indent: '-1' }, { indent: '+1' }],
+  [{ direction: 'rtl' }],
+  // Font size and type
+  [{ size: ['small', false, 'large', 'huge'] }],
+  [{ font: [] }],
+  // Color and background
+  [{ color: [] }, { background: [] }],
+  // Alignment
+  [{ align: [] }],
+  // Media
+  ['link', 'image', 'video', 'formula'],
+  // Table-better
+  ['table-better'],
+  // Remove formatting
+  ['clean']
+];
+
+const quill = new Quill('#editor', {
+  theme: 'snow',
   modules: {
-    toolbar: [
-      // Basic text styles
-      ["bold", "italic", "underline", "strike"],
-      // Block elements
-      ["blockquote", "code-block"],
-      // Headers
-      [{ header: 1 }, { header: 2 }],
-      [{ header: [1, 2, 3, 4, 5, 6, false] }],
-      // Lists
-      [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
-      // Scripts
-      [{ script: "sub" }, { script: "super" }],
-      // Indent and direction
-      [{ indent: "-1" }, { indent: "+1" }],
-      [{ direction: "rtl" }],
-      // Font size and type
-      [{ size: ["small", false, "large", "huge"] }],
-      [{ font: [] }],
-      // Color and background
-      [{ color: [] }, { background: [] }],
-      // Alignment
-      [{ align: [] }],
-      // Media
-      ["link", "image", "video", "formula"],
-      // Table (quill-table-better)
-      ["table"],
-      // Remove formatting
-      ["clean"],
-    ],
+    table: false,
+    toolbar: toolbarOptions,
     'table-better': {
-      operationMenu: {
-        items: {
-          unmergeCells: {
-            text: 'Unmerge cells',
-          },
-        },
-      },
-      color: {
-        colors: [
-          '#fff', '#000', 'red', 'blue', 'green', 'yellow', 'orange', 'purple'
-        ]
-      }
+      language: 'en_US',
+      menus: ['column', 'row', 'merge', 'table', 'cell', 'wrap', 'copy', 'delete'],
+      toolbarTable: true
     },
-  },
+    keyboard: {
+      bindings: QuillTableBetter.keyboardBindings
+    }
+  }
 });
 
 // Note: For table support, install a Quill table module/plugin and uncomment the relevant lines above.
