@@ -1,53 +1,65 @@
 // js/openCanvas.js
 // Register quill-table-better module (must be loaded via <script> before this runs)
-Quill.register({
-  'modules/table-better': QuillTableBetter
-}, true);
+Quill.register(
+  {
+    "modules/table-better": QuillTableBetter,
+  },
+  true
+);
 
 const toolbarOptions = [
   // Basic text styles
-  ['bold', 'italic', 'underline', 'strike'],
+  ["bold", "italic", "underline", "strike"],
   // Block elements
-  ['blockquote', 'code-block'],
+  ["blockquote", "code-block"],
   // Headers
   [{ header: 1 }, { header: 2 }],
   [{ header: [1, 2, 3, 4, 5, 6, false] }],
   // Lists
-  [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
+  [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
   // Scripts
-  [{ script: 'sub' }, { script: 'super' }],
+  [{ script: "sub" }, { script: "super" }],
   // Indent and direction
-  [{ indent: '-1' }, { indent: '+1' }],
-  [{ direction: 'rtl' }],
+  [{ indent: "-1" }, { indent: "+1" }],
+  [{ direction: "rtl" }],
   // Font size and type
-  [{ size: ['small', false, 'large', 'huge'] }],
+  [{ size: ["small", false, "large", "huge"] }],
   [{ font: [] }],
   // Color and background
   [{ color: [] }, { background: [] }],
   // Alignment
   [{ align: [] }],
   // Media
-  ['link', 'image', 'video', 'formula'],
+  ["link", "image", "video", "formula"],
   // Table-better
-  ['table-better'],
+  ["table-better"],
   // Remove formatting
-  ['clean']
+  ["clean"],
 ];
 
-const quill = new Quill('#editor', {
-  theme: 'snow',
+const quill = new Quill("#editor", {
+  theme: "snow",
   modules: {
     table: false,
     toolbar: toolbarOptions,
-    'table-better': {
-      language: 'en_US',
-      menus: ['column', 'row', 'merge', 'table', 'cell', 'wrap', 'copy', 'delete'],
-      toolbarTable: true
+    "table-better": {
+      language: "en_US",
+      menus: [
+        "column",
+        "row",
+        "merge",
+        "table",
+        "cell",
+        "wrap",
+        "copy",
+        "delete",
+      ],
+      toolbarTable: true,
     },
     keyboard: {
-      bindings: QuillTableBetter.keyboardBindings
-    }
-  }
+      bindings: QuillTableBetter.keyboardBindings,
+    },
+  },
 });
 
 // Note: For table support, install a Quill table module/plugin and uncomment the relevant lines above.
