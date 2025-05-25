@@ -6,6 +6,9 @@
   border: 1px solid #374151 !important; /* Tailwind gray-700 */
   border-bottom: 1px solid #4b5563 !important; /* Tailwind gray-600 */
   border-radius: 0.5rem 0.5rem 0 0 !important; /* Rounded top corners */
+  position: sticky !important;
+  top: 0;
+  z-index: 20;
 }
 
 /* All toolbar buttons and icons */
@@ -190,10 +193,29 @@
 
 /* Ensure editor container fills the space properly */
 .ql-container {
-  flex: 1 !important;
+  flex: 1 1 auto !important;
   border: none !important;
   border-radius: 0 0 0.5rem 0.5rem !important;
+  overflow-y: auto !important;
+  min-height: 0 !important;
 }
+
+/* Make sure the editor wrapper is a flex column and fills height */
+.main-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Optional: Ensure #editor also fills space */
+#editor {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 
 /* === AI PANEL STYLING === */
 .ai-panel {
