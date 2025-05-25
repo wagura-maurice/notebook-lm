@@ -3528,8 +3528,8 @@
             </div>
           </div>
 
-          <!-- Right Content Area (75%) - Rich Text Editor -->
-          <div class="w-3/4 flex flex-col bg-gray-900 rounded-lg">
+          <!-- Middle Content Area (50%) - Rich Text Editor -->
+          <div class="w-2/4 flex flex-col bg-gray-900 rounded-lg">
             <!-- WYSIWYG Toolbar -->
             <div
               id="wysiwyg-toolbar"
@@ -3702,6 +3702,37 @@
               <p>Try selecting some text to see AI options appear.</p>
             </div>
           </div>
+
+          <!-- Right Sidebar (25%) - Ai Tools -->
+          <div class="w-1/4 flex flex-col bg-slate-800 text-white rounded-lg shadow-[0_4px_6px_-1px_rgba(147,51,234,0.3),0_2px_4px_-1px_rgba(147,51,234,0.1)] ai-panel">
+            <div class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent">
+              <div class="px-5 py-3">
+                <div class="selection-info bg-slate-700 rounded-lg p-4 mb-5 border-l-4 border-sky-500">
+                  <h3 class="mb-2 text-slate-200 text-sm font-semibold">Selected Content</h3>
+                  <div class="selected-text bg-slate-900 p-3 rounded border border-slate-600 my-2 italic min-h-[20px]" id="selectedText">
+                    Select text in the editor to see it here...
+                  </div>
+                  <div class="position-info text-xs text-slate-400 mt-2" id="positionInfo">
+                    Position: No selection
+                  </div>
+                </div>
+                <div class="ai-actions flex flex-col gap-2 mt-4">
+                  <button class="ai-btn primary py-2 px-4 rounded bg-sky-500 hover:bg-sky-600 transition-colors text-white text-sm font-medium" id="explainBtn" disabled>
+                    🧠 Explain This
+                  </button>
+                  <button class="ai-btn primary py-2 px-4 rounded bg-sky-500 hover:bg-sky-600 transition-colors text-white text-sm font-medium" id="expandBtn" disabled>
+                    📝 Expand Content
+                  </button>
+                  <button class="ai-btn secondary py-2 px-4 rounded bg-slate-600 hover:bg-slate-700 transition-colors text-white text-sm font-medium" id="summarizeBtn" disabled>
+                    📋 Summarize
+                  </button>
+                  <button class="ai-btn secondary py-2 px-4 rounded bg-slate-600 hover:bg-slate-700 transition-colors text-white text-sm font-medium" id="improveBtn" disabled>
+                    ✨ Improve Writing
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -3723,6 +3754,7 @@
         }
       });
     </script>
+
     <script>
       // WYSIWYG editor logic
       const editor = document.getElementById("rich-text-content");
