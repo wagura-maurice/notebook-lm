@@ -1,4 +1,9 @@
 // js/openCanvas.js
+// Register quill-table-better module (must be loaded via <script> before this runs)
+Quill.register({
+  'modules/table-better': QuillTableBetter
+}, true);
+
 // Initialize Quill editor
 const quill = new Quill("#editor", {
   theme: "snow",
@@ -27,13 +32,25 @@ const quill = new Quill("#editor", {
       [{ align: [] }],
       // Media
       ["link", "image", "video", "formula"],
-      // Table (requires quill-table module or similar plugin)
-      // ["table"], // Uncomment if table module/plugin is included
+      // Table (quill-table-better)
+      ["table"],
       // Remove formatting
       ["clean"],
     ],
-    // Add table or other modules here if installed
-    // table: true, // Uncomment if table module/plugin is included
+    'table-better': {
+      operationMenu: {
+        items: {
+          unmergeCells: {
+            text: 'Unmerge cells',
+          },
+        },
+      },
+      color: {
+        colors: [
+          '#fff', '#000', 'red', 'blue', 'green', 'yellow', 'orange', 'purple'
+        ]
+      }
+    },
   },
 });
 
