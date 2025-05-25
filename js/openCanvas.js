@@ -172,11 +172,9 @@ summarizeBtn.addEventListener("click", () => {
     </ul>
   `;
 
-  // Insert the summary at the end of the current selection in the Quill editor
-  const range = quill.getSelection();
-  if (range) {
-    quill.clipboard.dangerouslyPasteHTML(range.index + range.length, mockSummary);
-  }
+  // Insert the summary at the end of the document in the Quill editor
+  const lastIndex = quill.getLength();
+  quill.clipboard.dangerouslyPasteHTML(lastIndex, mockSummary);
 });
 
 improveBtn.addEventListener("click", () => {
