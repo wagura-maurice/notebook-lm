@@ -8,17 +8,16 @@ Quill.register(
 );
 
 // Import and extend Scroll for custom drag/drop handling
-let Scroll = Quill.import('blots/scroll');
+let Scroll = Quill.import("blots/scroll");
 class DraggableScroll extends Scroll {
-    constructor(registry, domNode, { emitter }) {
-        super(registry, domNode, { emitter });
-        this.domNode.addEventListener('drop', (e) => this.handleDrop(e), true);
-    }
-    handleDrop(e) {
-        if (e.dataTransfer.files.length == 0)
-            e.stopImmediatePropagation();
-    }
-    handleDragStart(e) { }
+  constructor(registry, domNode, { emitter }) {
+    super(registry, domNode, { emitter });
+    this.domNode.addEventListener("drop", (e) => this.handleDrop(e), true);
+  }
+  handleDrop(e) {
+    if (e.dataTransfer.files.length == 0) e.stopImmediatePropagation();
+  }
+  handleDragStart(e) {}
 }
 Quill.register(DraggableScroll);
 
