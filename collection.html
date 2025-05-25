@@ -3347,7 +3347,7 @@
       id="open-canvas-notes-modal"
     >
       <!-- Main container - fills nearly entire screen -->
-      <div class="w-full h-full bg-gray-900 flex flex-col overflow-hidden">
+      <div class="w-full h-full flex flex-col overflow-hidden">
         <!-- Modal Header -->
         <div class="flex justify-between items-center p-3">
           <div class="flex items-center">
@@ -3537,10 +3537,7 @@
 
           <!-- Middle Content Area (50%) - Quill Rich Text Editor -->
           <div class="w-2/4 flex flex-col bg-gray-900 rounded-lg main-editor">
-            <div
-              id="editor"
-              class="flex-1 min-h-[400px] bg-slate-800 text-white rounded-lg"
-            >
+            <div id="editor" class="flex-1 bg-slate-800 text-white rounded-lg">
               <h1>AI-Enhanced Document Editor</h1>
               <p>
                 This is a sample document with rich text editing capabilities.
@@ -3577,9 +3574,9 @@
           <!-- Right Sidebar (25%) - Ai Tools -->
           <div class="w-1/4 flex flex-col bg-gray-900 rounded-lg ai-panel">
             <div
-              class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent py-2"
+              class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent"
             >
-              <div class="px-5 py-3">
+              <div class="p-4">
                 <div
                   class="selection-info bg-slate-700 rounded-lg p-4 mb-5 border-l-4 border-sky-500"
                 >
@@ -3587,7 +3584,7 @@
                     Selected Content
                   </h3>
                   <div
-                    class="selected-text bg-slate-900 p-3 rounded border border-slate-600 my-2 italic min-h-[20px]"
+                    class="selected-text bg-slate-900 p-3 rounded border border-slate-600 my-2 italic"
                     id="selectedText"
                   >
                     Select text in the editor to see it here...
