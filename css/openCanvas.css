@@ -2,7 +2,7 @@
 
 /* === QUILL TOOLBAR DARK THEME === */
 .ql-toolbar.ql-snow {
-  background-color: #1f2937 !important; /* Tailwind gray-800 */
+  background-color: #374151 !important;
   border: 1px solid #374151 !important; /* Tailwind gray-700 */
   border-bottom: 1px solid #4b5563 !important; /* Tailwind gray-600 */
   border-radius: 0.5rem 0.5rem 0 0 !important; /* Rounded top corners */
@@ -56,6 +56,36 @@
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5),
     0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
   z-index: 1000 !important;
+}
+
+/* Ensure all icons and text are visible */
+.ql-toolbar.ql-snow .ql-picker-item,
+.ql-toolbar.ql-snow .ql-picker-label,
+.ql-toolbar.ql-snow .ql-picker-options .ql-picker-item,
+.ql-toolbar.ql-snow .ql-stroke,
+.ql-toolbar.ql-snow .ql-fill,
+.ql-toolbar.ql-snow .ql-picker,
+.ql-toolbar.ql-snow .ql-picker-label,
+.ql-toolbar.ql-snow .ql-picker-item {
+  color: #e5e7eb !important;
+  fill: #e5e7eb !important;
+  stroke: #e5e7eb !important;
+}
+
+.ql-toolbar.ql-snow button:disabled,
+.ql-toolbar.ql-snow button[disabled],
+.ql-toolbar.ql-snow .ql-picker-label.ql-disabled {
+  color: #9ca3af !important;
+  fill: #9ca3af !important;
+  stroke: #9ca3af !important;
+  opacity: 0.7 !important;
+}
+
+/* Ensure SVG icons are visible */
+.ql-toolbar.ql-snow svg {
+  color: #e5e7eb !important;
+  fill: #e5e7eb !important;
+  stroke: #e5e7eb !important;
 }
 
 /* Dropdown items */
@@ -169,7 +199,6 @@
 .ai-panel {
   display: flex;
   flex-direction: column;
-  padding: 20px;
   background: #1f2937; /* Tailwind gray-800 */
   border-radius: 0.5rem;
   border: 1px solid #374151; /* Tailwind gray-700 */
