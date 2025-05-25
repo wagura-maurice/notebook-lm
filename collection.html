@@ -3721,12 +3721,13 @@
             fileInput.click();
           });
         }
-
-        // WYSIWYG editor logic
-        const editor = document.getElementById("rich-text-content");
-        const toolbar = document.getElementById("wysiwyg-toolbar");
-        if (!editor || !toolbar) return;
-
+      });
+    </script>
+    <script>
+      // WYSIWYG editor logic
+      const editor = document.getElementById("rich-text-content");
+      const toolbar = document.getElementById("wysiwyg-toolbar");
+      if (editor && toolbar) {
         // Update word count
         function updateWordCount() {
           const text = editor.innerText;
@@ -3736,14 +3737,6 @@
           if (wordCountEl) wordCountEl.textContent = wordCount;
         }
         editor.addEventListener("input", updateWordCount);
-
-        // Handle text selection for AI interactions (stub)
-        editor.addEventListener("mouseup", function () {
-          const selection = window.getSelection();
-          if (selection && selection.toString().trim() !== "") {
-            // Show AI options for selected text (future)
-          }
-        });
 
         // Toolbar button active state
         function updateToolbarState() {
@@ -3805,7 +3798,7 @@
 
         // Initial toolbar state
         updateToolbarState();
-      });
+      }
       // --- End Open Canvas Modal WYSIWYG Logic ---
     </script>
   </body>
