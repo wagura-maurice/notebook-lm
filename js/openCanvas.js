@@ -4,22 +4,41 @@ const quill = new Quill("#editor", {
   theme: "snow",
   modules: {
     toolbar: [
+      // Basic text styles
       ["bold", "italic", "underline", "strike"],
+      // Block elements
       ["blockquote", "code-block"],
+      // Headers
       [{ header: 1 }, { header: 2 }],
-      [{ list: "ordered" }, { list: "bullet" }],
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      // Lists
+      [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+      // Scripts
       [{ script: "sub" }, { script: "super" }],
+      // Indent and direction
       [{ indent: "-1" }, { indent: "+1" }],
       [{ direction: "rtl" }],
+      // Font size and type
       [{ size: ["small", false, "large", "huge"] }],
-      [{ header: [1, 2, 3, 4, 5, 6, false] }],
-      [{ color: [] }, { background: [] }],
       [{ font: [] }],
+      // Color and background
+      [{ color: [] }, { background: [] }],
+      // Alignment
       [{ align: [] }],
+      // Media
+      ["link", "image", "video", "formula"],
+      // Table (requires quill-table module or similar plugin)
+      // ["table"], // Uncomment if table module/plugin is included
+      // Remove formatting
       ["clean"],
     ],
+    // Add table or other modules here if installed
+    // table: true, // Uncomment if table module/plugin is included
   },
 });
+
+// Note: For table support, install a Quill table module/plugin and uncomment the relevant lines above.
+// For image upload, you may want to add a custom handler to upload and insert images from local files or URLs.
 
 // DOM elements
 const selectedTextEl = document.getElementById("selectedText");
