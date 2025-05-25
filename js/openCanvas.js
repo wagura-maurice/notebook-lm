@@ -139,7 +139,10 @@ explainBtn.addEventListener("click", () => {
   // Insert the explanation at the end of the current selection in the Quill editor
   const range = quill.getSelection();
   if (range) {
-    quill.clipboard.dangerouslyPasteHTML(range.index + range.length, mockExplanation);
+    quill.clipboard.dangerouslyPasteHTML(
+      range.index + range.length,
+      mockExplanation
+    );
   }
 });
 
@@ -155,7 +158,10 @@ expandBtn.addEventListener("click", () => {
   // Insert the expansion at the end of the current selection in the Quill editor
   const range = quill.getSelection();
   if (range) {
-    quill.clipboard.dangerouslyPasteHTML(range.index + range.length, mockExpansion);
+    quill.clipboard.dangerouslyPasteHTML(
+      range.index + range.length,
+      mockExpansion
+    );
   }
 });
 
@@ -164,7 +170,10 @@ summarizeBtn.addEventListener("click", () => {
 
   const mockSummary = `
     <p><strong>Summary:</strong></p>
-    <p>Key points from the selected text: "${currentSelection.text.substring(0, 50)}..."</p>
+    <p>Key points from the selected text: "${currentSelection.text.substring(
+      0,
+      50
+    )}..."</p>
     <ul>
       <li>Main concept identified</li>
       <li>Context preserved</li>
@@ -183,12 +192,15 @@ improveBtn.addEventListener("click", () => {
   const mockImprovement = `
             <p><strong>Improved version:</strong></p>
             <p>Here's a refined version of your selected text with better clarity and flow...</p>
-            <div style="background: #f8f9fa; padding: 10px; border-radius: 4px; margin: 10px 0;">
+            <div style="background:rgb(29, 130, 231); padding: 10px; border-radius: 4px; margin: 10px 0;">
                 Enhanced version of: "${currentSelection.text}"
             </div>
             <p><em>Click to replace original text at position ${currentSelection.startIndex}-${currentSelection.endIndex}</em></p>
         `;
-  showAIResponse(mockImprovement);
+
+  // Insert the summary at the end of the document in the Quill editor
+  const lastIndex = quill.getLength();
+  quill.clipboard.dangerouslyPasteHTML(lastIndex, mockImprovement);
 });
 
 // Add custom formatting for position indicators
