@@ -116,11 +116,13 @@ function enableAIButtons(enabled) {
 }
 
 function showAIResponse(content) {
+  if (!aiResponse) return;
   responseContent.innerHTML = content;
   aiResponse.classList.add("show");
 }
 
 function hideAIResponse() {
+  if (!aiResponse) return;
   aiResponse.classList.remove("show");
 }
 
