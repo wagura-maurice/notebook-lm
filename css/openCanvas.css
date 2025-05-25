@@ -9,9 +9,9 @@
 }
 
 .main-editor {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  /* background: white; */
+  /* border-radius: 8px; */
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
   overflow: hidden;
 }
 
@@ -22,16 +22,16 @@
 }
 
 .ai-panel {
-  background: white;
+  /* background: white; */
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+  /* padding: 20px; */
   display: flex;
   flex-direction: column;
 }
 
 .selection-info {
-  background: #f8f9fa;
+  /* background: #f8f9fa; */
   border-radius: 6px;
   padding: 15px;
   margin-bottom: 20px;
@@ -40,16 +40,16 @@
 
 .selection-info h3 {
   margin: 0 0 10px 0;
-  color: #343a40;
+  /* color: #343a40; */
   font-size: 14px;
   font-weight: 600;
 }
 
 .selected-text {
-  background: #fff3cd;
+  /* background: #fff3cd; */
   padding: 10px;
-  border-radius: 4px;
-  border: 1px solid #ffeaa7;
+  /* border-radius: 4px; */
+  /* border: 1px solid #ffeaa7; */
   margin: 10px 0;
   font-style: italic;
   min-height: 20px;
