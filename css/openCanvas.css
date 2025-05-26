@@ -264,7 +264,7 @@
 .selection-info {
   background: #374151 !important; /* Tailwind gray-700 */
   border-radius: 0.5rem;
-  padding: 16px;
+  /* padding: 16px; */
   border-left: 4px solid #3b82f6; /* Tailwind blue-500 */
 }
 
