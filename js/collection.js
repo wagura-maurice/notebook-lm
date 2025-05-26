@@ -421,6 +421,12 @@ const DropdownMenus = {
     let top = triggerOffset.top + triggerHeight;
     let transformOrigin = "top left";
 
+    // Attachment icon triggers file input for AI right input
+    $(document).on("click", "#ai-attach-right", function () {
+      // $('#ai-file-input-right').trigger('click');
+      console.log("Attachment icon clicked");
+    });
+
     // If not enough space below but enough space above, position above the trigger
     if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
       top = triggerOffset.top - dropdownHeight - 8; // 8px gap

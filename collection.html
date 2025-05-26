@@ -3631,36 +3631,35 @@
                   >
                     ✨ Improve Writing
                   </button>
+                </div>
 
-                  <div class="flex justify-center w-full">
-                    <div
-                      class="relative w-full max-w-xl flex items-center bg-slate-800 rounded-lg shadow-inner px-4 py-3 min-h-24"
-                    >
-                      <button
-                        id="ai-attach-right"
-                        class="absolute left-3 top-4 text-gray-400 hover:text-sky-400 transition-colors text-lg focus:outline-none bg-transparent border-none cursor-pointer"
-                        title="Attach"
-                        type="button"
-                      >
-                        <i class="fas fa-paperclip"></i>
-                      </button>
-                      <textarea
-                        id="ai-text-input-right"
-                        class="flex-1 bg-transparent text-white text-sm font-medium placeholder-gray-400 focus:outline-none px-8 resize-none border-none shadow-none min-h-18 custom-textarea"
-                        placeholder="Share your story idea and watch it unfold"
-                        autocomplete="off"
-                        rows="3"
-                      ></textarea>
-                      <button
-                        id="ai-text-send-right"
-                        class="absolute right-3 top-4 flex items-center justify-center text-gray-400 hover:text-sky-400 transition-colors text-lg focus:outline-none bg-transparent border-none cursor-pointer"
-                        title="Send"
-                        type="button"
-                      >
-                        <i class="fas fa-paper-plane"></i>
-                      </button>
-                    </div>
-                  </div>
+                <div
+                  class="relative w-full max-w-xl flex items-center bg-gray-800 shadow-inner px-4 mt-2 rounded-lg"
+                >
+                  <button
+                    id="ai-attach-right"
+                    class="absolute left-3 top-4 text-gray-400 hover:text-sky-400 transition-colors text-lg focus:outline-none bg-transparent border-none cursor-pointer"
+                    title="Attach"
+                    type="button"
+                  >
+                    <i class="fas fa-paperclip"></i>
+                  </button>
+                  <input type="file" id="ai-file-input-right" class="hidden" />
+                  <textarea
+                    id="ai-text-input-right"
+                    class="flex-1 bg-transparent text-white text-sm font-medium placeholder-gray-400 focus:outline-none px-8 resize-none border-none shadow-none custom-textarea"
+                    placeholder="Share your story idea and watch it unfold"
+                    autocomplete="off"
+                    rows="3"
+                  ></textarea>
+                  <button
+                    id="ai-text-send-right"
+                    class="absolute right-3 top-4 flex items-center justify-center text-gray-400 hover:text-sky-400 transition-colors text-lg focus:outline-none bg-transparent border-none cursor-pointer rounded-l-full"
+                    title="Send"
+                    type="button"
+                  >
+                    <i class="fas fa-paper-plane"></i>
+                  </button>
                 </div>
               </div>
             </div>
