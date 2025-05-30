@@ -892,11 +892,11 @@ const SourceActions = {
           <div class="source-content-section p-4">
             <h4 class="text-sm font-semibold text-slate-300 mb-2">Key Topics</h4>
             <div class="source-topics-list">
-              <span class="source-topic-tag">Methodology</span>
-              <span class="source-topic-tag">Analysis</span>
-              <span class="source-topic-tag">Research</span>
-              <span class="source-topic-tag">Data Collection</span>
-              <span class="source-topic-tag">Results</span>
+              <span class="source-topic-tag hover:bg-sky-600 cursor-pointer transition-colors" data-topic="Methodology">Methodology</span>
+              <span class="source-topic-tag hover:bg-sky-600 cursor-pointer transition-colors" data-topic="Analysis">Analysis</span>
+              <span class="source-topic-tag hover:bg-sky-600 cursor-pointer transition-colors" data-topic="Research">Research</span>
+              <span class="source-topic-tag hover:bg-sky-600 cursor-pointer transition-colors" data-topic="Data Collection">Data Collection</span>
+              <span class="source-topic-tag hover:bg-sky-600 cursor-pointer transition-colors" data-topic="Results">Results</span>
             </div>
           </div>
           
@@ -1449,6 +1449,13 @@ const ChatFunctionality = {
       e.preventDefault();
       const message = $(e.target).text().trim();
       this.submitMessage(message);
+    });
+    
+    // Add click handler for source topic tags
+    $(document).on('click', '.source-topic-tag', (e) => {
+      e.preventDefault();
+      const topic = $(e.target).data('topic') || $(e.target).text().trim();
+      this.submitMessage(topic);
     });
   },
   
