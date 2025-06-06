@@ -1484,7 +1484,7 @@ const ChatFunctionality = {
   addUserMessage: function (messageText) {
     const userMessage = $(`
       <div class="flex justify-end">
-        <div class="max-w-[80%] bg-purple-500 hover:bg-purple-600 px-4 py-2 rounded-xl rounded-bl-none shadow relative group">
+        <div class="max-w-[80%] bg-purple-500 hover:bg-purple-600 px-4 py-2 rounded-xl rounded-br-none shadow relative group">
           <div class="text-white">${messageText}</div>
           <div class="text-xs text-gray-300 text-right">${Utils.formatTime()}</div>
         </div>
