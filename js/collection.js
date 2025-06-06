@@ -1495,16 +1495,16 @@ const ChatFunctionality = {
     Utils.scrollToBottom($(SELECTORS.chatMessages)[0]);
   },
 
-  getAIResponse: function(userMessage) {
+  getAIResponse: function (userMessage) {
     // Simple response logic - you can expand this with more sophisticated AI responses
     const responses = [
       "I'm here to help with your notes and questions. What would you like to know?",
       "That's an interesting point. Could you tell me more about it?",
       "I've made a note of that. Is there anything else you'd like to discuss?",
       "Thanks for sharing! How can I assist you further?",
-      "I understand. What would you like to do next?"
+      "I understand. What would you like to do next?",
     ];
-    
+
     // Return a random response
     return responses[Math.floor(Math.random() * responses.length)];
   },
@@ -1538,12 +1538,12 @@ const ChatFunctionality = {
           </div>
           <div class="flex justify-between items-center mt-2">
             <div class="text-xs text-gray-300">${Utils.formatTime()}</div>
-            <div class="flex gap-2">
-              <button class="text-gray-400 hover:text-white text-xs flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity">
-                <i class="fas fa-plus-circle mr-1"></i> Add to note
+            <div class="flex gap-3">
+              <button class="text-gray-400 hover:text-white text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600">
+                <i class="fas fa-plus-circle mr-1.5 text-base"></i> Add to note
               </button>
-              <button class="text-gray-400 hover:text-white text-xs flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity">
-                <i class="fas fa-copy mr-1"></i> Copy
+              <button class="text-gray-400 hover:text-white text-sm flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600">
+                <i class="fas fa-copy mr-1.5 text-base"></i> Copy
               </button>
             </div>
           </div>
@@ -1577,8 +1577,12 @@ const MessageActions = {
     e.preventDefault();
     e.stopPropagation();
 
-    const $messageElement = $(e.currentTarget).closest(".bg-slate-700");
-    const messageContent = $messageElement.find(".text-white").text().trim();
+    const $messageElement = $(e.currentTarget).closest(".group");
+    const messageContent = $messageElement
+      .find(".text-white")
+      .first()
+      .text()
+      .trim();
     const timestamp = new Date().toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
@@ -1646,48 +1650,49 @@ const MessageActions = {
     e.preventDefault();
     e.stopPropagation();
 
-    const $button = $(e.currentTarget);
-    const $messageElement = $button.closest(".bg-slate-700");
-    const messageContent = $messageElement.find(".text-white").text().trim();
+    const $messageElement = $(e.currentTarget).closest(".group");
+    const messageContent = $messageElement
+      .find(".text-white")
+      .first()
+      .text()
+      .trim();
 
     if (!messageContent) return;
 
-    // Copy to clipboard
-    navigator.clipboard
-      .writeText(messageContent)
-      .then(() => {
-        // Show success message
-        const $successMsg = $(
-          `<div class="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200">Copied to clipboard</div>`
-        );
+    // Create a temporary textarea element to copy the text
+    const textarea = document.createElement("textarea");
+    textarea.value = messageContent;
+    document.body.appendChild(textarea);
+    textarea.select();
 
-        // Remove any existing success messages
-        $messageElement.find(".copy-success-message").remove();
-        $successMsg.addClass("copy-success-message");
-        $messageElement.append($successMsg);
+    try {
+      // Copy the text
+      const successful = document.execCommand("copy");
 
-        // Animate the success message
+      if (successful) {
+        // Show success feedback
+        const $copyButton = $(e.currentTarget);
+        const originalHtml = $copyButton.html();
+        const originalClasses = $copyButton.attr("class");
+
+        // Update button to show success state
+        $copyButton.html('<i class="fas fa-check mr-1.5"></i> Copied!');
+        $copyButton
+          .removeClass("text-gray-400 hover:text-white")
+          .addClass("text-green-400");
+
+        // Revert back to original state after 2 seconds
         setTimeout(() => {
-          $successMsg.addClass("opacity-100");
-          setTimeout(() => {
-            $successMsg.removeClass("opacity-100");
-            setTimeout(() => $successMsg.remove(), 200);
-          }, 2000);
-        }, 100);
-
-        // Update button text temporarily
-        const originalHtml = $button.html();
-        $button.html('<i class="fas fa-check mr-1"></i> Copied');
-
-        // Revert button text after delay
-        setTimeout(() => {
-          $button.html(originalHtml);
+          $copyButton.html(originalHtml);
+          $copyButton.attr("class", originalClasses);
         }, 2000);
-      })
-      .catch((err) => {
-        console.error("Failed to copy text: ", err);
-        alert("Failed to copy text to clipboard");
-      });
+      }
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    } finally {
+      // Clean up
+      document.body.removeChild(textarea);
+    }
   },
 };
 
