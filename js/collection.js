@@ -1436,30 +1436,30 @@ const ChatFunctionality = {
   init: function () {
     $(SELECTORS.sendMessage).on("click", this.sendMessage.bind(this));
     $(SELECTORS.chatInput).on("keydown", this.handleKeydown.bind(this));
-    
+
     // Add click handler for chat suggestions
-    $(document).on('click', `${SELECTORS.chatSuggestions} button`, (e) => {
+    $(document).on("click", `${SELECTORS.chatSuggestions} button`, (e) => {
       e.preventDefault();
-      const message = $(e.target).closest('button').text().trim();
+      const message = $(e.target).closest("button").text().trim();
       this.submitMessage(message);
     });
-    
+
     // Add click handler for key topics in source view
-    $(document).on('click', '.key-topic', (e) => {
+    $(document).on("click", ".key-topic", (e) => {
       e.preventDefault();
       const message = $(e.target).text().trim();
       this.submitMessage(message);
     });
-    
+
     // Add click handler for source topic tags
-    $(document).on('click', '.source-topic-tag', (e) => {
+    $(document).on("click", ".source-topic-tag", (e) => {
       e.preventDefault();
-      const topic = $(e.target).data('topic') || $(e.target).text().trim();
+      const topic = $(e.target).data("topic") || $(e.target).text().trim();
       this.submitMessage(topic);
     });
   },
-  
-  submitMessage: function(messageText) {
+
+  submitMessage: function (messageText) {
     // Update the chat input with the message
     $(SELECTORS.chatInput).val(messageText);
     // Trigger the send message functionality
@@ -1472,16 +1472,16 @@ const ChatFunctionality = {
     if (messageText !== "") {
       // Clear the input immediately after getting the message
       $(SELECTORS.chatInput).val("");
-      
+
       // Add the user message to the chat
       this.addUserMessage(messageText);
-      
+
       // Simulate AI response after a short delay
       this.simulateAIResponse(messageText);
     }
   },
-  
-  addUserMessage: function(messageText) {
+
+  addUserMessage: function (messageText) {
     const userMessage = $(`
       <div class="flex justify-end">
         <div class="max-w-[80%] bg-purple-500 px-4 py-2 rounded-xl rounded-br-none shadow">
@@ -1490,16 +1490,16 @@ const ChatFunctionality = {
         </div>
       </div>
     `);
-    
+
     $(SELECTORS.chatMessages).append(userMessage);
     Utils.scrollToBottom($(SELECTORS.chatMessages)[0]);
   },
-  
-  simulateAIResponse: function(userMessage) {
+
+  simulateAIResponse: function (userMessage) {
     // Show loading state
     const loadingMessage = $(`
       <div class="flex justify-start">
-        <div class="max-w-[80%] bg-blue-500 px-4 py-2 rounded-xl rounded-bl-none shadow relative group">
+        <div class="max-w-[80%] bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl rounded-bl-none shadow relative group">
           <div class="flex items-center space-x-2">
             <div class="w-2 h-2 rounded-full bg-white opacity-75 animate-bounce"></div>
             <div class="w-2 h-2 rounded-full bg-white opacity-50 animate-bounce" style="animation-delay: 0.2s"></div>
@@ -1508,45 +1508,48 @@ const ChatFunctionality = {
         </div>
       </div>
     `);
-    
+
     const $loadingMessage = $(loadingMessage);
     $(SELECTORS.chatMessages).append($loadingMessage);
     Utils.scrollToBottom($(SELECTORS.chatMessages)[0]);
-    
+
     // Simulate API call delay
     setTimeout(() => {
       // Remove loading message
       $loadingMessage.remove();
-      
+
       // Add AI response
       const aiResponse = $(`
         <div class="flex justify-start">
-          <div class="max-w-[80%] bg-blue-500 px-4 py-2 rounded-xl rounded-bl-none shadow relative group">
-            <div class="text-white">I received your message about "${userMessage.substring(0, 20)}${userMessage.length > 20 ? '...' : ''}"</div>
+          <div class="max-w-[80%] bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl rounded-bl-none shadow relative group">
+            <div class="text-white">I received your message about "${userMessage.substring(
+              0,
+              20
+            )}${userMessage.length > 20 ? "..." : ""}"</div>
             <div class="flex justify-between items-center mt-2">
               <div class="text-xs text-gray-300">${Utils.formatTime()}</div>
-              <button class="text-gray-300 hover:text-white text-sm flex items-center add-to-note-btn">
+              <button class="text-gray-300 hover:text-white text-xs flex items-center add-to-note-btn">
                 <i class="fas fa-plus-circle mr-1"></i> Add to note
               </button>
-              <button class="text-gray-300 hover:text-white text-sm flex items-center copy-message-btn">
+              <button class="text-gray-300 hover:text-white text-xs flex items-center copy-message-btn">
                 <i class="fas fa-copy mr-1"></i> Copy
               </button>
             </div>
           </div>
         </div>
       `);
-      
+
       $(SELECTORS.chatMessages).append(aiResponse);
       Utils.scrollToBottom($(SELECTORS.chatMessages)[0]);
     }, 1000);
   },
-  
-  handleKeydown: function(e) {
+
+  handleKeydown: function (e) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       this.sendMessage();
     }
-  }
+  },
 };
 
 /* ============================================ */
