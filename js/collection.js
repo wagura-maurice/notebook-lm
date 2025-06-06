@@ -1484,8 +1484,8 @@ const ChatFunctionality = {
   addUserMessage: function (messageText) {
     const userMessage = $(`
       <div class="flex justify-end">
-        <div class="max-w-[80%] bg-purple-700 hover:bg-purple-600 px-4 py-2 rounded-xl rounded-br-none shadow relative group">
-          <div class="text-white">${messageText}</div>
+        <div class="max-w-[80%] bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl rounded-br-none shadow relative group">
+          <div class="text-white text-sm">${messageText}</div>
           <div class="text-xs text-gray-300 text-right">${Utils.formatTime()}</div>
         </div>
       </div>
@@ -1495,16 +1495,28 @@ const ChatFunctionality = {
     Utils.scrollToBottom($(SELECTORS.chatMessages)[0]);
   },
 
+  getAIResponse: function(userMessage) {
+    // Simple response logic - you can expand this with more sophisticated AI responses
+    const responses = [
+      "I'm here to help with your notes and questions. What would you like to know?",
+      "That's an interesting point. Could you tell me more about it?",
+      "I've made a note of that. Is there anything else you'd like to discuss?",
+      "Thanks for sharing! How can I assist you further?",
+      "I understand. What would you like to do next?"
+    ];
+    
+    // Return a random response
+    return responses[Math.floor(Math.random() * responses.length)];
+  },
+
   simulateAIResponse: function (userMessage) {
     // Show loading state
     const loadingMessage = $(`
-      <div class="flex justify-start">
-        <div class="max-w-[80%] bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl rounded-bl-none shadow relative group">
-          <div class="flex items-center space-x-2">
-            <div class="w-2 h-2 rounded-full bg-white opacity-75 animate-bounce"></div>
-            <div class="w-2 h-2 rounded-full bg-white opacity-50 animate-bounce" style="animation-delay: 0.2s"></div>
-            <div class="w-2 h-2 rounded-full bg-white opacity-25 animate-bounce" style="animation-delay: 0.4s"></div>
-          </div>
+      <div class="w-full px-4 py-2">
+        <div class="flex items-center space-x-2">
+          <div class="w-2 h-2 rounded-full bg-white opacity-75 animate-bounce"></div>
+          <div class="w-2 h-2 rounded-full bg-white opacity-50 animate-bounce" style="animation-delay: 0.2s"></div>
+          <div class="w-2 h-2 rounded-full bg-white opacity-25 animate-bounce" style="animation-delay: 0.4s"></div>
         </div>
       </div>
     `);
@@ -1518,20 +1530,19 @@ const ChatFunctionality = {
       // Remove loading message
       $loadingMessage.remove();
 
-      // Add AI response
+      // Create AI response
       const aiResponse = $(`
-        <div class="flex justify-start">
-          <div class="max-w-[80%] bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl rounded-bl-none shadow relative group">
-            <div class="text-white">I received your message about "${userMessage.substring(
-              0,
-              20
-            )}${userMessage.length > 20 ? "..." : ""}"</div>
-            <div class="flex justify-between items-center mt-2">
-              <div class="text-xs text-gray-300">${Utils.formatTime()}</div>
-              <button class="text-gray-300 hover:text-white text-xs flex items-center add-to-note-btn">
+        <div class="w-full px-4 py-2 group">
+          <div class="text-white text-sm">
+            ${this.getAIResponse(userMessage)}
+          </div>
+          <div class="flex justify-between items-center mt-2">
+            <div class="text-xs text-gray-300">${Utils.formatTime()}</div>
+            <div class="flex gap-2">
+              <button class="text-gray-400 hover:text-white text-xs flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity">
                 <i class="fas fa-plus-circle mr-1"></i> Add to note
               </button>
-              <button class="text-gray-300 hover:text-white text-xs flex items-center copy-message-btn">
+              <button class="text-gray-400 hover:text-white text-xs flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity">
                 <i class="fas fa-copy mr-1"></i> Copy
               </button>
             </div>
