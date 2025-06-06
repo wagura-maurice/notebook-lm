@@ -1563,12 +1563,57 @@ const MessageActions = {
   },
 
   addToNote: function (e) {
-    const messageContent = $(e.currentTarget)
-      .closest(".bg-blue-500")
-      .find(".text-white")
-      .text();
-    console.log("Adding to note:", messageContent);
-    alert("Message added to notes!");
+    e.preventDefault();
+    e.stopPropagation();
+
+    const $messageElement = $(e.currentTarget).closest(".bg-slate-700");
+    const messageContent = $messageElement.find(".text-white").text().trim();
+    const timestamp = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    if (!messageContent) return;
+
+    // Create a unique ID for the new note
+    const noteId = "note-" + Date.now();
+
+    // Create the new note HTML
+    const newNoteHtml = `
+      <div class="relative flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item" data-note-id="${noteId}">
+        <div class="relative mr-3 w-6 h-6 mt-1 flex-shrink-0">
+          <i class="fas fa-sticky-note text-amber-400 note-icon transition-opacity duration-200"></i>
+          <i class="fas fa-check text-green-400 absolute inset-0 flex items-center justify-center opacity-0 note-check-icon transition-opacity duration-200"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-medium text-white truncate note-title">
+            ${messageContent.substring(0, 50)}${
+      messageContent.length > 50 ? "..." : ""
+    }
+          </div>
+          <div class="text-xs text-gray-400 note-time">${timestamp}</div>
+        </div>
+      </div>`;
+
+    // Add the new note to the top of the notes list
+    $(".note-item").first().before(newNoteHtml);
+
+    // Show a success message
+    const $successMsg = $(
+      `<div class="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200">Added to notes</div>`
+    );
+    $messageElement.append($successMsg);
+
+    // Animate the success message
+    setTimeout(() => {
+      $successMsg.addClass("opacity-100");
+      setTimeout(() => {
+        $successMsg.removeClass("opacity-100");
+        setTimeout(() => $successMsg.remove(), 200);
+      }, 2000);
+    }, 100);
+
+    console.log("Added new note:", messageContent);
   },
 
   copyMessage: function (e) {
