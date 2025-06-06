@@ -938,6 +938,33 @@ const NoteActions = {
       this.openAddNoteModal.bind(this)
     );
 
+    // Quick Notes buttons click handler
+    const self = this; // Store reference to 'this'
+    $(document).on("click", ".quick-note-btn", function(e) {
+      const buttonText = $(this).find("span").text().trim();
+      console.log(`Quick Note button clicked: ${buttonText}`);
+      
+      // Add specific logic for each button type here if needed
+      switch(buttonText) {
+        case 'Study guide':
+          console.log('Study guide logic would run here');
+          break;
+        case 'Briefing doc':
+          console.log('Briefing doc logic would run here');
+          break;
+        case 'FAQ':
+          console.log('FAQ logic would run here');
+          break;
+        case 'Timeline':
+          console.log('Timeline logic would run here');
+          break;
+        case 'Wizard':
+          console.log('Opening canvas notes modal...');
+          self.showOpenCanvasNotesToCanvasModal(e);
+          break;
+      }
+    });
+
     $(document)
       .on(
         "click",
