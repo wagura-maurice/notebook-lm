@@ -1617,16 +1617,47 @@ const MessageActions = {
   },
 
   copyMessage: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
     const $button = $(e.currentTarget);
-    const messageContent = $button
-      .closest(".bg-blue-500")
-      .find(".text-white")
-      .text();
+    const $messageElement = $button.closest(".bg-slate-700");
+    const messageContent = $messageElement.find(".text-white").text().trim();
+    
+    if (!messageContent) return;
+    
+    // Copy to clipboard
     navigator.clipboard.writeText(messageContent).then(() => {
-      $button.html('<i class="fas fa-check mr-1"></i> Copied');
+      // Show success message
+      const $successMsg = $(
+        `<div class="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200">Copied to clipboard</div>`
+      );
+      
+      // Remove any existing success messages
+      $messageElement.find('.copy-success-message').remove();
+      $successMsg.addClass('copy-success-message');
+      $messageElement.append($successMsg);
+      
+      // Animate the success message
       setTimeout(() => {
-        $button.html('<i class="fas fa-copy mr-1"></i> Copy');
+        $successMsg.addClass('opacity-100');
+        setTimeout(() => {
+          $successMsg.removeClass('opacity-100');
+          setTimeout(() => $successMsg.remove(), 200);
+        }, 2000);
+      }, 100);
+      
+      // Update button text temporarily
+      const originalHtml = $button.html();
+      $button.html('<i class="fas fa-check mr-1"></i> Copied');
+      
+      // Revert button text after delay
+      setTimeout(() => {
+        $button.html(originalHtml);
       }, 2000);
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+      alert('Failed to copy text to clipboard');
     });
   },
 };
