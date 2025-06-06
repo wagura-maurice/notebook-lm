@@ -1130,6 +1130,12 @@ const NoteActions = {
     }
   },
 
+  showOpenWizardModal: function (e) {
+    e.preventDefault();
+    // $("#open-wizard-modal").removeClass("hidden");
+    $("#open-canvas-notes-modal").removeClass("hidden");
+  },
+
   showOpenCanvasNotesToCanvasModal: function (e) {
     // alert("Add logic to converge all notes to canvas");
     e.preventDefault();
