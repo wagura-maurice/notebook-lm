@@ -1484,7 +1484,7 @@ const ChatFunctionality = {
   addUserMessage: function (messageText) {
     const userMessage = $(`
       <div class="flex justify-end">
-        <div class="max-w-[80%] bg-purple-500 hover:bg-purple-600 px-4 py-2 rounded-xl rounded-br-none shadow relative group">
+        <div class="max-w-[80%] bg-purple-700 hover:bg-purple-600 px-4 py-2 rounded-xl rounded-br-none shadow relative group">
           <div class="text-white">${messageText}</div>
           <div class="text-xs text-gray-300 text-right">${Utils.formatTime()}</div>
         </div>
@@ -1499,7 +1499,7 @@ const ChatFunctionality = {
     // Show loading state
     const loadingMessage = $(`
       <div class="flex justify-start">
-        <div class="max-w-[80%] bg-slate-500 hover:bg-slate-600 px-4 py-2 rounded-xl rounded-bl-none shadow relative group">
+        <div class="max-w-[80%] bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl rounded-bl-none shadow relative group">
           <div class="flex items-center space-x-2">
             <div class="w-2 h-2 rounded-full bg-white opacity-75 animate-bounce"></div>
             <div class="w-2 h-2 rounded-full bg-white opacity-50 animate-bounce" style="animation-delay: 0.2s"></div>
@@ -1521,7 +1521,7 @@ const ChatFunctionality = {
       // Add AI response
       const aiResponse = $(`
         <div class="flex justify-start">
-          <div class="max-w-[80%] bg-slate-500 hover:bg-slate-600 px-4 py-2 rounded-xl rounded-bl-none shadow relative group">
+          <div class="max-w-[80%] bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl rounded-bl-none shadow relative group">
             <div class="text-white">I received your message about "${userMessage.substring(
               0,
               20
