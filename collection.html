@@ -60,8 +60,9 @@
     />
 
     <!-- Custom CSS -->
-    <link href="./css/collection.css" rel="stylesheet" />
-    <link href="./css/openCanvas.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/collection.css" />
+    <link rel="stylesheet" href="css/openCanvas.css" />
+    <link rel="stylesheet" href="css/wizard.css" />
   </head>
 
   <body class="h-screen flex flex-col bg-dark-blue overflow-hidden font-sans">
@@ -3673,18 +3674,17 @@
       </div>
     </div>
 
-    <!-- Open Wizard Modal -->
+    <!-- AI Wizard Modal -->
     <div
       class="modal fixed hidden inset-0 z-50 bg-black bg-opacity-70 w-screen h-screen"
       id="open-wizard-modal"
     >
-      <!-- Main container - fills nearly entire screen -->
-      <div class="w-full h-full flex flex-col overflow-hidden">
+      <div class="w-full h-full flex flex-col">
         <!-- Modal Header -->
-        <div class="flex justify-between items-center p-3">
-          <div class="flex items-center">
-            <h3 class="text-xl font-bold text-white">AI Wizard</h3>
-          </div>
+        <div
+          class="flex justify-between items-center p-4 bg-gray-800 border-b border-gray-700"
+        >
+          <h3 class="text-xl font-bold text-white">AI Assistant</h3>
           <button
             type="button"
             class="modal-close text-gray-400 hover:text-white p-2"
@@ -3693,114 +3693,93 @@
           </button>
         </div>
 
-        <!-- Main Content Area -->
-        <div class="flex flex-1 overflow-hidden gap-4 p-4">
-          <!-- Left Sidebar (25%) - AI Tools -->
-          <div class="w-1/4 flex flex-col bg-gray-800 rounded-lg shadow-lg">
+        <!-- Main Content -->
+        <div class="flex-1 flex overflow-hidden">
+          <!-- Left Sidebar - Sources with AI Tools -->
+          <div class="w-1/4 flex flex-col bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <!-- AI Tools Section -->
             <div class="p-4 border-b border-gray-700">
-              <h4 class="text-white font-medium mb-2">AI Tools</h4>
-              <div class="space-y-2">
-                <button
-                  class="w-full text-left px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium transition-colors"
-                >
-                  <i class="fas fa-magic mr-2"></i>Generate Content
+              <h4 class="text-white font-medium mb-3">AI Tools</h4>
+              <div class="grid grid-cols-2 gap-2">
+                <button class="wizard-tool-btn" data-tool="generate">
+                  <i class="fas fa-magic mr-2"></i>Generate
                 </button>
-                <button
-                  class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md text-sm font-medium transition-colors"
-                >
-                  <i class="fas fa-edit mr-2"></i>Edit Selection
+                <button class="wizard-tool-btn" data-tool="edit">
+                  <i class="fas fa-edit mr-2"></i>Edit
                 </button>
-                <button
-                  class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md text-sm font-medium transition-colors"
-                >
+                <button class="wizard-tool-btn" data-tool="research">
                   <i class="fas fa-search mr-2"></i>Research
                 </button>
-                <button
-                  class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md text-sm font-medium transition-colors"
-                >
+                <button class="wizard-tool-btn" data-tool="ideas">
                   <i class="fas fa-lightbulb mr-2"></i>Ideas
                 </button>
               </div>
             </div>
+            
+            <!-- Recent Section -->
             <div class="p-4 border-b border-gray-700">
               <h4 class="text-white font-medium mb-2">Recent</h4>
               <div class="space-y-1">
-                <button
-                  class="w-full text-left px-3 py-1.5 text-gray-300 hover:bg-gray-700 rounded text-sm truncate"
-                >
-                  Meeting notes summary
-                </button>
-                <button
-                  class="w-full text-left px-3 py-1.5 text-gray-300 hover:bg-gray-700 rounded text-sm truncate"
-                >
-                  Research outline
-                </button>
-                <button
-                  class="w-full text-left px-3 py-1.5 text-gray-300 hover:bg-gray-700 rounded text-sm truncate"
-                >
-                  Project ideas
+                <button class="wizard-recent-btn">Meeting notes</button>
+                <button class="wizard-recent-btn">Research</button>
+                <button class="wizard-recent-btn">Project ideas</button>
+              </div>
+            </div>
+            
+            <!-- Sources Section -->
+            <div class="p-3 border-b border-gray-700">
+              <div class="flex justify-between items-center">
+                <h4 class="text-white font-medium">Sources</h4>
+                <button class="text-xs text-blue-400 hover:text-blue-300" id="refresh-sources">
+                  <i class="fas fa-sync-alt mr-1"></i> Refresh
                 </button>
               </div>
             </div>
-            <div class="p-4">
-              <h4 class="text-white font-medium mb-2">Templates</h4>
-              <div class="space-y-1">
-                <button
-                  class="w-full text-left px-3 py-1.5 text-gray-300 hover:bg-gray-700 rounded text-sm"
-                >
-                  Blog Post
-                </button>
-                <button
-                  class="w-full text-left px-3 py-1.5 text-gray-300 hover:bg-gray-700 rounded text-sm"
-                >
-                  Email Draft
-                </button>
-                <button
-                  class="w-full text-left px-3 py-1.5 text-gray-300 hover:bg-gray-700 rounded text-sm"
-                >
-                  Meeting Notes
-                </button>
+            <div class="flex-1 overflow-y-auto" id="wizard-sources-list">
+              <!-- Sources will be dynamically inserted here -->
+              <div class="p-4 text-center text-gray-500">
+                <i class="fas fa-folder-open text-2xl mb-2"></i>
+                <p class="text-sm">No sources available</p>
               </div>
             </div>
           </div>
 
-          <!-- Right Content Area (75%) -->
-          <div class="w-3/4 flex flex-col bg-gray-900 rounded-lg shadow-lg">
-            <!-- Content Display Area -->
+          <!-- Main Chat Area -->
+          <div class="w-3/4 flex flex-col bg-gray-900 rounded-lg shadow-lg overflow-hidden">
             <div class="flex-1 overflow-y-auto p-4" id="wizard-content">
-              <!-- AI Response will be displayed here -->
-              <div class="text-center text-gray-400 mt-10">
-                <i class="fas fa-robot text-4xl mb-2"></i>
-                <p>How can I assist you today?</p>
+              <div class="text-center text-gray-400 py-10">
+                <i class="fas fa-robot text-5xl mb-4 text-purple-400"></i>
+                <h3 class="text-xl font-medium text-white mb-1">
+                  How can I help you today?
+                </h3>
+                <p class="text-sm max-w-md mx-auto">
+                  Ask me anything about your documents or request help with
+                  writing, editing, or research.
+                </p>
               </div>
             </div>
 
-            <!-- Message Input Area -->
-            <div class="border-t border-gray-700 p-4">
+            <!-- Message Input -->
+            <div class="wizard-message-input">
               <div class="relative">
                 <textarea
                   id="wizard-message-input"
-                  class="w-full bg-gray-800 text-white rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                  placeholder="Type your message..."
-                  rows="3"
+                  class="w-full"
+                  placeholder="Ask me anything..."
+                  rows="1"
                 ></textarea>
-                <div class="absolute right-3 bottom-3 flex space-x-2">
-                  <button class="text-gray-400 hover:text-blue-400">
-                    <i class="fas fa-paperclip"></i>
-                  </button>
-                  <button
-                    id="wizard-send-btn"
-                    class="text-blue-400 hover:text-blue-300"
-                  >
-                    <i class="fas fa-paper-plane"></i>
-                  </button>
-                </div>
+                <button id="wizard-send-btn" class="send-button">
+                  <i class="fas fa-paper-plane"></i>
+                </button>
               </div>
-              <p class="text-xs text-gray-500 mt-1 text-right">
-                Press Enter to send, Shift+Enter for new line
+              <p class="text-xs text-gray-500 mt-2 text-center">
+                Press Enter to send • Shift+Enter for new line
               </p>
             </div>
           </div>
+
+          <!-- Right Sidebar - Empty (can be used for additional content if needed) -->
+          <div class="w-1/4"></div>
         </div>
       </div>
     </div>
@@ -3810,5 +3789,6 @@
     <script src="https://cdn.jsdelivr.net/npm/quill-table-better@1/dist/quill-table-better.js"></script>
     <script src="js/collection.js"></script>
     <script src="js/openCanvas.js"></script>
+    <script src="js/wizard.js"></script>
   </body>
 </html>
