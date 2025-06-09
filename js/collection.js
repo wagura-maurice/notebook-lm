@@ -1799,6 +1799,81 @@ const ModalHandling = {
 };
 
 /* ============================================ */
+/* === MODULE: WIZARD SOURCES === */
+/* ============================================ */
+const WizardSources = {
+  init: function () {
+    this.setupEventListeners();
+  },
+
+  setupEventListeners: function () {
+    // Handle refresh button click
+    $(document).on('click', '#wizard-refresh-sources', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.syncSourcesToWizard();
+    });
+
+    // Also sync when the wizard modal is opened
+    $(document).on('click', '[data-modal-target="open-wizard-modal"]', () => {
+      setTimeout(() => {
+        this.syncSourcesToWizard();
+      }, 100);
+    });
+  },
+
+  syncSourcesToWizard: function () {
+    const $leftColumnSources = $('.source-list .source-item');
+    const $wizardSourceView = $('#wizard-sources-view');
+    const $wizardSourceList = $('#wizard-sources-list');
+
+    // Clear existing content
+    $wizardSourceView.empty();
+
+    if ($leftColumnSources.length === 0) {
+      // Show no sources message
+      $wizardSourceView.html(`
+        <div class="p-4 text-center text-gray-400">
+          <i class="fas fa-folder-open text-2xl mb-2"></i>
+          <p class="text-sm">No sources available</p>
+        </div>
+      `);
+      return;
+    }
+
+    // Create a container for the sources list
+    const $sourcesContainer = $('<div class="space-y-1"></div>');
+
+    // Clone and add each source to the wizard section
+    $leftColumnSources.each(function () {
+      const $source = $(this).clone();
+
+      // Clean up the cloned element
+      $source.removeClass('source-item hover:bg-slate-700')
+        .addClass('hover:bg-slate-700/50')
+        .find('input[type="checkbox"]').remove();
+
+      // Remove any existing click handlers
+      $source.off('click');
+
+      // Add click handler for selection
+      $source.on('click', function (e) {
+        e.stopPropagation();
+        $sourcesContainer.find('.bg-slate-700/50').removeClass('bg-slate-700/50');
+        $(this).addClass('bg-slate-700/50');
+      });
+
+      $sourcesContainer.append($source);
+    });
+
+    $wizardSourceView.append($sourcesContainer);
+
+    // Initialize with first source selected if available
+    $sourcesContainer.find('> div:first-child').trigger('click');
+  }
+};
+
+/* ============================================ */
 /* === DOCUMENT READY === */
 /* ============================================ */
 $(document).ready(function () {
@@ -1815,6 +1890,7 @@ $(document).ready(function () {
   MessageActions.init();
   Utilities.init();
   ModalHandling.init();
+  WizardSources.init();
 });
 
 // More CHAT SUGGESTIONS Javascript
