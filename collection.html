@@ -3696,7 +3696,7 @@
         <div class="flex-1 flex overflow-hidden gap-x-2">
           <!-- Left Sidebar - Sources with AI Tools (25%) -->
           <div
-            class="w-1/4 flex flex-col bg-gray-800 rounded-lg shadow-lg overflow-hidden"
+            class="w-1/4 flex flex-col bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden border border-gray-700/50"
           >
             <!-- AI Tools Section -->
             <div class="p-4 border-b border-gray-700">
@@ -3717,48 +3717,44 @@
               </div>
             </div>
 
-            <!-- Recent Section -->
-            <div class="p-4 border-b border-gray-700">
-              <h4 class="text-white font-medium mb-2">Recent</h4>
-              <div class="space-y-1">
-                <button class="wizard-recent-btn">Meeting notes</button>
-                <button class="wizard-recent-btn">Research</button>
-                <button class="wizard-recent-btn">Project ideas</button>
-              </div>
-            </div>
-
             <!-- Sources Section -->
-            <div class="p-3 border-b border-gray-700">
-              <div class="flex justify-between items-center">
-                <h4 class="text-white font-medium">Sources</h4>
-                <button
-                  class="text-xs text-blue-400 hover:text-blue-300"
-                  id="refresh-sources"
-                >
-                  <i class="fas fa-sync-alt mr-1"></i> Refresh
-                </button>
+            <div class="flex-1 overflow-y-auto">
+              <div class="p-3 border-b border-gray-700">
+                <div class="flex justify-between items-center">
+                  <h4 class="text-white font-medium">Sources</h4>
+                  <button
+                    class="text-xs text-blue-400 hover:text-blue-300"
+                    id="wizard-refresh-sources"
+                  >
+                    <i class="fas fa-sync-alt mr-1"></i> Refresh
+                  </button>
+                </div>
               </div>
-            </div>
-            <div class="flex-1 overflow-y-auto" id="wizard-sources-list">
-              <!-- Sources will be dynamically inserted here -->
-              <div class="p-4 text-center text-gray-500">
-                <i class="fas fa-folder-open text-2xl mb-2"></i>
-                <p class="text-sm">No sources available</p>
+              <div id="wizard-sources-list" class="p-2">
+                <!-- Sources will be dynamically inserted here -->
+                <div class="p-4 text-center text-gray-400">
+                  <i class="fas fa-folder-open text-2xl mb-2"></i>
+                  <p class="text-sm">No sources available</p>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Main Chat Area (75%) -->
           <div
-            class="w-3/4 flex flex-col bg-gray-900 rounded-lg shadow-lg overflow-hidden"
+            class="w-3/4 flex flex-col bg-gray-900 rounded-lg shadow-lg overflow-hidden border border-gray-700"
           >
-            <div class="flex-1 overflow-y-auto p-4" id="wizard-content">
-              <div class="text-center text-gray-400 py-10">
-                <i class="fas fa-robot text-5xl mb-4 text-purple-400"></i>
-                <h3 class="text-xl font-medium text-white mb-1">
+            <div class="flex-1 overflow-y-auto p-6" id="wizard-content">
+              <div class="text-center text-gray-300 py-12">
+                <div
+                  class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-800 mb-6"
+                >
+                  <i class="fas fa-robot text-4xl text-purple-400"></i>
+                </div>
+                <h3 class="text-2xl font-semibold text-white mb-3">
                   How can I help you today?
                 </h3>
-                <p class="text-sm max-w-md mx-auto">
+                <p class="text-gray-400 max-w-md mx-auto text-base">
                   Ask me anything about your documents or request help with
                   writing, editing, or research.
                 </p>
@@ -3766,21 +3762,44 @@
             </div>
 
             <!-- Message Input -->
-            <div class="wizard-message-input">
+            <div class="border-t border-gray-700 p-4 bg-gray-800">
               <div class="relative">
-                <textarea
-                  id="wizard-message-input"
-                  class="w-full"
-                  placeholder="Ask me anything..."
-                  rows="1"
-                ></textarea>
-                <button id="wizard-send-btn" class="send-button">
-                  <i class="fas fa-paper-plane"></i>
-                </button>
+                <div class="relative">
+                  <textarea
+                    id="wizard-message-input"
+                    class="w-full bg-gray-700 text-white rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                    placeholder="Ask me anything..."
+                    rows="1"
+                    style="min-height: 48px; max-height: 200px"
+                  ></textarea>
+                  <button
+                    id="wizard-send-btn"
+                    class="absolute right-2 bottom-2 p-2 rounded-full text-gray-400 hover:text-white hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled
+                  >
+                    <i class="fas fa-paper-plane text-lg"></i>
+                  </button>
+                </div>
+                <p class="text-xs text-gray-500 mt-2 text-center">
+                  <span class="inline-flex items-center">
+                    <kbd
+                      class="px-1.5 py-0.5 text-xs font-medium bg-gray-700 rounded border border-gray-600"
+                      >Enter</kbd
+                    >
+                    <span class="mx-1">to send</span>
+                    <kbd
+                      class="px-1.5 py-0.5 text-xs font-medium bg-gray-700 rounded border border-gray-600"
+                      >Shift</kbd
+                    >
+                    <span class="mx-1">+</span>
+                    <kbd
+                      class="px-1.5 py-0.5 text-xs font-medium bg-gray-700 rounded border border-gray-600"
+                      >Enter</kbd
+                    >
+                    <span class="ml-1">for new line</span>
+                  </span>
+                </p>
               </div>
-              <p class="text-xs text-gray-500 mt-2 text-center">
-                Press Enter to send • Shift+Enter for new line
-              </p>
             </div>
           </div>
         </div>

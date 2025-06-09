@@ -1770,6 +1770,89 @@ const Utilities = {
 };
 
 /* ============================================ */
+/* === MODULE: WIZARD SOURCES === */
+/* ============================================ */
+const WizardSources = {
+  init() {
+    this.setupEventListeners();
+  },
+
+  setupEventListeners() {
+    // When the wizard modal is opened
+    document.getElementById('open-wizard-modal')?.addEventListener('shown.bs.modal', () => {
+      this.syncSourcesToWizard();
+    });
+
+    // Refresh button in wizard
+    document.getElementById('wizard-refresh-sources')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.syncSourcesToWizard();
+    });
+  },
+
+  syncSourcesToWizard() {
+    const mainSourceList = document.querySelector('#left-column .source-list');
+    const wizardSourceList = document.getElementById('wizard-sources-list');
+    
+    if (!mainSourceList || !wizardSourceList) return;
+
+    // Clear existing wizard sources
+    wizardSourceList.innerHTML = '';
+    
+    // Clone each source item from main to wizard
+    const sources = mainSourceList.querySelectorAll('.source-item');
+    
+    if (sources.length === 0) {
+      wizardSourceList.innerHTML = `
+        <div class="p-4 text-center text-gray-400">
+          <i class="fas fa-folder-open text-2xl mb-2"></i>
+          <p class="text-sm">No sources available</p>
+        </div>`;
+      return;
+    }
+
+    sources.forEach(source => {
+      // Clone the source item
+      const clonedSource = source.cloneNode(true);
+      
+      // Clean up any existing event listeners and classes
+      clonedSource.className = 'group py-2 px-3 hover:bg-gray-700/50 rounded cursor-pointer flex items-center relative mb-1 transition-colors';
+      
+      // Remove any existing click handlers
+      clonedSource.onclick = null;
+      
+      // Add custom click handler
+      clonedSource.addEventListener('click', (e) => {
+        // Handle source click in wizard
+        e.stopPropagation();
+        this.handleSourceClickInWizard(e);
+      });
+      
+      // Add to wizard
+      wizardSourceList.appendChild(clonedSource);
+    });
+  },
+  
+  handleSourceClickInWizard(e) {
+    const sourceItem = e.currentTarget;
+    const sourceName = sourceItem.querySelector('.source-name')?.textContent || 'Source';
+    
+    // Toggle active state
+    document.querySelectorAll('#wizard-sources-list .source-item').forEach(item => {
+      item.classList.remove('bg-gray-700/50');
+    });
+    
+    sourceItem.classList.add('bg-gray-700/50');
+    
+    // Update the chat input placeholder
+    const chatInput = document.getElementById('wizard-message-input');
+    if (chatInput) {
+      chatInput.placeholder = `Ask me about ${sourceName}...`;
+    }
+  }
+};
+
+/* ============================================ */
 /* === MODULE: MODAL HANDLING === */
 /* ============================================ */
 const ModalHandling = {
@@ -1816,6 +1899,7 @@ $(document).ready(function () {
   MessageActions.init();
   Utilities.init();
   ModalHandling.init();
+  WizardSources.init();
 });
 
 // More CHAT SUGGESTIONS Javascript
