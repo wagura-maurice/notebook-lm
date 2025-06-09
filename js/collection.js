@@ -773,7 +773,7 @@ const SourceActions = {
         function () {
           if (SourceActions.selectedSources.size > 0) {
             // Changed from this.selectedSources
-            alert(`${SourceActions.selectedSources.size} source(s) added!`); // Changed from this.selectedSources
+            // alert(`${SourceActions.selectedSources.size} source(s) added!`); // Changed from this.selectedSources
             $("#discover-source-modal").addClass("hidden");
             SourceActions.selectedSources.clear(); // Changed from this.selectedSources
             SourceActions.updateAddSelectedCount(); // Changed from this.updateAddSelectedCount
@@ -970,7 +970,7 @@ const NoteActions = {
         "click",
         '#notes-menu-dropdown a:contains("Source all")',
         function () {
-          alert("Add logic to source all notes");
+          // alert("Add logic to source all notes");
         }
       )
       .on(
@@ -1160,11 +1160,10 @@ const NoteActions = {
   showOpenWizardModal: function (e) {
     e.preventDefault();
     $("#open-wizard-modal").removeClass("hidden");
-
   },
 
   showOpenCanvasNotesToCanvasModal: function (e) {
-    // alert("Add logic to converge all notes to canvas");
+    alert("Add logic to converge all notes to canvas");
     e.preventDefault();
     const $noteItems = $(e.currentTarget).closest(".note-list-container");
     $("#open-canvas-notes-modal").removeClass("hidden");
@@ -1779,29 +1778,33 @@ const WizardSources = {
 
   setupEventListeners() {
     // When the wizard modal is opened
-    document.getElementById('open-wizard-modal')?.addEventListener('shown.bs.modal', () => {
-      this.syncSourcesToWizard();
-    });
+    document
+      .getElementById("open-wizard-modal")
+      ?.addEventListener("shown.bs.modal", () => {
+        this.syncSourcesToWizard();
+      });
 
     // Refresh button in wizard
-    document.getElementById('wizard-refresh-sources')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      this.syncSourcesToWizard();
-    });
+    document
+      .getElementById("wizard-refresh-sources")
+      ?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.syncSourcesToWizard();
+      });
   },
 
   syncSourcesToWizard() {
-    const mainSourceList = document.querySelector('#left-column .source-list');
-    const wizardSourceList = document.getElementById('wizard-sources-list');
-    
+    const mainSourceList = document.querySelector("#left-column .source-list");
+    const wizardSourceList = document.getElementById("wizard-sources-list");
+
     if (!mainSourceList || !wizardSourceList) return;
 
     // Clear existing wizard sources
-    wizardSourceList.innerHTML = '';
-    
+    wizardSourceList.innerHTML = "";
+
     // Clone each source item from main to wizard
-    const sources = mainSourceList.querySelectorAll('.source-item');
-    
+    const sources = mainSourceList.querySelectorAll(".source-item");
+
     if (sources.length === 0) {
       wizardSourceList.innerHTML = `
         <div class="p-4 text-center text-gray-400">
@@ -1811,45 +1814,51 @@ const WizardSources = {
       return;
     }
 
-    sources.forEach(source => {
+    sources.forEach((source) => {
       // Clone the source item
       const clonedSource = source.cloneNode(true);
-      
+
       // Clean up any existing event listeners and classes
-      clonedSource.className = 'group py-2 px-3 hover:bg-gray-700/50 rounded cursor-pointer flex items-center relative mb-1 transition-colors';
-      
+      clonedSource.className =
+        "group py-2 px-3 hover:bg-gray-700/50 rounded cursor-pointer flex items-center relative mb-1 transition-colors";
+
       // Remove any existing click handlers
       clonedSource.onclick = null;
-      
+
       // Add custom click handler
-      clonedSource.addEventListener('click', (e) => {
+      clonedSource.addEventListener("click", (e) => {
         // Handle source click in wizard
         e.stopPropagation();
         this.handleSourceClickInWizard(e);
       });
-      
+
       // Add to wizard
       wizardSourceList.appendChild(clonedSource);
     });
   },
-  
+
   handleSourceClickInWizard(e) {
     const sourceItem = e.currentTarget;
-    const sourceName = sourceItem.querySelector('.source-name')?.textContent || 'Source';
-    
+    const sourceName =
+      sourceItem.querySelector(".truncate")?.textContent || "Source";
+
+    alert("Source clicked in wizard: " + sourceName);
+
     // Toggle active state
-    document.querySelectorAll('#wizard-sources-list .source-item').forEach(item => {
-      item.classList.remove('bg-gray-700/50');
-    });
-    
-    sourceItem.classList.add('bg-gray-700/50');
-    
+    document
+      .querySelectorAll("#wizard-sources-list .source-item")
+      .forEach((item) => {
+        item.classList.remove("bg-gray-700/50");
+      });
+
+    sourceItem.classList.add("bg-gray-700/50");
+
     // Update the chat input placeholder
-    const chatInput = document.getElementById('wizard-message-input');
+    const chatInput = document.getElementById("wizard-message-input");
     if (chatInput) {
       chatInput.placeholder = `Ask me about ${sourceName}...`;
     }
-  }
+  },
 };
 
 /* ============================================ */
