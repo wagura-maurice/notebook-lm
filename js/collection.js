@@ -1892,11 +1892,21 @@ const WizardSources = {
           icon: sourceIcon,
           // Mock data - in a real app, this would come from your data source
           summary: `This is a detailed summary of ${sourceTitle}. It includes key information and insights from the document.`,
-          topics: ["Topic 1", "Topic 2", "Topic 3"],
+          topics: ["Methodology", "Analysis", "Research", "Data Collection"],
           content: [
             `This is a preview of the content from ${sourceTitle}.`,
             "The document contains valuable information about the subject matter.",
+            "The document is formatted in a way that is easy to read and understand.",
+            "The document is formatted in a way that is easy to read and understand.",
+            "The document is formatted in a way that is easy to read and understand.",
             "Key points and details are presented in a clear and organized manner.",
+            "Key points and details are presented in a clear and organized manner.",
+            "Key points and details are presented in a clear and organized manner.",
+            "Key points and details are presented in a clear and organized manner.",
+            "The document is formatted in a way that is easy to read and understand.",
+            "The document is formatted in a way that is easy to read and understand.",
+            "The document is formatted in a way that is easy to read and understand.",
+            "The document is formatted in a way that is easy to read and understand.",
           ],
         });
       });
@@ -1927,7 +1937,7 @@ const WizardSources = {
     const $topicsContainer = $("#wizard-source-topics").empty();
     sourceData.topics.forEach((topic) => {
       $topicsContainer.append(`
-        <span class="px-2 py-1 bg-slate-700 rounded text-xs text-gray-300">
+        <span class="source-topic-tag hover:bg-sky-600 cursor-pointer transition-colors">
           ${topic}
         </span>
       `);
