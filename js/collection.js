@@ -1933,7 +1933,7 @@ const WizardSources = {
     const sourcesView = document.getElementById("wizard-sources-view");
 
     if (sourceContentView && sourceContentInner && sourcesView) {
-      alert("true");
+      // alert("true");
       // Hide sources view
       sourcesView.classList.add("hidden");
 
@@ -1992,7 +1992,7 @@ const WizardSources = {
         }
       });
     } else {
-      alert("false");
+      // alert("false");
     }
   }, // End of handleSourceClickInWizard function
 }; // End of WizardSources module
