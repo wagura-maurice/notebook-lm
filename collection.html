@@ -3958,7 +3958,7 @@
       <div class="w-full h-full flex flex-col">
         <!-- Modal Header -->
         <div class="flex justify-between items-center p-4 bg-gray-800">
-          <h3 class="text-xl font-bold text-white">AI Assistant</h3>
+          <h3 class="text-xl font-bold text-white">AI Wizard</h3>
           <button
             type="button"
             class="modal-close text-gray-400 hover:text-white p-2"
@@ -4093,14 +4093,13 @@
 
             <!-- Message Input -->
             <div class="border-t border-gray-700 p-4 bg-gray-800">
-              <form id="wizard-chat-form">
-                <div class="relative">
+              <form id="wizard-chat-form" class="h-full flex flex-col">
+                <div class="relative flex-1">
                   <textarea
                     id="wizard-message-input"
-                    class="w-full bg-gray-700 text-white rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                    class="w-full h-full bg-gray-700 text-white rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
                     placeholder="Ask me anything..."
-                    rows="1"
-                    style="min-height: 48px; max-height: 200px"
+                    style="min-height: 120px"
                   ></textarea>
                   <button
                     type="submit"
@@ -4111,20 +4110,6 @@
                     <i class="fas fa-paper-plane"></i>
                   </button>
                 </div>
-                <p class="text-xs text-gray-500 mt-2 text-center">
-                  <span class="inline-flex items-center">
-                    <kbd
-                      class="px-1.5 py-0.5 text-xs font-medium bg-gray-700 rounded border border-gray-600"
-                      >Enter</kbd
-                    >
-                    <span class="mx-1">to send</span>
-                    <kbd
-                      class="px-1.5 py-0.5 text-xs font-medium bg-gray-700 rounded border border-gray-600"
-                      >Shift + Enter</kbd
-                    >
-                    <span class="ml-1">for new line</span>
-                  </span>
-                </p>
               </form>
             </div>
           </div>
