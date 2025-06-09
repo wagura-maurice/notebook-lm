@@ -1876,7 +1876,8 @@ const WizardSources = {
       // Add click handler for selection
       $source.on('click', (e) => {
         e.stopPropagation();
-        $sourcesContainer.find('.bg-slate-700/50').removeClass('bg-slate-700/50');
+        // Use a class without forward slash for selection
+        $sourcesContainer.find('[class*="bg-slate-700"]').removeClass('bg-slate-700/50');
         $source.addClass('bg-slate-700/50');
         
         // Show source details
