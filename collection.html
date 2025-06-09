@@ -4068,26 +4068,32 @@
           <div
             class="w-3/4 flex flex-col bg-gray-900 rounded-lg shadow-lg overflow-hidden border border-gray-700"
           >
-            <div class="flex-1 overflow-y-auto p-6" id="wizard-content">
-              <div class="text-center text-gray-300 py-12">
+            <!-- Chat messages container -->
+            <div class="flex-1 overflow-y-auto" id="wizard-chat-messages">
+              <div class="p-6">
                 <div
-                  class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-800 mb-6"
+                  class="text-center text-gray-300 py-12"
+                  id="wizard-welcome-message"
                 >
-                  <i class="fas fa-robot text-4xl text-purple-400"></i>
+                  <div
+                    class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-800 mb-6"
+                  >
+                    <i class="fas fa-robot text-4xl text-purple-400"></i>
+                  </div>
+                  <h3 class="text-2xl font-semibold text-white mb-3">
+                    How can I help you today?
+                  </h3>
+                  <p class="text-gray-400 max-w-md mx-auto text-base">
+                    Ask me anything about your documents or request help with
+                    writing, editing, or research.
+                  </p>
                 </div>
-                <h3 class="text-2xl font-semibold text-white mb-3">
-                  How can I help you today?
-                </h3>
-                <p class="text-gray-400 max-w-md mx-auto text-base">
-                  Ask me anything about your documents or request help with
-                  writing, editing, or research.
-                </p>
               </div>
             </div>
 
             <!-- Message Input -->
             <div class="border-t border-gray-700 p-4 bg-gray-800">
-              <div class="relative">
+              <form id="wizard-chat-form">
                 <div class="relative">
                   <textarea
                     id="wizard-message-input"
@@ -4097,11 +4103,12 @@
                     style="min-height: 48px; max-height: 200px"
                   ></textarea>
                   <button
+                    type="submit"
                     id="wizard-send-btn"
                     class="absolute right-2 bottom-2 p-2 rounded-full text-gray-400 hover:text-white hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled
                   >
-                    <i class="fas fa-paper-plane text-lg"></i>
+                    <i class="fas fa-paper-plane"></i>
                   </button>
                 </div>
                 <p class="text-xs text-gray-500 mt-2 text-center">
@@ -4113,17 +4120,12 @@
                     <span class="mx-1">to send</span>
                     <kbd
                       class="px-1.5 py-0.5 text-xs font-medium bg-gray-700 rounded border border-gray-600"
-                      >Shift</kbd
-                    >
-                    <span class="mx-1">+</span>
-                    <kbd
-                      class="px-1.5 py-0.5 text-xs font-medium bg-gray-700 rounded border border-gray-600"
-                      >Enter</kbd
+                      >Shift + Enter</kbd
                     >
                     <span class="ml-1">for new line</span>
                   </span>
                 </p>
-              </div>
+              </form>
             </div>
           </div>
         </div>

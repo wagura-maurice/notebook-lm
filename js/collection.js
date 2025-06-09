@@ -1799,6 +1799,155 @@ const ModalHandling = {
 };
 
 /* ============================================ */
+/* === MODULE: WIZARD CHAT === */
+/* ============================================ */
+const WizardChat = {
+  init: function() {
+    this.$form = $('#wizard-chat-form');
+    this.$input = $('#wizard-message-input');
+    this.$sendBtn = $('#wizard-send-btn');
+    this.$messagesContainer = $('#wizard-chat-messages');
+    this.$welcomeMessage = $('#wizard-welcome-message');
+    
+    this.bindEvents();
+  },
+  
+  bindEvents: function() {
+    // Handle form submission
+    this.$form.on('submit', this.handleSubmit.bind(this));
+    
+    // Handle input events to enable/disable send button
+    this.$input.on('input', this.handleInput.bind(this));
+    
+    // Handle Enter/Shift+Enter for sending/new line
+    this.$input.on('keydown', this.handleKeydown.bind(this));
+    
+    // Handle click on key topics in wizard
+    $(document).on('click', '#wizard-source-topics .source-topic-tag', (e) => {
+      e.preventDefault();
+      const topic = $(e.target).text().trim();
+      this.submitMessage(topic);
+    });
+  },
+  
+  handleSubmit: function(e) {
+    e.preventDefault();
+    this.sendMessage();
+  },
+  
+  handleInput: function() {
+    const hasText = this.$input.val().trim() !== '';
+    this.$sendBtn.prop('disabled', !hasText);
+  },
+  
+  handleKeydown: function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      this.sendMessage();
+    }
+  },
+  
+  sendMessage: function() {
+    const message = this.$input.val().trim();
+    if (!message) return;
+    
+    // Add user message to chat
+    this.addMessage('user', message);
+    
+    // Clear input and disable send button
+    this.$input.val('');
+    this.$sendBtn.prop('disabled', true);
+    
+    // Show typing indicator
+    this.showTypingIndicator();
+    
+    // Simulate AI response after a delay
+    setTimeout(() => {
+      this.hideTypingIndicator();
+      this.generateAIResponse(message);
+    }, 1000);
+  },
+  
+  submitMessage: function(message) {
+    if (!message) return;
+    
+    // Set the input value and trigger the send
+    this.$input.val(message);
+    this.$sendBtn.prop('disabled', false);
+    this.sendMessage();
+  },
+  
+  addMessage: function(type, content) {
+    // Hide welcome message when first message is sent
+    if (this.$welcomeMessage.is(':visible')) {
+      this.$welcomeMessage.hide();
+    }
+    
+    const isUser = type === 'user';
+    const messageClass = isUser ? 'justify-end' : 'justify-start';
+    const bubbleClass = isUser 
+      ? 'bg-slate-700 hover:bg-slate-600 rounded-xl rounded-br-none' 
+      : 'bg-gray-800 rounded-xl rounded-bl-none';
+    
+    const message = $(`
+      <div class="flex ${messageClass} mb-4 px-2">
+        <div class="max-w-[80%] ${bubbleClass} px-4 py-2 shadow relative group">
+          <div class="text-white text-sm">${content}</div>
+          <div class="text-xs text-gray-400 text-right mt-1">${Utils.formatTime()}</div>
+        </div>
+      </div>
+    `);
+    
+    this.$messagesContainer.append(message);
+    this.scrollToBottom();
+  },
+  
+  showTypingIndicator: function() {
+    const typingIndicator = $(`
+      <div class="typing-indicator flex justify-start mb-4 px-2">
+        <div class="max-w-[80%] bg-gray-800 rounded-xl rounded-bl-none px-4 py-2">
+          <div class="flex items-center space-x-1">
+            <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce"></div>
+            <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style="animation-delay: 0.2s"></div>
+            <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style="animation-delay: 0.4s"></div>
+          </div>
+        </div>
+      </div>
+    `);
+    
+    this.$messagesContainer.append(typingIndicator);
+    this.scrollToBottom();
+    
+    this.typingIndicator = typingIndicator;
+  },
+  
+  hideTypingIndicator: function() {
+    if (this.typingIndicator) {
+      this.typingIndicator.remove();
+      this.typingIndicator = null;
+    }
+  },
+  
+  generateAIResponse: function(userMessage) {
+    // Simple response generation - you can replace this with an actual API call
+    const responses = [
+      `I understand you're interested in "${userMessage}". How can I help you explore this topic further?`,
+      `That's an interesting topic! What specific aspect of "${userMessage}" would you like to discuss?`,
+      `I can help you with "${userMessage}". Would you like me to find more information or help you analyze it?`,
+      `"${userMessage}" is a great topic! What would you like to know more about it?`,
+      `I can see you're interested in "${userMessage}". Let me know how I can assist you with this.`
+    ];
+    
+    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+    this.addMessage('ai', randomResponse);
+  },
+  
+  scrollToBottom: function() {
+    this.$messagesContainer.scrollTop(this.$messagesContainer[0].scrollHeight);
+  }
+};
+
+/* ============================================ */
 /* === MODULE: WIZARD SOURCES === */
 /* ============================================ */
 const WizardSources = {
@@ -1989,6 +2138,7 @@ $(document).ready(function () {
   Utilities.init();
   ModalHandling.init();
   WizardSources.init();
+  WizardChat.init();
 });
 
 // More CHAT SUGGESTIONS Javascript
