@@ -2014,6 +2014,199 @@ const WizardChat = {
 })();
 
 /* ============================================ */
+/* === MODULE: CANVAS CHAT === */
+/* ============================================ */
+const CanvasChat = {
+  init: function () {
+    this.$form = $("#canvas-chat-form");
+    this.$input = $("#canvas-message-input");
+    this.$sendBtn = $("#canvas-send-btn");
+    this.$messagesContainer = $("#canvas-chat-messages");
+    this.$welcomeMessage = $("#canvas-welcome-message");
+    this.$chatContainer = $("#canvas-chat-messages-container");
+
+    this.bindEvents();
+    this.initJumpToBottom();
+  },
+
+  bindEvents: function () {
+    // Handle form submission
+    this.$form.on("submit", this.handleSubmit.bind(this));
+
+    // Handle input events to enable/disable send button
+    this.$input.on("input", this.handleInput.bind(this));
+
+    // Handle Enter/Shift+Enter for sending/new line
+    this.$input.on("keydown", this.handleKeydown.bind(this));
+  },
+
+  handleSubmit: function (e) {
+    e.preventDefault();
+    this.sendMessage();
+  },
+
+  handleInput: function () {
+    const hasText = this.$input.val().trim() !== "";
+    this.$sendBtn.prop("disabled", !hasText);
+  },
+
+  handleKeydown: function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      this.sendMessage();
+    }
+  },
+
+  sendMessage: function () {
+    const message = this.$input.val().trim();
+    if (!message) return;
+
+    // Add user message to chat
+    this.addMessage("user", message);
+
+    // Clear input and disable send button
+    this.$input.val("");
+    this.$sendBtn.prop("disabled", true);
+
+    // Show typing indicator
+    this.showTypingIndicator();
+
+    // Simulate AI response after a delay
+    setTimeout(() => {
+      this.hideTypingIndicator();
+      this.generateAIResponse(message);
+    }, 1000);
+  },
+
+  addMessage: function (type, content) {
+    // Hide welcome message when first message is sent
+    if (this.$welcomeMessage.is(":visible")) {
+      this.$welcomeMessage.hide();
+    }
+
+    const isUser = type === "user";
+    
+    if (isUser) {
+      // User message styling (bubble on the right)
+      const message = $(`
+        <div class="flex justify-end mb-4 px-2">
+          <div class="max-w-[80%] bg-slate-700 hover:bg-slate-600 rounded-xl rounded-br-none px-4 py-2 shadow relative group">
+            <div class="text-white text-sm">${content}</div>
+            <div class="text-xs text-gray-400 text-right mt-1">${Utils.formatTime()}</div>
+          </div>
+        </div>
+      `);
+      this.$chatContainer.append(message);
+    } else {
+      // AI message styling (full width, no borders)
+      const message = $(`
+        <div class="w-full flex flex-col">
+          <div class="px-4 py-3 bg-gray-900/50">
+            <div class="text-white text-sm mb-1">${content}</div>
+            <div class="text-xs text-gray-400">${Utils.formatTime()}</div>
+          </div>
+        </div>
+      `);
+      this.$chatContainer.append(message);
+    }
+    
+    this.scrollToBottom();
+  },
+
+  showTypingIndicator: function () {
+    const typingIndicator = $(`
+      <div class="typing-indicator flex justify-start mb-4 px-2">
+        <div class="max-w-[80%] bg-gray-800 rounded-xl rounded-bl-none px-4 py-2">
+          <div class="flex items-center space-x-1">
+            <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce"></div>
+            <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style="animation-delay: 0.2s"></div>
+            <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style="animation-delay: 0.4s"></div>
+          </div>
+        </div>
+      </div>
+    `);
+
+    this.$chatContainer.append(typingIndicator);
+    this.scrollToBottom();
+
+    this.typingIndicator = typingIndicator;
+  },
+
+  hideTypingIndicator: function () {
+    if (this.typingIndicator) {
+      this.typingIndicator.remove();
+      this.typingIndicator = null;
+    }
+  },
+
+  generateAIResponse: function (userMessage) {
+    // Simple response generation - you can replace this with an actual API call
+    const responses = [
+      `I understand you're interested in "${userMessage}". How can I help you explore this topic further?`,
+      `That's an interesting topic! What specific aspect of "${userMessage}" would you like to discuss?`,
+      `I can help you with "${userMessage}". Would you like me to find more information or help you analyze it?`,
+      `"${userMessage}" is a great topic! What would you like to know more about it?`,
+      `I can see you're interested in "${userMessage}". Let me know how I can assist you with this.`,
+    ];
+
+    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+    this.addMessage("ai", randomResponse);
+  },
+
+  scrollToBottom: function () {
+    this.$messagesContainer[0].scrollTo({
+      top: this.$messagesContainer[0].scrollHeight,
+      behavior: 'smooth'
+    });
+  },
+
+  initJumpToBottom: function() {
+    const chatMessages = document.getElementById("canvas-chat-messages");
+    const jumpBtn = document.getElementById("canvas-jump-to-bottom-btn");
+
+    if (chatMessages && jumpBtn) {
+      function atBottom() {
+        // 2px tolerance for floating point errors
+        return chatMessages.scrollHeight - chatMessages.scrollTop - chatMessages.clientHeight < 2;
+      }
+
+      function toggleJumpBtn() {
+        if (!atBottom()) {
+          jumpBtn.classList.add("opacity-100", "pointer-events-auto");
+          jumpBtn.classList.remove("opacity-0", "pointer-events-none");
+        } else {
+          jumpBtn.classList.remove("opacity-100", "pointer-events-auto");
+          jumpBtn.classList.add("opacity-0", "pointer-events-none");
+        }
+      }
+
+      chatMessages.addEventListener("scroll", toggleJumpBtn);
+
+      // Initial check
+      setTimeout(toggleJumpBtn, 500);
+
+      jumpBtn.addEventListener("click", function () {
+        chatMessages.scrollTo({
+          top: chatMessages.scrollHeight,
+          behavior: "smooth"
+        });
+      });
+
+      // Handle new messages
+      const observer = new MutationObserver(() => {
+        // Only auto-scroll if already at bottom
+        if (atBottom()) {
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        setTimeout(toggleJumpBtn, 100);
+      });
+      
+      observer.observe(chatMessages, { childList: true, subtree: true });
+    }
+  }
+};
+
+/* ============================================ */
 /* === MODULE: WIZARD SOURCES === */
 /* ============================================ */
 const WizardSources = {
