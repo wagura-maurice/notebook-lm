@@ -1908,81 +1908,92 @@ const WizardSources = {
       sourceItem.querySelector(".truncate")?.textContent || "Source";
 
     // Toggle active state
-    document
-      .querySelectorAll("#wizard-sources-list .source-item")
-      .forEach((item) => {
-        item.classList.remove("bg-gray-700/50");
-      });
+    if (
+      document.querySelectorAll("#wizard-sources-list .source-item").length > 0
+    ) {
+      document
+        .querySelectorAll("#wizard-sources-list .source-item")
+        .forEach((item) => {
+          item.classList.remove("bg-gray-700/50");
+        });
+      sourceItem.classList.add("bg-gray-700/50");
+    }
 
-    sourceItem.classList.add("bg-gray-700/50");
-
-    // Update the chat input placeholder
+    // Update chat input placeholder
     const chatInput = document.getElementById("wizard-message-input");
     if (chatInput) {
       chatInput.placeholder = `Ask me about ${sourceName}...`;
     }
 
-    // Show source content view
+    // Toggle source views
     const sourceContentView = document.getElementById("wizard-source-content");
     const sourceContentInner = document.getElementById(
       "wizard-source-content-inner"
     );
     const sourcesView = document.getElementById("wizard-sources-view");
 
-    // Update content with hardcoded template
-    sourceContentInner.innerHTML = `
-      <div class="flex flex-col h-full">
-        <h3 class="font-medium text-purple-400 text-center py-3">${sourceName}</h3>
-        
-        <div class="source-content-section p-4">
-          <h4 class="text-sm font-semibold text-gray-400 mb-2">Summary</h4>
-          <p class="text-sm text-gray-300">This document provides a comprehensive overview of key concepts and methodologies in the field. It covers fundamental principles and practical applications while exploring various aspects of the subject matter.</p>
-        </div>
+    if (sourceContentView && sourceContentInner && sourcesView) {
+      alert("true");
+      // Hide sources view
+      sourcesView.classList.add("hidden");
 
-        <div class="source-content-section p-4">
-          <h4 class="text-sm font-semibold text-gray-400 mb-2">Key Topics</h4>
-          <div class="source-topics-list">
-            <span class="source-topic-tag hover:bg-purple-600 cursor-pointer transition-colors" data-topic="Methodology">Methodology</span>
-            <span class="source-topic-tag hover:bg-purple-600 cursor-pointer transition-colors" data-topic="Analysis">Analysis</span>
-            <span class="source-topic-tag hover:bg-purple-600 cursor-pointer transition-colors" data-topic="Research">Research</span>
-            <span class="source-topic-tag hover:bg-purple-600 cursor-pointer transition-colors" data-topic="Data Collection">Data Collection</span>
-            <span class="source-topic-tag hover:bg-purple-600 cursor-pointer transition-colors" data-topic="Results">Results</span>
+      // Show source content view
+      sourceContentView.classList.remove("hidden");
+
+      // Update content with hardcoded template
+      sourceContentInner.innerHTML = `
+        <div class="flex flex-col h-full">
+          <h3 class="font-medium text-purple-400 text-center py-3">${sourceName}</h3>
+          <div class="source-content-section p-4">
+            <h4 class="text-sm font-semibold text-gray-400 mb-2">Summary</h4>
+            <p class="text-sm text-gray-300">This document provides a comprehensive overview of key concepts and methodologies in the field. It covers fundamental principles and practical applications while exploring various aspects of the subject matter.</p>
+          </div>
+          <div class="source-content-section p-4">
+            <h4 class="text-sm font-semibold text-gray-400 mb-2">Key Topics</h4>
+            <div class="source-topics-list">
+              <span class="source-topic-tag hover:bg-purple-600 cursor-pointer transition-colors" data-topic="Methodology">Methodology</span>
+              <span class="source-topic-tag hover:bg-purple-600 cursor-pointer transition-colors" data-topic="Analysis">Analysis</span>
+              <span class="source-topic-tag hover:bg-purple-600 cursor-pointer transition-colors" data-topic="Research">Research</span>
+              <span class="source-topic-tag hover:bg-purple-600 cursor-pointer transition-colors" data-topic="Data Collection">Data Collection</span>
+              <span class="source-topic-tag hover:bg-purple-600 cursor-pointer transition-colors" data-topic="Results">Results</span>
+            </div>
+          </div>
+          <div class="source-content-section p-4 flex-1 overflow-hidden">
+            <h4 class="text-sm font-semibold text-gray-400 mb-2">Content</h4>
+            <div class="flex-1 overflow-y-auto text-gray-300 space-y-4">
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+              <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+              <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+              <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+              <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
+              <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur.</p>
+            </div>
           </div>
         </div>
+      `;
 
-        <div class="source-content-section p-4 flex-1 overflow-hidden">
-          <h4 class="text-sm font-semibold text-gray-400 mb-2">Content</h4>
-          <div class="flex-1 overflow-y-auto text-gray-300 space-y-4">
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-            <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-            <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
-            <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur.</p>
-          </div>
-        </div>
-      </div>
-    `;
+      // Add event listeners for topic tags
+      sourceContentInner
+        .querySelectorAll(".source-topic-tag")
+        .forEach((tag) => {
+          tag.addEventListener("click", () => {
+            // Handle topic click
+            console.log("Topic clicked:", tag.dataset.topic);
+          });
+        });
 
-    // Show/hide views
-    sourcesView.classList.add("hidden");
-    sourceContentView.classList.remove("hidden");
-
-    // Add back button handler
-    const backButton = document.getElementById("wizard-back-to-sources");
-    if (backButton) {
-      backButton.addEventListener("click", () => {
-        this.hideSourceContent();
+      // Add back button click handler
+      sourceContentView.addEventListener("click", (event) => {
+        if (event.target.closest(".back-to-sources")) {
+          // Hide source content view
+          sourceContentView.classList.add("hidden");
+          // Show sources view
+          sourcesView.classList.remove("hidden");
+        }
       });
+    } else {
+      alert("false");
     }
-
-    // Add event listeners for topic tags
-    sourceContentInner.querySelectorAll(".source-topic-tag").forEach((tag) => {
-      tag.addEventListener("click", () => {
-        // Handle topic click
-        console.log("Topic clicked:", tag.dataset.topic);
-      });
-    });
   }, // End of handleSourceClickInWizard function
 }; // End of WizardSources module
 
