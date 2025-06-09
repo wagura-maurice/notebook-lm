@@ -1823,7 +1823,11 @@ const WizardSources = {
   },
 
   syncSourcesToWizard: function () {
-    const $leftColumnSources = $('.source-list .source-item');
+    // Get only sources that are not currently loading (don't have the loading spinner icon)
+    const $leftColumnSources = $('.source-list .source-item').filter(function() {
+      return $(this).find('.fa-arrows-rotate').length === 0;
+    });
+    
     const $wizardSourceView = $('#wizard-sources-view');
     const $wizardSourceList = $('#wizard-sources-list');
 
@@ -1835,7 +1839,8 @@ const WizardSources = {
       $wizardSourceView.html(`
         <div class="p-4 text-center text-gray-400">
           <i class="fas fa-folder-open text-2xl mb-2"></i>
-          <p class="text-sm">No sources available</p>
+          <p class="text-sm">No loaded sources available</p>
+          <p class="text-xs text-gray-500 mt-1">Some sources may still be loading</p>
         </div>
       `);
       return;
@@ -1853,8 +1858,9 @@ const WizardSources = {
         .addClass('hover:bg-slate-700/50')
         .find('input[type="checkbox"]').remove();
 
-      // Remove any existing click handlers
-      $source.off('click');
+      // Remove any existing click handlers and loading indicators
+      $source.off('click')
+             .find('.fa-arrows-rotate').parent().remove();
 
       // Add click handler for selection
       $source.on('click', function (e) {
@@ -1869,7 +1875,10 @@ const WizardSources = {
     $wizardSourceView.append($sourcesContainer);
 
     // Initialize with first source selected if available
-    $sourcesContainer.find('> div:first-child').trigger('click');
+    const $firstSource = $sourcesContainer.find('> div:first-child');
+    if ($firstSource.length) {
+      $firstSource.trigger('click');
+    }
   }
 };
 
