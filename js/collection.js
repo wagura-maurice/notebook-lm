@@ -1571,10 +1571,10 @@ const ChatFunctionality = {
           <div class="flex justify-between items-center mt-2">
             <div class="text-xs text-gray-300">${Utils.formatTime()}</div>
             <div class="flex gap-3">
-              <button class="text-gray-400 hover:text-white text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600">
+              <button class="text-xs text-gray-300 hover:text-white text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600">
                 <i class="fas fa-plus-circle mr-1.5 text-base"></i> Add to note
               </button>
-              <button class="text-gray-400 hover:text-white text-sm flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600">
+              <button class="text-xs text-gray-300 hover:text-white text-sm flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600">
                 <i class="fas fa-copy mr-1.5 text-base"></i> Copy
               </button>
             </div>
@@ -1808,14 +1808,14 @@ const WizardSources = {
 
   setupEventListeners: function () {
     // Handle refresh button click
-    $(document).on('click', '#wizard-refresh-sources', (e) => {
+    $(document).on("click", "#wizard-refresh-sources", (e) => {
       e.preventDefault();
       e.stopPropagation();
       this.syncSourcesToWizard();
     });
 
     // Also sync when the wizard modal is opened
-    $(document).on('click', '[data-modal-target="open-wizard-modal"]', () => {
+    $(document).on("click", '[data-modal-target="open-wizard-modal"]', () => {
       setTimeout(() => {
         this.syncSourcesToWizard();
       }, 100);
@@ -1824,22 +1824,24 @@ const WizardSources = {
 
   syncSourcesToWizard: function () {
     // Get only sources that are not currently loading (don't have the loading spinner icon)
-    const $leftColumnSources = $('.source-list .source-item').filter(function() {
-      return $(this).find('.fa-arrows-rotate').length === 0;
-    });
-    
-    const $wizardSourceView = $('#wizard-sources-view');
-    const $wizardSourceList = $('#wizard-sources-list');
-    const $sourceDetailsView = $('#wizard-source-details');
-    const $backButton = $('#wizard-back-to-sources');
-    const $refreshButton = $('#wizard-refresh-sources');
+    const $leftColumnSources = $(".source-list .source-item").filter(
+      function () {
+        return $(this).find(".fa-arrows-rotate").length === 0;
+      }
+    );
+
+    const $wizardSourceView = $("#wizard-sources-view");
+    const $wizardSourceList = $("#wizard-sources-list");
+    const $sourceDetailsView = $("#wizard-source-details");
+    const $backButton = $("#wizard-back-to-sources");
+    const $refreshButton = $("#wizard-refresh-sources");
 
     // Reset view to sources list
-    $wizardSourceView.removeClass('hidden');
-    $sourceDetailsView.addClass('hidden');
-    $backButton.addClass('hidden');
-    $refreshButton.removeClass('hidden');
-    
+    $wizardSourceView.removeClass("hidden");
+    $sourceDetailsView.addClass("hidden");
+    $backButton.addClass("hidden");
+    $refreshButton.removeClass("hidden");
+
     // Clear existing content
     $wizardSourceView.empty();
 
@@ -1861,37 +1863,41 @@ const WizardSources = {
     // Clone and add each source to the wizard section
     $leftColumnSources.each((index, element) => {
       const $source = $(element).clone();
-      const sourceTitle = $source.find('.truncate').text() || 'Untitled Source';
-      const sourceIcon = $source.find('.source-icon').attr('class') || 'fas fa-file';
+      const sourceTitle = $source.find(".truncate").text() || "Untitled Source";
+      const sourceIcon =
+        $source.find(".source-icon").attr("class") || "fas fa-file";
 
       // Clean up the cloned element
-      $source.removeClass('source-item hover:bg-slate-700')
-        .addClass('hover:bg-slate-700/50')
-        .find('input[type="checkbox"]').remove();
+      $source
+        .removeClass("source-item hover:bg-slate-700")
+        .addClass("hover:bg-slate-700/50")
+        .find('input[type="checkbox"]')
+        .remove();
 
       // Remove any existing click handlers and loading indicators
-      $source.off('click')
-             .find('.fa-arrows-rotate').parent().remove();
+      $source.off("click").find(".fa-arrows-rotate").parent().remove();
 
       // Add click handler for selection
-      $source.on('click', (e) => {
+      $source.on("click", (e) => {
         e.stopPropagation();
         // Use a class without forward slash for selection
-        $sourcesContainer.find('[class*="bg-slate-700"]').removeClass('bg-slate-700/50');
-        $source.addClass('bg-slate-700/50');
-        
+        $sourcesContainer
+          .find('[class*="bg-slate-700"]')
+          .removeClass("bg-slate-700/50");
+        $source.addClass("bg-slate-700/50");
+
         // Show source details
         this.showSourceDetails({
           title: sourceTitle,
           icon: sourceIcon,
           // Mock data - in a real app, this would come from your data source
           summary: `This is a detailed summary of ${sourceTitle}. It includes key information and insights from the document.`,
-          topics: ['Topic 1', 'Topic 2', 'Topic 3'],
+          topics: ["Topic 1", "Topic 2", "Topic 3"],
           content: [
             `This is a preview of the content from ${sourceTitle}.`,
-            'The document contains valuable information about the subject matter.',
-            'Key points and details are presented in a clear and organized manner.'
-          ]
+            "The document contains valuable information about the subject matter.",
+            "Key points and details are presented in a clear and organized manner.",
+          ],
         });
       });
 
@@ -1901,58 +1907,58 @@ const WizardSources = {
     $wizardSourceView.append($sourcesContainer);
 
     // Initialize with first source selected if available
-    const $firstSource = $sourcesContainer.find('> div:first-child');
+    const $firstSource = $sourcesContainer.find("> div:first-child");
     if ($firstSource.length) {
-      $firstSource.trigger('click');
+      $firstSource.trigger("click");
     }
   },
-  
-  showSourceDetails: function(sourceData) {
-    const $sourceDetails = $('#wizard-source-details');
-    const $sourcesView = $('#wizard-sources-view');
-    const $backButton = $('#wizard-back-to-sources');
-    const $refreshButton = $('#wizard-refresh-sources');
-    
+
+  showSourceDetails: function (sourceData) {
+    const $sourceDetails = $("#wizard-source-details");
+    const $sourcesView = $("#wizard-sources-view");
+    const $backButton = $("#wizard-back-to-sources");
+    const $refreshButton = $("#wizard-refresh-sources");
+
     // Update source details
-    $('#wizard-source-title').text(sourceData.title);
-    $('#wizard-source-summary').text(sourceData.summary);
-    
+    $("#wizard-source-title").text(sourceData.title);
+    $("#wizard-source-summary").text(sourceData.summary);
+
     // Update topics
-    const $topicsContainer = $('#wizard-source-topics').empty();
-    sourceData.topics.forEach(topic => {
+    const $topicsContainer = $("#wizard-source-topics").empty();
+    sourceData.topics.forEach((topic) => {
       $topicsContainer.append(`
         <span class="px-2 py-1 bg-slate-700 rounded text-xs text-gray-300">
           ${topic}
         </span>
       `);
     });
-    
+
     // Update content
-    const $contentContainer = $('#wizard-source-content').empty();
-    sourceData.content.forEach(paragraph => {
+    const $contentContainer = $("#wizard-source-content").empty();
+    sourceData.content.forEach((paragraph) => {
       $contentContainer.append(`<p>${paragraph}</p>`);
     });
-    
+
     // Switch to details view
-    $sourcesView.addClass('hidden');
-    $sourceDetails.removeClass('hidden');
-    $backButton.removeClass('hidden');
-    $refreshButton.addClass('hidden');
-  }
+    $sourcesView.addClass("hidden");
+    $sourceDetails.removeClass("hidden");
+    $backButton.removeClass("hidden");
+    $refreshButton.addClass("hidden");
+  },
 };
 
 // Handle back button in wizard
-$(document).on('click', '#wizard-back-to-sources', function(e) {
+$(document).on("click", "#wizard-back-to-sources", function (e) {
   e.preventDefault();
-  const $wizardSourceView = $('#wizard-sources-view');
-  const $sourceDetails = $('#wizard-source-details');
-  const $backButton = $('#wizard-back-to-sources');
-  const $refreshButton = $('#wizard-refresh-sources');
-  
-  $wizardSourceView.removeClass('hidden');
-  $sourceDetails.addClass('hidden');
-  $backButton.addClass('hidden');
-  $refreshButton.removeClass('hidden');
+  const $wizardSourceView = $("#wizard-sources-view");
+  const $sourceDetails = $("#wizard-source-details");
+  const $backButton = $("#wizard-back-to-sources");
+  const $refreshButton = $("#wizard-refresh-sources");
+
+  $wizardSourceView.removeClass("hidden");
+  $sourceDetails.addClass("hidden");
+  $backButton.addClass("hidden");
+  $refreshButton.removeClass("hidden");
 });
 
 /* ============================================ */
