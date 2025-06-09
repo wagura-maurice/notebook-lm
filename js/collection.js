@@ -1901,8 +1901,8 @@ const WizardChat = {
       const message = $(`
         <div class="w-full flex flex-col">
           <div class="px-4 py-3 bg-gray-900/50">
-            <div class="text-xs text-gray-400 mb-1">${Utils.formatTime()}</div>
-            <div class="text-white text-sm">${content}</div>
+            <div class="text-white text-sm mb-1">${content}</div>
+            <div class="text-xs text-gray-400">${Utils.formatTime()}</div>
           </div>
         </div>
       `);
