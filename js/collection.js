@@ -1830,7 +1830,16 @@ const WizardSources = {
     
     const $wizardSourceView = $('#wizard-sources-view');
     const $wizardSourceList = $('#wizard-sources-list');
+    const $sourceDetailsView = $('#wizard-source-details');
+    const $backButton = $('#wizard-back-to-sources');
+    const $refreshButton = $('#wizard-refresh-sources');
 
+    // Reset view to sources list
+    $wizardSourceView.removeClass('hidden');
+    $sourceDetailsView.addClass('hidden');
+    $backButton.addClass('hidden');
+    $refreshButton.removeClass('hidden');
+    
     // Clear existing content
     $wizardSourceView.empty();
 
@@ -1850,8 +1859,10 @@ const WizardSources = {
     const $sourcesContainer = $('<div class="space-y-1"></div>');
 
     // Clone and add each source to the wizard section
-    $leftColumnSources.each(function () {
-      const $source = $(this).clone();
+    $leftColumnSources.each((index, element) => {
+      const $source = $(element).clone();
+      const sourceTitle = $source.find('.truncate').text() || 'Untitled Source';
+      const sourceIcon = $source.find('.source-icon').attr('class') || 'fas fa-file';
 
       // Clean up the cloned element
       $source.removeClass('source-item hover:bg-slate-700')
@@ -1863,10 +1874,24 @@ const WizardSources = {
              .find('.fa-arrows-rotate').parent().remove();
 
       // Add click handler for selection
-      $source.on('click', function (e) {
+      $source.on('click', (e) => {
         e.stopPropagation();
         $sourcesContainer.find('.bg-slate-700/50').removeClass('bg-slate-700/50');
-        $(this).addClass('bg-slate-700/50');
+        $source.addClass('bg-slate-700/50');
+        
+        // Show source details
+        this.showSourceDetails({
+          title: sourceTitle,
+          icon: sourceIcon,
+          // Mock data - in a real app, this would come from your data source
+          summary: `This is a detailed summary of ${sourceTitle}. It includes key information and insights from the document.`,
+          topics: ['Topic 1', 'Topic 2', 'Topic 3'],
+          content: [
+            `This is a preview of the content from ${sourceTitle}.`,
+            'The document contains valuable information about the subject matter.',
+            'Key points and details are presented in a clear and organized manner.'
+          ]
+        });
       });
 
       $sourcesContainer.append($source);
@@ -1879,8 +1904,55 @@ const WizardSources = {
     if ($firstSource.length) {
       $firstSource.trigger('click');
     }
+  },
+  
+  showSourceDetails: function(sourceData) {
+    const $sourceDetails = $('#wizard-source-details');
+    const $sourcesView = $('#wizard-sources-view');
+    const $backButton = $('#wizard-back-to-sources');
+    const $refreshButton = $('#wizard-refresh-sources');
+    
+    // Update source details
+    $('#wizard-source-title').text(sourceData.title);
+    $('#wizard-source-summary').text(sourceData.summary);
+    
+    // Update topics
+    const $topicsContainer = $('#wizard-source-topics').empty();
+    sourceData.topics.forEach(topic => {
+      $topicsContainer.append(`
+        <span class="px-2 py-1 bg-slate-700 rounded text-xs text-gray-300">
+          ${topic}
+        </span>
+      `);
+    });
+    
+    // Update content
+    const $contentContainer = $('#wizard-source-content').empty();
+    sourceData.content.forEach(paragraph => {
+      $contentContainer.append(`<p>${paragraph}</p>`);
+    });
+    
+    // Switch to details view
+    $sourcesView.addClass('hidden');
+    $sourceDetails.removeClass('hidden');
+    $backButton.removeClass('hidden');
+    $refreshButton.addClass('hidden');
   }
 };
+
+// Handle back button in wizard
+$(document).on('click', '#wizard-back-to-sources', function(e) {
+  e.preventDefault();
+  const $wizardSourceView = $('#wizard-sources-view');
+  const $sourceDetails = $('#wizard-source-details');
+  const $backButton = $('#wizard-back-to-sources');
+  const $refreshButton = $('#wizard-refresh-sources');
+  
+  $wizardSourceView.removeClass('hidden');
+  $sourceDetails.addClass('hidden');
+  $backButton.addClass('hidden');
+  $refreshButton.removeClass('hidden');
+});
 
 /* ============================================ */
 /* === DOCUMENT READY === */
