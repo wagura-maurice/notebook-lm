@@ -1889,7 +1889,9 @@ const WizardChat = {
       ? "bg-slate-700 hover:bg-slate-600 rounded-xl rounded-br-none"
       : "bg-gray-800 rounded-xl rounded-bl-none";
 
-    const timestamp = `<div class="text-xs text-gray-400 ${isUser ? 'text-right' : 'text-left'} mt-1">${Utils.formatTime()}</div>`;
+    const timestamp = `<div class="text-xs text-gray-400 ${
+      isUser ? "text-right" : "text-left"
+    } mt-1">${Utils.formatTime()}</div>`;
     const messageContent = `<div class="text-white text-sm">${content}</div>`;
 
     const message = $(`
@@ -1938,7 +1940,7 @@ const WizardChat = {
       `That's an interesting topic! What specific aspect of "${userMessage}" would you like to discuss?`,
       `I can help you with "${userMessage}". Would you like me to find more information or help you analyze it?`,
       `"${userMessage}" is a great topic! What would you like to know more about it?`,
-      `I can see you're interested in "${userMessage}". Let me know how I can assist you with this.`,
+      `I can see you're interested in, I can see you're interested in, I can see you're interested in, I can see you're interested in, I can see you're interested in, I can see you're interested in "${userMessage}". Let me know how I can assist you with this.`,
     ];
 
     const randomResponse =
