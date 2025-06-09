@@ -181,7 +181,57 @@ const MobileTabs = {
       this.activeTab = currentTab;
     }
   },
-};
+}; // End of MobileTabs module
+
+/* ============================================ */
+/* === MODULE: MODAL HANDLING === */
+/* ============================================ */
+const ModalHandling = {
+  init() {
+    $(document)
+      .on("click", SELECTORS.modalClose, this.closeModal.bind(this))
+      .on("click", SELECTORS.modal, this.closeModalOnClickOutside.bind(this))
+      .on("keydown", this.closeModalOnEscape.bind(this));
+  },
+
+  closeModal(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    $(e.currentTarget).closest(SELECTORS.modal).addClass("hidden");
+  },
+
+  closeModalOnClickOutside(e) {
+    if (e.target === e.currentTarget) {
+      $(e.currentTarget).addClass("hidden");
+    }
+  },
+
+  closeModalOnEscape(e) {
+    if (e.key === "Escape") {
+      $(SELECTORS.modal).addClass("hidden");
+    }
+  },
+}; // End of ModalHandling module
+
+/* ============================================ */
+/* === DOCUMENT READY === */
+/* ============================================ */
+$(document).ready(function () {
+  Preloader.init();
+  ChatSuggestions.init();
+  MobileTabs.init();
+  ColumnToggles.init();
+  DropdownMenus.init();
+  SourceActions.init();
+  NoteActions.init();
+  SourceItemInteractions.init();
+  NoteItemInteractions.init();
+  ChatFunctionality.init();
+  MessageActions.init();
+  Utilities.init();
+  ModalHandling.init();
+  WizardSources.init();
+});
 
 /* ============================================ */
 /* === MODULE: COLUMN TOGGLES === */
@@ -1785,12 +1835,26 @@ const WizardSources = {
       });
 
     // Refresh button in wizard
-    document
-      .getElementById("wizard-refresh-sources")
-      ?.addEventListener("click", (e) => {
+    const refreshButton = document.getElementById("wizard-refresh-sources");
+    if (refreshButton) {
+      refreshButton.addEventListener("click", (e) => {
         e.stopPropagation();
+        e.preventDefault(); // Prevent any default behavior
+
+        // Add loading state
+        refreshButton.disabled = true;
+        refreshButton.classList.add("opacity-50", "cursor-not-allowed");
+
+        // Sync sources
         this.syncSourcesToWizard();
+
+        // Reset loading state after sync
+        setTimeout(() => {
+          refreshButton.disabled = false;
+          refreshButton.classList.remove("opacity-50", "cursor-not-allowed");
+        }, 1000); // Small delay to ensure visual feedback
       });
+    }
   },
 
   syncSourcesToWizard() {
@@ -1838,11 +1902,10 @@ const WizardSources = {
   },
 
   handleSourceClickInWizard(e) {
+    e.preventDefault();
     const sourceItem = e.currentTarget;
     const sourceName =
       sourceItem.querySelector(".truncate")?.textContent || "Source";
-
-    alert("Source clicked in wizard: " + sourceName);
 
     // Toggle active state
     document
@@ -1858,40 +1921,71 @@ const WizardSources = {
     if (chatInput) {
       chatInput.placeholder = `Ask me about ${sourceName}...`;
     }
-  },
-};
 
-/* ============================================ */
-/* === MODULE: MODAL HANDLING === */
-/* ============================================ */
-const ModalHandling = {
-  init: function () {
-    $(document)
-      .on("click", SELECTORS.modalClose, this.closeModal.bind(this))
-      .on("click", SELECTORS.modal, this.closeModalOnClickOutside.bind(this))
-      .on("keydown", this.closeModalOnEscape.bind(this));
-  },
+    // Show source content view
+    const sourceContentView = document.getElementById("wizard-source-content");
+    const sourceContentInner = document.getElementById(
+      "wizard-source-content-inner"
+    );
+    const sourcesView = document.getElementById("wizard-sources-view");
 
-  closeModal: function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    $(e.currentTarget).closest(SELECTORS.modal).addClass("hidden");
-  },
+    // Update content with hardcoded template
+    sourceContentInner.innerHTML = `
+      <div class="flex flex-col h-full">
+        <h3 class="font-medium text-purple-400 text-center py-3">${sourceName}</h3>
+        
+        <div class="source-content-section p-4">
+          <h4 class="text-sm font-semibold text-gray-400 mb-2">Summary</h4>
+          <p class="text-sm text-gray-300">This document provides a comprehensive overview of key concepts and methodologies in the field. It covers fundamental principles and practical applications while exploring various aspects of the subject matter.</p>
+        </div>
 
-  closeModalOnClickOutside: function (e) {
-    if (e.target === e.currentTarget) {
-      $(e.currentTarget).addClass("hidden");
+        <div class="source-content-section p-4">
+          <h4 class="text-sm font-semibold text-gray-400 mb-2">Key Topics</h4>
+          <div class="source-topics-list">
+            <span class="source-topic-tag hover:bg-purple-600 cursor-pointer transition-colors" data-topic="Methodology">Methodology</span>
+            <span class="source-topic-tag hover:bg-purple-600 cursor-pointer transition-colors" data-topic="Analysis">Analysis</span>
+            <span class="source-topic-tag hover:bg-purple-600 cursor-pointer transition-colors" data-topic="Research">Research</span>
+            <span class="source-topic-tag hover:bg-purple-600 cursor-pointer transition-colors" data-topic="Data Collection">Data Collection</span>
+            <span class="source-topic-tag hover:bg-purple-600 cursor-pointer transition-colors" data-topic="Results">Results</span>
+          </div>
+        </div>
+
+        <div class="source-content-section p-4 flex-1 overflow-hidden">
+          <h4 class="text-sm font-semibold text-gray-400 mb-2">Content</h4>
+          <div class="flex-1 overflow-y-auto text-gray-300 space-y-4">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+            <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
+            <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur.</p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Show/hide views
+    sourcesView.classList.add("hidden");
+    sourceContentView.classList.remove("hidden");
+
+    // Add back button handler
+    const backButton = document.getElementById("wizard-back-to-sources");
+    if (backButton) {
+      backButton.addEventListener("click", () => {
+        this.hideSourceContent();
+      });
     }
-  },
 
-  closeModalOnEscape: function (e) {
-    if (e.key === "Escape") {
-      $(SELECTORS.modal).addClass("hidden");
-    }
-  },
-};
+    // Add event listeners for topic tags
+    sourceContentInner.querySelectorAll(".source-topic-tag").forEach((tag) => {
+      tag.addEventListener("click", () => {
+        // Handle topic click
+        console.log("Topic clicked:", tag.dataset.topic);
+      });
+    });
+  }, // End of handleSourceClickInWizard function
+}; // End of WizardSources module
 
-/* ============================================ */
 /* === DOCUMENT READY === */
 /* ============================================ */
 $(document).ready(function () {
