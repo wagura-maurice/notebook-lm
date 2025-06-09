@@ -1949,9 +1949,60 @@ const WizardChat = {
   },
 
   scrollToBottom: function () {
-    this.$messagesContainer.scrollTop(this.$messagesContainer[0].scrollHeight);
+    this.$messagesContainer[0].scrollTo({
+      top: this.$messagesContainer[0].scrollHeight,
+      behavior: 'smooth'
+    });
   },
 };
+
+// Initialize Jump to Bottom functionality for wizard chat
+(function () {
+  const chatMessages = document.getElementById("wizard-chat-messages");
+  const jumpBtn = document.getElementById("wizard-jump-to-bottom-btn");
+
+  if (chatMessages && jumpBtn) {
+    function atBottom() {
+      // 2px tolerance for floating point errors
+      return (
+        chatMessages.scrollHeight - chatMessages.scrollTop - chatMessages.clientHeight < 2
+      );
+    }
+
+    function toggleJumpBtn() {
+      if (!atBottom()) {
+        jumpBtn.classList.add("opacity-100", "pointer-events-auto");
+        jumpBtn.classList.remove("opacity-0", "pointer-events-none");
+      } else {
+        jumpBtn.classList.remove("opacity-100", "pointer-events-auto");
+        jumpBtn.classList.add("opacity-0", "pointer-events-none");
+      }
+    }
+
+    chatMessages.addEventListener("scroll", toggleJumpBtn);
+
+    // Initial check
+    setTimeout(toggleJumpBtn, 500);
+
+    jumpBtn.addEventListener("click", function () {
+      chatMessages.scrollTo({
+        top: chatMessages.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+
+    // Handle new messages
+    const observer = new MutationObserver(() => {
+      // Only auto-scroll if already at bottom
+      if (atBottom()) {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+      setTimeout(toggleJumpBtn, 100);
+    });
+    
+    observer.observe(chatMessages, { childList: true, subtree: true });
+  }
+})();
 
 /* ============================================ */
 /* === MODULE: WIZARD SOURCES === */
