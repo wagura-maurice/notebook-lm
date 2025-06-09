@@ -1884,24 +1884,33 @@ const WizardChat = {
     }
 
     const isUser = type === "user";
-    const messageClass = isUser ? "justify-end" : "justify-start";
-    const bubbleClass = isUser
-      ? "bg-slate-700 hover:bg-slate-600 rounded-xl rounded-br-none"
-      : "bg-gray-800 rounded-xl rounded-bl-none";
-
-    const timestamp = `<div class="text-xs text-gray-400 ${
-      isUser ? "text-right" : "text-left"
-    } mt-1">${Utils.formatTime()}</div>`;
-    const messageContent = `<div class="text-white text-sm">${content}</div>`;
-
-    const message = $(`
-      <div class="flex ${messageClass} mb-4 px-2">
-        <div class="max-w-[80%] ${bubbleClass} px-4 py-2 shadow relative group">
-          ${messageContent}
-          ${timestamp}
+    
+    if (isUser) {
+      // User message styling (bubble on the right)
+      const message = $(`
+        <div class="flex justify-end mb-4 px-2">
+          <div class="max-w-[80%] bg-slate-700 hover:bg-slate-600 rounded-xl rounded-br-none px-4 py-2 shadow relative group">
+            <div class="text-white text-sm">${content}</div>
+            <div class="text-xs text-gray-400 text-right mt-1">${Utils.formatTime()}</div>
+          </div>
         </div>
-      </div>
-    `);
+      `);
+      this.$messagesContainer.append(message);
+    } else {
+      // AI message styling (full width, no borders)
+      const message = $(`
+        <div class="w-full flex flex-col">
+          <div class="px-4 py-3 bg-gray-900/50">
+            <div class="text-xs text-gray-400 mb-1">${Utils.formatTime()}</div>
+            <div class="text-white text-sm">${content}</div>
+          </div>
+        </div>
+      `);
+      this.$messagesContainer.append(message);
+    }
+    
+    this.scrollToBottom();
+    return;
 
     this.$messagesContainer.append(message);
     this.scrollToBottom();
