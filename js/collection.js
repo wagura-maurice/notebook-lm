@@ -1889,17 +1889,14 @@ const WizardChat = {
       ? "bg-slate-700 hover:bg-slate-600 rounded-xl rounded-br-none"
       : "bg-gray-800 rounded-xl rounded-bl-none";
 
-    const timestamp = `<div class="text-xs text-gray-400 ${
-      isUser ? "text-right" : ""
-    } mb-1">${Utils.formatTime()}</div>`;
+    const timestamp = `<div class="text-xs text-gray-400 ${isUser ? 'text-right' : 'text-left'} mt-1">${Utils.formatTime()}</div>`;
     const messageContent = `<div class="text-white text-sm">${content}</div>`;
 
     const message = $(`
       <div class="flex ${messageClass} mb-4 px-2">
         <div class="max-w-[80%] ${bubbleClass} px-4 py-2 shadow relative group">
-          ${!isUser ? timestamp : ""}
           ${messageContent}
-          ${isUser ? timestamp : ""}
+          ${timestamp}
         </div>
       </div>
     `);
