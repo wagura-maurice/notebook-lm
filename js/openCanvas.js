@@ -89,55 +89,102 @@ const expandBtn = document.getElementById("expandBtn");
 const summarizeBtn = document.getElementById("summarizeBtn");
 const improveBtn = document.getElementById("improveBtn");
 
-// Store current selection data
-let currentSelection = null;
+// Store current selection data persistently
+const selectionState = {
+  currentSelection: null,
+  lastActiveSelection: null,
+  hasActiveSelection: false
+};
 
-// Track selection changes
+// Helper to update the selection state
+function updateSelectionState(selection) {
+  if (selection) {
+    selectionState.currentSelection = {
+      text: selection.text,
+      range: { index: selection.range.index, length: selection.range.length },
+      lineNumber: selection.lineNumber,
+      startIndex: selection.range.index,
+      endIndex: selection.range.index + selection.range.length,
+      bounds: selection.bounds,
+      timestamp: new Date().toISOString()
+    };
+    selectionState.lastActiveSelection = { ...selectionState.currentSelection };
+    selectionState.hasActiveSelection = true;
+  } else {
+    selectionState.currentSelection = null;
+    selectionState.hasActiveSelection = false;
+  }
+}
+
+// Track selection changes in the editor
 quill.on("selection-change", function (range, oldRange, source) {
   if (range && range.length > 0) {
     // Get selected text
-    const selectedText = quill.getText(range.index, range.length);
+    const selectedText = quill.getText(range.index, range.length).trim();
+    
+    // Only update if we have actual selected text (not just a cursor)
+    if (selectedText.length > 0) {
+      // Get position information
+      const bounds = quill.getBounds(range.index);
+      const [line, column] = quill.getLine(range.index);
 
-    // Get position information
-    const bounds = quill.getBounds(range.index);
-    const [line, column] = quill.getLine(range.index);
+      // Calculate line number (approximate)
+      const textBefore = quill.getText(0, range.index);
+      const lineNumber = textBefore.split("\n").length;
 
-    // Calculate line number (approximate)
-    const textBefore = quill.getText(0, range.index);
-    const lineNumber = textBefore.split("\n").length;
+      // Create selection object
+      const selection = {
+        text: selectedText,
+        range: range,
+        lineNumber: lineNumber,
+        startIndex: range.index,
+        endIndex: range.index + range.length,
+        bounds: bounds,
+      };
 
-    // Store selection data
-    currentSelection = {
-      text: selectedText,
-      range: range,
-      lineNumber: lineNumber,
-      startIndex: range.index,
-      endIndex: range.index + range.length,
-      bounds: bounds,
-    };
-
-    // Update UI
-    updateSelectionDisplay();
-    enableAIButtons(true);
-  } else {
-    // No selection
-    currentSelection = null;
+      // Update the persistent selection state
+      updateSelectionState(selection);
+      
+      // Update UI
+      updateSelectionDisplay();
+      enableAIButtons(true);
+    } else if (!selectionState.hasActiveSelection) {
+      // Only clear if we don't have a previous active selection
+      clearSelectionDisplay();
+      enableAIButtons(false);
+    }
+  } else if (!selectionState.hasActiveSelection) {
+    // No selection and no previous active selection
     clearSelectionDisplay();
     enableAIButtons(false);
   }
 });
 
-function updateSelectionDisplay() {
-  if (!currentSelection) return;
+// Track clicks outside the editor to maintain selection state
+document.addEventListener('click', (e) => {
+  const isEditorClick = quill.container.contains(e.target);
+  if (!isEditorClick && selectionState.lastActiveSelection) {
+    // Restore the last active selection in the UI
+    updateSelectionDisplay();
+    enableAIButtons(true);
+  }
+});
 
-  selectedTextEl.textContent = currentSelection.text;
+function updateSelectionDisplay() {
+  const selection = selectionState.currentSelection || selectionState.lastActiveSelection;
+  if (!selection) {
+    clearSelectionDisplay();
+    return;
+  }
+
+  selectedTextEl.textContent = selection.text;
   selectedTextEl.style.fontStyle = "normal";
 
   positionInfoEl.innerHTML = `
-            <strong>Position:</strong> Line ${currentSelection.lineNumber}, 
-            Characters ${currentSelection.startIndex}-${currentSelection.endIndex}<br>
-            <strong>Length:</strong> ${currentSelection.text.length} characters
-        `;
+    <strong>Position:</strong> Line ${selection.lineNumber}, 
+    Characters ${selection.startIndex}-${selection.endIndex}<br>
+    <strong>Length:</strong> ${selection.text.length} characters
+  `;
 }
 
 function clearSelectionDisplay() {
@@ -167,11 +214,12 @@ function hideAIResponse() {
 
 // AI Action handlers (simulated)
 explainBtn.addEventListener("click", () => {
-  if (!currentSelection) return;
+  const selection = selectionState.currentSelection || selectionState.lastActiveSelection;
+  if (!selection) return;
 
   const mockExplanation = `
-    <p><strong>Explanation for:</strong> "${currentSelection.text}"</p>
-    <p>This text appears at line ${currentSelection.lineNumber} in your document. Here's what it means in context...</p>
+    <p><strong>Explanation for:</strong> "${selection.text}"</p>
+    <p>This text appears at line ${selection.lineNumber} in your document. Here's what it means in context...</p>
     <p><em>This is a simulated AI response. In a real implementation, this would connect to an actual AI API.</em></p>
   `;
 
@@ -186,11 +234,12 @@ explainBtn.addEventListener("click", () => {
 });
 
 expandBtn.addEventListener("click", () => {
-  if (!currentSelection) return;
+  const selection = selectionState.currentSelection || selectionState.lastActiveSelection;
+  if (!selection) return;
 
   const mockExpansion = `
-    <p><strong>Expanded content for:</strong> "${currentSelection.text}"</p>
-    <p>Here's additional context and elaboration that could be inserted at position ${currentSelection.startIndex}...</p>
+    <p><strong>Expanded content for:</strong> "${selection.text}"</p>
+    <p>Here's additional context and elaboration that could be inserted at position ${selection.startIndex}...</p>
     <p><em>In a real implementation, this expanded content would be inserted directly into the document at the selection point.</em></p>
   `;
 
