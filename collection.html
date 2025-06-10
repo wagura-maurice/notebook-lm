@@ -3689,7 +3689,7 @@
                 </p>
               </div>
               <!-- Messages will be inserted here by JavaScript -->
-              <div id="canvas-chat-messages-container" class="p-4"></div>
+              <div id="canvas-chat-messages-container"></div>
             </div>
 
             <!-- Jump to Bottom Button -->
@@ -3713,7 +3713,12 @@
                     class="w-full bg-gray-700 text-white rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
                     placeholder="Ask me anything..."
                     rows="3"
-                    style="min-height: 80px"
+                    style="
+                      min-height: 80px;
+                      overflow-y: auto;
+                      scrollbar-width: thin;
+                      scrollbar-color: transparent transparent;
+                    "
                   ></textarea>
                   <button
                     type="submit"
