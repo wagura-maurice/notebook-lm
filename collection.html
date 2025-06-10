@@ -3978,20 +3978,10 @@
           >
             <!-- Chat messages container -->
             <div
-              class="flex-1 overflow-y-auto scrollbar-transparent relative"
+              class="flex-1 overflow-y-auto scrollbar-transparent relative flex flex-col"
               id="wizard-chat-messages"
+              style="contain: layout style paint"
             >
-              <!-- Jump to Bottom Button -->
-              <div
-                class="absolute bottom-4 left-0 right-0 flex justify-center z-10"
-              >
-                <button
-                  id="wizard-jump-to-bottom-btn"
-                  class="bg-indigo-500 text-white rounded-full py-2 px-6 shadow-md hover:bg-indigo-600 focus:outline-none transition-opacity duration-300 opacity-0 pointer-events-none"
-                >
-                  Jump to Bottom
-                </button>
-              </div>
               <div class="p-6">
                 <div
                   class="text-center text-gray-300 py-12"
@@ -4011,6 +4001,18 @@
                   </p>
                 </div>
               </div>
+            </div>
+
+            <!-- Jump to Bottom Button -->
+            <div
+              class="sticky bottom-4 left-0 right-0 flex justify-center z-10"
+            >
+              <button
+                id="wizard-jump-to-bottom-btn"
+                class="bg-indigo-500 text-white rounded-full py-2 px-6 shadow-md hover:bg-indigo-600 focus:outline-none transition-opacity duration-300 opacity-0 pointer-events-none"
+              >
+                Jump to Bottom
+              </button>
             </div>
 
             <!-- Message Input -->
