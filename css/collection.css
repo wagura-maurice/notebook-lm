@@ -39,9 +39,62 @@
   visibility: visible;
 }
 
-/* Ensure left column allows overflow for tooltips */
-#left-column {
+/* Tooltip styles for both columns */
+#left-column,
+#right-column {
   overflow: visible !important;
+}
+
+/* Tooltip for note items in right column */
+#right-column .note-item {
+  position: relative;
+}
+
+#right-column .note-item .font-medium.truncate {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+#right-column .note-item .font-medium.truncate[data-title]::after {
+  content: attr(data-title);
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 1000;
+  pointer-events: none;
+  border: 1px solid #334155;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  min-width: max-content;
+  max-width: 200px;
+  text-align: center;
+}
+
+#right-column .note-item:hover .font-medium.truncate[data-title]::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Adjust for collapsed state */
+#right-column.collapsed .note-item .font-medium.truncate[data-title]::after {
+  left: 100%;
+  bottom: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 10px;
 }
 
 :root {
@@ -886,14 +939,7 @@ header {
 
 /* Large desktop (1440px and above) */
 @media (min-width: 1440px) {
-  #left-column,
-  #right-column {
-    /* width: 300px; */
-  }
-
-  #middle-column {
-    /* flex: 3; */
-  }
+  /* Additional styles for large desktops can be added here */
 }
 
 /* Modal responsiveness (below 767px) */

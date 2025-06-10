@@ -1382,9 +1382,23 @@ const NoteActions = {
 const SourceItemInteractions = {
   init: function () {
     this.setupSourceTitles();
+    this.setupNoteTitles();
+    
+    // Set up event listeners
     $(document)
       .on("click", SELECTORS.sourceItem, this.handleSourceItemClick.bind(this))
       .on("click", this.handleDocumentClick.bind(this));
+      
+    // Update titles when the document is fully loaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        this.updateSourceTitles();
+        this.updateNoteTitles();
+      });
+    } else {
+      this.updateSourceTitles();
+      this.updateNoteTitles();
+    }
   },
 
   setupSourceTitles: function() {
@@ -1400,9 +1414,42 @@ const SourceItemInteractions = {
   },
   
   updateSourceTitles: function() {
+    // Update source item tooltips
     document.querySelectorAll('.source-item .truncate').forEach(span => {
       if (!span.title) {
         span.title = span.textContent.trim();
+      }
+    });
+    
+    // Update note item tooltips
+    document.querySelectorAll('#right-column .note-item .truncate').forEach(span => {
+      const title = span.textContent.trim();
+      if (title) {
+        span.setAttribute('data-title', title);
+      }
+    });
+  },
+  
+  setupNoteTitles: function() {
+    // Initial setup for note titles
+    this.updateNoteTitles();
+    
+    // Set up MutationObserver for dynamically added note items
+    const notesList = document.querySelector('#right-column .px-5.py-3');
+    if (notesList) {
+      const observer = new MutationObserver(() => {
+        this.updateNoteTitles();
+      });
+      observer.observe(notesList, { childList: true, subtree: true });
+    }
+  },
+  
+  updateNoteTitles: function() {
+    // Update tooltips for note items
+    document.querySelectorAll('#right-column .note-item .font-medium.truncate').forEach(div => {
+      const title = div.textContent.trim();
+      if (title) {
+        div.setAttribute('data-title', title);
       }
     });
   },
