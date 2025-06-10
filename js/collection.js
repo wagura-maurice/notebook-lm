@@ -1381,9 +1381,30 @@ const NoteActions = {
 /* ============================================ */
 const SourceItemInteractions = {
   init: function () {
+    this.setupSourceTitles();
     $(document)
       .on("click", SELECTORS.sourceItem, this.handleSourceItemClick.bind(this))
       .on("click", this.handleDocumentClick.bind(this));
+  },
+
+  setupSourceTitles: function() {
+    // Set initial titles
+    this.updateSourceTitles();
+    
+    // Update titles when new items are added
+    const observer = new MutationObserver(() => this.updateSourceTitles());
+    const sourcesList = document.querySelector('#sources-list');
+    if (sourcesList) {
+      observer.observe(sourcesList, { childList: true, subtree: true });
+    }
+  },
+  
+  updateSourceTitles: function() {
+    document.querySelectorAll('.source-item .truncate').forEach(span => {
+      if (!span.title) {
+        span.title = span.textContent.trim();
+      }
+    });
   },
 
   handleSourceItemClick: function (e) {

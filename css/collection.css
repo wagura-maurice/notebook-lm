@@ -1,6 +1,49 @@
 /* ============================================ */
 /* === GLOBAL & BASE STYLES === */
 /* ============================================ */
+
+/* Source item tooltip styling */
+#left-column .source-item {
+  position: relative;
+}
+
+#left-column .source-item .truncate {
+  position: relative;
+  display: inline-block;
+}
+
+#left-column .source-item .truncate::after {
+  content: attr(title);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 10px;
+  background: #1e293b;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 1000;
+  pointer-events: none;
+  border: 1px solid #334155;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+#left-column .source-item:hover .truncate::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Ensure left column allows overflow for tooltips */
+#left-column {
+  overflow: visible !important;
+}
+
 :root {
   --slate-900: #0f172a;
   --slate-800: #1e293b;
