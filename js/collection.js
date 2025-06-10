@@ -2483,31 +2483,59 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Handle AI text chat form submission in right sidebar
   const aiChatForm = document.getElementById('ai-text-chat-form-right');
-  if (aiChatForm) {
+  const aiTextInput = document.getElementById('ai-text-input-right');
+  const aiSendButton = document.getElementById('ai-text-send-right');
+
+  // Function to handle sending the message
+  function handleSendMessage() {
+    const message = aiTextInput.value.trim();
+    
+    if (message) {
+      console.log('AI Action Submitted:', message);
+      
+      // Clear the input field
+      aiTextInput.value = '';
+      
+      // Reset the textarea height
+      aiTextInput.style.height = 'auto';
+      
+      // Focus back to the input
+      aiTextInput.focus();
+    }
+  }
+
+  if (aiChatForm && aiTextInput && aiSendButton) {
+    // Handle form submission (when pressing Enter)
     aiChatForm.addEventListener('submit', function(e) {
       e.preventDefault();
-      const input = document.getElementById('ai-text-input-right');
-      const message = input.value.trim();
-      
-      if (message) {
-        console.log('AI Action Submitted:', message);
-        
-        // Clear the input field
-        input.value = '';
-        
-        // Reset the textarea height
-        input.style.height = 'auto';
+      handleSendMessage();
+    });
+
+    // Handle send button click
+    aiSendButton.addEventListener('click', function() {
+      handleSendMessage();
+    });
+
+    // Handle Enter key submission
+    aiTextInput.addEventListener('keydown', function(e) {
+      // Check if Enter was pressed and Ctrl/Cmd is not pressed
+      if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault(); // Prevent line break
+        handleSendMessage();
       }
     });
 
     // Auto-resize textarea as user types
-    const aiTextInput = document.getElementById('ai-text-input-right');
-    if (aiTextInput) {
-      aiTextInput.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = (this.scrollHeight) + 'px';
-      });
-    }
+    aiTextInput.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
+      
+      // Enable/disable send button based on input
+      aiSendButton.disabled = this.value.trim() === '';
+    });
+    
+    // Initial button state
+    aiSendButton.disabled = aiTextInput.value.trim() === '';
   }
 
   jumpBtn.addEventListener("click", function () {
