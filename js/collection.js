@@ -101,6 +101,13 @@ const ChatSuggestions = {
         "overflow-x": "auto",
       });
 
+      // Show/hide buttons based on number of suggestions
+      const suggestions = chatSuggestions.find("button");
+      const showButtons = suggestions.length > 1;
+      leftBtn.toggle(showButtons);
+      rightBtn.toggle(showButtons);
+
+      // Add click handlers
       leftBtn.on("click", () => {
         chatSuggestions.parent().get(0).scrollBy({
           left: -CONFIG.scrollOffset,
@@ -115,6 +122,18 @@ const ChatSuggestions = {
         });
       });
     }
+  },
+
+  // Update button states when suggestions change
+  updateButtonStates: function () {
+    const chatSuggestions = $(SELECTORS.chatSuggestions);
+    const leftBtn = $(SELECTORS.chatSuggestionsLeft);
+    const rightBtn = $(SELECTORS.chatSuggestionsRight);
+    const suggestions = chatSuggestions.find("button");
+    const showButtons = suggestions.length > 1;
+
+    leftBtn.toggle(showButtons);
+    rightBtn.toggle(showButtons);
   },
 };
 
@@ -1884,7 +1903,7 @@ const WizardChat = {
     }
 
     const isUser = type === "user";
-    
+
     if (isUser) {
       // User message styling (bubble on the right)
       const message = $(`
@@ -1908,7 +1927,7 @@ const WizardChat = {
       `);
       this.$messagesContainer.append(message);
     }
-    
+
     this.scrollToBottom();
     return;
 
@@ -1960,7 +1979,7 @@ const WizardChat = {
   scrollToBottom: function () {
     this.$messagesContainer[0].scrollTo({
       top: this.$messagesContainer[0].scrollHeight,
-      behavior: 'smooth'
+      behavior: "smooth",
     });
   },
 };
@@ -1974,7 +1993,10 @@ const WizardChat = {
     function atBottom() {
       // 2px tolerance for floating point errors
       return (
-        chatMessages.scrollHeight - chatMessages.scrollTop - chatMessages.clientHeight < 2
+        chatMessages.scrollHeight -
+          chatMessages.scrollTop -
+          chatMessages.clientHeight <
+        2
       );
     }
 
@@ -2008,7 +2030,7 @@ const WizardChat = {
       }
       setTimeout(toggleJumpBtn, 100);
     });
-    
+
     observer.observe(chatMessages, { childList: true, subtree: true });
   }
 })();
@@ -2085,7 +2107,7 @@ const CanvasChat = {
     }
 
     const isUser = type === "user";
-    
+
     if (isUser) {
       // User message styling (bubble on the right)
       const message = $(`
@@ -2109,7 +2131,7 @@ const CanvasChat = {
       `);
       this.$chatContainer.append(message);
     }
-    
+
     this.scrollToBottom();
   },
 
@@ -2149,25 +2171,31 @@ const CanvasChat = {
       `I can see you're interested in "${userMessage}". Let me know how I can assist you with this.`,
     ];
 
-    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+    const randomResponse =
+      responses[Math.floor(Math.random() * responses.length)];
     this.addMessage("ai", randomResponse);
   },
 
   scrollToBottom: function () {
     this.$messagesContainer[0].scrollTo({
       top: this.$messagesContainer[0].scrollHeight,
-      behavior: 'smooth'
+      behavior: "smooth",
     });
   },
 
-  initJumpToBottom: function() {
+  initJumpToBottom: function () {
     const chatMessages = document.getElementById("canvas-chat-messages");
     const jumpBtn = document.getElementById("canvas-jump-to-bottom-btn");
 
     if (chatMessages && jumpBtn) {
       function atBottom() {
         // 2px tolerance for floating point errors
-        return chatMessages.scrollHeight - chatMessages.scrollTop - chatMessages.clientHeight < 2;
+        return (
+          chatMessages.scrollHeight -
+            chatMessages.scrollTop -
+            chatMessages.clientHeight <
+          2
+        );
       }
 
       function toggleJumpBtn() {
@@ -2188,7 +2216,7 @@ const CanvasChat = {
       jumpBtn.addEventListener("click", function () {
         chatMessages.scrollTo({
           top: chatMessages.scrollHeight,
-          behavior: "smooth"
+          behavior: "smooth",
         });
       });
 
@@ -2200,10 +2228,10 @@ const CanvasChat = {
         }
         setTimeout(toggleJumpBtn, 100);
       });
-      
+
       observer.observe(chatMessages, { childList: true, subtree: true });
     }
-  }
+  },
 };
 
 /* ============================================ */
@@ -2482,23 +2510,23 @@ document.addEventListener("DOMContentLoaded", () => {
   setTimeout(toggleJumpBtn, 500);
 
   // Handle AI text chat form submission in right sidebar
-  const aiChatForm = document.getElementById('ai-text-chat-form-right');
-  const aiTextInput = document.getElementById('ai-text-input-right');
-  const aiSendButton = document.getElementById('ai-text-send-right');
+  const aiChatForm = document.getElementById("ai-text-chat-form-right");
+  const aiTextInput = document.getElementById("ai-text-input-right");
+  const aiSendButton = document.getElementById("ai-text-send-right");
 
   // Function to handle sending the message
   function handleSendMessage() {
     const message = aiTextInput.value.trim();
-    
+
     if (message) {
-      console.log('AI Action Submitted:', message);
-      
+      console.log("AI Action Submitted:", message);
+
       // Clear the input field
-      aiTextInput.value = '';
-      
+      aiTextInput.value = "";
+
       // Reset the textarea height
-      aiTextInput.style.height = 'auto';
-      
+      aiTextInput.style.height = "auto";
+
       // Focus back to the input
       aiTextInput.focus();
     }
@@ -2506,36 +2534,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (aiChatForm && aiTextInput && aiSendButton) {
     // Handle form submission (when pressing Enter)
-    aiChatForm.addEventListener('submit', function(e) {
+    aiChatForm.addEventListener("submit", function (e) {
       e.preventDefault();
       handleSendMessage();
     });
 
     // Handle send button click
-    aiSendButton.addEventListener('click', function() {
+    aiSendButton.addEventListener("click", function () {
       handleSendMessage();
     });
 
     // Handle Enter key submission
-    aiTextInput.addEventListener('keydown', function(e) {
+    aiTextInput.addEventListener("keydown", function (e) {
       // Check if Enter was pressed and Ctrl/Cmd is not pressed
-      if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) {
+      if (e.key === "Enter" && !e.ctrlKey && !e.metaKey) {
         e.preventDefault(); // Prevent line break
         handleSendMessage();
       }
     });
 
     // Auto-resize textarea as user types
-    aiTextInput.addEventListener('input', function() {
-      this.style.height = 'auto';
-      this.style.height = (this.scrollHeight) + 'px';
-      
+    aiTextInput.addEventListener("input", function () {
+      this.style.height = "auto";
+      this.style.height = this.scrollHeight + "px";
+
       // Enable/disable send button based on input
-      aiSendButton.disabled = this.value.trim() === '';
+      aiSendButton.disabled = this.value.trim() === "";
     });
-    
+
     // Initial button state
-    aiSendButton.disabled = aiTextInput.value.trim() === '';
+    aiSendButton.disabled = aiTextInput.value.trim() === "";
   }
 
   jumpBtn.addEventListener("click", function () {
