@@ -1918,10 +1918,15 @@ const WizardChat = {
     } else {
       // AI message styling (full width, no borders)
       const message = $(`
-        <div class="w-full flex flex-col">
-          <div class="px-4 py-3 bg-gray-900/50">
-            <div class="text-white text-sm mb-1">${content}</div>
-            <div class="text-xs text-gray-400">${Utils.formatTime()}</div>
+        <div class="w-full px-4 py-2 group">
+          <div class="text-white text-sm">${content}</div>
+          <div class="flex justify-between items-center mt-2">
+            <div class="text-xs text-gray-300">${Utils.formatTime()}</div>
+            <button
+              class="text-xs text-gray-300 hover:text-white flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
+              data-message="${content.replace(/"/g, '"')}">
+              <i class="fas fa-copy mr-1"></i> Copy
+            </button>
           </div>
         </div>
       `);
@@ -2112,20 +2117,25 @@ const CanvasChat = {
       // User message styling (bubble on the right)
       const message = $(`
         <div class="flex justify-end mb-4 px-2">
-          <div class="max-w-[80%] bg-slate-700 hover:bg-slate-600 rounded-xl rounded-br-none px-4 py-2 shadow relative group">
+          <div class="max-w-[80%] bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl rounded-br-none shadow relative group">
             <div class="text-white text-sm">${content}</div>
-            <div class="text-xs text-gray-400 text-right mt-1">${Utils.formatTime()}</div>
+            <div class="text-xs text-gray-300 text-right">${Utils.formatTime()}</div>
           </div>
         </div>
       `);
       this.$chatContainer.append(message);
     } else {
-      // AI message styling (full width, no borders)
+      // AI message styling (full width with copy button)
       const message = $(`
-        <div class="w-full flex flex-col">
-          <div class="px-4 py-3 bg-gray-900/50">
-            <div class="text-white text-sm mb-1">${content}</div>
-            <div class="text-xs text-gray-400">${Utils.formatTime()}</div>
+        <div class="w-full px-4 py-2 group">
+          <div class="text-white text-sm">${content}</div>
+          <div class="flex justify-between items-center mt-2">
+            <div class="text-xs text-gray-300">${Utils.formatTime()}</div>
+            <button
+              class="text-xs text-gray-300 hover:text-white flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
+              data-message="${content.replace(/"/g, '"')}">
+              <i class="fas fa-copy mr-1"></i> Copy
+            </button>
           </div>
         </div>
       `);
