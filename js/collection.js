@@ -2481,6 +2481,35 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initial check
   setTimeout(toggleJumpBtn, 500);
 
+  // Handle AI text chat form submission in right sidebar
+  const aiChatForm = document.getElementById('ai-text-chat-form-right');
+  if (aiChatForm) {
+    aiChatForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const input = document.getElementById('ai-text-input-right');
+      const message = input.value.trim();
+      
+      if (message) {
+        console.log('AI Action Submitted:', message);
+        
+        // Clear the input field
+        input.value = '';
+        
+        // Reset the textarea height
+        input.style.height = 'auto';
+      }
+    });
+
+    // Auto-resize textarea as user types
+    const aiTextInput = document.getElementById('ai-text-input-right');
+    if (aiTextInput) {
+      aiTextInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+      });
+    }
+  }
+
   jumpBtn.addEventListener("click", function () {
     chatMessages.scrollTo({
       top: chatMessages.scrollHeight,
