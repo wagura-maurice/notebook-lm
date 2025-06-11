@@ -254,18 +254,19 @@ expandBtn.addEventListener("click", () => {
 });
 
 summarizeBtn.addEventListener("click", () => {
-  if (!currentSelection) return;
+  const selection = selectionState.currentSelection || selectionState.lastActiveSelection;
+  if (!selection) return;
 
   const mockSummary = `
     <p><strong>Summary:</strong></p>
-    <p>Key points from the selected text: "${currentSelection.text.substring(
+    <p>Key points from the selected text: "${selection.text.substring(
       0,
       50
     )}..."</p>
     <ul>
       <li>Main concept identified</li>
       <li>Context preserved</li>
-      <li>Position tracked (Line ${currentSelection.lineNumber})</li>
+      <li>Position tracked (Line ${selection.lineNumber})</li>
     </ul>
   `;
 
@@ -275,16 +276,17 @@ summarizeBtn.addEventListener("click", () => {
 });
 
 improveBtn.addEventListener("click", () => {
-  if (!currentSelection) return;
+  const selection = selectionState.currentSelection || selectionState.lastActiveSelection;
+  if (!selection) return;
 
   const mockImprovement = `
-            <p><strong>Improved version:</strong></p>
-            <p>Here's a refined version of your selected text with better clarity and flow...</p>
-            <div style="background:rgb(29, 130, 231); padding: 10px; border-radius: 4px; margin: 10px 0;">
-                Enhanced version of: "${currentSelection.text}"
-            </div>
-            <p><em>Click to replace original text at position ${currentSelection.startIndex}-${currentSelection.endIndex}</em></p>
-        `;
+    <p><strong>Improved version:</strong></p>
+    <p>Here's a refined version of your selected text with better clarity and flow...</p>
+    <div style="background:rgb(29, 130, 231); padding: 10px; border-radius: 4px; margin: 10px 0;">
+        Enhanced version of: "${selection.text}"
+    </div>
+    <p><em>Click to replace original text at position ${selection.startIndex}-${selection.endIndex}</em></p>
+  `;
 
   // Insert the summary at the end of the document in the Quill editor
   const lastIndex = quill.getLength();
