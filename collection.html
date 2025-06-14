@@ -118,25 +118,46 @@
                   class="h-full w-full rounded-full object-cover hover:opacity-90 transition-opacity"
                   alt="User Avatar"
                 />
-                <div class="absolute inset-0 rounded-full border-2 border-green-500 pointer-events-none"></div>
+                <div
+                  class="absolute inset-0 rounded-full border-2 border-green-500 pointer-events-none"
+                ></div>
               </div>
               <!-- Dropdown menu -->
-              <div id="avatar-dropdown" class="hidden fixed lg:absolute right-4 lg:right-0 mt-2 w-56 lg:w-48 bg-slate-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+              <div
+                id="avatar-dropdown"
+                class="hidden fixed lg:absolute right-4 lg:right-0 mt-2 w-56 lg:w-48 bg-slate-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+              >
                 <div class="py-1" role="menu" aria-orientation="vertical">
-                  <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white" role="menuitem">
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white"
+                    role="menuitem"
+                  >
                     <i class="fas fa-user mr-3 w-5 text-center"></i>
                     <span>Profile</span>
                   </a>
-                  <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white" role="menuitem">
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white"
+                    role="menuitem"
+                  >
                     <i class="fas fa-cog mr-3 w-5 text-center"></i>
                     <span>Settings</span>
                   </a>
-                  <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white" role="menuitem">
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white"
+                    role="menuitem"
+                  >
                     <i class="fas fa-moon mr-3 w-5 text-center"></i>
                     <span>Theme</span>
                   </a>
                   <div class="border-t border-slate-700 my-1"></div>
-                  <a href="#" class="flex items-center px-4 py-3 text-sm text-red-400 hover:bg-slate-700 hover:text-red-300" role="menuitem">
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-3 text-sm text-red-400 hover:bg-slate-700 hover:text-red-300"
+                    role="menuitem"
+                  >
                     <i class="fas fa-sign-out-alt mr-3 w-5 text-center"></i>
                     <span>Sign out</span>
                   </a>
@@ -144,56 +165,64 @@
               </div>
             </div>
             <script>
-              document.addEventListener('DOMContentLoaded', function() {
-                const dropdownTrigger = document.getElementById('avatar-dropdown-trigger');
-                const dropdownMenu = document.getElementById('avatar-dropdown');
-                
+              document.addEventListener("DOMContentLoaded", function () {
+                const dropdownTrigger = document.getElementById(
+                  "avatar-dropdown-trigger"
+                );
+                const dropdownMenu = document.getElementById("avatar-dropdown");
+
                 // Toggle dropdown on click
-                dropdownTrigger.addEventListener('click', function(e) {
+                dropdownTrigger.addEventListener("click", function (e) {
                   e.stopPropagation();
-                  const isHidden = dropdownMenu.classList.toggle('hidden');
-                  
+                  const isHidden = dropdownMenu.classList.toggle("hidden");
+
                   // Position the dropdown for mobile
-                  if (!isHidden && window.innerWidth < 1024) { // lg breakpoint
+                  if (!isHidden && window.innerWidth < 1024) {
+                    // lg breakpoint
                     const rect = dropdownTrigger.getBoundingClientRect();
-                    dropdownMenu.style.top = `${rect.bottom + window.scrollY}px`;
-                    dropdownMenu.style.right = '1rem';
+                    dropdownMenu.style.top = `${
+                      rect.bottom + window.scrollY
+                    }px`;
+                    dropdownMenu.style.right = "1rem";
                   }
                 });
-                
+
                 // Handle window resize
                 let resizeTimer;
-                window.addEventListener('resize', function() {
+                window.addEventListener("resize", function () {
                   clearTimeout(resizeTimer);
-                  resizeTimer = setTimeout(function() {
-                    if (!dropdownMenu.classList.contains('hidden')) {
-                      dropdownMenu.classList.add('hidden');
+                  resizeTimer = setTimeout(function () {
+                    if (!dropdownMenu.classList.contains("hidden")) {
+                      dropdownMenu.classList.add("hidden");
                     }
                   }, 250);
                 });
-                
+
                 // Close dropdown when clicking outside
-                document.addEventListener('click', function(e) {
-                  if (!dropdownTrigger.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                    dropdownMenu.classList.add('hidden');
+                document.addEventListener("click", function (e) {
+                  if (
+                    !dropdownTrigger.contains(e.target) &&
+                    !dropdownMenu.contains(e.target)
+                  ) {
+                    dropdownMenu.classList.add("hidden");
                   }
                 });
-                
+
                 // Close dropdown when clicking on a menu item
-                const menuItems = dropdownMenu.querySelectorAll('a');
-                menuItems.forEach(item => {
-                  item.addEventListener('click', function(e) {
+                const menuItems = dropdownMenu.querySelectorAll("a");
+                menuItems.forEach((item) => {
+                  item.addEventListener("click", function (e) {
                     e.preventDefault();
-                    dropdownMenu.classList.add('hidden');
+                    dropdownMenu.classList.add("hidden");
                     // Here you can add navigation logic for each menu item
-                    console.log('Clicked:', item.textContent.trim());
+                    console.log("Clicked:", item.textContent.trim());
                   });
                 });
-                
+
                 // Close dropdown when pressing Escape key
-                document.addEventListener('keydown', function(e) {
-                  if (e.key === 'Escape') {
-                    dropdownMenu.classList.add('hidden');
+                document.addEventListener("keydown", function (e) {
+                  if (e.key === "Escape") {
+                    dropdownMenu.classList.add("hidden");
                   }
                 });
               });
@@ -230,31 +259,55 @@
             <i class="fas fa-cog fa-md"></i>
           </button>
           <div class="relative">
-            <div class="h-10 w-10 cursor-pointer" id="desktop-avatar-dropdown-trigger">
+            <div
+              class="h-10 w-10 cursor-pointer"
+              id="desktop-avatar-dropdown-trigger"
+            >
               <img
                 src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=6366f1&color=fff&rounded=true&size=40"
                 class="h-full w-full rounded-full object-cover hover:opacity-90 transition-opacity"
                 alt="User Avatar"
               />
-              <div class="absolute inset-0 rounded-full border-2 border-green-500 pointer-events-none"></div>
+              <div
+                class="absolute inset-0 rounded-full border-2 border-green-500 pointer-events-none"
+              ></div>
             </div>
             <!-- Dropdown menu -->
-            <div id="desktop-avatar-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-slate-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+            <div
+              id="desktop-avatar-dropdown"
+              class="hidden absolute right-0 mt-2 w-48 bg-slate-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+            >
               <div class="py-1" role="menu" aria-orientation="vertical">
-                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white" role="menuitem">
+                <a
+                  href="#"
+                  class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white"
+                  role="menuitem"
+                >
                   <i class="fas fa-user mr-3 w-5 text-center"></i>
                   <span>Profile</span>
                 </a>
-                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white" role="menuitem">
+                <a
+                  href="#"
+                  class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white"
+                  role="menuitem"
+                >
                   <i class="fas fa-cog mr-3 w-5 text-center"></i>
                   <span>Settings</span>
                 </a>
-                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white" role="menuitem">
+                <a
+                  href="#"
+                  class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white"
+                  role="menuitem"
+                >
                   <i class="fas fa-moon mr-3 w-5 text-center"></i>
                   <span>Theme</span>
                 </a>
                 <div class="border-t border-slate-700 my-1"></div>
-                <a href="#" class="flex items-center px-4 py-3 text-sm text-red-400 hover:bg-slate-700 hover:text-red-300" role="menuitem">
+                <a
+                  href="#"
+                  class="flex items-center px-4 py-3 text-sm text-red-400 hover:bg-slate-700 hover:text-red-300"
+                  role="menuitem"
+                >
                   <i class="fas fa-sign-out-alt mr-3 w-5 text-center"></i>
                   <span>Sign out</span>
                 </a>
@@ -262,38 +315,45 @@
             </div>
           </div>
           <script>
-            document.addEventListener('DOMContentLoaded', function() {
-              const dropdownTrigger = document.getElementById('desktop-avatar-dropdown-trigger');
-              const dropdownMenu = document.getElementById('desktop-avatar-dropdown');
-              
+            document.addEventListener("DOMContentLoaded", function () {
+              const dropdownTrigger = document.getElementById(
+                "desktop-avatar-dropdown-trigger"
+              );
+              const dropdownMenu = document.getElementById(
+                "desktop-avatar-dropdown"
+              );
+
               // Toggle dropdown on click
-              dropdownTrigger.addEventListener('click', function(e) {
+              dropdownTrigger.addEventListener("click", function (e) {
                 e.stopPropagation();
-                dropdownMenu.classList.toggle('hidden');
+                dropdownMenu.classList.toggle("hidden");
               });
-              
+
               // Close dropdown when clicking outside
-              document.addEventListener('click', function(e) {
-                if (!dropdownTrigger.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                  dropdownMenu.classList.add('hidden');
+              document.addEventListener("click", function (e) {
+                if (
+                  !dropdownTrigger.contains(e.target) &&
+                  !dropdownMenu.contains(e.target)
+                ) {
+                  dropdownMenu.classList.add("hidden");
                 }
               });
-              
+
               // Close dropdown when clicking on a menu item
-              const menuItems = dropdownMenu.querySelectorAll('a');
-              menuItems.forEach(item => {
-                item.addEventListener('click', function(e) {
+              const menuItems = dropdownMenu.querySelectorAll("a");
+              menuItems.forEach((item) => {
+                item.addEventListener("click", function (e) {
                   e.preventDefault();
-                  dropdownMenu.classList.add('hidden');
+                  dropdownMenu.classList.add("hidden");
                   // Here you can add navigation logic for each menu item
-                  console.log('Clicked:', item.textContent.trim());
+                  console.log("Clicked:", item.textContent.trim());
                 });
               });
-              
+
               // Close dropdown when pressing Escape key
-              document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                  dropdownMenu.classList.add('hidden');
+              document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape") {
+                  dropdownMenu.classList.add("hidden");
                 }
               });
             });
@@ -3000,1030 +3060,949 @@
             >
               <i class="fas fa-book text-xl text-amber-400"></i>
             </button>
-            <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
-              title="Add a source"
-            >
-      </div>
-    </div>
-
-    <!-- Modals -->
-    <!-- Share Modal -->
-    <div
-      class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
-      id="share-collection-modal"
-    >
-      <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
-        <!-- Modal Header -->
-        <div class="flex justify-between items-start p-4 border-b rounded-t">
-          <div>
-            <button
-              id="share-collection-modal-back"
-              class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
-            >
-              <i class="fas fa-arrow-left text-xl"></i>
-            </button>
-            <h3
-              id="share-collection-modal-title"
-              class="py-4 text-xl font-bold text-white"
-            >
-              Share Collection
-            </h3>
-            <p
-              id="share-collection-modal-description"
-              class="text-gray-300 mt-1"
-            >
-              Share this collection with others
-            </p>
-          </div>
-          <button
-            type="button"
-            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
-          >
-            <i class="fa-solid fa-xmark p-1"></i>
-            <span class="sr-only">Close modal</span>
-          </button>
-        </div>
-
-        <!-- Modal Body -->
-        <div class="p-4">
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-300 mb-1"
-                >Share Link</label
-              >
-              <div class="relative">
-                <input
-                  type="text"
-                  id="share-notebook-link"
-                  class="w-full px-3 py-2 rounded-lg bg-slate-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-accent-blue"
-                  placeholder="Shareable link will appear here"
-                  readonly
-                />
-                <button
-                  id="copy-share-link"
-                  class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 rounded bg-blue-gray hover:bg-slate-600 text-white"
-                >
-                  Copy
-                </button>
-              </div>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-300 mb-1"
-                >Access Level</label
-              >
-              <select
-                id="share-notebook-access"
-                class="w-full px-3 py-2 rounded-lg bg-slate-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-accent-blue"
-              >
-                <option value="view">View Only</option>
-                <option value="edit">Can Edit</option>
-              </select>
-            </div>
           </div>
         </div>
 
-        <!-- Modal Footer -->
+        <!-- Modals -->
+        <!-- Share Modal -->
         <div
-          class="flex justify-end gap-0 p-4"
-          id="share-collection-modal-footer"
+          class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
+          id="share-collection-modal"
         >
-          <div class="flex justify-end gap-0">
-            <button
-              class="px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-600"
+          <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
+            <!-- Modal Header -->
+            <div
+              class="flex justify-between items-start p-4 border-b rounded-t"
             >
-              Cancel
-            </button>
-            <button
-              class="px-4 py-2 rounded-r-full bg-accent-blue text-white border border-gray-600"
-            >
-              Generate Link
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Add Source Modal -->
-    <div
-      class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
-      id="add-source-modal"
-    >
-      <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
-        <!-- Modal Header -->
-        <div class="flex justify-between items-start p-4 border-b rounded-t">
-          <div>
-            <button
-              id="source-modal-back"
-              class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
-            >
-              <i class="fas fa-arrow-left text-xl"></i>
-            </button>
-            <h3
-              id="source-modal-title"
-              class="py-4 text-xl font-bold text-white"
-            >
-              Add Source
-            </h3>
-            <p id="source-modal-description" class="text-gray-300 mt-1">
-              Select a source to add to your notebook
-            </p>
-          </div>
-          <button
-            type="button"
-            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
-          >
-            <i class="fa-solid fa-xmark p-1"></i>
-            <span class="sr-only">Close modal</span>
-          </button>
-        </div>
-
-        <!-- Modal Body -->
-        <div class="p-4">
-          <!-- Step 1: Picker UI -->
-          <div id="source-modal-step-picker">
-            <div class="space-y-6">
-              <!-- Upload Card -->
-              <div
-                id="upload-source-card"
-                class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-              >
-                <i
-                  class="fas fa-cloud-upload-alt text-4xl text-gray-400 dark:text-gray-300 mb-3"
-                ></i>
-                <h4 class="text-lg font-medium text-gray-900 dark:text-white">
-                  Upload sources
-                </h4>
-                <p class="text-gray-600 dark:text-gray-300 mb-3">
-                  Drag and drop or choose file to upload
-                </p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">
-                  Supported file types: PDF, txt, Markdown, Audio (e.g. mp3)
-                </p>
-                <input type="file" class="hidden" id="file-upload" multiple />
+              <div>
                 <button
-                  type="button"
-                  id="file-upload-btn"
-                  class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium dark:bg-blue-500 dark:hover:bg-blue-600"
+                  id="share-collection-modal-back"
+                  class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
                 >
-                  Select Files
+                  <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-              </div>
-
-              <!-- Website/YouTube Options -->
-              <div class="grid grid-cols-2 gap-3">
-                <div
-                  id="website-source-card"
-                  class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                <h3
+                  id="share-collection-modal-title"
+                  class="py-4 text-xl font-bold text-white"
                 >
-                  <i
-                    class="fas fa-link text-2xl text-blue-500 dark:text-blue-400 mb-2"
-                  ></i>
-                  <p class="text-sm font-medium text-gray-900 dark:text-white">
-                    Website
-                  </p>
-                </div>
-                <div
-                  id="youtube-source-card"
-                  class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                >
-                  <i
-                    class="fab fa-youtube text-2xl text-red-500 dark:text-red-400 mb-2"
-                  ></i>
-                  <p class="text-sm font-medium text-gray-900 dark:text-white">
-                    YouTube
-                  </p>
-                </div>
-              </div>
-              <div
-                id="paste-source-card"
-                class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-              >
-                <div class="flex items-center">
-                  <i
-                    class="fas fa-paste text-2xl text-purple-500 dark:text-purple-400 mr-3"
-                  ></i>
-                  <div>
-                    <p
-                      class="text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Paste text
-                    </p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">
-                      Copied text
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Step 2: Website -->
-          <div id="source-modal-step-website" class="hidden">
-            <label class="block mb-2 text-base text-white"
-              >Paste in a web URL below to upload as a source in
-              NotebookLM.</label
-            >
-            <div
-              class="flex items-center bg-dark-blue rounded border border-gray-700 mb-4"
-            >
-              <span class="px-3 text-gray-400"
-                ><i class="fas fa-link"></i
-              ></span>
-              <input
-                type="text"
-                id="website-url-input"
-                class="flex-1 bg-transparent border-0 focus:ring-0 text-white p-3"
-                placeholder="Paste URL*"
-              />
-            </div>
-            <div class="text-gray-400 text-sm mb-4">
-              <div class="font-semibold mb-1">Notes</div>
-              <ul class="list-disc pl-5">
-                <li>
-                  Only the visible text on the website will be imported at this
-                  moment
-                </li>
-                <li>Paid articles are not supported</li>
-              </ul>
-            </div>
-            <button
-              id="insert-website-btn"
-              class="w-full mt-4 px-4 py-2 rounded bg-accent-blue text-white font-semibold disabled:opacity-50"
-              disabled
-            >
-              Insert
-            </button>
-          </div>
-
-          <!-- Step 3: YouTube -->
-          <div id="source-modal-step-youtube" class="hidden">
-            <label class="block mb-2 text-base text-white"
-              >Paste in a YouTube URL below to upload as a source in
-              NotebookLM.</label
-            >
-            <div
-              class="flex items-center bg-dark-blue rounded border border-gray-700 mb-4"
-            >
-              <span class="px-3 text-gray-400"
-                ><i class="fab fa-youtube"></i
-              ></span>
-              <input
-                type="text"
-                id="youtube-url-input"
-                class="flex-1 bg-transparent border-0 focus:ring-0 text-white p-3"
-                placeholder="Paste YouTube URL*"
-              />
-            </div>
-            <div class="text-gray-400 text-sm mb-4">
-              <div class="font-semibold mb-1">Notes</div>
-              <ul class="list-disc pl-5">
-                <li>
-                  Only the text transcript will be imported at this moment
-                </li>
-                <li>Only public YouTube videos are supported</li>
-                <li>Recently uploaded videos may not be available to import</li>
-                <li>
-                  If upload fails,
-                  <a href="#" class="underline text-blue-400">learn more</a> for
-                  common reasons.
-                </li>
-              </ul>
-            </div>
-            <button
-              id="insert-youtube-btn"
-              class="w-full mt-4 px-4 py-2 rounded bg-accent-blue text-white font-semibold disabled:opacity-50"
-              disabled
-            >
-              Insert
-            </button>
-          </div>
-
-          <!-- Step 4: Paste Text -->
-          <div id="source-modal-step-paste" class="hidden">
-            <label class="block mb-2 text-base text-white"
-              >Paste your copied text below to upload as a source in
-              NotebookLM</label
-            >
-            <textarea
-              id="paste-text-input"
-              class="w-full bg-dark-blue border border-gray-700 text-white rounded p-3 mb-4 h-32"
-              placeholder="Paste text here*"
-            ></textarea>
-            <div class="text-gray-400 text-sm mb-4">
-              <div class="font-semibold mb-1">Notes</div>
-              <ul class="list-disc pl-5">
-                <li>Only the pasted text will be used as a source</li>
-              </ul>
-            </div>
-            <button
-              id="insert-paste-btn"
-              class="w-full mt-4 px-4 py-2 rounded bg-accent-blue text-white font-semibold disabled:opacity-50"
-              disabled
-            >
-              Insert
-            </button>
-          </div>
-        </div>
-
-        <!-- Modal Footer -->
-        <div class="flex justify-end gap-0 p-4" id="source-modal-footer">
-          <button
-            class="px-4 py-2 rounded text-gray-300 hover:bg-blue-gray modal-close border border-gray-600 rounded-full"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Discover Source Modal -->
-    <div
-      class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
-      id="discover-source-modal"
-    >
-      <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
-        <!-- Modal Header -->
-        <div class="flex justify-between items-start p-4 border-b rounded-t">
-          <div>
-            <button
-              id="discover-source-modal-back"
-              class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
-            >
-              <i class="fas fa-arrow-left text-xl"></i>
-            </button>
-            <h3
-              id="discover-source-modal-title"
-              class="py-4 text-xl font-bold text-white"
-            >
-              Discover Source
-            </h3>
-            <p
-              id="discover-source-modal-description"
-              class="text-gray-300 mt-1"
-            >
-              Browse and select from available sources to add to your notebook
-            </p>
-          </div>
-          <button
-            type="button"
-            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
-          >
-            <i class="fa-solid fa-xmark p-1"></i>
-            <span class="sr-only">Close modal</span>
-          </button>
-        </div>
-
-        <!-- Modal Body -->
-        <div class="p-4">
-          <!-- Search bar -->
-          <div class="relative mb-4">
-            <div
-              class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-            >
-              <i class="fas fa-search text-gray-500 dark:text-gray-400"></i>
-            </div>
-            <input
-              type="text"
-              class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
-              placeholder="Search sources..."
-            />
-          </div>
-
-          <!-- Source list -->
-          <div
-            class="border border-gray-200 dark:border-gray-700 rounded-lg divide-y divide-gray-200 dark:divide-gray-700 max-h-96 overflow-y-auto py-1 scrollbar-transparent"
-          >
-            <!-- Source item 1 -->
-            <div
-              class="p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-            >
-              <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                  <i
-                    class="fas fa-file-pdf text-red-500 dark:text-red-400 text-xl"
-                  ></i>
-                  <div>
-                    <h4 class="font-medium text-gray-900 dark:text-white">
-                      Assessing Reliability and Credibility in Information
-                      Sci...
-                    </h4>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                      PDF • 2.4 MB • Last opened 3 days ago
-                    </p>
-                  </div>
-                </div>
-                <button
-                  class="discover-add-remove-btn add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
-                >
-                  Add
-                </button>
-              </div>
-            </div>
-
-            <!-- Source item 2 -->
-            <div
-              class="p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-            >
-              <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                  <i
-                    class="fas fa-file-pdf text-red-500 dark:text-red-400 text-xl"
-                  ></i>
-                  <div>
-                    <h4 class="font-medium text-gray-900 dark:text-white">
-                      EDWIN COC.pdf
-                    </h4>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                      PDF • 1.8 MB • Certificate of Completion
-                    </p>
-                  </div>
-                </div>
-                <button
-                  class="discover-add-remove-btn add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
-                >
-                  Add
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Modal footer -->
-        <div
-          class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-4 border-t border-gray-200 gap-2 sm:gap-0"
-        >
-          <span
-            class="text-sm font-medium text-gray-500 mb-2 sm:mb-0 text-center sm:text-left"
-            >8 sources found</span
-          >
-          <div class="flex w-full sm:w-auto justify-end gap-0">
-            <button
-              type="button"
-              class="flex-1 sm:flex-none px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-200"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              class="flex-1 sm:flex-none px-4 py-2 rounded-r-full bg-accent-blue text-white border border-gray-600"
-            >
-              Add Selected (0)
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Rename Source Modal -->
-    <div
-      class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
-      id="rename-modal"
-    >
-      <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
-        <!-- Modal Header -->
-        <div class="flex justify-between items-start p-4 border-b rounded-t">
-          <div>
-            <button
-              id="rename-source-modal-back"
-              class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
-            >
-              <i class="fas fa-arrow-left text-xl"></i>
-            </button>
-            <h3
-              id="rename-source-modal-title"
-              class="py-4 text-xl font-bold text-white"
-            >
-              Rename Source
-            </h3>
-            <p id="rename-source-modal-description" class="text-gray-300 mt-1">
-              Enter a new name for this source
-            </p>
-          </div>
-          <button
-            type="button"
-            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
-          >
-            <i class="fa-solid fa-xmark p-1"></i>
-            <span class="sr-only">Close modal</span>
-          </button>
-        </div>
-
-        <!-- Modal Body -->
-        <div class="p-4">
-          <input
-            type="text"
-            class="w-full p-3 rounded bg-dark-blue border border-gray-700 text-white"
-            placeholder="Enter new name"
-            id="rename-input"
-          />
-        </div>
-
-        <!-- Modal Footer -->
-        <div class="flex justify-end gap-0 p-4" id="rename-source-modal-footer">
-          <div class="flex justify-end gap-0">
-            <button
-              class="px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-600"
-            >
-              Cancel
-            </button>
-            <button
-              class="px-4 py-2 rounded-r-full bg-accent-blue text-white border border-gray-600"
-            >
-              Save
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Delete Source Modal -->
-    <div
-      class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
-      id="delete-source-modal"
-    >
-      <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
-        <!-- Modal Header -->
-        <div class="flex justify-between items-start p-4 border-b rounded-t">
-          <div>
-            <button
-              id="delete-source-modal-back"
-              class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
-            >
-              <i class="fas fa-arrow-left text-xl"></i>
-            </button>
-            <h3
-              id="delete-source-modal-title"
-              class="py-4 text-xl font-bold text-white"
-            >
-              Delete Source
-            </h3>
-            <p id="delete-source-modal-description" class="text-gray-300 mt-1">
-              Are you sure you want to delete this source? This action cannot be
-              undone.
-            </p>
-          </div>
-          <button
-            type="button"
-            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
-          >
-            <i class="fa-solid fa-xmark p-1"></i>
-            <span class="sr-only">Close modal</span>
-          </button>
-        </div>
-
-        <!-- Modal Footer -->
-        <div class="flex justify-end gap-0 p-4" id="delete-source-modal-footer">
-          <div class="flex justify-end gap-0">
-            <button
-              class="px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-600"
-            >
-              Cancel
-            </button>
-            <button
-              class="px-4 py-2 rounded-r-full bg-red-600 text-white border border-gray-600"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Add Note Modal -->
-    <div
-      class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
-      id="add-note-modal"
-    >
-      <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
-        <!-- Modal Header -->
-        <div class="flex justify-between items-start p-4 border-b rounded-t">
-          <div>
-            <button
-              id="add-note-modal-back"
-              class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
-            >
-              <i class="fas fa-arrow-left text-xl"></i>
-            </button>
-            <h3
-              id="add-note-modal-title"
-              class="py-4 text-xl font-bold text-white"
-            >
-              Add Note
-            </h3>
-            <p id="add-note-modal-description" class="text-gray-300 mt-1">
-              Add a new note to your collection
-            </p>
-          </div>
-          <button
-            type="button"
-            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
-          >
-            <i class="fa-solid fa-xmark p-1"></i>
-            <span class="sr-only">Close modal</span>
-          </button>
-        </div>
-
-        <!-- Modal Body -->
-        <div class="p-4 space-y-4">
-          <!-- Note Title -->
-          <input
-            type="text"
-            class="w-full p-3 rounded bg-dark-blue border border-gray-700 text-white"
-            placeholder="Enter note title"
-            id="note-title-input"
-          />
-
-          <!-- WYSIWYG Editor -->
-          <div class="wysiwyg-toolbar mb-2">
-            <button class="wysiwyg-btn" data-command="bold">
-              <i class="fas fa-bold"></i>
-            </button>
-            <button class="wysiwyg-btn" data-command="italic">
-              <i class="fas fa-italic"></i>
-            </button>
-            <button class="wysiwyg-btn" data-command="underline">
-              <i class="fas fa-underline"></i>
-            </button>
-            <button class="wysiwyg-btn" data-command="createLink">
-              <i class="fas fa-link"></i>
-            </button>
-            <button class="wysiwyg-btn" data-command="insertUnorderedList">
-              <i class="fas fa-list-ul"></i>
-            </button>
-            <button class="wysiwyg-btn" data-command="insertOrderedList">
-              <i class="fas fa-list-ol"></i>
-            </button>
-            <button
-              class="wysiwyg-btn"
-              data-command="formatBlock"
-              data-value="h1"
-            >
-              <i class="fas fa-heading"></i>
-            </button>
-            <button
-              class="wysiwyg-btn"
-              data-command="formatBlock"
-              data-value="h2"
-            >
-              <i class="fas fa-heading"></i>2
-            </button>
-            <button
-              class="wysiwyg-btn"
-              data-command="formatBlock"
-              data-value="h3"
-            >
-              <i class="fas fa-heading"></i>3
-            </button>
-          </div>
-          <textarea
-            id="note-content"
-            class="w-full p-2 rounded bg-dark-blue border border-gray-700 text-white focus:outline-none focus:border-accent-blue transition-colors"
-            rows="10"
-            placeholder="Enter your note content here..."
-          ></textarea>
-        </div>
-
-        <!-- Modal Footer -->
-        <div class="flex justify-end gap-0 p-4" id="add-note-modal-footer">
-          <div class="flex justify-end gap-0">
-            <button
-              class="px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-600"
-            >
-              Cancel
-            </button>
-            <button
-              class="px-4 py-2 rounded-r-full bg-accent-blue text-white border border-gray-600"
-              id="save-new-note"
-            >
-              Save
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Delete Note Modal -->
-    <div
-      class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
-      id="delete-note-modal"
-    >
-      <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
-        <!-- Modal Header -->
-        <div class="flex justify-between items-start p-4 border-b rounded-t">
-          <div>
-            <button
-              id="delete-note-modal-back"
-              class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
-            >
-              <i class="fas fa-arrow-left text-xl"></i>
-            </button>
-            <h3
-              id="delete-note-modal-title"
-              class="py-4 text-xl font-bold text-white"
-            >
-              Delete Note
-            </h3>
-            <p id="delete-note-modal-description" class="text-gray-300 mt-1">
-              Are you sure you want to delete this note? This action cannot be
-              undone.
-            </p>
-          </div>
-          <button
-            type="button"
-            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
-          >
-            <i class="fa-solid fa-xmark p-1"></i>
-            <span class="sr-only">Close modal</span>
-          </button>
-        </div>
-
-        <!-- Modal Footer -->
-        <div class="flex justify-end gap-0 p-4" id="delete-note-modal-footer">
-          <div class="flex justify-end gap-0">
-            <button
-              class="px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-600"
-            >
-              Cancel
-            </button>
-            <button
-              class="px-4 py-2 rounded-r-full bg-red-600 text-white border border-gray-600"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Delete All Notes Modal -->
-    <div
-      class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
-      id="delete-all-notes-modal"
-    >
-      <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
-        <!-- Modal Header -->
-        <div class="flex justify-between items-start p-4 border-b rounded-t">
-          <div>
-            <button
-              id="delete-all-notes-modal-back"
-              class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
-            >
-              <i class="fas fa-arrow-left text-xl"></i>
-            </button>
-            <h3
-              id="delete-all-notes-modal-title"
-              class="py-4 text-xl font-bold text-white"
-            >
-              Delete Note
-            </h3>
-            <p
-              id="delete-all-notes-modal-description"
-              class="text-gray-300 mt-1"
-            >
-              Are you sure you want to delete all notes? This action cannot be
-              undone.
-            </p>
-          </div>
-          <button
-            type="button"
-            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
-          >
-            <i class="fa-solid fa-xmark p-1"></i>
-            <span class="sr-only">Close modal</span>
-          </button>
-        </div>
-
-        <!-- Modal Footer -->
-        <div
-          class="flex justify-end gap-0 p-4"
-          id="delete-all-notes-modal-footer"
-        >
-          <div class="flex justify-end gap-0">
-            <button
-              class="px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-600"
-            >
-              Cancel
-            </button>
-            <button
-              class="px-4 py-2 rounded-r-full bg-red-600 text-white border border-gray-600"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Open Canvas Notes Modal -->
-    <div
-      class="modal fixed hidden inset-0 z-50 bg-black bg-opacity-70 w-screen h-screen"
-      id="open-canvas-notes-modal"
-    >
-      <!-- Main container - fills nearly entire screen -->
-      <div class="w-full h-full flex flex-col overflow-hidden">
-        <!-- Modal Header -->
-        <div class="flex justify-between items-center p-3">
-          <div class="flex items-center">
-            <button
-              id="open-canvas-notes-modal-back"
-              class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
-            >
-              <i class="fas fa-arrow-left text-xl"></i>
-            </button>
-            <h3
-              id="open-canvas-notes-modal-title"
-              class="text-xl font-bold text-white"
-            >
-              Open Canvas Notes
-            </h3>
-          </div>
-          <button
-            type="button"
-            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
-          >
-            <i class="fa-solid fa-xmark"></i>
-            <span class="sr-only">Close modal</span>
-          </button>
-        </div>
-
-        <!-- Main Content Area -->
-        <div class="flex flex-1 overflow-hidden gap-x-2">
-          <!-- Left Sidebar (25%) - Chat -->
-          <div
-            class="w-1/4 flex flex-col bg-gray-900 rounded-lg border border-gray-700 overflow-hidden"
-          >
-            <!-- Chat Messages -->
-            <div
-              id="canvas-chat-messages"
-              class="flex-1 overflow-y-auto scrollbar-transparent relative"
-            >
-              <div
-                id="canvas-welcome-message"
-                class="text-center text-gray-300 py-12"
-              >
-                <div
-                  class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800 mb-4"
-                >
-                  <i class="fas fa-robot text-3xl text-purple-400"></i>
-                </div>
-                <h3 class="text-xl font-semibold text-white mb-2">
-                  How can I help with your notes today?
+                  Share Collection
                 </h3>
-                <p class="text-gray-400 text-sm px-4">
-                  Ask me anything about your notes or request help with writing,
-                  editing, or organizing your thoughts.
+                <p
+                  id="share-collection-modal-description"
+                  class="text-gray-300 mt-1"
+                >
+                  Share this collection with others
                 </p>
               </div>
-              <!-- Messages will be inserted here by JavaScript -->
-              <div id="canvas-chat-messages-container" class="mt-2"></div>
-            </div>
-
-            <!-- Jump to Bottom Button -->
-            <div
-              class="sticky bottom-4 left-0 right-0 flex justify-center z-10"
-            >
               <button
-                id="canvas-jump-to-bottom-btn"
-                class="bg-indigo-500 text-white rounded-full py-2 px-6 shadow-md hover:bg-indigo-600 focus:outline-none transition-opacity duration-300 opacity-0 pointer-events-none"
+                type="button"
+                class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
               >
-                Jump to Bottom
+                <i class="fa-solid fa-xmark p-1"></i>
+                <span class="sr-only">Close modal</span>
               </button>
             </div>
 
-            <!-- Message Input -->
-            <div class="border-t border-gray-700 p-3 bg-gray-800">
-              <form id="canvas-chat-form" class="h-full flex flex-col">
-                <div class="relative">
-                  <textarea
-                    id="canvas-message-input"
-                    class="w-full bg-gray-700 text-white rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-                    placeholder="Ask me anything..."
-                    rows="3"
-                    style="
-                      min-height: 80px;
-                      overflow-y: auto;
-                      scrollbar-width: thin;
-                      scrollbar-color: transparent transparent;
-                    "
-                  ></textarea>
-                  <button
-                    type="submit"
-                    id="canvas-send-btn"
-                    class="absolute right-2 bottom-2 p-1.5 rounded-full text-gray-400 hover:text-white hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled
+            <!-- Modal Body -->
+            <div class="p-4">
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-1"
+                    >Share Link</label
                   >
-                    <i class="fas fa-paper-plane text-sm"></i>
-                  </button>
+                  <div class="relative">
+                    <input
+                      type="text"
+                      id="share-notebook-link"
+                      class="w-full px-3 py-2 rounded-lg bg-slate-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-accent-blue"
+                      placeholder="Shareable link will appear here"
+                      readonly
+                    />
+                    <button
+                      id="copy-share-link"
+                      class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 rounded bg-blue-gray hover:bg-slate-600 text-white"
+                    >
+                      Copy
+                    </button>
+                  </div>
                 </div>
-              </form>
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-1"
+                    >Access Level</label
+                  >
+                  <select
+                    id="share-notebook-access"
+                    class="w-full px-3 py-2 rounded-lg bg-slate-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-accent-blue"
+                  >
+                    <option value="view">View Only</option>
+                    <option value="edit">Can Edit</option>
+                  </select>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <!-- Middle Content Area (50%) - Quill Rich Text Editor -->
-          <div class="w-2/4 flex flex-col bg-gray-900 rounded-lg main-editor">
-            <div id="editor" class="flex-1 bg-slate-800 text-white rounded-lg">
-              <h1>AI-Enhanced Document Editor</h1>
-              <p>
-                This is a sample document with rich text editing capabilities.
-                Select any text to see AI integration features.
-              </p>
-
-              <h2>Key Features</h2>
-              <p>
-                You can highlight text, and the AI panel will show exactly where
-                in the document you've selected. This enables precise AI
-                assistance for content editing, expansion, or explanation.
-              </p>
-
-              <h3>How it Works</h3>
-              <ul>
-                <li>Select any text in this editor</li>
-                <li>See the selection details in the right panel</li>
-                <li>Use AI actions to modify or enhance your content</li>
-                <li>AI responses are inserted at the exact location</li>
-              </ul>
-
-              <p>
-                The system tracks the exact position of your selections, making
-                it perfect for collaborative editing with AI assistance.
-              </p>
-
-              <blockquote>
-                "The future of content creation is the seamless integration of
-                human creativity with AI assistance."
-              </blockquote>
-            </div>
-          </div>
-
-          <!-- Right Sidebar (25%) - Ai Tools -->
-          <div class="w-1/4 flex flex-col bg-gray-900 rounded-lg ai-panel">
+            <!-- Modal Footer -->
             <div
-              class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent"
+              class="flex justify-end gap-0 p-4"
+              id="share-collection-modal-footer"
             >
-              <div class="p-4">
-                <div
-                  class="selection-info bg-slate-700 rounded-lg border-l-4 border-sky-500 mb-4"
+              <div class="flex justify-end gap-0">
+                <button
+                  class="px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-600"
                 >
-                  <h3 class="text-slate-200 text-sm font-semibold p-4">
-                    Selected Content
-                  </h3>
+                  Cancel
+                </button>
+                <button
+                  class="px-4 py-2 rounded-r-full bg-accent-blue text-white border border-gray-600"
+                >
+                  Generate Link
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Source Modal -->
+        <div
+          class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
+          id="add-source-modal"
+        >
+          <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
+            <!-- Modal Header -->
+            <div
+              class="flex justify-between items-start p-4 border-b rounded-t"
+            >
+              <div>
+                <button
+                  id="source-modal-back"
+                  class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
+                >
+                  <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h3
+                  id="source-modal-title"
+                  class="py-4 text-xl font-bold text-white"
+                >
+                  Add Source
+                </h3>
+                <p id="source-modal-description" class="text-gray-300 mt-1">
+                  Select a source to add to your notebook
+                </p>
+              </div>
+              <button
+                type="button"
+                class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+              >
+                <i class="fa-solid fa-xmark p-1"></i>
+                <span class="sr-only">Close modal</span>
+              </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-4">
+              <!-- Step 1: Picker UI -->
+              <div id="source-modal-step-picker">
+                <div class="space-y-6">
+                  <!-- Upload Card -->
                   <div
-                    class="selected-text bg-slate-900 p-3 rounded border border-slate-600 italic"
-                    id="selectedText"
+                    id="upload-source-card"
+                    class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                   >
-                    Select text in the editor to see it here...
+                    <i
+                      class="fas fa-cloud-upload-alt text-4xl text-gray-400 dark:text-gray-300 mb-3"
+                    ></i>
+                    <h4
+                      class="text-lg font-medium text-gray-900 dark:text-white"
+                    >
+                      Upload sources
+                    </h4>
+                    <p class="text-gray-600 dark:text-gray-300 mb-3">
+                      Drag and drop or choose file to upload
+                    </p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      Supported file types: PDF, txt, Markdown, Audio (e.g. mp3)
+                    </p>
+                    <input
+                      type="file"
+                      class="hidden"
+                      id="file-upload"
+                      multiple
+                    />
+                    <button
+                      type="button"
+                      id="file-upload-btn"
+                      class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium dark:bg-blue-500 dark:hover:bg-blue-600"
+                    >
+                      Select Files
+                    </button>
+                  </div>
+
+                  <!-- Website/YouTube Options -->
+                  <div class="grid grid-cols-2 gap-3">
+                    <div
+                      id="website-source-card"
+                      class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      <i
+                        class="fas fa-link text-2xl text-blue-500 dark:text-blue-400 mb-2"
+                      ></i>
+                      <p
+                        class="text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Website
+                      </p>
+                    </div>
+                    <div
+                      id="youtube-source-card"
+                      class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      <i
+                        class="fab fa-youtube text-2xl text-red-500 dark:text-red-400 mb-2"
+                      ></i>
+                      <p
+                        class="text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        YouTube
+                      </p>
+                    </div>
                   </div>
                   <div
-                    class="position-info text-xs text-slate-400 p-4"
-                    id="positionInfo"
+                    id="paste-source-card"
+                    class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                   >
-                    Position: No selection
+                    <div class="flex items-center">
+                      <i
+                        class="fas fa-paste text-2xl text-purple-500 dark:text-purple-400 mr-3"
+                      ></i>
+                      <div>
+                        <p
+                          class="text-sm font-medium text-gray-900 dark:text-white"
+                        >
+                          Paste text
+                        </p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                          Copied text
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 2: Website -->
+              <div id="source-modal-step-website" class="hidden">
+                <label class="block mb-2 text-base text-white"
+                  >Paste in a web URL below to upload as a source in
+                  NotebookLM.</label
+                >
+                <div
+                  class="flex items-center bg-dark-blue rounded border border-gray-700 mb-4"
+                >
+                  <span class="px-3 text-gray-400"
+                    ><i class="fas fa-link"></i
+                  ></span>
+                  <input
+                    type="text"
+                    id="website-url-input"
+                    class="flex-1 bg-transparent border-0 focus:ring-0 text-white p-3"
+                    placeholder="Paste URL*"
+                  />
+                </div>
+                <div class="text-gray-400 text-sm mb-4">
+                  <div class="font-semibold mb-1">Notes</div>
+                  <ul class="list-disc pl-5">
+                    <li>
+                      Only the visible text on the website will be imported at
+                      this moment
+                    </li>
+                    <li>Paid articles are not supported</li>
+                  </ul>
+                </div>
+                <button
+                  id="insert-website-btn"
+                  class="w-full mt-4 px-4 py-2 rounded bg-accent-blue text-white font-semibold disabled:opacity-50"
+                  disabled
+                >
+                  Insert
+                </button>
+              </div>
+
+              <!-- Step 3: YouTube -->
+              <div id="source-modal-step-youtube" class="hidden">
+                <label class="block mb-2 text-base text-white"
+                  >Paste in a YouTube URL below to upload as a source in
+                  NotebookLM.</label
+                >
+                <div
+                  class="flex items-center bg-dark-blue rounded border border-gray-700 mb-4"
+                >
+                  <span class="px-3 text-gray-400"
+                    ><i class="fab fa-youtube"></i
+                  ></span>
+                  <input
+                    type="text"
+                    id="youtube-url-input"
+                    class="flex-1 bg-transparent border-0 focus:ring-0 text-white p-3"
+                    placeholder="Paste YouTube URL*"
+                  />
+                </div>
+                <div class="text-gray-400 text-sm mb-4">
+                  <div class="font-semibold mb-1">Notes</div>
+                  <ul class="list-disc pl-5">
+                    <li>
+                      Only the text transcript will be imported at this moment
+                    </li>
+                    <li>Only public YouTube videos are supported</li>
+                    <li>
+                      Recently uploaded videos may not be available to import
+                    </li>
+                    <li>
+                      If upload fails,
+                      <a href="#" class="underline text-blue-400">learn more</a>
+                      for common reasons.
+                    </li>
+                  </ul>
+                </div>
+                <button
+                  id="insert-youtube-btn"
+                  class="w-full mt-4 px-4 py-2 rounded bg-accent-blue text-white font-semibold disabled:opacity-50"
+                  disabled
+                >
+                  Insert
+                </button>
+              </div>
+
+              <!-- Step 4: Paste Text -->
+              <div id="source-modal-step-paste" class="hidden">
+                <label class="block mb-2 text-base text-white"
+                  >Paste your copied text below to upload as a source in
+                  NotebookLM</label
+                >
+                <textarea
+                  id="paste-text-input"
+                  class="w-full bg-dark-blue border border-gray-700 text-white rounded p-3 mb-4 h-32"
+                  placeholder="Paste text here*"
+                ></textarea>
+                <div class="text-gray-400 text-sm mb-4">
+                  <div class="font-semibold mb-1">Notes</div>
+                  <ul class="list-disc pl-5">
+                    <li>Only the pasted text will be used as a source</li>
+                  </ul>
+                </div>
+                <button
+                  id="insert-paste-btn"
+                  class="w-full mt-4 px-4 py-2 rounded bg-accent-blue text-white font-semibold disabled:opacity-50"
+                  disabled
+                >
+                  Insert
+                </button>
+              </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="flex justify-end gap-0 p-4" id="source-modal-footer">
+              <button
+                class="px-4 py-2 rounded text-gray-300 hover:bg-blue-gray modal-close border border-gray-600 rounded-full"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Discover Source Modal -->
+        <div
+          class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
+          id="discover-source-modal"
+        >
+          <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
+            <!-- Modal Header -->
+            <div
+              class="flex justify-between items-start p-4 border-b rounded-t"
+            >
+              <div>
+                <button
+                  id="discover-source-modal-back"
+                  class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
+                >
+                  <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h3
+                  id="discover-source-modal-title"
+                  class="py-4 text-xl font-bold text-white"
+                >
+                  Discover Source
+                </h3>
+                <p
+                  id="discover-source-modal-description"
+                  class="text-gray-300 mt-1"
+                >
+                  Browse and select from available sources to add to your
+                  notebook
+                </p>
+              </div>
+              <button
+                type="button"
+                class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+              >
+                <i class="fa-solid fa-xmark p-1"></i>
+                <span class="sr-only">Close modal</span>
+              </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-4">
+              <!-- Search bar -->
+              <div class="relative mb-4">
+                <div
+                  class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                >
+                  <i class="fas fa-search text-gray-500 dark:text-gray-400"></i>
+                </div>
+                <input
+                  type="text"
+                  class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
+                  placeholder="Search sources..."
+                />
+              </div>
+
+              <!-- Source list -->
+              <div
+                class="border border-gray-200 dark:border-gray-700 rounded-lg divide-y divide-gray-200 dark:divide-gray-700 max-h-96 overflow-y-auto py-1 scrollbar-transparent"
+              >
+                <!-- Source item 1 -->
+                <div
+                  class="p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                      <i
+                        class="fas fa-file-pdf text-red-500 dark:text-red-400 text-xl"
+                      ></i>
+                      <div>
+                        <h4 class="font-medium text-gray-900 dark:text-white">
+                          Assessing Reliability and Credibility in Information
+                          Sci...
+                        </h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                          PDF • 2.4 MB • Last opened 3 days ago
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      class="discover-add-remove-btn add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                    >
+                      Add
+                    </button>
                   </div>
                 </div>
 
-                <div class="ai-actions flex flex-col gap-2">
-                  <button
-                    class="ai-btn primary py-2 px-4 rounded bg-sky-500 hover:bg-sky-600 transition-colors text-white text-sm font-medium"
-                    id="explainBtn"
-                    disabled
+                <!-- Source item 2 -->
+                <div
+                  class="p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                      <i
+                        class="fas fa-file-pdf text-red-500 dark:text-red-400 text-xl"
+                      ></i>
+                      <div>
+                        <h4 class="font-medium text-gray-900 dark:text-white">
+                          EDWIN COC.pdf
+                        </h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                          PDF • 1.8 MB • Certificate of Completion
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      class="discover-add-remove-btn add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div
+              class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-4 border-t border-gray-200 gap-2 sm:gap-0"
+            >
+              <span
+                class="text-sm font-medium text-gray-500 mb-2 sm:mb-0 text-center sm:text-left"
+                >8 sources found</span
+              >
+              <div class="flex w-full sm:w-auto justify-end gap-0">
+                <button
+                  type="button"
+                  class="flex-1 sm:flex-none px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  class="flex-1 sm:flex-none px-4 py-2 rounded-r-full bg-accent-blue text-white border border-gray-600"
+                >
+                  Add Selected (0)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rename Source Modal -->
+        <div
+          class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
+          id="rename-modal"
+        >
+          <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
+            <!-- Modal Header -->
+            <div
+              class="flex justify-between items-start p-4 border-b rounded-t"
+            >
+              <div>
+                <button
+                  id="rename-source-modal-back"
+                  class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
+                >
+                  <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h3
+                  id="rename-source-modal-title"
+                  class="py-4 text-xl font-bold text-white"
+                >
+                  Rename Source
+                </h3>
+                <p
+                  id="rename-source-modal-description"
+                  class="text-gray-300 mt-1"
+                >
+                  Enter a new name for this source
+                </p>
+              </div>
+              <button
+                type="button"
+                class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+              >
+                <i class="fa-solid fa-xmark p-1"></i>
+                <span class="sr-only">Close modal</span>
+              </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-4">
+              <input
+                type="text"
+                class="w-full p-3 rounded bg-dark-blue border border-gray-700 text-white"
+                placeholder="Enter new name"
+                id="rename-input"
+              />
+            </div>
+
+            <!-- Modal Footer -->
+            <div
+              class="flex justify-end gap-0 p-4"
+              id="rename-source-modal-footer"
+            >
+              <div class="flex justify-end gap-0">
+                <button
+                  class="px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-600"
+                >
+                  Cancel
+                </button>
+                <button
+                  class="px-4 py-2 rounded-r-full bg-accent-blue text-white border border-gray-600"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete Source Modal -->
+        <div
+          class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
+          id="delete-source-modal"
+        >
+          <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
+            <!-- Modal Header -->
+            <div
+              class="flex justify-between items-start p-4 border-b rounded-t"
+            >
+              <div>
+                <button
+                  id="delete-source-modal-back"
+                  class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
+                >
+                  <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h3
+                  id="delete-source-modal-title"
+                  class="py-4 text-xl font-bold text-white"
+                >
+                  Delete Source
+                </h3>
+                <p
+                  id="delete-source-modal-description"
+                  class="text-gray-300 mt-1"
+                >
+                  Are you sure you want to delete this source? This action
+                  cannot be undone.
+                </p>
+              </div>
+              <button
+                type="button"
+                class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+              >
+                <i class="fa-solid fa-xmark p-1"></i>
+                <span class="sr-only">Close modal</span>
+              </button>
+            </div>
+
+            <!-- Modal Footer -->
+            <div
+              class="flex justify-end gap-0 p-4"
+              id="delete-source-modal-footer"
+            >
+              <div class="flex justify-end gap-0">
+                <button
+                  class="px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-600"
+                >
+                  Cancel
+                </button>
+                <button
+                  class="px-4 py-2 rounded-r-full bg-red-600 text-white border border-gray-600"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Note Modal -->
+        <div
+          class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
+          id="add-note-modal"
+        >
+          <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
+            <!-- Modal Header -->
+            <div
+              class="flex justify-between items-start p-4 border-b rounded-t"
+            >
+              <div>
+                <button
+                  id="add-note-modal-back"
+                  class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
+                >
+                  <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h3
+                  id="add-note-modal-title"
+                  class="py-4 text-xl font-bold text-white"
+                >
+                  Add Note
+                </h3>
+                <p id="add-note-modal-description" class="text-gray-300 mt-1">
+                  Add a new note to your collection
+                </p>
+              </div>
+              <button
+                type="button"
+                class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+              >
+                <i class="fa-solid fa-xmark p-1"></i>
+                <span class="sr-only">Close modal</span>
+              </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-4 space-y-4">
+              <!-- Note Title -->
+              <input
+                type="text"
+                class="w-full p-3 rounded bg-dark-blue border border-gray-700 text-white"
+                placeholder="Enter note title"
+                id="note-title-input"
+              />
+
+              <!-- WYSIWYG Editor -->
+              <div class="wysiwyg-toolbar mb-2">
+                <button class="wysiwyg-btn" data-command="bold">
+                  <i class="fas fa-bold"></i>
+                </button>
+                <button class="wysiwyg-btn" data-command="italic">
+                  <i class="fas fa-italic"></i>
+                </button>
+                <button class="wysiwyg-btn" data-command="underline">
+                  <i class="fas fa-underline"></i>
+                </button>
+                <button class="wysiwyg-btn" data-command="createLink">
+                  <i class="fas fa-link"></i>
+                </button>
+                <button class="wysiwyg-btn" data-command="insertUnorderedList">
+                  <i class="fas fa-list-ul"></i>
+                </button>
+                <button class="wysiwyg-btn" data-command="insertOrderedList">
+                  <i class="fas fa-list-ol"></i>
+                </button>
+                <button
+                  class="wysiwyg-btn"
+                  data-command="formatBlock"
+                  data-value="h1"
+                >
+                  <i class="fas fa-heading"></i>
+                </button>
+                <button
+                  class="wysiwyg-btn"
+                  data-command="formatBlock"
+                  data-value="h2"
+                >
+                  <i class="fas fa-heading"></i>2
+                </button>
+                <button
+                  class="wysiwyg-btn"
+                  data-command="formatBlock"
+                  data-value="h3"
+                >
+                  <i class="fas fa-heading"></i>3
+                </button>
+              </div>
+              <textarea
+                id="note-content"
+                class="w-full p-2 rounded bg-dark-blue border border-gray-700 text-white focus:outline-none focus:border-accent-blue transition-colors"
+                rows="10"
+                placeholder="Enter your note content here..."
+              ></textarea>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="flex justify-end gap-0 p-4" id="add-note-modal-footer">
+              <div class="flex justify-end gap-0">
+                <button
+                  class="px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-600"
+                >
+                  Cancel
+                </button>
+                <button
+                  class="px-4 py-2 rounded-r-full bg-accent-blue text-white border border-gray-600"
+                  id="save-new-note"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete Note Modal -->
+        <div
+          class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
+          id="delete-note-modal"
+        >
+          <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
+            <!-- Modal Header -->
+            <div
+              class="flex justify-between items-start p-4 border-b rounded-t"
+            >
+              <div>
+                <button
+                  id="delete-note-modal-back"
+                  class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
+                >
+                  <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h3
+                  id="delete-note-modal-title"
+                  class="py-4 text-xl font-bold text-white"
+                >
+                  Delete Note
+                </h3>
+                <p
+                  id="delete-note-modal-description"
+                  class="text-gray-300 mt-1"
+                >
+                  Are you sure you want to delete this note? This action cannot
+                  be undone.
+                </p>
+              </div>
+              <button
+                type="button"
+                class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+              >
+                <i class="fa-solid fa-xmark p-1"></i>
+                <span class="sr-only">Close modal</span>
+              </button>
+            </div>
+
+            <!-- Modal Footer -->
+            <div
+              class="flex justify-end gap-0 p-4"
+              id="delete-note-modal-footer"
+            >
+              <div class="flex justify-end gap-0">
+                <button
+                  class="px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-600"
+                >
+                  Cancel
+                </button>
+                <button
+                  class="px-4 py-2 rounded-r-full bg-red-600 text-white border border-gray-600"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete All Notes Modal -->
+        <div
+          class="modal fixed hidden inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70"
+          id="delete-all-notes-modal"
+        >
+          <div class="bg-blue-gray rounded-lg shadow-xl max-w-2xl w-full">
+            <!-- Modal Header -->
+            <div
+              class="flex justify-between items-start p-4 border-b rounded-t"
+            >
+              <div>
+                <button
+                  id="delete-all-notes-modal-back"
+                  class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
+                >
+                  <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h3
+                  id="delete-all-notes-modal-title"
+                  class="py-4 text-xl font-bold text-white"
+                >
+                  Delete Note
+                </h3>
+                <p
+                  id="delete-all-notes-modal-description"
+                  class="text-gray-300 mt-1"
+                >
+                  Are you sure you want to delete all notes? This action cannot
+                  be undone.
+                </p>
+              </div>
+              <button
+                type="button"
+                class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+              >
+                <i class="fa-solid fa-xmark p-1"></i>
+                <span class="sr-only">Close modal</span>
+              </button>
+            </div>
+
+            <!-- Modal Footer -->
+            <div
+              class="flex justify-end gap-0 p-4"
+              id="delete-all-notes-modal-footer"
+            >
+              <div class="flex justify-end gap-0">
+                <button
+                  class="px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-600"
+                >
+                  Cancel
+                </button>
+                <button
+                  class="px-4 py-2 rounded-r-full bg-red-600 text-white border border-gray-600"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Open Canvas Notes Modal -->
+        <div
+          class="modal fixed hidden inset-0 z-50 bg-black bg-opacity-70 w-screen h-screen"
+          id="open-canvas-notes-modal"
+        >
+          <!-- Main container - fills nearly entire screen -->
+          <div class="w-full h-full flex flex-col overflow-hidden">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-3">
+              <div class="flex items-center">
+                <button
+                  id="open-canvas-notes-modal-back"
+                  class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
+                >
+                  <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h3
+                  id="open-canvas-notes-modal-title"
+                  class="text-xl font-bold text-white"
+                >
+                  Open Canvas Notes
+                </h3>
+              </div>
+              <button
+                type="button"
+                class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+              >
+                <i class="fa-solid fa-xmark"></i>
+                <span class="sr-only">Close modal</span>
+              </button>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="flex flex-1 overflow-hidden gap-x-2">
+              <!-- Left Sidebar (25%) - Chat -->
+              <div
+                class="w-1/4 flex flex-col bg-gray-900 rounded-lg border border-gray-700 overflow-hidden"
+              >
+                <!-- Chat Messages -->
+                <div
+                  id="canvas-chat-messages"
+                  class="flex-1 overflow-y-auto scrollbar-transparent relative"
+                >
+                  <div
+                    id="canvas-welcome-message"
+                    class="text-center text-gray-300 py-12"
                   >
-                    🧠 Explain This
-                  </button>
+                    <div
+                      class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800 mb-4"
+                    >
+                      <i class="fas fa-robot text-3xl text-purple-400"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-2">
+                      How can I help with your notes today?
+                    </h3>
+                    <p class="text-gray-400 text-sm px-4">
+                      Ask me anything about your notes or request help with
+                      writing, editing, or organizing your thoughts.
+                    </p>
+                  </div>
+                  <!-- Messages will be inserted here by JavaScript -->
+                  <div id="canvas-chat-messages-container" class="mt-2"></div>
+                </div>
+
+                <!-- Jump to Bottom Button -->
+                <div
+                  class="sticky bottom-4 left-0 right-0 flex justify-center z-10"
+                >
                   <button
-                    class="ai-btn primary py-2 px-4 rounded bg-sky-500 hover:bg-sky-600 transition-colors text-white text-sm font-medium"
-                    id="expandBtn"
-                    disabled
+                    id="canvas-jump-to-bottom-btn"
+                    class="bg-indigo-500 text-white rounded-full py-2 px-6 shadow-md hover:bg-indigo-600 focus:outline-none transition-opacity duration-300 opacity-0 pointer-events-none"
                   >
-                    📝 Expand Content
-                  </button>
-                  <button
-                    class="ai-btn secondary py-2 px-4 rounded bg-slate-600 hover:bg-slate-700 transition-colors text-white text-sm font-medium"
-                    id="summarizeBtn"
-                    disabled
-                  >
-                    📋 Summarize
-                  </button>
-                  <button
-                    class="ai-btn secondary py-2 px-4 rounded bg-slate-600 hover:bg-slate-700 transition-colors text-white text-sm font-medium"
-                    id="improveBtn"
-                    disabled
-                  >
-                    ✨ Improve Writing
+                    Jump to Bottom
                   </button>
                 </div>
 
-                <!-- chat input -->
-                <div class="mt-2">
-                  <form
-                    id="ai-text-chat-form-right"
-                    class="h-full flex flex-col"
-                  >
+                <!-- Message Input -->
+                <div class="border-t border-gray-700 p-3 bg-gray-800">
+                  <form id="canvas-chat-form" class="h-full flex flex-col">
                     <div class="relative">
                       <textarea
-                        id="ai-text-input-right"
+                        id="canvas-message-input"
                         class="w-full bg-gray-700 text-white rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-                        placeholder="Run custom Ai action..."
+                        placeholder="Ask me anything..."
                         rows="3"
                         style="
                           min-height: 80px;
@@ -4033,8 +4012,8 @@
                         "
                       ></textarea>
                       <button
-                        type="button"
-                        id="ai-text-send-right"
+                        type="submit"
+                        id="canvas-send-btn"
                         class="absolute right-2 bottom-2 p-1.5 rounded-full text-gray-400 hover:text-white hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled
                       >
@@ -4044,189 +4023,351 @@
                   </form>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Open Wizard Modal -->
-    <div
-      class="modal fixed hidden inset-0 z-50 bg-black bg-opacity-70 w-screen h-screen"
-      id="open-wizard-modal"
-    >
-      <div class="w-full h-full flex flex-col">
-        <!-- Modal Header -->
-        <div class="flex justify-between items-center p-4 bg-gray-800">
-          <h3 class="text-xl font-bold text-white">AI Wizard</h3>
-          <button
-            type="button"
-            class="modal-close text-gray-400 hover:text-white p-2"
-          >
-            <i class="fa-solid fa-xmark text-xl"></i>
-          </button>
-        </div>
-
-        <!-- Main Content -->
-        <div class="flex-1 flex overflow-hidden gap-x-2">
-          <!-- Left Sidebar - Sources with AI Tools (25%) -->
-          <div
-            class="w-1/4 flex flex-col bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden border border-gray-700/50"
-          >
-            <!-- Sources Section -->
-            <div class="flex-1 overflow-y-auto scrollbar-transparent">
-              <div id="wizard-sources-list" class="h-full flex flex-col">
-                <!-- Source List Header -->
-                <div
-                  class="p-3 border-b border-gray-700 flex justify-between items-center"
-                >
-                  <h4 class="text-white font-medium">Sources</h4>
-                  <button
-                    class="text-xs text-blue-400 hover:text-blue-300 back-to-sources hidden"
-                    id="wizard-back-to-sources"
-                  >
-                    <i class="fas fa-arrow-left mr-1"></i> Back to sources
-                  </button>
-                  <button
-                    class="text-xs text-blue-400 hover:text-blue-300"
-                    id="wizard-refresh-sources"
-                  >
-                    <i class="fas fa-sync-alt mr-1"></i> Refresh
-                  </button>
-                </div>
-
-                <!-- Sources List View -->
-                <div
-                  id="wizard-sources-view"
-                  class="flex-1 overflow-y-auto p-2"
-                >
-                  <!-- Sources will be dynamically inserted here -->
-                  <div class="p-4 text-center text-gray-400">
-                    <i class="fas fa-folder-open text-2xl mb-2"></i>
-                    <p class="text-sm">No sources available</p>
-                  </div>
-                </div>
-
-                <!-- Source Details View -->
-                <div
-                  id="wizard-source-details"
-                  class="hidden flex-1 w-full overflow-y-auto py-1 scrollbar-transparent"
-                >
-                  <div class="p-2">
-                    <h3
-                      class="font-medium text-sky-400 text-center py-3"
-                      id="wizard-source-title"
-                    >
-                      <!-- source title will populate here -->
-                    </h3>
-
-                    <!-- Source Summary -->
-                    <div class="source-content-section mb-6">
-                      <h4 class="text-sm font-semibold text-slate-300 mb-2">
-                        Summary
-                      </h4>
-                      <p
-                        class="text-sm text-slate-400"
-                        id="wizard-source-summary"
-                      >
-                        <!-- source summary will populate here -->
-                      </p>
-                    </div>
-
-                    <!-- Key Topics -->
-                    <div class="source-content-section mb-6">
-                      <h4 class="text-sm font-semibold text-slate-300 mb-2">
-                        Key Topics
-                      </h4>
-                      <div
-                        class="flex flex-wrap gap-4"
-                        id="wizard-source-topics"
-                      >
-                        <!-- source topics will populate here -->
-                      </div>
-                    </div>
-
-                    <!-- Source Content -->
-                    <div class="source-content-section flex-1 overflow-hidden">
-                      <h4 class="text-sm font-semibold text-slate-300 mb-2">
-                        Content Preview
-                      </h4>
-                      <div
-                        class="flex-1 overflow-y-auto text-slate-400 space-y-4"
-                        id="wizard-source-content"
-                      >
-                        <!-- source content will populate here -->
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Main Chat Area (75%) -->
-          <div
-            class="w-3/4 flex flex-col bg-gray-900 rounded-lg shadow-lg overflow-hidden border border-gray-700"
-          >
-            <!-- Chat messages container -->
-            <div
-              class="flex-1 overflow-y-auto scrollbar-transparent relative flex flex-col"
-              id="wizard-chat-messages"
-              style="contain: layout style paint"
-            >
-              <div class="p-6">
-                <div
-                  class="text-center text-gray-300 py-12"
-                  id="wizard-welcome-message"
-                >
-                  <div
-                    class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-800 mb-6"
-                  >
-                    <i class="fas fa-robot text-4xl text-purple-400"></i>
-                  </div>
-                  <h3 class="text-2xl font-semibold text-white mb-3">
-                    How can I help you today?
-                  </h3>
-                  <p class="text-gray-400 max-w-md mx-auto text-base">
-                    Ask me anything about your documents or request help with
-                    writing, editing, or research.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Jump to Bottom Button -->
-            <div
-              class="sticky bottom-4 left-0 right-0 flex justify-center z-10"
-            >
-              <button
-                id="wizard-jump-to-bottom-btn"
-                class="bg-indigo-500 text-white rounded-full py-2 px-6 shadow-md hover:bg-indigo-600 focus:outline-none transition-opacity duration-300 opacity-0 pointer-events-none"
+              <!-- Middle Content Area (50%) - Quill Rich Text Editor -->
+              <div
+                class="w-2/4 flex flex-col bg-gray-900 rounded-lg main-editor"
               >
-                Jump to Bottom
+                <div
+                  id="editor"
+                  class="flex-1 bg-slate-800 text-white rounded-lg"
+                >
+                  <h1>AI-Enhanced Document Editor</h1>
+                  <p>
+                    This is a sample document with rich text editing
+                    capabilities. Select any text to see AI integration
+                    features.
+                  </p>
+
+                  <h2>Key Features</h2>
+                  <p>
+                    You can highlight text, and the AI panel will show exactly
+                    where in the document you've selected. This enables precise
+                    AI assistance for content editing, expansion, or
+                    explanation.
+                  </p>
+
+                  <h3>How it Works</h3>
+                  <ul>
+                    <li>Select any text in this editor</li>
+                    <li>See the selection details in the right panel</li>
+                    <li>Use AI actions to modify or enhance your content</li>
+                    <li>AI responses are inserted at the exact location</li>
+                  </ul>
+
+                  <p>
+                    The system tracks the exact position of your selections,
+                    making it perfect for collaborative editing with AI
+                    assistance.
+                  </p>
+
+                  <blockquote>
+                    "The future of content creation is the seamless integration
+                    of human creativity with AI assistance."
+                  </blockquote>
+                </div>
+              </div>
+
+              <!-- Right Sidebar (25%) - Ai Tools -->
+              <div class="w-1/4 flex flex-col bg-gray-900 rounded-lg ai-panel">
+                <div
+                  class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent"
+                >
+                  <div class="p-4">
+                    <div
+                      class="selection-info bg-slate-700 rounded-lg border-l-4 border-sky-500 mb-4"
+                    >
+                      <h3 class="text-slate-200 text-sm font-semibold p-4">
+                        Selected Content
+                      </h3>
+                      <div
+                        class="selected-text bg-slate-900 p-3 rounded border border-slate-600 italic"
+                        id="selectedText"
+                      >
+                        Select text in the editor to see it here...
+                      </div>
+                      <div
+                        class="position-info text-xs text-slate-400 p-4"
+                        id="positionInfo"
+                      >
+                        Position: No selection
+                      </div>
+                    </div>
+
+                    <div class="ai-actions flex flex-col gap-2">
+                      <button
+                        class="ai-btn primary py-2 px-4 rounded bg-sky-500 hover:bg-sky-600 transition-colors text-white text-sm font-medium"
+                        id="explainBtn"
+                        disabled
+                      >
+                        🧠 Explain This
+                      </button>
+                      <button
+                        class="ai-btn primary py-2 px-4 rounded bg-sky-500 hover:bg-sky-600 transition-colors text-white text-sm font-medium"
+                        id="expandBtn"
+                        disabled
+                      >
+                        📝 Expand Content
+                      </button>
+                      <button
+                        class="ai-btn secondary py-2 px-4 rounded bg-slate-600 hover:bg-slate-700 transition-colors text-white text-sm font-medium"
+                        id="summarizeBtn"
+                        disabled
+                      >
+                        📋 Summarize
+                      </button>
+                      <button
+                        class="ai-btn secondary py-2 px-4 rounded bg-slate-600 hover:bg-slate-700 transition-colors text-white text-sm font-medium"
+                        id="improveBtn"
+                        disabled
+                      >
+                        ✨ Improve Writing
+                      </button>
+                    </div>
+
+                    <!-- chat input -->
+                    <div class="mt-2">
+                      <form
+                        id="ai-text-chat-form-right"
+                        class="h-full flex flex-col"
+                      >
+                        <div class="relative">
+                          <textarea
+                            id="ai-text-input-right"
+                            class="w-full bg-gray-700 text-white rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                            placeholder="Run custom Ai action..."
+                            rows="3"
+                            style="
+                              min-height: 80px;
+                              overflow-y: auto;
+                              scrollbar-width: thin;
+                              scrollbar-color: transparent transparent;
+                            "
+                          >
+Please generate a comprehensive Active Labor Market Policy (ALMPs) document. The document should follow international best practice standards and include the following sections:
+            
+                      Title Page: Include the title, date, and authors.
+                      Executive Summary: A brief overview of the policy objectives and key recommendations.
+                      Introduction: Outline the purpose and importance of ALMPs, including current labor market challenges.
+                      Objectives: Clearly define the goals of the ALMPs.
+                      Target Groups: Identify the specific groups the policy aims to assist (e.g., unemployed individuals, youth, long-term unemployed).
+                      Policy Measures: Detail the specific programs and measures to be implemented, including:
+                      Training and education programs
+                      Job placement services
+                      Wage subsidies
+                      Support for self-employment
+                      Implementation Plan: Describe how the policy will be executed, including timelines and responsible parties.
+                      Monitoring and Evaluation: Outline methods for tracking progress and measuring effectiveness.
+                      Conclusion: Summarize the key points and the expected impact of the policy.
+                      References: Notes.
+                      Formatting Instructions:
+          
+                      Use a clear and professional font (e.g., Arial or Times New Roman, size 12).
+                      Organize content with appropriate headings and subheadings.
+                      Include bullet points for clarity where necessary.
+                      Ensure the document is well-structured and easy to navigate.
+                      Use a consistent style for citations and references.
+                      Make sure to provide detailed content for each section, reflecting best practices in labor market policies.</textarea
+                          >
+                          <button
+                            type="button"
+                            id="ai-text-send-right"
+                            class="absolute right-2 bottom-2 p-1.5 rounded-full text-gray-400 hover:text-white hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled
+                          >
+                            <i class="fas fa-paper-plane text-sm"></i>
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Open Wizard Modal -->
+        <div
+          class="modal fixed hidden inset-0 z-50 bg-black bg-opacity-70 w-screen h-screen"
+          id="open-wizard-modal"
+        >
+          <div class="w-full h-full flex flex-col">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-4 bg-gray-800">
+              <h3 class="text-xl font-bold text-white">AI Wizard</h3>
+              <button
+                type="button"
+                class="modal-close text-gray-400 hover:text-white p-2"
+              >
+                <i class="fa-solid fa-xmark text-xl"></i>
               </button>
             </div>
 
-            <!-- Message Input -->
-            <div class="border-t border-gray-700 p-4 bg-gray-800">
-              <form id="wizard-chat-form" class="h-full flex flex-col">
-                <div class="relative flex-1">
-                  <textarea
-                    id="wizard-message-input"
-                    class="w-full h-full bg-gray-700 text-white rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-                    placeholder="Ask me anything..."
-                    style="min-height: 120px"
-                  ></textarea>
+            <!-- Main Content -->
+            <div class="flex-1 flex overflow-hidden gap-x-2">
+              <!-- Left Sidebar - Sources with AI Tools (25%) -->
+              <div
+                class="w-1/4 flex flex-col bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden border border-gray-700/50"
+              >
+                <!-- Sources Section -->
+                <div class="flex-1 overflow-y-auto scrollbar-transparent">
+                  <div id="wizard-sources-list" class="h-full flex flex-col">
+                    <!-- Source List Header -->
+                    <div
+                      class="p-3 border-b border-gray-700 flex justify-between items-center"
+                    >
+                      <h4 class="text-white font-medium">Sources</h4>
+                      <button
+                        class="text-xs text-blue-400 hover:text-blue-300 back-to-sources hidden"
+                        id="wizard-back-to-sources"
+                      >
+                        <i class="fas fa-arrow-left mr-1"></i> Back to sources
+                      </button>
+                      <button
+                        class="text-xs text-blue-400 hover:text-blue-300"
+                        id="wizard-refresh-sources"
+                      >
+                        <i class="fas fa-sync-alt mr-1"></i> Refresh
+                      </button>
+                    </div>
+
+                    <!-- Sources List View -->
+                    <div
+                      id="wizard-sources-view"
+                      class="flex-1 overflow-y-auto p-2"
+                    >
+                      <!-- Sources will be dynamically inserted here -->
+                      <div class="p-4 text-center text-gray-400">
+                        <i class="fas fa-folder-open text-2xl mb-2"></i>
+                        <p class="text-sm">No sources available</p>
+                      </div>
+                    </div>
+
+                    <!-- Source Details View -->
+                    <div
+                      id="wizard-source-details"
+                      class="hidden flex-1 w-full overflow-y-auto py-1 scrollbar-transparent"
+                    >
+                      <div class="p-2">
+                        <h3
+                          class="font-medium text-sky-400 text-center py-3"
+                          id="wizard-source-title"
+                        >
+                          <!-- source title will populate here -->
+                        </h3>
+
+                        <!-- Source Summary -->
+                        <div class="source-content-section mb-6">
+                          <h4 class="text-sm font-semibold text-slate-300 mb-2">
+                            Summary
+                          </h4>
+                          <p
+                            class="text-sm text-slate-400"
+                            id="wizard-source-summary"
+                          >
+                            <!-- source summary will populate here -->
+                          </p>
+                        </div>
+
+                        <!-- Key Topics -->
+                        <div class="source-content-section mb-6">
+                          <h4 class="text-sm font-semibold text-slate-300 mb-2">
+                            Key Topics
+                          </h4>
+                          <div
+                            class="flex flex-wrap gap-4"
+                            id="wizard-source-topics"
+                          >
+                            <!-- source topics will populate here -->
+                          </div>
+                        </div>
+
+                        <!-- Source Content -->
+                        <div
+                          class="source-content-section flex-1 overflow-hidden"
+                        >
+                          <h4 class="text-sm font-semibold text-slate-300 mb-2">
+                            Content Preview
+                          </h4>
+                          <div
+                            class="flex-1 overflow-y-auto text-slate-400 space-y-4"
+                            id="wizard-source-content"
+                          >
+                            <!-- source content will populate here -->
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Main Chat Area (75%) -->
+              <div
+                class="w-3/4 flex flex-col bg-gray-900 rounded-lg shadow-lg overflow-hidden border border-gray-700"
+              >
+                <!-- Chat messages container -->
+                <div
+                  class="flex-1 overflow-y-auto scrollbar-transparent relative flex flex-col"
+                  id="wizard-chat-messages"
+                  style="contain: layout style paint"
+                >
+                  <div class="p-6">
+                    <div
+                      class="text-center text-gray-300 py-12"
+                      id="wizard-welcome-message"
+                    >
+                      <div
+                        class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-800 mb-6"
+                      >
+                        <i class="fas fa-robot text-4xl text-purple-400"></i>
+                      </div>
+                      <h3 class="text-2xl font-semibold text-white mb-3">
+                        How can I help you today?
+                      </h3>
+                      <p class="text-gray-400 max-w-md mx-auto text-base">
+                        Ask me anything about your documents or request help
+                        with writing, editing, or research.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Jump to Bottom Button -->
+                <div
+                  class="sticky bottom-4 left-0 right-0 flex justify-center z-10"
+                >
                   <button
-                    type="submit"
-                    id="wizard-send-btn"
-                    class="absolute right-2 bottom-2 p-2 rounded-full text-gray-400 hover:text-white hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled
+                    id="wizard-jump-to-bottom-btn"
+                    class="bg-indigo-500 text-white rounded-full py-2 px-6 shadow-md hover:bg-indigo-600 focus:outline-none transition-opacity duration-300 opacity-0 pointer-events-none"
                   >
-                    <i class="fas fa-paper-plane"></i>
+                    Jump to Bottom
                   </button>
                 </div>
-              </form>
+
+                <!-- Message Input -->
+                <div class="border-t border-gray-700 p-4 bg-gray-800">
+                  <form id="wizard-chat-form" class="h-full flex flex-col">
+                    <div class="relative flex-1">
+                      <textarea
+                        id="wizard-message-input"
+                        class="w-full h-full bg-gray-700 text-white rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                        placeholder="Ask me anything..."
+                        style="min-height: 120px"
+                      ></textarea>
+                      <button
+                        type="submit"
+                        id="wizard-send-btn"
+                        class="absolute right-2 bottom-2 p-2 rounded-full text-gray-400 hover:text-white hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled
+                      >
+                        <i class="fas fa-paper-plane"></i>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </div>
           </div>
         </div>
