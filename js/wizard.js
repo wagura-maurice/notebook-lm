@@ -1890,6 +1890,47 @@ const ModalHandling = {
 };
 
 /* ============================================ */
+/* === MODULE: LEFT COLUMN CHAT === */
+/* ============================================ */
+const LeftColumnChat = {
+  init: function() {
+    this.bindEvents();
+  },
+
+  bindEvents: function() {
+    const leftChatInput = document.getElementById('left-chat-input');
+    const leftSendButton = document.getElementById('left-send-message');
+
+    if (leftChatInput && leftSendButton) {
+      leftChatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          this.handleSendMessage();
+        }
+      });
+
+      leftSendButton.addEventListener('click', () => this.handleSendMessage());
+    }
+  },
+
+  handleSendMessage: function() {
+    const input = document.getElementById('left-chat-input');
+    const message = input.value.trim();
+    
+    if (message) {
+      // Here you would typically send the message to your backend
+      console.log('Left column chat message:', message);
+      
+      // Clear input
+      input.value = '';
+      
+      // Focus back on input
+      input.focus();
+    }
+  }
+};
+
+/* ============================================ */
 /* === MODULE: WIZARD CHAT === */
 /* ============================================ */
 const WizardChat = {
@@ -2460,6 +2501,7 @@ $(document).ready(function () {
   ModalHandling.init();
   WizardSources.init();
   WizardChat.init();
+  LeftColumnChat.init();
 });
 
 // More CHAT SUGGESTIONS Javascript

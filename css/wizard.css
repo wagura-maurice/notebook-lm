@@ -233,13 +233,32 @@ header {
 /* ============================================ */
 /* Scroll Containers */
 .collapsed-content,
-.source-list-container,
 .note-list-container {
   max-height: calc(100vh - 8rem);
   overflow-y: auto;
   padding-right: 0.5rem;
   height: 100%;
   box-sizing: border-box;
+}
+
+.source-list-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.source-list-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.left-column-chat {
+  flex-shrink: 0;
+  border-top: 1px solid #334155;
+  background: #1e293b;
+  padding: 0.75rem;
   scrollbar-width: thin;
   scrollbar-color: var(--slate-600) var(--slate-800);
   -webkit-overflow-scrolling: touch;
