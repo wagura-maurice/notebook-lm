@@ -2567,10 +2567,18 @@
     <!-- Custom JavaScript -->
     <script src="js/wizard.js"></script>
 
-    <!-- Initialize tooltips -->
+    <!-- Custom tooltip initialization -->
     <script>
       $(function () {
-        $('[data-toggle="tooltip"]').tooltip();
+        // Initialize custom tooltips using the existing CSS
+        $('[data-toggle="tooltip"]').each(function() {
+          const $el = $(this);
+          const tooltipText = $el.attr('title') || $el.data('original-title') || '';
+          if (tooltipText) {
+            $el.attr('data-title', tooltipText);
+            $el.removeAttr('title');
+          }
+        });
       });
     </script>
   </body>
