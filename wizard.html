@@ -374,28 +374,30 @@
       <!-- Left Column - Sources (35%) -->
       <div
         id="left-column"
-        class="w-full lg:w-[35%] bg-slate-800 text-white transition-all duration-300 flex flex-col h-full lg:block hidden"
+        class="w-full lg:w-[35%] bg-slate-800 text-white transition-all duration-300 flex flex-col h-full lg:flex hidden"
       >
         <!-- Expanded view -->
-        <div class="flex flex-col h-full expanded-content">
+        <div class="flex flex-col h-full">
           <!-- Header -->
-          <div
-            class="flex items-center justify-between px-5 py-3 border-b border-slate-700"
-          >
-            <h2 class="text-lg font-semibold">Sources</h2>
-            <div class="flex items-center">
-              <button
-                id="collapse-left"
-                class="text-white text-lg hover:text-sky-400 toggle-left-column hidden lg:block"
-              >
-                <i class="fas fa-chevron-left"></i>
-              </button>
-              <button
-                class="text-white text-lg hover:text-sky-400 lg:hidden"
-                id="close-left-column"
-              >
-                <i class="fas fa-times"></i>
-              </button>
+          <div class="flex-shrink-0">
+            <div
+              class="flex items-center justify-between px-5 py-3 border-b border-slate-700"
+            >
+              <h2 class="text-lg font-semibold">Sources</h2>
+              <div class="flex items-center">
+                <button
+                  id="collapse-left"
+                  class="text-white text-lg hover:text-sky-400 toggle-left-column hidden lg:block"
+                >
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                <button
+                  class="text-white text-lg hover:text-sky-400 lg:hidden"
+                  id="close-left-column"
+                >
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
             </div>
           </div>
           <div class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent">
@@ -432,7 +434,7 @@
             </div>
 
             <!-- Sources List -->
-            <div class="source-list-wrapper">
+            <div class="flex-1 overflow-y-auto" style="min-height: 0">
               <ul class="source-list px-5 py-3">
                 <!-- PDF Source -->
                 <li
@@ -1658,24 +1660,31 @@
               </ul>
             </div>
 
-            <!-- Left Column Chat Area -->
+            <!-- Scrollable Content Area -->
+            <div class="flex-1 overflow-y-auto min-h-0">
+              <!-- Sources List -->
+              <div class="source-list-wrapper">
+                <ul class="source-list px-5 py-3">
+                  <!-- Source items will be populated here -->
+                </ul>
+              </div>
+            </div>
+
+            <!-- Fixed Chat Area at Bottom -->
             <div class="left-column-chat">
               <div class="p-3 bg-slate-800">
-                <div class="text-sm text-slate-300 mb-2">
-                  Chat about this source
-                </div>
-                <div class="flex items-center">
-                  <input
-                    type="text"
+                <div class="relative">
+                  <textarea
                     id="left-chat-input"
-                    class="flex-1 bg-slate-700 text-white text-sm rounded-l-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
-                    placeholder="Ask about this source..."
-                  />
+                    class="w-full bg-slate-900 rounded-lg p-3 pr-12 text-white !text-white resize-none focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                    placeholder="Chat about these sources..."
+                    rows="2"
+                  ></textarea>
                   <button
                     id="left-send-message"
-                    class="bg-sky-500 hover:bg-sky-600 text-white rounded-r-lg px-3 py-2 transition-colors"
+                    class="absolute right-3 bottom-3 text-sky-400 hover:text-white p-1 rounded-full transition-colors"
                   >
-                    <i class="fas fa-paper-plane"></i>
+                    <i class="fas fa-paper-plane text-lg"></i>
                   </button>
                 </div>
               </div>

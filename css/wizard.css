@@ -246,23 +246,122 @@ header {
   flex-direction: column;
   height: 100%;
   box-sizing: border-box;
+  overflow: hidden; /* Prevent double scrollbar */
 }
 
 .source-list-wrapper {
   flex: 1;
+  min-height: 0; /* Allow flex item to shrink below content size */
   overflow-y: auto;
   padding-right: 0.5rem;
 }
 
+/* Left Column Layout */
+#left-column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Fixed chat area at bottom */
 .left-column-chat {
-  flex-shrink: 0;
-  border-top: 1px solid #334155;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: #1e293b;
-  padding: 0.75rem;
-  scrollbar-width: thin;
-  scrollbar-color: var(--slate-600) var(--slate-800);
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
+  z-index: 20;
+  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.left-column-chat > div {
+  width: 100%;
+  box-sizing: border-box;
+  background: #1e293b;
+}
+
+.left-column-chat textarea {
+  min-height: 44px;
+  max-height: 200px;
+  transition: height 0.2s;
+  line-height: 1.5;
+  padding: 0.75rem 3rem 0.75rem 1rem;
+  box-sizing: border-box;
+  width: 100%;
+  resize: none;
+  background: #0f172a;
+  color: white;
+  font-size: 0.875rem;
+  border: 1px solid #334155;
+  border-radius: 0.5rem;
+}
+
+.left-column-chat textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+.left-column-chat button {
+  position: absolute;
+  right: 1rem;
+  bottom: 0.75rem;
+  background: none;
+  border: none;
+  color: #60a5fa;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.left-column-chat button:hover {
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Scrollable content area */
+#left-column > .flex-1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 60px; /* Height of the chat input area */
+  overflow-y: auto;
+  padding-bottom: 1rem;
+}
+
+.source-list-wrapper {
+  min-height: 100%;
+  padding-bottom: 1rem;
+}
+
+.source-list {
+  padding: 0 1.25rem;
+}
+
+/* Ensure source items don't show through the chat area */
+.source-list::after {
+  content: '';
+  display: block;
+  height: 60px; /* Same as bottom offset */
+  width: 100%;
+  flex-shrink: 0;
+}
+
+/* Ensure the expanded content takes full height and allows scrolling */
+.expanded-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Make sure the source list takes available space and scrolls */
+.flex-1.overflow-y-auto {
+  min-height: 0; /* Crucial for flex item scrolling */
 }
 
 .collapsed-content::-webkit-scrollbar,
