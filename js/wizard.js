@@ -1489,15 +1489,11 @@ $(document).ready(function () {
   ColumnToggles.init();
   DropdownMenus.init();
   SourceActions.init();
-  NoteActions.init();
   SourceItemInteractions.init();
-  NoteItemInteractions.init();
   ChatFunctionality.init();
   MessageActions.init();
   Utilities.init();
   ModalHandling.init();
-  WizardSources.init();
-  WizardChat.init();
   LeftColumnChat.init();
 });
 

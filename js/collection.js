@@ -756,6 +756,23 @@ const SourceActions = {
       this.addSource(sourceText, "text", sourceText);
       sourceInput.val("");
       $("#add-source-modal").addClass("hidden");
+
+      // Show success message
+      const $successMessage = $(`
+        <div class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50 flex items-center">
+          <i class="fas fa-check-circle mr-2"></i>
+          Source added successfully
+        </div>
+      `);
+
+      $("body").append($successMessage);
+
+      // Remove the message after 3 seconds
+      setTimeout(() => {
+        $successMessage.fadeOut(300, function () {
+          $(this).remove();
+        });
+      }, 3000);
     }
   },
 
@@ -1167,6 +1184,94 @@ const NoteActions = {
         </div>
       `);
 
+      // Add hover effect for the menu toggle
+      $newNote.hover(
+        function () {
+          $(this).find(".note-icon").css("opacity", "0");
+          $(this).find(".note-menu-toggle").css("opacity", "1");
+        },
+        function () {
+          if (!$(this).hasClass("active")) {
+            $(this).find(".note-icon").css("opacity", "1");
+            $(this).find(".note-menu-toggle").css("opacity", "0");
+          }
+        }
+      );
+
+      // Add click handler for the menu toggle
+      $newNote.find(".note-menu-toggle").on("click", function (e) {
+        e.stopPropagation();
+        const $noteItem = $(this).closest(".note-item");
+        const $dropdown = $noteItem.find(".notes-menu-dropdown");
+        const isVisible = !$dropdown.hasClass("hidden");
+
+        // Hide all other dropdowns
+        $(".notes-menu-dropdown").not($dropdown).addClass("hidden");
+
+        if (!isVisible) {
+          // Position and show the dropdown
+          const $trigger = $(this);
+          const triggerOffset = $trigger.offset();
+          const triggerHeight = $trigger.outerHeight();
+          const dropdownHeight = $dropdown.outerHeight();
+          const windowHeight = $(window).height();
+          const spaceBelow = windowHeight - (triggerOffset.top + triggerHeight);
+          const spaceAbove = triggerOffset.top;
+
+          // Default position below the trigger
+          let top = triggerOffset.top + triggerHeight;
+
+          // If not enough space below but enough space above, position above the trigger
+          if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
+            top = triggerOffset.top - dropdownHeight - 8; // 8px gap
+          }
+
+          $dropdown.css({
+            top: `${top}px`,
+            left: `${
+              triggerOffset.left -
+              $dropdown.outerWidth() +
+              $trigger.outerWidth()
+            }px`,
+          });
+
+          $dropdown.removeClass("hidden");
+        }
+      });
+
+      // Add click handler for the note item
+      $newNote.on("click", function (e) {
+        if (
+          $(e.target).closest(".note-menu-toggle, .notes-menu-dropdown").length
+        ) {
+          return;
+        }
+
+        const $noteItem = $(this);
+        $noteItem.toggleClass("active").siblings().removeClass("active");
+
+        if ($noteItem.hasClass("active")) {
+          $noteItem.find(".note-icon").css("opacity", "0");
+          $noteItem.find(".note-menu-toggle").css("opacity", "1");
+        } else {
+          $noteItem.find(".note-icon").css("opacity", "1");
+          $noteItem.find(".note-menu-toggle").css("opacity", "0");
+          $noteItem.find(".notes-menu-dropdown").addClass("hidden");
+        }
+      });
+
+      // Add document click handler to close dropdown when clicking outside
+      $(document).on("click.noteMenu", function (e) {
+        if (
+          !$(e.target).closest(".note-menu-toggle, .notes-menu-dropdown").length
+        ) {
+          $(".notes-menu-dropdown").addClass("hidden");
+          $(".note-item").removeClass("active");
+          $(".note-icon").css("opacity", "1");
+          $(".note-menu-toggle").css("opacity", "0");
+        }
+      });
+
       $(".note-list-container").prepend($newNote);
       $("#note-title-input").val("");
       $("#note-content").html("");
@@ -1216,8 +1321,127 @@ const NoteActions = {
   addNoteToSources: function (e) {
     e.preventDefault();
     const $noteItem = $(e.currentTarget).closest(SELECTORS.noteItem);
-    const title = $noteItem.find(".font-medium.truncate").text();
-    SourceActions.addSource(title, "note", title);
+    const title = $noteItem.find(".font-medium.truncate").text().trim();
+    const content = $noteItem.find(".text-sm.text-gray-400").text().trim();
+
+    console.log("Adding note to sources:", { title, content });
+
+    // Add the note as a source
+    this.addSource(title, "note", content);
+
+    // Close the dropdown menu
+    $noteItem.find(".notes-menu-dropdown").addClass("hidden");
+  },
+
+  addSource: function (name, type, content) {
+    const truncatedName =
+      name.length > 30 ? `${name.substring(0, 30)}...` : name;
+
+    const $newSource = $(`
+      <li class="group py-2 px-3 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item">
+        <div class="relative mr-3 w-6 h-6">
+          <i class="fas fa-file-alt text-green-400 group-hover:opacity-0 transition-opacity source-icon"></i>
+          <i class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center source-menu-toggle"></i>
+        </div>
+        <span class="flex-1 truncate">${truncatedName}</span>
+        <input type="checkbox" class="ml-2 source-checkbox" />
+        <div class="source-menu hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30">
+          <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+            <i class="fas fa-eye mr-2"></i> Show source
+          </a>
+          <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+            <i class="fas fa-pencil-alt mr-2"></i> Rename
+          </a>
+          <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+            <i class="fas fa-trash-alt mr-2"></i> Delete
+          </a>
+        </div>
+      </li>
+    `);
+
+    // Add hover effect for the source item
+    $newSource.hover(
+      function () {
+        $(this).find(".source-icon").css("opacity", "0");
+        $(this).find(".source-menu-toggle").css("opacity", "1");
+      },
+      function () {
+        if (!$(this).hasClass("active")) {
+          $(this).find(".source-icon").css("opacity", "1");
+          $(this).find(".source-menu-toggle").css("opacity", "0");
+        }
+      }
+    );
+
+    // Add click handler for the menu toggle
+    $newSource.find(".source-menu-toggle").on("click", function (e) {
+      e.stopPropagation();
+      const $sourceItem = $(this).closest(".source-item");
+      const $dropdown = $sourceItem.find(".source-menu");
+      const isVisible = !$dropdown.hasClass("hidden");
+
+      // Hide all other dropdowns
+      $(".source-menu").not($dropdown).addClass("hidden");
+
+      if (!isVisible) {
+        // Position and show the dropdown
+        const $trigger = $(this);
+        const triggerOffset = $trigger.offset();
+        const triggerHeight = $trigger.outerHeight();
+        const dropdownHeight = $dropdown.outerHeight();
+        const windowHeight = $(window).height();
+        const spaceBelow = windowHeight - (triggerOffset.top + triggerHeight);
+        const spaceAbove = triggerOffset.top;
+
+        // Default position below the trigger
+        let top = triggerOffset.top + triggerHeight;
+
+        // If not enough space below but enough space above, position above the trigger
+        if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
+          top = triggerOffset.top - dropdownHeight - 8; // 8px gap
+        }
+
+        $dropdown.css({
+          top: `${top}px`,
+          left: `${
+            triggerOffset.left - $dropdown.outerWidth() + $trigger.outerWidth()
+          }px`,
+        });
+
+        $dropdown.removeClass("hidden");
+      }
+    });
+
+    // Add click handler for the source item
+    $newSource.on("click", function (e) {
+      if ($(e.target).closest(".source-menu-toggle, .source-menu").length) {
+        return;
+      }
+
+      const $sourceItem = $(this);
+      $sourceItem.toggleClass("active").siblings().removeClass("active");
+
+      if ($sourceItem.hasClass("active")) {
+        $sourceItem.find(".source-icon").css("opacity", "0");
+        $sourceItem.find(".source-menu-toggle").css("opacity", "1");
+      } else {
+        $sourceItem.find(".source-icon").css("opacity", "1");
+        $sourceItem.find(".source-menu-toggle").css("opacity", "0");
+        $sourceItem.find(".source-menu").addClass("hidden");
+      }
+    });
+
+    // Add document click handler to close dropdown when clicking outside
+    $(document).on("click.sourceMenu", function (e) {
+      if (!$(e.target).closest(".source-menu-toggle, .source-menu").length) {
+        $(".source-menu").addClass("hidden");
+        $(".source-item").removeClass("active");
+        $(".source-icon").css("opacity", "1");
+        $(".source-menu-toggle").css("opacity", "0");
+      }
+    });
+
+    $(".source-list").prepend($newSource);
   },
 
   showNoteContent: function (e) {
