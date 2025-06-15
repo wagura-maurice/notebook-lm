@@ -996,6 +996,7 @@ const NoteActions = {
           break;
         case "Wizard":
           console.log("Opening Wizard page");
+          window.open("wizard.html", "_blank");
           break;
         case "Canvas":
           console.log("Opening canvas notes modal...");
