@@ -1164,22 +1164,25 @@ const NoteActions = {
       const $newNote = $(`
         <div class="relative flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item group mb-2">
           <div class="relative mr-3 w-6 h-6 mt-1 flex-shrink-0">
-            <i class="fas fa-sticky-note text-sky-400 note-icon transition-opacity duration-200"></i>
-            <i class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 note-menu-toggle transition-opacity duration-200 flex items-center justify-center"></i>
+            <i class="fas fa-sticky-note text-amber-400 note-icon transition-opacity duration-200"></i>
+            <i class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 note-menu-toggle transition-opacity duration-200 flex items-center justify-center cursor-pointer"></i>
           </div>
           <div class="flex-1 min-w-0 overflow-hidden">
-            <div class="font-medium truncate">${noteTitle}</div>
-            <div class="text-xs text-slate-400 truncate">${truncatedContent}</div>
+            <div class="font-medium truncate" data-title="${noteTitle}">${noteTitle}</div>
+            <div class="text-xs text-slate-400 truncate" data-title="${truncatedContent}">
+              <span class="key-topic hover:text-sky-400 cursor-pointer transition-colors">${truncatedContent}</span>
+            </div>
           </div>
-          <div class="notes-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30">
-            <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+          <!-- Dropdown Menu -->
+          <div class="notes-menu-dropdown hidden absolute right-0 mt-2 w-48 bg-slate-800 rounded-md shadow-lg py-1 border border-slate-700 z-30">
+            <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option show-note">
               <i class="fa-solid fa-eye mr-2"></i> Show note
             </a>
-            <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
-              <i class="fas fa-plus-circle mr-3 text-sm"></i> Add to sources
+            <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option add-to-sources">
+              <i class="fas fa-plus-circle mr-2"></i> Add to sources
             </a>
-            <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
-              <i class="fas fa-trash-alt mr-3 text-sm"></i> Delete note
+            <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option delete-note">
+              <i class="fas fa-trash-alt mr-2"></i> Delete note
             </a>
           </div>
         </div>
@@ -1200,8 +1203,10 @@ const NoteActions = {
       );
 
       // Add click handler for the menu toggle
-      $newNote.find(".note-menu-toggle").on("click", function (e) {
+      $newNote.on("click", ".note-menu-toggle", function (e) {
         e.stopPropagation();
+        e.preventDefault();
+
         const $noteItem = $(this).closest(".note-item");
         const $dropdown = $noteItem.find(".notes-menu-dropdown");
         const isVisible = !$dropdown.hasClass("hidden");
@@ -1210,34 +1215,71 @@ const NoteActions = {
         $(".notes-menu-dropdown").not($dropdown).addClass("hidden");
 
         if (!isVisible) {
-          // Position and show the dropdown
-          const $trigger = $(this);
-          const triggerOffset = $trigger.offset();
-          const triggerHeight = $trigger.outerHeight();
-          const dropdownHeight = $dropdown.outerHeight();
-          const windowHeight = $(window).height();
-          const spaceBelow = windowHeight - (triggerOffset.top + triggerHeight);
-          const spaceAbove = triggerOffset.top;
+          // Position the dropdown relative to the note item
+          const noteOffset = $noteItem.offset();
+          const noteWidth = $noteItem.outerWidth();
+          const dropdownWidth = $dropdown.outerWidth();
 
-          // Default position below the trigger
-          let top = triggerOffset.top + triggerHeight;
+          // Position the dropdown to the right of the note item
+          let left = noteOffset.left + noteWidth - dropdownWidth;
 
-          // If not enough space below but enough space above, position above the trigger
-          if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
-            top = triggerOffset.top - dropdownHeight - 8; // 8px gap
+          // Make sure it doesn't go off screen
+          const windowWidth = $(window).width();
+          if (left + dropdownWidth > windowWidth) {
+            left = windowWidth - dropdownWidth - 10; // 10px padding from edge
           }
 
-          $dropdown.css({
-            top: `${top}px`,
-            left: `${
-              triggerOffset.left -
-              $dropdown.outerWidth() +
-              $trigger.outerWidth()
-            }px`,
-          });
+          // Position below the note item
+          const top = noteOffset.top + $noteItem.outerHeight() + 5;
 
-          $dropdown.removeClass("hidden");
+          $dropdown
+            .css({
+              position: "fixed",
+              top: `${top}px`,
+              left: `${left}px`,
+              display: "block",
+            })
+            .removeClass("hidden");
+
+          // Close dropdown when clicking outside
+          const closeDropdown = function (e) {
+            if (
+              !$dropdown.is(e.target) &&
+              $dropdown.has(e.target).length === 0
+            ) {
+              $dropdown.addClass("hidden");
+              $(document).off("click", closeDropdown);
+            }
+          };
+
+          // Add a small delay to prevent immediate closing
+          setTimeout(() => {
+            $(document).on("click", closeDropdown);
+          }, 10);
+        } else {
+          $dropdown.addClass("hidden");
         }
+      });
+
+      // Handle menu option clicks
+      $newNote.on("click", ".menu-option", function (e) {
+        e.stopPropagation();
+        const $option = $(this);
+        const $noteItem = $option.closest(".note-item");
+
+        if ($option.hasClass("show-note")) {
+          // Handle show note
+          console.log("Show note clicked");
+        } else if ($option.hasClass("add-to-sources")) {
+          // Handle add to sources
+          console.log("Add to sources clicked");
+        } else if ($option.hasClass("delete-note")) {
+          // Handle delete note
+          console.log("Delete note clicked");
+        }
+
+        // Close the dropdown
+        $noteItem.find(".notes-menu-dropdown").addClass("hidden");
       });
 
       // Add click handler for the note item
