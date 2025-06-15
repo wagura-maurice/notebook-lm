@@ -978,8 +978,11 @@ const NoteActions = {
           console.log("Timeline logic would run here");
           break;
         case "Wizard":
+          console.log("Opening Wizard page");
+          break;
+        case "Canvas":
           console.log("Opening canvas notes modal...");
-          self.showOpenWizardModal(e);
+          self.showOpenCanvasNotesToCanvasModal(e);
           break;
       }
     });
@@ -991,11 +994,6 @@ const NoteActions = {
         function () {
           alert("Add logic to source all notes");
         }
-      )
-      .on(
-        "click",
-        '#notes-menu-dropdown a:contains("Canvas all")',
-        this.showOpenCanvasNotesToCanvasModal.bind(this)
       )
       .on(
         "click",
@@ -1174,11 +1172,6 @@ const NoteActions = {
       $("#note-content").html("");
       $("#add-note-modal").addClass("hidden");
     }
-  },
-
-  showOpenWizardModal: function (e) {
-    e.preventDefault();
-    $("#open-wizard-modal").removeClass("hidden");
   },
 
   showOpenCanvasNotesToCanvasModal: function (e) {
@@ -1383,15 +1376,15 @@ const SourceItemInteractions = {
   init: function () {
     this.setupSourceTitles();
     this.setupNoteTitles();
-    
+
     // Set up event listeners
     $(document)
       .on("click", SELECTORS.sourceItem, this.handleSourceItemClick.bind(this))
       .on("click", this.handleDocumentClick.bind(this));
-      
+
     // Update titles when the document is fully loaded
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => {
         this.updateSourceTitles();
         this.updateNoteTitles();
       });
@@ -1401,41 +1394,43 @@ const SourceItemInteractions = {
     }
   },
 
-  setupSourceTitles: function() {
+  setupSourceTitles: function () {
     // Set initial titles
     this.updateSourceTitles();
-    
+
     // Update titles when new items are added
     const observer = new MutationObserver(() => this.updateSourceTitles());
-    const sourcesList = document.querySelector('#sources-list');
+    const sourcesList = document.querySelector("#sources-list");
     if (sourcesList) {
       observer.observe(sourcesList, { childList: true, subtree: true });
     }
   },
-  
-  updateSourceTitles: function() {
+
+  updateSourceTitles: function () {
     // Update source item tooltips
-    document.querySelectorAll('.source-item .truncate').forEach(span => {
+    document.querySelectorAll(".source-item .truncate").forEach((span) => {
       if (!span.title) {
         span.title = span.textContent.trim();
       }
     });
-    
+
     // Update note item tooltips
-    document.querySelectorAll('#right-column .note-item .truncate').forEach(span => {
-      const title = span.textContent.trim();
-      if (title) {
-        span.setAttribute('data-title', title);
-      }
-    });
+    document
+      .querySelectorAll("#right-column .note-item .truncate")
+      .forEach((span) => {
+        const title = span.textContent.trim();
+        if (title) {
+          span.setAttribute("data-title", title);
+        }
+      });
   },
-  
-  setupNoteTitles: function() {
+
+  setupNoteTitles: function () {
     // Initial setup for note titles
     this.updateNoteTitles();
-    
+
     // Set up MutationObserver for dynamically added note items
-    const notesList = document.querySelector('#right-column .px-5.py-3');
+    const notesList = document.querySelector("#right-column .px-5.py-3");
     if (notesList) {
       const observer = new MutationObserver(() => {
         this.updateNoteTitles();
@@ -1443,15 +1438,17 @@ const SourceItemInteractions = {
       observer.observe(notesList, { childList: true, subtree: true });
     }
   },
-  
-  updateNoteTitles: function() {
+
+  updateNoteTitles: function () {
     // Update tooltips for note items
-    document.querySelectorAll('#right-column .note-item .font-medium.truncate').forEach(div => {
-      const title = div.textContent.trim();
-      if (title) {
-        div.setAttribute('data-title', title);
-      }
-    });
+    document
+      .querySelectorAll("#right-column .note-item .font-medium.truncate")
+      .forEach((div) => {
+        const title = div.textContent.trim();
+        if (title) {
+          div.setAttribute("data-title", title);
+        }
+      });
   },
 
   handleSourceItemClick: function (e) {
@@ -1886,229 +1883,6 @@ const ModalHandling = {
 };
 
 /* ============================================ */
-/* === MODULE: WIZARD CHAT === */
-/* ============================================ */
-const WizardChat = {
-  init: function () {
-    this.$form = $("#wizard-chat-form");
-    this.$input = $("#wizard-message-input");
-    this.$sendBtn = $("#wizard-send-btn");
-    this.$messagesContainer = $("#wizard-chat-messages");
-    this.$welcomeMessage = $("#wizard-welcome-message");
-
-    this.bindEvents();
-  },
-
-  bindEvents: function () {
-    // Handle form submission
-    this.$form.on("submit", this.handleSubmit.bind(this));
-
-    // Handle input events to enable/disable send button
-    this.$input.on("input", this.handleInput.bind(this));
-
-    // Handle Enter/Shift+Enter for sending/new line
-    this.$input.on("keydown", this.handleKeydown.bind(this));
-
-    // Handle click on key topics in wizard
-    $(document).on("click", "#wizard-source-topics .source-topic-tag", (e) => {
-      e.preventDefault();
-      const topic = $(e.target).text().trim();
-      this.submitMessage(topic);
-    });
-  },
-
-  handleSubmit: function (e) {
-    e.preventDefault();
-    this.sendMessage();
-  },
-
-  handleInput: function () {
-    const hasText = this.$input.val().trim() !== "";
-    this.$sendBtn.prop("disabled", !hasText);
-  },
-
-  handleKeydown: function (e) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      this.sendMessage();
-    }
-  },
-
-  sendMessage: function () {
-    const message = this.$input.val().trim();
-    if (!message) return;
-
-    // Add user message to chat
-    this.addMessage("user", message);
-
-    // Clear input and disable send button
-    this.$input.val("");
-    this.$sendBtn.prop("disabled", true);
-
-    // Show typing indicator
-    this.showTypingIndicator();
-
-    // Simulate AI response after a delay
-    setTimeout(() => {
-      this.hideTypingIndicator();
-      this.generateAIResponse(message);
-    }, 1000);
-  },
-
-  submitMessage: function (message) {
-    if (!message) return;
-
-    // Set the input value and trigger the send
-    this.$input.val(message);
-    this.$sendBtn.prop("disabled", false);
-    this.sendMessage();
-  },
-
-  addMessage: function (type, content) {
-    // Hide welcome message when first message is sent
-    if (this.$welcomeMessage.is(":visible")) {
-      this.$welcomeMessage.hide();
-    }
-
-    const isUser = type === "user";
-
-    if (isUser) {
-      // User message styling (bubble on the right)
-      const message = $(`
-        <div class="flex justify-end mb-4 px-2">
-          <div class="max-w-[80%] bg-slate-700 hover:bg-slate-600 rounded-xl rounded-br-none px-4 py-2 shadow relative group">
-            <div class="text-white text-sm">${content}</div>
-            <div class="text-xs text-gray-400 text-right mt-1">${Utils.formatTime()}</div>
-          </div>
-        </div>
-      `);
-      this.$messagesContainer.append(message);
-    } else {
-      // AI message styling (full width, no borders)
-      const message = $(`
-        <div class="w-full px-4 py-2 group">
-          <div class="text-white text-sm">${content}</div>
-          <div class="flex justify-between items-center mt-2">
-            <div class="text-xs text-gray-300">${Utils.formatTime()}</div>
-            <button
-              class="text-xs text-gray-300 hover:text-white flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
-              data-message="${content.replace(/"/g, '"')}">
-              <i class="fas fa-copy mr-1"></i> Copy
-            </button>
-          </div>
-        </div>
-      `);
-      this.$messagesContainer.append(message);
-    }
-
-    this.scrollToBottom();
-    return;
-
-    this.$messagesContainer.append(message);
-    this.scrollToBottom();
-  },
-
-  showTypingIndicator: function () {
-    const typingIndicator = $(`
-      <div class="typing-indicator flex justify-start mb-4 px-2">
-        <div class="max-w-[80%] bg-gray-800 rounded-xl rounded-bl-none px-4 py-2">
-          <div class="flex items-center space-x-1">
-            <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce"></div>
-            <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style="animation-delay: 0.2s"></div>
-            <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style="animation-delay: 0.4s"></div>
-          </div>
-        </div>
-      </div>
-    `);
-
-    this.$messagesContainer.append(typingIndicator);
-    this.scrollToBottom();
-
-    this.typingIndicator = typingIndicator;
-  },
-
-  hideTypingIndicator: function () {
-    if (this.typingIndicator) {
-      this.typingIndicator.remove();
-      this.typingIndicator = null;
-    }
-  },
-
-  generateAIResponse: function (userMessage) {
-    // Simple response generation - you can replace this with an actual API call
-    const responses = [
-      `I understand you're interested in "${userMessage}". How can I help you explore this topic further?`,
-      `That's an interesting topic! What specific aspect of "${userMessage}" would you like to discuss?`,
-      `I can help you with "${userMessage}". Would you like me to find more information or help you analyze it?`,
-      `"${userMessage}" is a great topic! What would you like to know more about it?`,
-      `I can see you're interested in, I can see you're interested in, I can see you're interested in, I can see you're interested in, I can see you're interested in, I can see you're interested in "${userMessage}". Let me know how I can assist you with this.`,
-    ];
-
-    const randomResponse =
-      responses[Math.floor(Math.random() * responses.length)];
-    this.addMessage("ai", randomResponse);
-  },
-
-  scrollToBottom: function () {
-    this.$messagesContainer[0].scrollTo({
-      top: this.$messagesContainer[0].scrollHeight,
-      behavior: "smooth",
-    });
-  },
-};
-
-// Initialize Jump to Bottom functionality for wizard chat
-(function () {
-  const chatMessages = document.getElementById("wizard-chat-messages");
-  const jumpBtn = document.getElementById("wizard-jump-to-bottom-btn");
-
-  if (chatMessages && jumpBtn) {
-    function atBottom() {
-      // 2px tolerance for floating point errors
-      return (
-        chatMessages.scrollHeight -
-          chatMessages.scrollTop -
-          chatMessages.clientHeight <
-        2
-      );
-    }
-
-    function toggleJumpBtn() {
-      if (!atBottom()) {
-        jumpBtn.classList.add("opacity-100", "pointer-events-auto");
-        jumpBtn.classList.remove("opacity-0", "pointer-events-none");
-      } else {
-        jumpBtn.classList.remove("opacity-100", "pointer-events-auto");
-        jumpBtn.classList.add("opacity-0", "pointer-events-none");
-      }
-    }
-
-    chatMessages.addEventListener("scroll", toggleJumpBtn);
-
-    // Initial check
-    setTimeout(toggleJumpBtn, 500);
-
-    jumpBtn.addEventListener("click", function () {
-      chatMessages.scrollTo({
-        top: chatMessages.scrollHeight,
-        behavior: "smooth",
-      });
-    });
-
-    // Handle new messages
-    const observer = new MutationObserver(() => {
-      // Only auto-scroll if already at bottom
-      if (atBottom()) {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      }
-      setTimeout(toggleJumpBtn, 100);
-    });
-
-    observer.observe(chatMessages, { childList: true, subtree: true });
-  }
-})();
-
-/* ============================================ */
 /* === MODULE: CANVAS CHAT === */
 /* ============================================ */
 const CanvasChat = {
@@ -2313,179 +2087,6 @@ const CanvasChat = {
 };
 
 /* ============================================ */
-/* === MODULE: WIZARD SOURCES === */
-/* ============================================ */
-const WizardSources = {
-  init: function () {
-    this.setupEventListeners();
-  },
-
-  setupEventListeners: function () {
-    // Handle refresh button click
-    $(document).on("click", "#wizard-refresh-sources", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this.syncSourcesToWizard();
-    });
-
-    // Also sync when the wizard modal is opened
-    $(document).on("click", '[data-modal-target="open-wizard-modal"]', () => {
-      setTimeout(() => {
-        this.syncSourcesToWizard();
-      }, 100);
-    });
-  },
-
-  syncSourcesToWizard: function () {
-    // Get only sources that are not currently loading (don't have the loading spinner icon)
-    const $leftColumnSources = $(".source-list .source-item").filter(
-      function () {
-        return $(this).find(".fa-arrows-rotate").length === 0;
-      }
-    );
-
-    const $wizardSourceView = $("#wizard-sources-view");
-    const $wizardSourceList = $("#wizard-sources-list");
-    const $sourceDetailsView = $("#wizard-source-details");
-    const $backButton = $("#wizard-back-to-sources");
-    const $refreshButton = $("#wizard-refresh-sources");
-
-    // Reset view to sources list
-    $wizardSourceView.removeClass("hidden");
-    $sourceDetailsView.addClass("hidden");
-    $backButton.addClass("hidden");
-    $refreshButton.removeClass("hidden");
-
-    // Clear existing content
-    $wizardSourceView.empty();
-
-    if ($leftColumnSources.length === 0) {
-      // Show no sources message
-      $wizardSourceView.html(`
-        <div class="p-4 text-center text-gray-400">
-          <i class="fas fa-folder-open text-2xl mb-2"></i>
-          <p class="text-sm">No loaded sources available</p>
-          <p class="text-xs text-gray-500 mt-1">Some sources may still be loading</p>
-        </div>
-      `);
-      return;
-    }
-
-    // Create a container for the sources list
-    const $sourcesContainer = $('<div class="space-y-1"></div>');
-
-    // Clone and add each source to the wizard section
-    $leftColumnSources.each((index, element) => {
-      const $source = $(element).clone();
-      const sourceTitle = $source.find(".truncate").text() || "Untitled Source";
-      const sourceIcon =
-        $source.find(".source-icon").attr("class") || "fas fa-file";
-
-      // Clean up the cloned element
-      $source
-        .removeClass("source-item hover:bg-slate-700")
-        .addClass("hover:bg-slate-700/50")
-        .find('input[type="checkbox"]')
-        .remove();
-
-      // Remove any existing click handlers and loading indicators
-      $source.off("click").find(".fa-arrows-rotate").parent().remove();
-
-      // Add click handler for selection
-      $source.on("click", (e) => {
-        e.stopPropagation();
-        // Use a class without forward slash for selection
-        $sourcesContainer
-          .find('[class*="bg-slate-700"]')
-          .removeClass("bg-slate-700/50");
-        $source.addClass("bg-slate-700/50");
-
-        // Show source details
-        this.showSourceDetails({
-          title: sourceTitle,
-          icon: sourceIcon,
-          // Mock data - in a real app, this would come from your data source
-          summary: `This is a detailed summary of ${sourceTitle}. It includes key information and insights from the document.`,
-          topics: ["Methodology", "Analysis", "Research", "Data Collection"],
-          content: [
-            `This is a preview of the content from ${sourceTitle}.`,
-            "The document contains valuable information about the subject matter.",
-            "The document is formatted in a way that is easy to read and understand.",
-            "The document is formatted in a way that is easy to read and understand.",
-            "The document is formatted in a way that is easy to read and understand.",
-            "Key points and details are presented in a clear and organized manner.",
-            "Key points and details are presented in a clear and organized manner.",
-            "Key points and details are presented in a clear and organized manner.",
-            "Key points and details are presented in a clear and organized manner.",
-            "The document is formatted in a way that is easy to read and understand.",
-            "The document is formatted in a way that is easy to read and understand.",
-            "The document is formatted in a way that is easy to read and understand.",
-            "The document is formatted in a way that is easy to read and understand.",
-          ],
-        });
-      });
-
-      $sourcesContainer.append($source);
-    });
-
-    $wizardSourceView.append($sourcesContainer);
-
-    // Initialize with first source selected if available
-    const $firstSource = $sourcesContainer.find("> div:first-child");
-    if ($firstSource.length) {
-      $firstSource.trigger("click");
-    }
-  },
-
-  showSourceDetails: function (sourceData) {
-    const $sourceDetails = $("#wizard-source-details");
-    const $sourcesView = $("#wizard-sources-view");
-    const $backButton = $("#wizard-back-to-sources");
-    const $refreshButton = $("#wizard-refresh-sources");
-
-    // Update source details
-    $("#wizard-source-title").text(sourceData.title);
-    $("#wizard-source-summary").text(sourceData.summary);
-
-    // Update topics
-    const $topicsContainer = $("#wizard-source-topics").empty();
-    sourceData.topics.forEach((topic) => {
-      $topicsContainer.append(`
-        <span class="source-topic-tag hover:bg-sky-600 cursor-pointer transition-colors">
-          ${topic}
-        </span>
-      `);
-    });
-
-    // Update content
-    const $contentContainer = $("#wizard-source-content").empty();
-    sourceData.content.forEach((paragraph) => {
-      $contentContainer.append(`<p>${paragraph}</p>`);
-    });
-
-    // Switch to details view
-    $sourcesView.addClass("hidden");
-    $sourceDetails.removeClass("hidden");
-    $backButton.removeClass("hidden");
-    $refreshButton.addClass("hidden");
-  },
-};
-
-// Handle back button in wizard
-$(document).on("click", "#wizard-back-to-sources", function (e) {
-  e.preventDefault();
-  const $wizardSourceView = $("#wizard-sources-view");
-  const $sourceDetails = $("#wizard-source-details");
-  const $backButton = $("#wizard-back-to-sources");
-  const $refreshButton = $("#wizard-refresh-sources");
-
-  $wizardSourceView.removeClass("hidden");
-  $sourceDetails.addClass("hidden");
-  $backButton.addClass("hidden");
-  $refreshButton.removeClass("hidden");
-});
-
-/* ============================================ */
 /* === DOCUMENT READY === */
 /* ============================================ */
 $(document).ready(function () {
@@ -2502,8 +2103,6 @@ $(document).ready(function () {
   MessageActions.init();
   Utilities.init();
   ModalHandling.init();
-  WizardSources.init();
-  WizardChat.init();
 });
 
 // More CHAT SUGGESTIONS Javascript

@@ -273,7 +273,6 @@ header {
   bottom: 0;
   background: #1e293b;
   z-index: 20;
-  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .left-column-chat > div {
@@ -339,12 +338,12 @@ header {
 }
 
 .source-list {
-  padding: 0 1.25rem;
+  /* padding: 0 1.25rem; */
 }
 
 /* Ensure source items don't show through the chat area */
 .source-list::after {
-  content: '';
+  content: "";
   display: block;
   height: 60px; /* Same as bottom offset */
   width: 100%;

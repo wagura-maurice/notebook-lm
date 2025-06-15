@@ -1895,6 +1895,7 @@ const ModalHandling = {
 const LeftColumnChat = {
   init: function() {
     this.bindEvents();
+    this.setupColumnObserver();
   },
 
   bindEvents: function() {
@@ -1910,6 +1911,38 @@ const LeftColumnChat = {
       });
 
       leftSendButton.addEventListener('click', () => this.handleSendMessage());
+    }
+  },
+
+  setupColumnObserver: function() {
+    const leftColumn = document.getElementById('left-column');
+    const chatArea = document.querySelector('.left-column-chat');
+    
+    if (!leftColumn || !chatArea) return;
+    
+    // Check initial state
+    this.toggleChatAreaVisibility(leftColumn, chatArea);
+    
+    // Create a mutation observer to watch for class changes on the left column
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          this.toggleChatAreaVisibility(leftColumn, chatArea);
+        }
+      });
+    });
+    
+    // Start observing the left column for attribute changes
+    observer.observe(leftColumn, { attributes: true });
+  },
+  
+  toggleChatAreaVisibility: function(leftColumn, chatArea) {
+    // Show chat area only if left column is expanded (has lg:flex class)
+    const isExpanded = leftColumn.classList.contains('lg:flex');
+    if (isExpanded) {
+      chatArea.classList.remove('hidden');
+    } else {
+      chatArea.classList.add('hidden');
     }
   },
 
