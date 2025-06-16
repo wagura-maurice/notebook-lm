@@ -1568,57 +1568,62 @@ const LeftColumnChatModule = {
     this.messagesContainer = messagesContainer;
 
     // Add event listeners
-    this.input.addEventListener('keydown', this.handleKeydown.bind(this));
-    this.sendButton.addEventListener('click', this.handleSubmit.bind(this));
-    this.input.addEventListener('input', this.handleInput.bind(this));
+    this.input.addEventListener("keydown", this.handleKeydown.bind(this));
+    this.sendButton.addEventListener(
+      "click",
+      this.handleLeftColumnSubmit.bind(this)
+    );
+    this.input.addEventListener("input", this.handleInput.bind(this));
 
     // Focus the input when the chat opens
     this.input.focus();
   },
 
   handleKeydown: function (e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       this.handleSubmit();
     }
   },
 
   handleInput: function (e) {
-    e.target.style.height = 'auto';
-    e.target.style.height = (e.target.scrollHeight) + 'px';
+    e.target.style.height = "auto";
+    e.target.style.height = e.target.scrollHeight + "px";
   },
 
-  handleSubmit: function () {
+  handleLeftColumnSubmit: function () {
     const messageText = this.input.value.trim();
     if (messageText) {
       // Add user message
-      this.addUserMessage(messageText);
-      
+      this.addLeftColumnUserMessage(messageText);
+
       // Clear input
-      this.input.value = '';
-      
+      this.input.value = "";
+
       // Simulate AI response
-      this.simulateAIResponse(messageText);
+      this.simulateLeftColumnAIResponse(messageText);
     }
   },
 
-  addUserMessage: function (message) {
+  addLeftColumnUserMessage: function (message) {
     const messageDiv = $(`
       <div class="flex justify-end">
-        <div
-          class="max-w-[80%] bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl rounded-br-none shadow relative group"
-        >
-          <div class="text-white text-sm">${message}</div>
-          <div class="text-xs text-gray-300 text-right">${Utils.formatTime()}</div>
-        </div>
-      </div>
+            <div
+              class="max-w-[80%] bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl rounded-br-none shadow relative group"
+            >
+              <div class="text-white text-sm">
+                ${message}
+              </div>
+              <div class="text-xs text-gray-300 text-right">${Utils.formatTime()}</div>
+            </div>
+          </div>
     `);
 
     $(this.messagesContainer).append(messageDiv);
     Utils.scrollToBottom(this.messagesContainer);
   },
 
-  simulateAIResponse: function (userMessage) {
+  simulateLeftColumnAIResponse: function (userMessage) {
     // Show loading state
     const loadingDiv = $(`
       <div class="flex justify-start">
@@ -1636,16 +1641,29 @@ const LeftColumnChatModule = {
 
     // Simulate delay and replace with actual response
     setTimeout(() => {
-      const response = this.getAIResponse(userMessage);
+      const response = this.getLeftColumnAIResponse(userMessage);
       const responseDiv = $(`
-        <div class="flex justify-start">
-          <div
-            class="max-w-[80%] bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl rounded-bl-none shadow relative group"
-          >
-            <div class="text-white text-sm">${response}</div>
-            <div class="text-xs text-gray-300">${Utils.formatTime()}</div>
+        <div class="w-full px-4 py-2 group">
+            <div class="text-white text-sm">
+              ${response}
+            </div>
+            <div class="flex justify-between items-center mt-2">
+              <div class="text-xs text-gray-300">${Utils.formatTime()}</div>
+              <div class="flex gap-3">
+                <button
+                  class="text-xs text-gray-300 hover:text-white text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600"
+                >
+                  <i class="fas fa-plus-circle mr-1.5 text-base"></i> Add to
+                  note
+                </button>
+                <button
+                  class="text-xs text-gray-300 hover:text-white text-sm flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600"
+                >
+                  <i class="fas fa-copy mr-1.5 text-base"></i> Copy
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
       `);
 
       loadingDiv.replaceWith(responseDiv);
@@ -1653,7 +1671,7 @@ const LeftColumnChatModule = {
     }, 1000); // 1 second delay
   },
 
-  getAIResponse: function (userMessage) {
+  getLeftColumnAIResponse: function (userMessage) {
     const responses = [
       "I'm here to help with your notes and questions. What would you like to know?",
       "That's an interesting point. Could you tell me more about it?",
