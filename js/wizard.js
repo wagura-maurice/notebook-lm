@@ -1582,7 +1582,7 @@ const LeftColumnChatModule = {
   handleKeydown: function (e) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      this.handleSubmit();
+      this.handleLeftColumnSubmit();
     }
   },
 
