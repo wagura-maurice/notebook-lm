@@ -956,7 +956,7 @@ const SourceActions = {
       .addClass("hidden");
     const originalContent = $(SELECTORS.leftColumn).children().detach();
 
-    const viewForm = $(`
+    const viewChatWithSourcesContent = $(`
       <div class="flex flex-col h-full expanded-content view-source-content">
         <div class="flex items-center justify-between px-5 py-3 border-b border-slate-700">
           <h3 class="text-lg font-semibold">Chat with Sources</h3>
@@ -1052,6 +1052,7 @@ const SourceActions = {
               <button
                 id="left-column-send-message"
                 class="absolute right-3 bottom-3 text-sky-400 hover:text-white p-1 rounded-full transition-colors"
+                title="Send message"
               >
                 <i class="fas fa-paper-plane text-lg"></i>
               </button>
@@ -1061,7 +1062,26 @@ const SourceActions = {
       </div>
     `);
 
-    $(SELECTORS.leftColumn).append(viewForm);
+    $(SELECTORS.leftColumn).append(viewChatWithSourcesContent);
+
+    // Initialize chat module
+    const leftColumnChatInput = document.getElementById(
+      "left-column-chat-input"
+    );
+    const leftColumnSendButton = document.getElementById(
+      "left-column-send-message"
+    );
+    const leftColumnChatMessages = document.getElementById(
+      "left-column-chat-messages"
+    );
+
+    if (leftColumnChatInput && leftColumnSendButton && leftColumnChatMessages) {
+      LeftColumnChatModule.init(
+        leftColumnChatInput,
+        leftColumnSendButton,
+        leftColumnChatMessages
+      );
+    }
 
     $("#back-to-sources").on("click", () => {
       $(".view-source-content").remove();
@@ -1249,11 +1269,13 @@ const ChatFunctionality = {
   addUserMessage: function (messageText) {
     const userMessage = $(`
       <div class="flex justify-end">
-        <div class="max-w-[80%] bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl rounded-br-none shadow relative group">
-          <div class="text-white text-sm">${messageText}</div>
-          <div class="text-xs text-gray-300 text-right">${Utils.formatTime()}</div>
+          <div
+            class="max-w-[80%] bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl rounded-br-none shadow relative group"
+          >
+            <div class="text-white text-sm">${messageText}</div>
+            <div class="text-xs text-gray-300 text-right">${Utils.formatTime()}</div>
+          </div>
         </div>
-      </div>
     `);
 
     $(SELECTORS.chatMessages).append(userMessage);
@@ -1298,21 +1320,26 @@ const ChatFunctionality = {
       // Create AI response
       const aiResponse = $(`
         <div class="w-full px-4 py-2 group">
-          <div class="text-white text-sm">
+            <div class="text-white text-sm">
             ${this.getAIResponse(userMessage)}
-          </div>
-          <div class="flex justify-between items-center mt-2">
-            <div class="text-xs text-gray-300">${Utils.formatTime()}</div>
-            <div class="flex gap-3">
-              <button class="text-xs text-gray-300 hover:text-white text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600">
-                <i class="fas fa-plus-circle mr-1.5 text-base"></i> Add to note
-              </button>
-              <button class="text-xs text-gray-300 hover:text-white text-sm flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600">
-                <i class="fas fa-copy mr-1.5 text-base"></i> Copy
-              </button>
+            </div>
+            <div class="flex justify-between items-center mt-2">
+              <div class="text-xs text-gray-300">${Utils.formatTime()}</div>
+              <div class="flex gap-3">
+                <button
+                  class="text-xs text-gray-300 hover:text-white text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600"
+                >
+                  <i class="fas fa-plus-circle mr-1.5 text-base"></i> Add to
+                  note
+                </button>
+                <button
+                  class="text-xs text-gray-300 hover:text-white text-sm flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600"
+                >
+                  <i class="fas fa-copy mr-1.5 text-base"></i> Copy
+                </button>
+              </div>
             </div>
           </div>
-        </div>
       `);
 
       $(SELECTORS.chatMessages).append(aiResponse);
@@ -1534,26 +1561,107 @@ const ModalHandling = {
 /* ============================================ */
 /* === MODULE: LEFT COLUMN CHAT === */
 /* ============================================ */
-const LeftColumnChat = {
-  init: function () {
-    this.bindEvents();
-    this.setupColumnObserver();
+const LeftColumnChatModule = {
+  init: function (input, sendButton, messagesContainer) {
+    this.input = input;
+    this.sendButton = sendButton;
+    this.messagesContainer = messagesContainer;
+
+    // Add event listeners
+    this.input.addEventListener('keydown', this.handleKeydown.bind(this));
+    this.sendButton.addEventListener('click', this.handleSubmit.bind(this));
+    this.input.addEventListener('input', this.handleInput.bind(this));
+
+    // Focus the input when the chat opens
+    this.input.focus();
   },
 
-  bindEvents: function () {
-    const leftChatInput = document.getElementById("left-column-chat-input");
-    const leftSendButton = document.getElementById("left-column-send-message");
-
-    if (leftChatInput && leftSendButton) {
-      leftChatInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          this.handleSendMessage();
-        }
-      });
-
-      leftSendButton.addEventListener("click", () => this.handleSendMessage());
+  handleKeydown: function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      this.handleSubmit();
     }
+  },
+
+  handleInput: function (e) {
+    e.target.style.height = 'auto';
+    e.target.style.height = (e.target.scrollHeight) + 'px';
+  },
+
+  handleSubmit: function () {
+    const messageText = this.input.value.trim();
+    if (messageText) {
+      // Add user message
+      this.addUserMessage(messageText);
+      
+      // Clear input
+      this.input.value = '';
+      
+      // Simulate AI response
+      this.simulateAIResponse(messageText);
+    }
+  },
+
+  addUserMessage: function (message) {
+    const messageDiv = $(`
+      <div class="flex justify-end">
+        <div
+          class="max-w-[80%] bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl rounded-br-none shadow relative group"
+        >
+          <div class="text-white text-sm">${message}</div>
+          <div class="text-xs text-gray-300 text-right">${Utils.formatTime()}</div>
+        </div>
+      </div>
+    `);
+
+    $(this.messagesContainer).append(messageDiv);
+    Utils.scrollToBottom(this.messagesContainer);
+  },
+
+  simulateAIResponse: function (userMessage) {
+    // Show loading state
+    const loadingDiv = $(`
+      <div class="flex justify-start">
+        <div
+          class="max-w-[80%] bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl rounded-bl-none shadow relative group"
+        >
+          <div class="text-white text-sm">Thinking...</div>
+          <div class="text-xs text-gray-300">${Utils.formatTime()}</div>
+        </div>
+      </div>
+    `);
+
+    $(this.messagesContainer).append(loadingDiv);
+    Utils.scrollToBottom(this.messagesContainer);
+
+    // Simulate delay and replace with actual response
+    setTimeout(() => {
+      const response = this.getAIResponse(userMessage);
+      const responseDiv = $(`
+        <div class="flex justify-start">
+          <div
+            class="max-w-[80%] bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl rounded-bl-none shadow relative group"
+          >
+            <div class="text-white text-sm">${response}</div>
+            <div class="text-xs text-gray-300">${Utils.formatTime()}</div>
+          </div>
+        </div>
+      `);
+
+      loadingDiv.replaceWith(responseDiv);
+      Utils.scrollToBottom(this.messagesContainer);
+    }, 1000); // 1 second delay
+  },
+
+  getAIResponse: function (userMessage) {
+    const responses = [
+      "I'm here to help with your notes and questions. What would you like to know?",
+      "That's an interesting point. Could you tell me more about it?",
+      "I've made a note of that. Is there anything else you'd like to discuss?",
+      "Thanks for sharing! How can I assist you further?",
+      "I understand. What would you like to do next?",
+    ];
+    return responses[Math.floor(Math.random() * responses.length)];
   },
 
   setupColumnObserver: function () {
@@ -1579,7 +1687,6 @@ const LeftColumnChat = {
   },
 
   toggleChatAreaVisibility: function (leftColumn, chatArea) {
-    // Show chat area only if left column is expanded (has lg:flex class)
     const isExpanded = leftColumn.classList.contains("lg:flex");
     if (isExpanded) {
       chatArea.classList.remove("hidden");
