@@ -390,26 +390,32 @@
               <i class="fas fa-chevron-left"></i>
             </button>
           </div>
-          <div
-            class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent mb-8"
-          >
+          <div class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent">
             <!-- Actions -->
-            <div
-              class="flex items-center gap-2 px-5 py-3 border-b border-slate-700 actions-row"
-            >
+            <div class="px-5 py-3 border-b border-slate-700">
+              <div class="flex items-center mb-4 gap-2 actions-row">
+                <button
+                  id="addSourceBtn"
+                  class="flex items-center justify-center flex-1 py-2 px-3 bg-sky-500 hover:bg-sky-600 rounded-full text-sm font-medium transition-colors"
+                >
+                  <i class="fas fa-plus mr-2"></i>
+                  <span>Add</span>
+                </button>
+                <button
+                  id="discoverSourceBtn"
+                  class="flex items-center justify-center flex-1 py-2 px-3 bg-sky-500 hover:bg-sky-600 rounded-full text-sm font-medium transition-colors"
+                >
+                  <i class="fas fa-search mr-2"></i>
+                  <span>Discover</span>
+                </button>
+              </div>
+
               <button
-                id="addSourceBtn"
-                class="flex items-center justify-center flex-1 py-2 px-3 bg-sky-500 hover:bg-sky-600 rounded-full text-sm font-medium transition-colors"
+                id="chatAboutSourcesBtn"
+                class="flex items-center justify-center w-full py-2 px-3 bg-sky-500 hover:bg-sky-600 rounded-full text-sm font-medium transition-colors"
               >
-                <i class="fas fa-plus mr-2"></i>
-                <span>Add</span>
-              </button>
-              <button
-                id="discoverSourceBtn"
-                class="flex items-center justify-center flex-1 py-2 px-3 bg-sky-500 hover:bg-sky-600 rounded-full text-sm font-medium transition-colors"
-              >
-                <i class="fas fa-search mr-2"></i>
-                <span>Discover</span>
+                <i class="fa-brands fa-rocketchat mr-2"></i>
+                <span>Chat about these sources</span>
               </button>
             </div>
 
@@ -1652,26 +1658,6 @@
               </ul>
             </div>
           </div>
-
-          <!-- Fixed Chat Area at Bottom - Only visible in expanded view -->
-          <div class="left-column-chat hidden lg:block">
-            <div class="p-3 bg-slate-800">
-              <div class="relative">
-                <textarea
-                  id="left-chat-input"
-                  class="w-full bg-slate-900 rounded-lg p-3 pr-12 text-white !text-white resize-none focus:ring-2 focus:ring-sky-500 focus:outline-none"
-                  placeholder="Chat about these sources..."
-                  rows="2"
-                ></textarea>
-                <button
-                  id="left-send-message"
-                  class="absolute right-3 bottom-3 text-sky-400 hover:text-white p-1 rounded-full transition-colors"
-                >
-                  <i class="fas fa-paper-plane text-lg"></i>
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
 
         <!-- Collapsed view -->
@@ -1701,6 +1687,15 @@
             >
               <i class="fas fa-search text-xl" id="discoverSourceIcon"></i>
             </button>
+            <!-- <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              title="Chat about these sources"
+            >
+              <i
+                class="fa-brands fa-rocketchat text-xl"
+                id="chatAboutSourcesIcon"
+              ></i>
+            </button> -->
             <div class="border-t border-slate-700 w-full my-2"></div>
 
             <button
@@ -1843,16 +1838,17 @@
             </div>
             <div class="flex justify-between items-center mt-2">
               <div class="text-xs text-gray-300">10:30 AM</div>
-              <div class="flex gap-2">
+              <div class="flex gap-3">
                 <button
-                  class="text-xs text-gray-300 hover:text-white flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
+                  class="text-xs text-gray-300 hover:text-white text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600"
                 >
-                  <i class="fas fa-plus-circle mr-1"></i> Add to note
+                  <i class="fas fa-plus-circle mr-1.5 text-base"></i> Add to
+                  note
                 </button>
                 <button
-                  class="text-xs text-gray-300 hover:text-white flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
+                  class="text-xs text-gray-300 hover:text-white text-sm flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600"
                 >
-                  <i class="fas fa-copy mr-1"></i> Copy
+                  <i class="fas fa-copy mr-1.5 text-base"></i> Copy
                 </button>
               </div>
             </div>
@@ -1880,16 +1876,17 @@
             </div>
             <div class="flex justify-between items-center mt-2">
               <div class="text-xs text-gray-300">10:30 AM</div>
-              <div class="flex gap-2">
+              <div class="flex gap-3">
                 <button
-                  class="text-xs text-gray-300 hover:text-white flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
+                  class="text-xs text-gray-300 hover:text-white text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600"
                 >
-                  <i class="fas fa-plus-circle mr-1"></i> Add to note
+                  <i class="fas fa-plus-circle mr-1.5 text-base"></i> Add to
+                  note
                 </button>
                 <button
-                  class="text-xs text-gray-300 hover:text-white flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
+                  class="text-xs text-gray-300 hover:text-white text-sm flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600"
                 >
-                  <i class="fas fa-copy mr-1"></i> Copy
+                  <i class="fas fa-copy mr-1.5 text-base"></i> Copy
                 </button>
               </div>
             </div>
@@ -2571,12 +2568,13 @@
     <script>
       $(function () {
         // Initialize custom tooltips using the existing CSS
-        $('[data-toggle="tooltip"]').each(function() {
+        $('[data-toggle="tooltip"]').each(function () {
           const $el = $(this);
-          const tooltipText = $el.attr('title') || $el.data('original-title') || '';
+          const tooltipText =
+            $el.attr("title") || $el.data("original-title") || "";
           if (tooltipText) {
-            $el.attr('data-title', tooltipText);
-            $el.removeAttr('title');
+            $el.attr("data-title", tooltipText);
+            $el.removeAttr("title");
           }
         });
       });

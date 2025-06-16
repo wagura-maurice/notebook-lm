@@ -501,6 +501,11 @@ const SourceActions = {
       this.openDiscoverModal.bind(this)
     );
 
+    $("#chatAboutSourcesBtn, #chatAboutSourcesIcon").on(
+      "click",
+      this.showChatAboutSourcesContent.bind(this)
+    );
+
     // Modal navigation
     $("#source-modal-back").on("click", () => {
       this.showStep("picker");
@@ -929,6 +934,127 @@ const SourceActions = {
               <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
               <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
               <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `);
+
+    $(SELECTORS.leftColumn).append(viewForm);
+
+    $("#back-to-sources").on("click", () => {
+      $(".view-source-content").remove();
+      $(SELECTORS.leftColumn).append(originalContent);
+    });
+  },
+
+  showChatAboutSourcesContent: function (e) {
+    e.preventDefault();
+
+    $(SELECTORS.leftColumn)
+      .find(SELECTORS.sourceMenuDropdown)
+      .addClass("hidden");
+    const originalContent = $(SELECTORS.leftColumn).children().detach();
+
+    const viewForm = $(`
+      <div class="flex flex-col h-full expanded-content view-source-content">
+        <div class="flex items-center justify-between px-5 py-3 border-b border-slate-700">
+          <h3 class="text-lg font-semibold">Chat with Sources</h3>
+          <button id="back-to-sources" class="text-sky-400 text-lg hover:text-sky-400">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+        </div>
+
+        <!-- Chat messages -->
+        <div
+          class="overflow-y-auto flex-1 px-5 py-3 space-y-4 scrollbar-transparent"
+          id="left-column-chat-messages"
+        >
+          <!-- Jump to Bottom Button -->
+          <button
+            id="left-column-jump-to-bottom-btn"
+            class="fixed left-1/2 -translate-x-1/2 bottom-[100px] z-40 bg-indigo-500 text-white rounded-full py-2 px-6 shadow-md hover:bg-indigo-600 focus:outline-none transition-opacity duration-300 opacity-0 pointer-events-none"
+          >
+            Jump to Bottom
+          </button>
+          <!-- AI message -->
+          <div class="w-full px-4 py-2 group">
+            <div class="text-white text-sm">
+              Hello, how can I help you today?
+            </div>
+            <div class="flex justify-between items-center mt-2">
+              <div class="text-xs text-gray-300">10:30 AM</div>
+              <div class="flex gap-3">
+                <button
+                  class="text-xs text-gray-300 hover:text-white text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600"
+                >
+                  <i class="fas fa-plus-circle mr-1.5 text-base"></i> Add to
+                  note
+                </button>
+                <button
+                  class="text-xs text-gray-300 hover:text-white text-sm flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600"
+                >
+                  <i class="fas fa-copy mr-1.5 text-base"></i> Copy
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- User message -->
+          <div class="flex justify-end">
+            <div
+              class="max-w-[80%] bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl rounded-br-none shadow relative group"
+            >
+              <div class="text-white text-sm">
+                I'm looking for information about machine learning.
+              </div>
+              <div class="text-xs text-gray-300 text-right">10:32 AM</div>
+            </div>
+          </div>
+
+          <!-- AI message -->
+          <div class="w-full px-4 py-2 group">
+            <div class="text-white text-sm">
+              I'd be happy to help with that! Based on your sources, I see you
+              have "Introduction to Machine Learning" document available. Would
+              you like me to summarize the key concepts from that document, or
+              do you have specific questions about machine learning?
+            </div>
+            <div class="flex justify-between items-center mt-2">
+              <div class="text-xs text-gray-300">10:30 AM</div>
+              <div class="flex gap-3">
+                <button
+                  class="text-xs text-gray-300 hover:text-white text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600"
+                >
+                  <i class="fas fa-plus-circle mr-1.5 text-base"></i> Add to
+                  note
+                </button>
+                <button
+                  class="text-xs text-gray-300 hover:text-white text-sm flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600"
+                >
+                  <i class="fas fa-copy mr-1.5 text-base"></i> Copy
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fixed Chat Area at Bottom - Only visible in expanded view -->
+        <div class="left-column-chat hidden lg:block">
+          <div class="p-3 bg-slate-800">
+            <div class="relative">
+              <textarea
+                id="left-column-chat-input"
+                class="w-full bg-slate-900 rounded-lg p-3 pr-12 text-white !text-white resize-none focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                placeholder="Chat about these sources..."
+                rows="2"
+              ></textarea>
+              <button
+                id="left-column-send-message"
+                class="absolute right-3 bottom-3 text-sky-400 hover:text-white p-1 rounded-full transition-colors"
+              >
+                <i class="fas fa-paper-plane text-lg"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -1415,8 +1541,8 @@ const LeftColumnChat = {
   },
 
   bindEvents: function () {
-    const leftChatInput = document.getElementById("left-chat-input");
-    const leftSendButton = document.getElementById("left-send-message");
+    const leftChatInput = document.getElementById("left-column-chat-input");
+    const leftSendButton = document.getElementById("left-column-send-message");
 
     if (leftChatInput && leftSendButton) {
       leftChatInput.addEventListener("keydown", (e) => {
@@ -1463,7 +1589,7 @@ const LeftColumnChat = {
   },
 
   handleSendMessage: function () {
-    const input = document.getElementById("left-chat-input");
+    const input = document.getElementById("left-column-chat-input");
     const message = input.value.trim();
 
     if (message) {
@@ -1552,8 +1678,8 @@ document.addEventListener("DOMContentLoaded", () => {
 // ================================
 
 (function () {
-  const chatMessages = document.getElementById("chat-messages");
-  const jumpBtn = document.getElementById("jump-to-bottom-btn");
+  const chatMessages = document.getElementById("left-column-chat-messages");
+  const jumpBtn = document.getElementById("left-column-jump-to-bottom-btn");
 
   function atBottom() {
     // 2px tolerance for floating point errors
@@ -1573,10 +1699,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  chatMessages.addEventListener("scroll", toggleJumpBtn);
-
-  // Initial check
-  setTimeout(toggleJumpBtn, 500);
+  if (chatMessages) {
+    chatMessages.addEventListener("scroll", toggleJumpBtn);
+    // Initial check
+    setTimeout(toggleJumpBtn, 500);
+  }
 
   // Handle AI text chat form submission in right sidebar
   const aiChatForm = document.getElementById("ai-text-chat-form-right");
@@ -1635,16 +1762,22 @@ document.addEventListener("DOMContentLoaded", () => {
     aiSendButton.disabled = aiTextInput.value.trim() === "";
   }
 
-  jumpBtn.addEventListener("click", function () {
-    chatMessages.scrollTo({
-      top: chatMessages.scrollHeight,
-      behavior: "smooth",
+  if (jumpBtn) {
+    jumpBtn.addEventListener("click", function () {
+      if (chatMessages) {
+        chatMessages.scrollTo({
+          top: chatMessages.scrollHeight,
+          behavior: "smooth",
+        });
+      }
     });
-  });
+  }
 
   // Also handle new messages (MutationObserver)
-  const observer = new MutationObserver(() => {
-    setTimeout(toggleJumpBtn, 100);
-  });
-  observer.observe(chatMessages, { childList: true, subtree: true });
+  if (chatMessages) {
+    const observer = new MutationObserver(() => {
+      setTimeout(toggleJumpBtn, 100);
+    });
+    observer.observe(chatMessages, { childList: true, subtree: true });
+  }
 })();
