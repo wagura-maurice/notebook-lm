@@ -1626,12 +1626,11 @@ const LeftColumnChatModule = {
   simulateLeftColumnAIResponse: function (userMessage) {
     // Show loading state
     const loadingDiv = $(`
-      <div class="flex justify-start">
-        <div
-          class="max-w-[80%] bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl rounded-bl-none shadow relative group"
-        >
-          <div class="text-white text-sm">Thinking...</div>
-          <div class="text-xs text-gray-300">${Utils.formatTime()}</div>
+      <div class="w-full px-4 py-2">
+        <div class="flex items-center space-x-2">
+          <div class="w-2 h-2 rounded-full bg-white opacity-75 animate-bounce"></div>
+          <div class="w-2 h-2 rounded-full bg-white opacity-50 animate-bounce" style="animation-delay: 0.2s"></div>
+          <div class="w-2 h-2 rounded-full bg-white opacity-25 animate-bounce" style="animation-delay: 0.4s"></div>
         </div>
       </div>
     `);
