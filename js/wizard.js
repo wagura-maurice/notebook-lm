@@ -959,70 +959,69 @@ const SourceActions = {
     const viewChatWithSourcesContent = $(`
       <div class="flex flex-col h-full expanded-content view-source-content">
         <div class="flex items-center justify-between px-5 py-3 border-b border-slate-700">
-          <h3 class="text-lg font-semibold">Chat</h3>
+          <h3 class="text-lg font-semibold">Chat Sources</h3>
           <button id="back-to-sources" class="text-sky-400 text-lg hover:text-sky-400">
             <i class="fas fa-arrow-left"></i>
           </button>
         </div>
 
         <!-- Chat Messages -->
+        <div
+          class="flex-1 flex flex-col overflow-hidden"
+        >
+          <div
+            id="left-column-chat-message-welcome-message"
+            class="text-center text-gray-300 py-12"
+          >
             <div
-              id="left-column-chat-messages"
-              class="flex-1 overflow-y-auto scrollbar-transparent relative"
+              class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800 mb-4"
             >
-              <div
-                id="left-column-welcome-message"
-                class="text-center text-gray-300 py-12"
-              >
-                <div
-                  class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800 mb-4"
-                >
-                  <i class="fas fa-robot text-3xl text-purple-400"></i>
-                </div>
-                <h3 class="text-xl font-semibold text-white mb-2">
-                  How can I help with your sources today?
-                </h3>
-                <p class="text-gray-400 text-sm px-4">
-                  Ask me anything about your sources or request help with writing,
-                  editing, or organizing your thoughts.
-                </p>
-              </div>
-              <!-- Messages will be inserted here by JavaScript -->
-              <div id="left-column-chat-messages-container" class="mt-2"></div>
+              <i class="fas fa-robot text-3xl text-purple-400"></i>
             </div>
+            <h3 class="text-xl font-semibold text-slate-300 mb-2">
+              How can I help with your sources today?
+            </h3>
+            <p class="text-slate-400 text-sm px-4">
+              Ask me anything about your sources or request help with writing,
+              editing, or organizing your thoughts.
+            </p>
+          </div>
+          <!-- Messages will be inserted here by JavaScript -->
+          <div id="left-column-chat-messages-container" class="flex-1 overflow-y-auto px-5 py-3 space-y-4 scrollbar-transparent"></div>
+        </div>
 
-            <!-- Jump to Bottom Button -->
-            <div
-              class="sticky bottom-4 left-0 right-0 flex justify-center z-10"
-            >
+        <!-- Jump to Bottom Button -->
+        <div
+          class="sticky bottom-4 left-0 right-0 flex justify-center z-10"
+        >
+          <button
+            id="left-column-jump-to-bottom-btn"
+            class="bg-indigo-500 text-white rounded-full py-2 px-6 shadow-md hover:bg-indigo-600 focus:outline-none transition-opacity duration-300 opacity-0 pointer-events-none"
+          >
+            Jump to Bottom
+          </button>
+        </div>
+
+        <!-- Message Input -->
+        <div class="border-t border-slate-700">
+          <form id="left-column-chat-form" class="p-3 bg-slate-800">
+            <div class="relative">
+              <textarea
+                id="left-column-message-input"
+                class="w-full bg-slate-900 rounded-lg p-3 pr-12 text-white !text-white resize-none focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                placeholder="Chat about these sources..."
+                rows="2"
+              ></textarea>
               <button
-                id="left-column-jump-to-bottom-btn"
-                class="bg-indigo-500 text-white rounded-full py-2 px-6 shadow-md hover:bg-indigo-600 focus:outline-none transition-opacity duration-300 opacity-0 pointer-events-none"
+                type="button"
+                id="left-column-send-btn"
+                class="absolute right-3 bottom-3 text-sky-400 hover:text-white p-1 rounded-full transition-colors"
               >
-                Jump to Bottom
+                <i class="fas fa-paper-plane text-sm"></i>
               </button>
             </div>
-
-            <!-- Message Input -->
-            <div class="border-t border-slate-700">
-              <form id="left-column-chat-form" class="p-3 bg-slate-800">
-                <div class="relative">
-                  <textarea
-                    id="left-column-message-input"
-                    class="w-full bg-slate-900 rounded-lg p-3 pr-12 text-white !text-white resize-none focus:ring-2 focus:ring-sky-500 focus:outline-none"
-                    placeholder="Chat about these sources..."
-                    rows="2"
-                  ></textarea>
-                  <button
-                    type="submit"
-                    id="left-column-send-btn"
-                    class="absolute right-3 bottom-3 text-sky-400 hover:text-white p-1 rounded-full transition-colors"
-                  >
-                    <i class="fas fa-paper-plane text-sm"></i>
-                  </button>
-                </div>
-              </form>
-            </div>
+          </form>
+        </div>
       </div>
     `);
 
@@ -1036,7 +1035,7 @@ const SourceActions = {
       "left-column-send-btn"
     );
     const leftColumnChatMessages = document.getElementById(
-      "left-column-chat-messages"
+      "left-column-chat-messages-container"
     );
 
     if (leftColumnChatInput && leftColumnSendButton && leftColumnChatMessages) {
@@ -1048,7 +1047,7 @@ const SourceActions = {
     }
 
     // left-column-chat-messages
-    // left-column-welcome-message
+    // left-column-chat-message-welcome-message
     // left-column-chat-messages-container
     // left-column-jump-to-bottom-btn
     // left-column-chat-form
@@ -1536,6 +1535,7 @@ const LeftColumnChatModule = {
     this.input = input;
     this.sendButton = sendButton;
     this.messagesContainer = messagesContainer;
+    this.jumpButton = document.getElementById("left-column-jump-to-bottom-btn");
 
     // Add event listeners
     this.input.addEventListener("keydown", this.handleKeydown.bind(this));
@@ -1544,6 +1544,15 @@ const LeftColumnChatModule = {
       this.handleLeftColumnSubmit.bind(this)
     );
     this.input.addEventListener("input", this.handleInput.bind(this));
+
+    // Initialize jump button if it exists
+    if (this.jumpButton) {
+      this.jumpButton.addEventListener("click", () => this.scrollToBottom());
+      this.messagesContainer.addEventListener("scroll", () =>
+        this.toggleJumpButton()
+      );
+      this.toggleJumpButton(); // Initial check
+    }
 
     // Focus the input when the chat opens
     this.input.focus();
@@ -1566,7 +1575,7 @@ const LeftColumnChatModule = {
     if (messageText) {
       // Hide welcome message if it's the first message
       const welcomeMessage = document.getElementById(
-        "left-column-welcome-message"
+        "left-column-chat-message-welcome-message"
       );
       if (welcomeMessage) {
         welcomeMessage.style.display = "none";
@@ -1598,7 +1607,31 @@ const LeftColumnChatModule = {
     `);
 
     $(this.messagesContainer).append(messageDiv);
-    Utils.scrollToBottom(this.messagesContainer);
+    this.scrollToBottom();
+  },
+
+  scrollToBottom: function () {
+    this.messagesContainer.scrollTo({
+      top: this.messagesContainer.scrollHeight,
+      behavior: "smooth",
+    });
+    // Hide jump button after scrolling to bottom
+    if (this.jumpButton) {
+      this.jumpButton.classList.remove("show");
+    }
+  },
+
+  toggleJumpButton: function () {
+    if (!this.jumpButton) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = this.messagesContainer;
+    const isAtBottom = scrollHeight - (scrollTop + clientHeight) < 100; // 100px threshold
+
+    if (isAtBottom) {
+      this.jumpButton.classList.remove("show");
+    } else {
+      this.jumpButton.classList.add("show");
+    }
   },
 
   simulateLeftColumnAIResponse: function (userMessage) {
