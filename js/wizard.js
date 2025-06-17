@@ -31,11 +31,6 @@ const SELECTORS = {
   sourceMenuToggle: ".source-menu-toggle",
   sourceMenuDropdown: ".source-menu-dropdown",
 
-  // Notes
-  noteItem: ".note-item",
-  noteMenuToggle: ".note-menu-toggle",
-  notesMenuDropdown: ".notes-menu-dropdown",
-
   // Chat
   chatInput: "#chat-input",
   chatMessages: "#chat-messages",
@@ -86,56 +81,157 @@ const Preloader = {
 };
 
 /* ============================================ */
-/* === MODULE: CHAT SUGGESTIONS === */
+/* === MODULE: CHAT and CHAT SUGGESTIONS === */
 /* ============================================ */
-const ChatSuggestions = {
+const ChatModule = {
   init: function () {
-    const chatSuggestions = $(SELECTORS.chatSuggestions);
-    const leftBtn = $(SELECTORS.chatSuggestionsLeft);
-    const rightBtn = $(SELECTORS.chatSuggestionsRight);
-
-    if (chatSuggestions.length && chatSuggestions.parent().length) {
-      chatSuggestions.parent().css({
-        "min-width": "0",
-        "flex-shrink": "0",
-        "overflow-x": "auto",
-      });
-
-      // Show/hide buttons based on number of suggestions
-      const suggestions = chatSuggestions.find("button");
-      const showButtons = suggestions.length > 1;
-      leftBtn.toggle(showButtons);
-      rightBtn.toggle(showButtons);
-
-      // Add click handlers
-      leftBtn.on("click", () => {
-        chatSuggestions.parent().get(0).scrollBy({
-          left: -CONFIG.scrollOffset,
-          behavior: "smooth",
-        });
-      });
-
-      rightBtn.on("click", () => {
-        chatSuggestions.parent().get(0).scrollBy({
-          left: CONFIG.scrollOffset,
-          behavior: "smooth",
-        });
-      });
-    }
+    this.initChatSuggestions();
+    this.initChatMessages();
+    this.initAIChatForm();
   },
 
-  // Update button states when suggestions change
-  updateButtonStates: function () {
-    const chatSuggestions = $(SELECTORS.chatSuggestions);
-    const leftBtn = $(SELECTORS.chatSuggestionsLeft);
-    const rightBtn = $(SELECTORS.chatSuggestionsRight);
-    const suggestions = chatSuggestions.find("button");
-    const showButtons = suggestions.length > 1;
+  /* === CHAT SUGGGESTIONS === */
+  initChatSuggestions: function () {
+    const suggestionsContainer = document.getElementById("chat-suggestions");
+    const leftChevron = document.getElementById("chat-suggestions-left");
+    const rightChevron = document.getElementById("chat-suggestions-right");
 
-    leftBtn.toggle(showButtons);
-    rightBtn.toggle(showButtons);
+    if (!suggestionsContainer || !leftChevron || !rightChevron) return;
+
+    let scrollStep = 200; // Default scroll step in pixels
+
+    // Dynamically adjust scrollStep based on the first suggestion pill's width
+    const firstSuggestion = suggestionsContainer.querySelector("button");
+    if (firstSuggestion) {
+      scrollStep = firstSuggestion.offsetWidth + 8; // Add gap (8px from CSS gap-2)
+    }
+
+    // Scroll function with boundary checking
+    const scrollSuggestions = (direction) => {
+      const currentScroll = suggestionsContainer.scrollLeft;
+      const maxScroll =
+        suggestionsContainer.scrollWidth - suggestionsContainer.clientWidth;
+
+      if (direction === "left") {
+        const newScroll = Math.max(0, currentScroll - scrollStep);
+        suggestionsContainer.scrollTo({ left: newScroll, behavior: "smooth" });
+      } else if (direction === "right") {
+        const newScroll = Math.min(maxScroll, currentScroll + scrollStep);
+        suggestionsContainer.scrollTo({ left: newScroll, behavior: "smooth" });
+      }
+    };
+
+    // Update chevron visibility based on scroll position
+    const updateChevronVisibility = () => {
+      const currentScroll = suggestionsContainer.scrollLeft;
+      const maxScroll =
+        suggestionsContainer.scrollWidth - suggestionsContainer.clientWidth;
+
+      leftChevron.style.opacity = currentScroll > 0 ? "1" : "0.5";
+      rightChevron.style.opacity = currentScroll < maxScroll ? "1" : "0.5";
+      leftChevron.style.pointerEvents = currentScroll > 0 ? "auto" : "none";
+      rightChevron.style.pointerEvents =
+        currentScroll < maxScroll ? "auto" : "none";
+    };
+
+    // Add event listeners
+    leftChevron.addEventListener("click", () => scrollSuggestions("left"));
+    rightChevron.addEventListener("click", () => scrollSuggestions("right"));
+    suggestionsContainer.addEventListener("scroll", updateChevronVisibility);
+
+    // Initial setup
+    updateChevronVisibility();
+  },
+
+  /* === CHAT MESSAGES === */
+  initChatMessages: function () {
+    const chatMessages = document.getElementById("chat-messages");
+    const jumpBtn = document.getElementById("jump-to-bottom-btn");
+
+    if (!chatMessages || !jumpBtn) return;
+
+    const atBottom = () => {
+      return (
+        chatMessages.scrollHeight -
+          chatMessages.scrollTop -
+          chatMessages.clientHeight <
+        2
+      );
+    };
+
+    const toggleJumpBtn = () => {
+      jumpBtn.classList.toggle("show", !atBottom());
+    };
+
+    chatMessages.addEventListener("scroll", toggleJumpBtn);
+    jumpBtn.addEventListener("click", () => {
+      chatMessages.scrollTo({
+        top: chatMessages.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+
+    // Observe for new messages
+    const observer = new MutationObserver(() => {
+      setTimeout(toggleJumpBtn, 100);
+    });
+    observer.observe(chatMessages, { childList: true, subtree: true });
+
+    // Initial check
+    setTimeout(toggleJumpBtn, 500);
+  },
+
+  /* === AI CHAT FORM === */
+  initAIChatForm: function () {
+    const aiChatForm = document.getElementById("ai-text-chat-form-right");
+    const aiTextInput = document.getElementById("ai-text-input-right");
+    const aiSendButton = document.getElementById("ai-text-send-right");
+
+    if (!aiChatForm || !aiTextInput || !aiSendButton) return;
+
+    const handleSendMessage = () => {
+      const message = aiTextInput.value.trim();
+
+      if (message) {
+        console.log("AI Action Submitted:", message);
+        aiTextInput.value = "";
+        aiTextInput.style.height = "auto";
+        aiTextInput.focus();
+      }
+    };
+
+    // Form submission
+    aiChatForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      handleSendMessage();
+    });
+
+    // Send button click
+    aiSendButton.addEventListener("click", handleSendMessage);
+
+    // Textarea handling
+    aiTextInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        handleSendMessage();
+      }
+    });
+
+    aiTextInput.addEventListener("input", () => {
+      aiTextInput.style.height = "auto";
+      aiTextInput.style.height = aiTextInput.scrollHeight + "px";
+      aiSendButton.disabled = aiTextInput.value.trim() === "";
+    });
+
+    // Initial state
+    aiSendButton.disabled = aiTextInput.value.trim() === "";
   },
 };
+
+// Initialize the module when DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  ChatModule.init();
+});
 
 /* ============================================ */
 /* === MODULE: MOBILE TABS === */
@@ -222,7 +318,7 @@ const ColumnToggles = {
   },
 
   arePanelsActive: function () {
-    return $(".view-source-content, .edit-note-content").length > 0;
+    return $(".view-source-content").length > 0;
   },
 
   updateRightColumnState: function () {
@@ -342,12 +438,6 @@ const DropdownMenus = {
         SELECTORS.sourceMenuToggle,
         this.handleSourceMenuToggle.bind(this)
       )
-      .on(
-        "click",
-        SELECTORS.noteMenuToggle,
-        this.handleNoteMenuToggle.bind(this)
-      )
-      .on("click", "#notes-menu-button", this.handleNotesMenuButton.bind(this))
       .on("click", this.handleDocumentClick.bind(this));
   },
 
@@ -365,36 +455,10 @@ const DropdownMenus = {
     }
   },
 
-  handleNoteMenuToggle: function (e) {
-    e.stopPropagation();
-    const $noteItem = $(e.currentTarget).closest(SELECTORS.noteItem);
-    const $dropdown = $noteItem.find(SELECTORS.notesMenuDropdown);
-    const isVisible = !$dropdown.hasClass("hidden");
-
-    this.hideAllDropdowns();
-
-    if (!isVisible) {
-      this.positionDropdown($(e.currentTarget), $dropdown);
-      $dropdown.removeClass("hidden").addClass("show");
-    }
-  },
-
-  handleNotesMenuButton: function (e) {
-    e.stopPropagation();
-    $("#notes-menu-dropdown").toggleClass("hidden");
-  },
-
   handleDocumentClick: function (e) {
     if (
-      !$(e.target).closest("#notes-menu-dropdown").length &&
-      !$(e.target).closest("#notes-menu-button").length
-    ) {
-      $("#notes-menu-dropdown").addClass("hidden");
-    }
-
-    if (
       !$(e.target).closest(
-        `${SELECTORS.sourceMenuDropdown}, ${SELECTORS.sourceMenuToggle}, ${SELECTORS.notesMenuDropdown}, ${SELECTORS.noteMenuToggle}`
+        `${SELECTORS.sourceMenuDropdown}, ${SELECTORS.sourceMenuToggle}`
       ).length
     ) {
       this.hideAllDropdowns();
@@ -402,9 +466,7 @@ const DropdownMenus = {
   },
 
   hideAllDropdowns: function () {
-    $(`${SELECTORS.sourceMenuDropdown}, ${SELECTORS.notesMenuDropdown}`)
-      .removeClass("show")
-      .addClass("hidden");
+    $(`${SELECTORS.sourceMenuDropdown}`).removeClass("show").addClass("hidden");
   },
 
   positionDropdown: function ($trigger, $dropdown) {
@@ -982,7 +1044,7 @@ const SourceActions = {
         </div>
 
         <!-- Message Input -->
-        <div class="border-t border-slate-700">
+        <div class="border-t-2 border-slate-700">
           <form id="left-column-chat-form" class="p-3 bg-slate-800">
             <div class="relative">
               <textarea
@@ -1044,7 +1106,6 @@ const SourceActions = {
 const SourceItemInteractions = {
   init: function () {
     this.setupSourceTitles();
-    this.setupNoteTitles();
 
     // Set up event listeners
     $(document)
@@ -1055,11 +1116,9 @@ const SourceItemInteractions = {
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", () => {
         this.updateSourceTitles();
-        this.updateNoteTitles();
       });
     } else {
       this.updateSourceTitles();
-      this.updateNoteTitles();
     }
   },
 
@@ -1082,42 +1141,6 @@ const SourceItemInteractions = {
         span.title = span.textContent.trim();
       }
     });
-
-    // Update note item tooltips
-    document
-      .querySelectorAll("#right-column .note-item .truncate")
-      .forEach((span) => {
-        const title = span.textContent.trim();
-        if (title) {
-          span.setAttribute("data-title", title);
-        }
-      });
-  },
-
-  setupNoteTitles: function () {
-    // Initial setup for note titles
-    this.updateNoteTitles();
-
-    // Set up MutationObserver for dynamically added note items
-    const notesList = document.querySelector("#right-column .px-5.py-3");
-    if (notesList) {
-      const observer = new MutationObserver(() => {
-        this.updateNoteTitles();
-      });
-      observer.observe(notesList, { childList: true, subtree: true });
-    }
-  },
-
-  updateNoteTitles: function () {
-    // Update tooltips for note items
-    document
-      .querySelectorAll("#right-column .note-item .font-medium.truncate")
-      .forEach((div) => {
-        const title = div.textContent.trim();
-        if (title) {
-          div.setAttribute("data-title", title);
-        }
-      });
   },
 
   handleSourceItemClick: function (e) {
@@ -1764,7 +1787,7 @@ const RightColumnChat = {
 /* ============================================ */
 $(document).ready(function () {
   Preloader.init();
-  ChatSuggestions.init();
+  ChatModule.init();
   MobileTabs.init();
   ColumnToggles.init();
   DropdownMenus.init();
@@ -1776,162 +1799,3 @@ $(document).ready(function () {
   ModalHandling.init();
   RightColumnChat.init();
 });
-
-// More CHAT SUGGESTIONS Javascript
-
-// Wait for the DOM to be fully loaded
-document.addEventListener("DOMContentLoaded", () => {
-  const suggestionsContainer = document.getElementById("chat-suggestions");
-  const leftChevron = document.getElementById("chat-suggestions-left");
-  const rightChevron = document.getElementById("chat-suggestions-right");
-  let scrollStep = 200; // Default scroll step in pixels, adjustable based on design
-
-  // Dynamically adjust scrollStep based on the first suggestion pill's width
-  const firstSuggestion = suggestionsContainer.querySelector("button");
-  if (firstSuggestion) {
-    scrollStep = firstSuggestion.offsetWidth + 8; // Add gap (8px from CSS gap-2)
-  }
-
-  // Scroll function with boundary checking
-  const scrollSuggestions = (direction) => {
-    const currentScroll = suggestionsContainer.scrollLeft;
-    const maxScroll =
-      suggestionsContainer.scrollWidth - suggestionsContainer.clientWidth;
-
-    if (direction === "left") {
-      const newScroll = Math.max(0, currentScroll - scrollStep); // Prevent negative scroll
-      suggestionsContainer.scrollTo({ left: newScroll, behavior: "smooth" });
-    } else if (direction === "right") {
-      const newScroll = Math.min(maxScroll, currentScroll + scrollStep); // Prevent over-scroll
-      suggestionsContainer.scrollTo({ left: newScroll, behavior: "smooth" });
-    }
-  };
-
-  // Add event listeners for chevron buttons
-  leftChevron.addEventListener("click", () => scrollSuggestions("left"));
-  rightChevron.addEventListener("click", () => scrollSuggestions("right"));
-
-  // Optional: Update chevron visibility based on scroll position
-  const updateChevronVisibility = () => {
-    const currentScroll = suggestionsContainer.scrollLeft;
-    const maxScroll =
-      suggestionsContainer.scrollWidth - suggestionsContainer.clientWidth;
-
-    leftChevron.style.opacity = currentScroll > 0 ? "1" : "0.5";
-    rightChevron.style.opacity = currentScroll < maxScroll ? "1" : "0.5";
-    leftChevron.style.pointerEvents = currentScroll > 0 ? "auto" : "none";
-    rightChevron.style.pointerEvents =
-      currentScroll < maxScroll ? "auto" : "none";
-  };
-
-  // Initial visibility check and add scroll event listener for dynamic updates
-  updateChevronVisibility();
-  suggestionsContainer.addEventListener("scroll", updateChevronVisibility);
-});
-
-// ================================
-
-(function () {
-  const chatMessages = document.getElementById("chat-messages");
-  const jumpBtn = document.getElementById("jump-to-bottom-btn");
-
-  function atBottom() {
-    // 2px tolerance for floating point errors
-    return (
-      chatMessages.scrollHeight -
-        chatMessages.scrollTop -
-        chatMessages.clientHeight <
-      2
-    );
-  }
-
-  function toggleJumpBtn() {
-    if (!atBottom()) {
-      jumpBtn.classList.add("show");
-    } else {
-      jumpBtn.classList.remove("show");
-    }
-  }
-
-  if (chatMessages) {
-    chatMessages.addEventListener("scroll", toggleJumpBtn);
-    // Initial check
-    setTimeout(toggleJumpBtn, 500);
-  }
-
-  // Handle AI text chat form submission in right sidebar
-  const aiChatForm = document.getElementById("ai-text-chat-form-right");
-  const aiTextInput = document.getElementById("ai-text-input-right");
-  const aiSendButton = document.getElementById("ai-text-send-right");
-
-  // Function to handle sending the message
-  function handleSendMessage() {
-    const message = aiTextInput.value.trim();
-
-    if (message) {
-      console.log("AI Action Submitted:", message);
-
-      // Clear the input field
-      aiTextInput.value = "";
-
-      // Reset the textarea height
-      aiTextInput.style.height = "auto";
-
-      // Focus back to the input
-      aiTextInput.focus();
-    }
-  }
-
-  if (aiChatForm && aiTextInput && aiSendButton) {
-    // Handle form submission (when pressing Enter)
-    aiChatForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-      handleSendMessage();
-    });
-
-    // Handle send button click
-    aiSendButton.addEventListener("click", function () {
-      handleSendMessage();
-    });
-
-    // Handle Enter key submission
-    aiTextInput.addEventListener("keydown", function (e) {
-      // Check if Enter was pressed and Ctrl/Cmd is not pressed
-      if (e.key === "Enter" && !e.ctrlKey && !e.metaKey) {
-        e.preventDefault(); // Prevent line break
-        handleSendMessage();
-      }
-    });
-
-    // Auto-resize textarea as user types
-    aiTextInput.addEventListener("input", function () {
-      this.style.height = "auto";
-      this.style.height = this.scrollHeight + "px";
-
-      // Enable/disable send button based on input
-      aiSendButton.disabled = this.value.trim() === "";
-    });
-
-    // Initial button state
-    aiSendButton.disabled = aiTextInput.value.trim() === "";
-  }
-
-  if (jumpBtn) {
-    jumpBtn.addEventListener("click", function () {
-      if (chatMessages) {
-        chatMessages.scrollTo({
-          top: chatMessages.scrollHeight,
-          behavior: "smooth",
-        });
-      }
-    });
-  }
-
-  // Also handle new messages (MutationObserver)
-  if (chatMessages) {
-    const observer = new MutationObserver(() => {
-      setTimeout(toggleJumpBtn, 100);
-    });
-    observer.observe(chatMessages, { childList: true, subtree: true });
-  }
-})();

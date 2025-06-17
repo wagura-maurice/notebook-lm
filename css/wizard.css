@@ -167,8 +167,7 @@ header {
 /* === CONTENT SECTIONS === */
 /* ============================================ */
 /* Scroll Containers */
-.collapsed-content,
-.note-list-container {
+.collapsed-content {
   max-height: calc(100vh - 8rem);
   overflow-y: auto;
   padding-right: 0.5rem;
@@ -875,8 +874,7 @@ header {
     font-size: 0.75rem;
   }
 
-  .source-item,
-  .note-item {
+  .source-item {
     padding: 0.5rem;
   }
 
@@ -910,8 +908,7 @@ header {
     max-width: 90%;
   }
 
-  .source-item,
-  .note-item {
+  .source-item {
     padding: 0.75rem;
   }
 }
@@ -947,8 +944,7 @@ header {
     flex: 2;
   }
 
-  .source-item:hover .source-menu-toggle,
-  .note-item:hover .note-menu-toggle {
+  .source-item:hover .source-menu-toggle {
     opacity: 1 !important;
   }
 }
