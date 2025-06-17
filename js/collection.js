@@ -1068,6 +1068,19 @@ const NoteActions = {
       this.openAddNoteModal.bind(this)
     );
 
+    // Add click handler for note titles to show note content
+    $(document).on("click", ".note-item .font-medium.truncate", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const $noteItem = $(this).closest(".note-item");
+      const $menuItem = $noteItem.find(
+        '.notes-menu-dropdown a:contains("Show note")'
+      );
+      if ($menuItem.length) {
+        $menuItem.trigger("click");
+      }
+    });
+
     // Quick Notes buttons click handler
     const self = this; // Store reference to 'this'
     $(document).on("click", ".quick-note-btn", function (e) {
@@ -2107,9 +2120,23 @@ const MessageActions = {
 
     // Show a compact success message
     const $successMsg = $(
-      `<div class="bg-green-500 text-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200 z-50 whitespace-nowrap">Added to notes</div>`
+      `<div class="bg-green-500 text-white text-2xs px-1.5 py-0.5 rounded opacity-0 transition-opacity duration-200 z-50 whitespace-nowrap">Added to notes</div>`
     );
-    $messageElement.append($successMsg);
+
+    // Position the message relative to the button
+    const $button = $(e.currentTarget);
+    const buttonRect = $button[0].getBoundingClientRect();
+
+    $successMsg.css({
+      position: "fixed",
+      top: buttonRect.top + window.scrollY - 25 + "px",
+      left: buttonRect.left + window.scrollX + "px",
+      transform: "translateX(-50%)",
+      pointerEvents: "none",
+      "box-shadow": "0 1px 3px rgba(0,0,0,0.1)",
+    });
+
+    $("body").append($successMsg);
 
     // Animate the success message
     setTimeout(() => {
@@ -2117,8 +2144,8 @@ const MessageActions = {
       setTimeout(() => {
         $successMsg.removeClass("opacity-100");
         setTimeout(() => $successMsg.remove(), 200);
-      }, 2000);
-    }, 100);
+      }, 1500);
+    }, 10);
 
     console.log("Added new note:", messageContent);
   },
