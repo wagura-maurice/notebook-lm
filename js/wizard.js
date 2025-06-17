@@ -12,6 +12,7 @@ const SELECTORS = {
   // Layout
   columnsContainer: "#columns-container",
   leftColumn: "#left-column",
+
   rightColumn: "#right-column",
   collapsedContent: ".collapsed-content",
   expandedContent: ".expanded-content",
@@ -207,17 +208,48 @@ const MobileTabs = {
 const ColumnToggles = {
   init: function () {
     this.bindEvents();
+    this.updateRightColumnState();
   },
 
   bindEvents: function () {
     $("#collapse-left").on("click", this.toggleLeftColumn.bind(this));
-    $("#collapse-right").on("click", this.toggleRightColumn.bind(this));
+    // $("#collapse-right").on("click", this.toggleRightColumn.bind(this));
     $("#expand-left").on("click", this.expandLeftColumn.bind(this));
-    $("#expand-right").on("click", this.expandRightColumn.bind(this));
+    // $("#expand-right").on("click", this.expandRightColumn.bind(this));
+    $("#expand-right").on("click", this.toggleRightColumn.bind(this));
+    $(SELECTORS.rightColumn).on(
+      "dblclick",
+      this.toggleRightColumnSize.bind(this)
+    );
   },
 
   arePanelsActive: function () {
     return $(".view-source-content, .edit-note-content").length > 0;
+  },
+
+  updateRightColumnState: function () {
+    // const $rightColumn = $(SELECTORS.rightColumn);
+    const $leftColumn = $(SELECTORS.leftColumn);
+    const $rightColumn = $(SELECTORS.rightColumn);
+
+    if (this.arePanelsActive()) {
+      Utils.toggleClasses(
+        $rightColumn,
+        ["panel-active"],
+        ["expanded", "contracted"]
+      );
+    } else {
+      $rightColumn.removeClass("panel-active");
+    }
+
+    if (
+      $leftColumn.hasClass("collapsed") ||
+      $rightColumn.hasClass("collapsed")
+    ) {
+      $rightColumn.addClass("expanded");
+    } else {
+      $rightColumn.removeClass("expanded");
+    }
   },
 
   toggleLeftColumn: function () {
@@ -226,14 +258,7 @@ const ColumnToggles = {
     $leftColumn.find(SELECTORS.expandedContent).toggleClass("hidden");
     $leftColumn.find(SELECTORS.collapsedContent).toggleClass("hidden");
     $leftColumn.find(SELECTORS.sourceMenuDropdown).addClass("hidden");
-  },
-
-  toggleRightColumn: function () {
-    const $rightColumn = $(SELECTORS.rightColumn);
-    $rightColumn.toggleClass("collapsed");
-    $rightColumn.find(SELECTORS.expandedContent).toggleClass("hidden");
-    $rightColumn.find(SELECTORS.collapsedContent).toggleClass("hidden");
-    $rightColumn.find(SELECTORS.notesMenuDropdown).addClass("hidden");
+    this.updateRightColumnState();
   },
 
   expandLeftColumn: function () {
@@ -241,13 +266,28 @@ const ColumnToggles = {
     $leftColumn.removeClass("collapsed");
     $leftColumn.find(SELECTORS.expandedContent).removeClass("hidden");
     $leftColumn.find(SELECTORS.collapsedContent).addClass("hidden");
+    this.updateRightColumnState();
   },
 
-  expandRightColumn: function () {
+  toggleRightColumn: function (e) {
+    // const $rightColumn = $(SELECTORS.rightColumn);
+    const $leftColumn = $(SELECTORS.leftColumn);
     const $rightColumn = $(SELECTORS.rightColumn);
-    $rightColumn.removeClass("collapsed");
-    $rightColumn.find(SELECTORS.expandedContent).removeClass("hidden");
-    $rightColumn.find(SELECTORS.collapsedContent).addClass("hidden");
+
+    if (
+      !$leftColumn.hasClass("collapsed") &&
+      !$rightColumn.hasClass("collapsed")
+    ) {
+      this.collapseSideColumns();
+      $rightColumn.addClass("expanded");
+      $(e.currentTarget).html('<i class="fas fa-compress-alt"></i>');
+    } else {
+      this.expandSideColumns();
+      $rightColumn.removeClass("expanded");
+      $(e.currentTarget).html('<i class="fas fa-expand-alt"></i>');
+    }
+
+    this.updateRightColumnState();
   },
 
   collapseSideColumns: function () {
@@ -282,6 +322,12 @@ const ColumnToggles = {
       .find(SELECTORS.expandedContent)
       .removeClass("hidden");
     $rightColumn.find(SELECTORS.collapsedContent).addClass("hidden");
+  },
+
+  toggleRightColumnSize: function () {
+    if (!this.arePanelsActive()) {
+      $(SELECTORS.rightColumn).toggleClass("contracted");
+    }
   },
 };
 

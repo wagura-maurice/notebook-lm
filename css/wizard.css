@@ -40,61 +40,8 @@
 }
 
 /* Tooltip styles for both columns */
-#left-column,
-#right-column {
+#left-column {
   overflow: visible !important;
-}
-
-/* Tooltip for note items in right column */
-#right-column .note-item {
-  position: relative;
-}
-
-#right-column .note-item .font-medium.truncate {
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
-}
-
-#right-column .note-item .font-medium.truncate[data-title]::after {
-  content: attr(data-title);
-  position: absolute;
-  left: 50%;
-  bottom: 100%;
-  transform: translateX(-50%);
-  background: #1e293b;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
-  z-index: 1000;
-  pointer-events: none;
-  border: 1px solid #334155;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  min-width: max-content;
-  max-width: 200px;
-  text-align: center;
-}
-
-#right-column .note-item:hover .font-medium.truncate[data-title]::after {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* Adjust for collapsed state */
-#right-column.collapsed .note-item .font-medium.truncate[data-title]::after {
-  left: 100%;
-  bottom: auto;
-  top: 50%;
-  transform: translateY(-50%);
-  margin-left: 10px;
 }
 
 :root {
@@ -125,13 +72,12 @@ body {
 /* ============================================ */
 #columns-container {
   display: flex;
-  width: 100%;
   gap: 0.5rem;
   overflow: hidden;
-  flex: 1;
 }
 
-#left-column {
+#left-column,
+#right-column {
   background-color: var(--slate-800);
   color: white;
   border-radius: 0.5rem;
@@ -142,29 +88,19 @@ body {
 
 /* Left Column */
 #left-column {
-  width: 35%;
+  width: 27.5%;
   min-width: 250px;
-  max-width: 35%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  flex-shrink: 0;
 }
 
-/* Right Column */
+/* Right Column (Default Active) */
 #right-column {
-  background-color: var(--slate-800);
-  color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgba(147, 51, 234, 0.3),
-    0 2px 4px -1px rgba(147, 51, 234, 0.1);
-  transition: all 0.3s ease;
-  width: 65%;
-  max-width: 65%;
+  flex: 1; /* Fixed flex value to prevent dynamic shifts */
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  flex-grow: 1;
 }
 
 /* Collapsed States */
@@ -928,9 +864,7 @@ header {
   }
 
   #collapse-left,
-  #collapse-right,
-  #expand-left,
-  #expand-right {
+  #expand-left {
     display: none;
   }
 
@@ -1019,6 +953,10 @@ header {
 
 /* Tablet (640px - 1023px) */
 @media (min-width: 640px) and (max-width: 1023px) {
+  #right-column {
+    flex: 1.5;
+  }
+
   #chat-suggestions {
     gap: 0.5rem;
   }
@@ -1061,9 +999,7 @@ header {
   }
 
   #right-column {
-    width: 25%;
-    min-width: 250px;
-    max-width: 25%;
+    flex: 2;
   }
 
   .source-item:hover .source-menu-toggle,
