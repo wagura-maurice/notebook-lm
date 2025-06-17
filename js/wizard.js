@@ -1347,11 +1347,25 @@ const MessageActions = {
 
     if (!messageContent) return;
 
-    // Show a success message
+    // Show a compact success message
     const $successMsg = $(
-      `<div class="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200">Added to notes</div>`
+      `<div class="bg-green-500 text-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200 z-50 whitespace-nowrap">Added to notes</div>`
     );
-    $messageElement.append($successMsg);
+
+    // Position the message relative to the button
+    const $button = $(e.currentTarget);
+    const buttonRect = $button[0].getBoundingClientRect();
+
+    $successMsg.css({
+      position: "fixed",
+      top: buttonRect.top + window.scrollY - 30 + "px",
+      left: buttonRect.left + window.scrollX + "px",
+      transform: "translateX(-50%)",
+      pointerEvents: "none",
+      whiteSpace: "nowrap"
+    });
+
+    $("body").append($successMsg);
 
     // Animate the success message
     setTimeout(() => {
@@ -1359,8 +1373,8 @@ const MessageActions = {
       setTimeout(() => {
         $successMsg.removeClass("opacity-100");
         setTimeout(() => $successMsg.remove(), 200);
-      }, 50000000000000000);
-    }, 100);
+      }, 2000); // 2 seconds display time
+    }, 10);
 
     console.log("Added new note:", messageContent);
   },
