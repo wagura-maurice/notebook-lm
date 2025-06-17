@@ -299,27 +299,23 @@ header {
 }
 
 .collapsed-content::-webkit-scrollbar,
-.source-list-container::-webkit-scrollbar,
-.note-list-container::-webkit-scrollbar {
+.source-list-container::-webkit-scrollbar {
   width: 8px;
 }
 
 .collapsed-content::-webkit-scrollbar-track,
-.source-list-container::-webkit-scrollbar-track,
-.note-list-container::-webkit-scrollbar-track {
+.source-list-container::-webkit-scrollbar-track {
   background: var(--slate-800);
 }
 
 .collapsed-content::-webkit-scrollbar-thumb,
-.source-list-container::-webkit-scrollbar-thumb,
-.note-list-container::-webkit-scrollbar-thumb {
+.source-list-container::-webkit-scrollbar-thumb {
   background: var(--slate-600);
   border-radius: 4px;
 }
 
 .collapsed-content::-webkit-scrollbar-thumb:hover,
-.source-list-container::-webkit-scrollbar-thumb:hover,
-.note-list-container::-webkit-scrollbar-thumb:hover {
+.source-list-container::-webkit-scrollbar-thumb:hover {
   background: var(--slate-400);
 }
 
@@ -497,87 +493,43 @@ header {
   background-color: var(--slate-600);
 }
 
-.note-content-section {
-  background: rgba(30, 41, 59, 0.5);
-  /* border: 1px solid rgba(148, 163, 184, 0.1); */
-  /* border-radius: 0.5rem; */
-  /* padding: 1rem; */
-  /* margin-bottom: 1rem; */
-}
-
-/* Edit Note Content */
-#edit-note-content {
-  min-height: 200px;
-  max-height: calc(100vh - 300px);
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--slate-600) var(--slate-800);
-}
-
-#edit-note-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-#edit-note-content::-webkit-scrollbar-track {
-  background: var(--slate-800);
-}
-
-#edit-note-content::-webkit-scrollbar-thumb {
-  background: var(--slate-600);
-  border-radius: 4px;
-}
-
-#edit-note-content::-webkit-scrollbar-thumb:hover {
-  background: var(--slate-400);
-}
-
 /* ============================================ */
 /* === INTERACTIVE ELEMENTS === */
 /* ============================================ */
 /* Items with Hover States */
-.source-item,
-.note-item {
+.source-item {
   position: relative;
   transition: all 0.2s ease;
 }
 
 .source-item:hover,
-.note-item:hover,
-.source-item.active,
-.note-item.active {
+.source-item.active {
   background-color: var(--slate-800);
 }
 
 /* Menu Toggles */
-.source-icon,
-.note-icon {
+.source-icon {
   transition: opacity 0.2s ease;
 }
 
-.source-menu-toggle,
-.note-menu-toggle {
+.source-menu-toggle {
   transition: opacity 0.2s ease;
   cursor: pointer;
   opacity: 0;
 }
 
 .source-item:hover .source-icon,
-.source-item.active .source-icon,
-.note-item:hover .note-icon,
-.note-item.active .note-icon {
+.source-item.active .source-icon {
   opacity: 0 !important;
 }
 
 .source-item:hover .source-menu-toggle,
-.source-item.active .source-menu-toggle,
-.note-item:hover .note-menu-toggle,
-.note-item.active .note-menu-toggle {
+.source-item.active .source-menu-toggle {
   opacity: 1 !important;
 }
 
 /* Dropdown Menus */
-.source-menu-dropdown,
-.notes-menu-dropdown {
+.source-menu-dropdown {
   position: fixed !important;
   z-index: 100;
   min-width: 12rem;
@@ -592,14 +544,12 @@ header {
   border: 1px solid var(--slate-700);
 }
 
-.source-menu-dropdown.show,
-.notes-menu-dropdown.show {
+.source-menu-dropdown.show {
   opacity: 1;
   visibility: visible;
 }
 
-.source-menu-dropdown a,
-.notes-menu-dropdown a {
+.source-menu-dropdown a {
   display: flex;
   align-items: center;
   padding: 0.5rem 0.75rem;
@@ -607,8 +557,7 @@ header {
   color: white;
 }
 
-.source-menu-dropdown a:hover,
-.notes-menu-dropdown a:hover {
+.source-menu-dropdown a:hover {
   background-color: var(--slate-800);
 }
 
