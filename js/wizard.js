@@ -213,9 +213,7 @@ const ColumnToggles = {
 
   bindEvents: function () {
     $("#collapse-left").on("click", this.toggleLeftColumn.bind(this));
-    // $("#collapse-right").on("click", this.toggleRightColumn.bind(this));
     $("#expand-left").on("click", this.expandLeftColumn.bind(this));
-    // $("#expand-right").on("click", this.expandRightColumn.bind(this));
     $("#expand-right").on("click", this.toggleRightColumn.bind(this));
     $(SELECTORS.rightColumn).on(
       "dblclick",
@@ -228,7 +226,6 @@ const ColumnToggles = {
   },
 
   updateRightColumnState: function () {
-    // const $rightColumn = $(SELECTORS.rightColumn);
     const $leftColumn = $(SELECTORS.leftColumn);
     const $rightColumn = $(SELECTORS.rightColumn);
 
@@ -270,7 +267,6 @@ const ColumnToggles = {
   },
 
   toggleRightColumn: function (e) {
-    // const $rightColumn = $(SELECTORS.rightColumn);
     const $leftColumn = $(SELECTORS.leftColumn);
     const $rightColumn = $(SELECTORS.rightColumn);
 
