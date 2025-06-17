@@ -642,8 +642,6 @@ header {
 /* Jump to Bottom Button */
 #jump-to-bottom-btn {
   position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
   bottom: 100px;
   z-index: 40;
   background: var(--indigo-500);
@@ -655,7 +653,7 @@ header {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s;
+  transition: opacity 0.3s, transform 0.2s, box-shadow 0.2s;
 }
 
 #jump-to-bottom-btn.show {
@@ -665,13 +663,12 @@ header {
 
 #jump-to-bottom-btn:hover {
   background: var(--indigo-600);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Left column jump button */
 #left-column-jump-to-bottom-btn {
   position: fixed;
-  /* left: 50%; */
-  transform: translateX(-50%);
   bottom: 100px;
   z-index: 40;
   background: var(--indigo-500);
@@ -693,7 +690,6 @@ header {
 
 #left-column-jump-to-bottom-btn:hover {
   background: var(--indigo-600);
-  transform: translate(-50%, -2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
