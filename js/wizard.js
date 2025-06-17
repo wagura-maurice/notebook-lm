@@ -1087,12 +1087,6 @@ const SourceActions = {
       );
     }
 
-    // left-column-chat-messages
-    // left-column-chat-message-welcome-message
-    // left-column-chat-messages-container
-    // left-column-jump-to-bottom-btn
-    // left-column-chat-form
-
     $("#back-to-sources").on("click", () => {
       $(".view-source-content").remove();
       $(SELECTORS.leftColumn).append(originalContent);
