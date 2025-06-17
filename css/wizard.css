@@ -971,7 +971,7 @@ header {
 }
 
 /* =================================== */
-/* Add these styles to your collection.css file */
+/* Add these styles to your wizard.css file */
 @media (max-width: 767px) {
   .modal {
     align-items: flex-start; /* Align to top instead of center */
