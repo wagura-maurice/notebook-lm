@@ -786,7 +786,7 @@ header {
 /* Left column jump button */
 #left-column-jump-to-bottom-btn {
   position: fixed;
-  left: 50%;
+  /* left: 50%; */
   transform: translateX(-50%);
   bottom: 100px;
   z-index: 40;

@@ -1741,6 +1741,35 @@ const LeftColumnChatModule = {
 };
 
 /* ============================================ */
+/* === MODULE: RIGHT COLUMN CHAT === */
+/* ============================================ */
+const RightColumnChat = {
+  init: function () {
+    const rightColumnMessages = document.getElementById('right-column-chat-messages');
+    const rightColumnJumpButton = document.getElementById('right-column-jump-bottom');
+
+    if (rightColumnMessages && rightColumnJumpButton) {
+      // Toggle jump button visibility
+      const toggleRightColumnJumpButton = () => {
+        const isAtBottom = rightColumnMessages.scrollHeight - rightColumnMessages.scrollTop - rightColumnMessages.clientHeight < 50;
+        rightColumnJumpButton.classList.toggle('hidden', isAtBottom);
+      };
+
+      // Scroll to bottom when jump button is clicked
+      rightColumnJumpButton.addEventListener('click', () => {
+        rightColumnMessages.scrollTop = rightColumnMessages.scrollHeight;
+      });
+
+      // Add scroll event listener to toggle button visibility
+      rightColumnMessages.addEventListener('scroll', toggleRightColumnJumpButton);
+
+      // Initial check
+      setTimeout(toggleRightColumnJumpButton, 500);
+    }
+  }
+};
+
+/* ============================================ */
 /* === DOCUMENT READY === */
 /* ============================================ */
 $(document).ready(function () {
@@ -1755,6 +1784,7 @@ $(document).ready(function () {
   MessageActions.init();
   Utilities.init();
   ModalHandling.init();
+  RightColumnChat.init();
 });
 
 // More CHAT SUGGESTIONS Javascript
