@@ -41,8 +41,6 @@ const SELECTORS = {
   chatMessages: "#chat-messages",
   sendMessage: "#send-message",
   chatSuggestions: "#chat-suggestions",
-  chatSuggestionsLeft: "#chat-suggestions-left",
-  chatSuggestionsRight: "#chat-suggestions-right",
 };
 
 /* ============================================ */
@@ -86,54 +84,150 @@ const Preloader = {
 };
 
 /* ============================================ */
-/* === MODULE: CHAT SUGGESTIONS === */
+/* === MODULE: CHAT and CHAT SUGGESTIONS === */
 /* ============================================ */
-const ChatSuggestions = {
+const ChatModule = {
   init: function () {
-    const chatSuggestions = $(SELECTORS.chatSuggestions);
-    const leftBtn = $(SELECTORS.chatSuggestionsLeft);
-    const rightBtn = $(SELECTORS.chatSuggestionsRight);
-
-    if (chatSuggestions.length && chatSuggestions.parent().length) {
-      chatSuggestions.parent().css({
-        "min-width": "0",
-        "flex-shrink": "0",
-        "overflow-x": "auto",
-      });
-
-      // Show/hide buttons based on number of suggestions
-      const suggestions = chatSuggestions.find("button");
-      const showButtons = suggestions.length > 1;
-      leftBtn.toggle(showButtons);
-      rightBtn.toggle(showButtons);
-
-      // Add click handlers
-      leftBtn.on("click", () => {
-        chatSuggestions.parent().get(0).scrollBy({
-          left: -CONFIG.scrollOffset,
-          behavior: "smooth",
-        });
-      });
-
-      rightBtn.on("click", () => {
-        chatSuggestions.parent().get(0).scrollBy({
-          left: CONFIG.scrollOffset,
-          behavior: "smooth",
-        });
-      });
-    }
+    this.initChatSuggestions();
+    this.initChatMessages();
+    this.initAIChatForm();
   },
 
-  // Update button states when suggestions change
-  updateButtonStates: function () {
-    const chatSuggestions = $(SELECTORS.chatSuggestions);
-    const leftBtn = $(SELECTORS.chatSuggestionsLeft);
-    const rightBtn = $(SELECTORS.chatSuggestionsRight);
-    const suggestions = chatSuggestions.find("button");
-    const showButtons = suggestions.length > 1;
+  /* === CHAT SUGGGESTIONS === */
+  initChatSuggestions: function () {
+    const suggestionsContainer = document.getElementById("chat-suggestions");
+    const leftChevron = document.getElementById("chat-suggestions-left");
+    const rightChevron = document.getElementById("chat-suggestions-right");
 
-    leftBtn.toggle(showButtons);
-    rightBtn.toggle(showButtons);
+    if (!suggestionsContainer || !leftChevron || !rightChevron) return;
+
+    let scrollStep = 200; // Default scroll step in pixels
+
+    // Dynamically adjust scrollStep based on the first suggestion pill's width
+    const firstSuggestion = suggestionsContainer.querySelector("button");
+    if (firstSuggestion) {
+      scrollStep = firstSuggestion.offsetWidth + 8; // Add gap (8px from CSS gap-2)
+    }
+
+    // Scroll function with boundary checking
+    const scrollSuggestions = (direction) => {
+      const currentScroll = suggestionsContainer.scrollLeft;
+      const maxScroll =
+        suggestionsContainer.scrollWidth - suggestionsContainer.clientWidth;
+
+      if (direction === "left") {
+        const newScroll = Math.max(0, currentScroll - scrollStep);
+        suggestionsContainer.scrollTo({ left: newScroll, behavior: "smooth" });
+      } else if (direction === "right") {
+        const newScroll = Math.min(maxScroll, currentScroll + scrollStep);
+        suggestionsContainer.scrollTo({ left: newScroll, behavior: "smooth" });
+      }
+    };
+
+    // Update chevron visibility based on scroll position
+    const updateChevronVisibility = () => {
+      const currentScroll = suggestionsContainer.scrollLeft;
+      const maxScroll =
+        suggestionsContainer.scrollWidth - suggestionsContainer.clientWidth;
+
+      leftChevron.style.opacity = currentScroll > 0 ? "1" : "0.5";
+      rightChevron.style.opacity = currentScroll < maxScroll ? "1" : "0.5";
+      leftChevron.style.pointerEvents = currentScroll > 0 ? "auto" : "none";
+      rightChevron.style.pointerEvents =
+        currentScroll < maxScroll ? "auto" : "none";
+    };
+
+    // Add event listeners
+    leftChevron.addEventListener("click", () => scrollSuggestions("left"));
+    rightChevron.addEventListener("click", () => scrollSuggestions("right"));
+    suggestionsContainer.addEventListener("scroll", updateChevronVisibility);
+
+    // Initial setup
+    updateChevronVisibility();
+  },
+
+  /* === CHAT MESSAGES === */
+  initChatMessages: function () {
+    const chatMessages = document.getElementById("chat-messages");
+    const jumpBtn = document.getElementById("jump-to-bottom-btn");
+
+    if (!chatMessages || !jumpBtn) return;
+
+    const atBottom = () => {
+      return (
+        chatMessages.scrollHeight -
+          chatMessages.scrollTop -
+          chatMessages.clientHeight <
+        2
+      );
+    };
+
+    const toggleJumpBtn = () => {
+      jumpBtn.classList.toggle("show", !atBottom());
+    };
+
+    chatMessages.addEventListener("scroll", toggleJumpBtn);
+    jumpBtn.addEventListener("click", () => {
+      chatMessages.scrollTo({
+        top: chatMessages.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+
+    // Observe for new messages
+    const observer = new MutationObserver(() => {
+      setTimeout(toggleJumpBtn, 100);
+    });
+    observer.observe(chatMessages, { childList: true, subtree: true });
+
+    // Initial check
+    setTimeout(toggleJumpBtn, 500);
+  },
+
+  /* === AI CHAT FORM === */
+  initAIChatForm: function () {
+    const aiChatForm = document.getElementById("ai-text-chat-form-right");
+    const aiTextInput = document.getElementById("ai-text-input-right");
+    const aiSendButton = document.getElementById("ai-text-send-right");
+
+    if (!aiChatForm || !aiTextInput || !aiSendButton) return;
+
+    const handleSendMessage = () => {
+      const message = aiTextInput.value.trim();
+
+      if (message) {
+        console.log("AI Action Submitted:", message);
+        aiTextInput.value = "";
+        aiTextInput.style.height = "auto";
+        aiTextInput.focus();
+      }
+    };
+
+    // Form submission
+    aiChatForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      handleSendMessage();
+    });
+
+    // Send button click
+    aiSendButton.addEventListener("click", handleSendMessage);
+
+    // Textarea handling
+    aiTextInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        handleSendMessage();
+      }
+    });
+
+    aiTextInput.addEventListener("input", () => {
+      aiTextInput.style.height = "auto";
+      aiTextInput.style.height = aiTextInput.scrollHeight + "px";
+      aiSendButton.disabled = aiTextInput.value.trim() === "";
+    });
+
+    // Initial state
+    aiSendButton.disabled = aiTextInput.value.trim() === "";
   },
 };
 
@@ -2011,9 +2105,9 @@ const MessageActions = {
       $(".collapsed-content .flex-1").append(newCollapsedNoteHtml);
     }
 
-    // Show a success message
+    // Show a compact success message
     const $successMsg = $(
-      `<div class="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200">Added to notes</div>`
+      `<div class="bg-green-500 text-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200 z-50 whitespace-nowrap">Added to notes</div>`
     );
     $messageElement.append($successMsg);
 
@@ -2358,7 +2452,7 @@ const CanvasChat = {
 /* ============================================ */
 $(document).ready(function () {
   Preloader.init();
-  ChatSuggestions.init();
+  ChatModule.init();
   MobileTabs.init();
   ColumnToggles.init();
   DropdownMenus.init();
@@ -2375,7 +2469,7 @@ $(document).ready(function () {
 // More CHAT SUGGESTIONS Javascript
 
 // Wait for the DOM to be fully loaded
-document.addEventListener("DOMContentLoaded", () => {
+/* document.addEventListener("DOMContentLoaded", () => {
   const suggestionsContainer = document.getElementById("chat-suggestions");
   const leftChevron = document.getElementById("chat-suggestions-left");
   const rightChevron = document.getElementById("chat-suggestions-right");
@@ -2522,4 +2616,4 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(toggleJumpBtn, 100);
   });
   observer.observe(chatMessages, { childList: true, subtree: true });
-})();
+})(); */

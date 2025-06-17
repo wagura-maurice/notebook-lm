@@ -36,8 +36,6 @@ const SELECTORS = {
   chatMessages: "#chat-messages",
   sendMessage: "#send-message",
   chatSuggestions: "#chat-suggestions",
-  chatSuggestionsLeft: "#chat-suggestions-left",
-  chatSuggestionsRight: "#chat-suggestions-right",
 };
 
 /* ============================================ */
@@ -1362,7 +1360,7 @@ const MessageActions = {
       left: buttonRect.left + window.scrollX + "px",
       transform: "translateX(-50%)",
       pointerEvents: "none",
-      whiteSpace: "nowrap"
+      whiteSpace: "nowrap",
     });
 
     $("body").append($successMsg);
