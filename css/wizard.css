@@ -129,9 +129,7 @@ body {
   overflow: hidden;
 }
 
-#left-column,
-#middle-column,
-#right-column {
+#left-column {
   background-color: var(--slate-800);
   color: white;
   border-radius: 0.5rem;
@@ -149,27 +147,16 @@ body {
   overflow: hidden;
 }
 
-/* Middle Column (Default Active) */
-#middle-column {
+/* Right Column */
+#right-column {
   flex: 1; /* Fixed flex value to prevent dynamic shifts */
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-/* Right Column */
-#right-column {
-  width: 27.5%;
-  min-width: 250px;
-  display: flex;
-  flex-direction: column;
-  border-left: 1px solid var(--slate-700);
-  overflow: hidden;
-}
-
 /* Collapsed States */
-#left-column.collapsed,
-#right-column.collapsed {
+#left-column.collapsed {
   width: 4rem !important;
   min-width: 4rem;
 }
@@ -918,7 +905,6 @@ header {
   }
 
   #left-column,
-  #middle-column,
   #right-column {
     width: 100%;
     height: calc(100vh - 8rem);
@@ -961,7 +947,6 @@ header {
 
   /* Ensure all columns are styled correctly when active */
   #left-column.active,
-  #middle-column.active,
   #right-column.active {
     display: flex;
   }
@@ -1022,10 +1007,6 @@ header {
 
 /* Tablet (640px - 1023px) */
 @media (min-width: 640px) and (max-width: 1023px) {
-  #middle-column {
-    flex: 1.5;
-  }
-
   #chat-suggestions {
     gap: 0.5rem;
   }
@@ -1051,7 +1032,6 @@ header {
   }
 
   #left-column,
-  #middle-column,
   #right-column {
     display: flex !important;
   }
@@ -1066,10 +1046,6 @@ header {
     width: 25%;
     min-width: 250px;
     max-width: 25%;
-  }
-
-  #middle-column {
-    flex: 2;
   }
 
   #right-column {

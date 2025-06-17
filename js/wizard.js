@@ -2,7 +2,7 @@
 /* === CONSTANTS & CONFIGURATION === */
 /* ============================================ */
 const CONFIG = {
-  defaultTab: "middle-column",
+  defaultTab: "right-column",
   mobileBreakpoint: 1024,
   animationDuration: 300,
   scrollOffset: 150,
@@ -12,7 +12,6 @@ const SELECTORS = {
   // Layout
   columnsContainer: "#columns-container",
   leftColumn: "#left-column",
-  middleColumn: "#middle-column",
   rightColumn: "#right-column",
   collapsedContent: ".collapsed-content",
   expandedContent: ".expanded-content",
@@ -208,7 +207,6 @@ const MobileTabs = {
 const ColumnToggles = {
   init: function () {
     this.bindEvents();
-    this.updateMiddleColumnState();
   },
 
   bindEvents: function () {
@@ -216,40 +214,10 @@ const ColumnToggles = {
     $("#collapse-right").on("click", this.toggleRightColumn.bind(this));
     $("#expand-left").on("click", this.expandLeftColumn.bind(this));
     $("#expand-right").on("click", this.expandRightColumn.bind(this));
-    $("#expand-middle").on("click", this.toggleMiddleColumn.bind(this));
-    $(SELECTORS.middleColumn).on(
-      "dblclick",
-      this.toggleMiddleColumnSize.bind(this)
-    );
   },
 
   arePanelsActive: function () {
     return $(".view-source-content, .edit-note-content").length > 0;
-  },
-
-  updateMiddleColumnState: function () {
-    const $middleColumn = $(SELECTORS.middleColumn);
-    const $leftColumn = $(SELECTORS.leftColumn);
-    const $rightColumn = $(SELECTORS.rightColumn);
-
-    if (this.arePanelsActive()) {
-      Utils.toggleClasses(
-        $middleColumn,
-        ["panel-active"],
-        ["expanded", "contracted"]
-      );
-    } else {
-      $middleColumn.removeClass("panel-active");
-    }
-
-    if (
-      $leftColumn.hasClass("collapsed") ||
-      $rightColumn.hasClass("collapsed")
-    ) {
-      $middleColumn.addClass("expanded");
-    } else {
-      $middleColumn.removeClass("expanded");
-    }
   },
 
   toggleLeftColumn: function () {
@@ -258,7 +226,6 @@ const ColumnToggles = {
     $leftColumn.find(SELECTORS.expandedContent).toggleClass("hidden");
     $leftColumn.find(SELECTORS.collapsedContent).toggleClass("hidden");
     $leftColumn.find(SELECTORS.sourceMenuDropdown).addClass("hidden");
-    this.updateMiddleColumnState();
   },
 
   toggleRightColumn: function () {
@@ -267,7 +234,6 @@ const ColumnToggles = {
     $rightColumn.find(SELECTORS.expandedContent).toggleClass("hidden");
     $rightColumn.find(SELECTORS.collapsedContent).toggleClass("hidden");
     $rightColumn.find(SELECTORS.notesMenuDropdown).addClass("hidden");
-    this.updateMiddleColumnState();
   },
 
   expandLeftColumn: function () {
@@ -275,7 +241,6 @@ const ColumnToggles = {
     $leftColumn.removeClass("collapsed");
     $leftColumn.find(SELECTORS.expandedContent).removeClass("hidden");
     $leftColumn.find(SELECTORS.collapsedContent).addClass("hidden");
-    this.updateMiddleColumnState();
   },
 
   expandRightColumn: function () {
@@ -283,28 +248,6 @@ const ColumnToggles = {
     $rightColumn.removeClass("collapsed");
     $rightColumn.find(SELECTORS.expandedContent).removeClass("hidden");
     $rightColumn.find(SELECTORS.collapsedContent).addClass("hidden");
-    this.updateMiddleColumnState();
-  },
-
-  toggleMiddleColumn: function (e) {
-    const $middleColumn = $(SELECTORS.middleColumn);
-    const $leftColumn = $(SELECTORS.leftColumn);
-    const $rightColumn = $(SELECTORS.rightColumn);
-
-    if (
-      !$leftColumn.hasClass("collapsed") &&
-      !$rightColumn.hasClass("collapsed")
-    ) {
-      this.collapseSideColumns();
-      $middleColumn.addClass("expanded");
-      $(e.currentTarget).html('<i class="fas fa-compress-alt"></i>');
-    } else {
-      this.expandSideColumns();
-      $middleColumn.removeClass("expanded");
-      $(e.currentTarget).html('<i class="fas fa-expand-alt"></i>');
-    }
-
-    this.updateMiddleColumnState();
   },
 
   collapseSideColumns: function () {
@@ -339,12 +282,6 @@ const ColumnToggles = {
       .find(SELECTORS.expandedContent)
       .removeClass("hidden");
     $rightColumn.find(SELECTORS.collapsedContent).addClass("hidden");
-  },
-
-  toggleMiddleColumnSize: function () {
-    if (!this.arePanelsActive()) {
-      $(SELECTORS.middleColumn).toggleClass("contracted");
-    }
   },
 };
 
@@ -1745,28 +1682,39 @@ const LeftColumnChatModule = {
 /* ============================================ */
 const RightColumnChat = {
   init: function () {
-    const rightColumnMessages = document.getElementById('right-column-chat-messages');
-    const rightColumnJumpButton = document.getElementById('right-column-jump-bottom');
+    const rightColumnMessages = document.getElementById(
+      "right-column-chat-messages"
+    );
+    const rightColumnJumpButton = document.getElementById(
+      "right-column-jump-bottom"
+    );
 
     if (rightColumnMessages && rightColumnJumpButton) {
       // Toggle jump button visibility
       const toggleRightColumnJumpButton = () => {
-        const isAtBottom = rightColumnMessages.scrollHeight - rightColumnMessages.scrollTop - rightColumnMessages.clientHeight < 50;
-        rightColumnJumpButton.classList.toggle('hidden', isAtBottom);
+        const isAtBottom =
+          rightColumnMessages.scrollHeight -
+            rightColumnMessages.scrollTop -
+            rightColumnMessages.clientHeight <
+          50;
+        rightColumnJumpButton.classList.toggle("hidden", isAtBottom);
       };
 
       // Scroll to bottom when jump button is clicked
-      rightColumnJumpButton.addEventListener('click', () => {
+      rightColumnJumpButton.addEventListener("click", () => {
         rightColumnMessages.scrollTop = rightColumnMessages.scrollHeight;
       });
 
       // Add scroll event listener to toggle button visibility
-      rightColumnMessages.addEventListener('scroll', toggleRightColumnJumpButton);
+      rightColumnMessages.addEventListener(
+        "scroll",
+        toggleRightColumnJumpButton
+      );
 
       // Initial check
       setTimeout(toggleRightColumnJumpButton, 500);
     }
-  }
+  },
 };
 
 /* ============================================ */
