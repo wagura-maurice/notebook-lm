@@ -754,12 +754,12 @@ const SourceActions = {
       )
       .on(
         "click",
-        '.source-menu-dropdown a:contains("Show source")',
+        '.source-menu-dropdown a:contains("Show")',
         this.showSourceContent.bind(this)
       );
 
     // Rename/delete confirmations
-    $('#rename-modal button:contains("Save")').on(
+    $('#rename-modal button:contains("Update")').on(
       "click",
       this.saveRename.bind(this)
     );
