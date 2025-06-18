@@ -1246,10 +1246,8 @@ const NoteActions = {
         this.addNoteToSources.bind(this)
       );
 
-    $('#add-note-modal button:contains("Save Note")').on(
-      "click",
-      this.saveNote.bind(this)
-    );
+    // Save note button click handler
+    $("#save-new-note").on("click", this.saveNote.bind(this));
 
     $('#delete-all-notes-modal button:contains("Delete")').on(
       "click",
@@ -1513,7 +1511,7 @@ const NoteActions = {
 
   saveNote: function () {
     const noteTitle = $("#note-title-input").val();
-    const noteContent = $("#note-content").html();
+    const noteContent = $("#note-content").val();
 
     if (noteTitle.trim() !== "" && noteContent.trim() !== "") {
       const truncatedContent =
@@ -1521,186 +1519,62 @@ const NoteActions = {
           ? `${noteContent.substring(0, 50)}...`
           : noteContent;
 
-      const $newNote = $(`
-        <div class="relative flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item group mb-2">
-          <div class="relative mr-3 w-6 h-6 mt-1 flex-shrink-0">
-            <i class="fas fa-sticky-note text-amber-400 note-icon transition-opacity duration-200"></i>
-            <i class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 note-menu-toggle transition-opacity duration-200 flex items-center justify-center cursor-pointer"></i>
-          </div>
-          <div class="flex-1 min-w-0 overflow-hidden">
-            <div class="font-medium truncate note-title" data-title="${noteTitle}">${noteTitle}</div>
-            <div class="text-xs text-slate-400 truncate" data-title="${truncatedContent}">
-              <span class="key-topic hover:text-sky-400 cursor-pointer transition-colors">${truncatedContent}</span>
-            </div>
-          </div>
-          <!-- Dropdown Menu -->
-          <div class="notes-menu-dropdown hidden absolute right-0 mt-2 w-48 bg-slate-800 rounded-md shadow-lg py-1 border border-slate-700 z-30">
-            <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option show-note">
-              <i class="fa-solid fa-eye mr-2"></i> Show note
-            </a>
-            <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option add-to-sources">
-              <i class="fas fa-plus-circle mr-2"></i> Add to sources
-            </a>
-            <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option delete-note">
-              <i class="fas fa-trash-alt mr-2"></i> Delete note
-            </a>
-          </div>
+      // Create the new note HTML for expanded view
+      const newNoteHtml = `      
+    <div class="relative flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item group mb-2">
+      <div class="relative mr-3 w-6 h-6 mt-1 flex-shrink-0">
+        <i class="fas fa-sticky-note text-amber-400 note-icon transition-opacity duration-200"></i>
+        <i class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 note-menu-toggle transition-opacity duration-200 flex items-center justify-center cursor-pointer"></i>
+      </div>
+      <div class="flex-1 min-w-0 overflow-hidden">
+        <div class="font-medium truncate note-title">${noteTitle.substring(
+          0,
+          50
+        )}${noteTitle.length > 50 ? "..." : ""}</div>
+        <div class="text-xs text-slate-400 truncate">
+          <span class="key-topic hover:text-sky-400 cursor-pointer transition-colors">${truncatedContent}</span>
         </div>
-      `);
+      </div>
 
-      // Add hover effect for the menu toggle
-      $newNote.hover(
-        function () {
-          $(this).find(".note-icon").css("opacity", "0");
-          $(this).find(".note-menu-toggle").css("opacity", "1");
-        },
-        function () {
-          if (!$(this).hasClass("active")) {
-            $(this).find(".note-icon").css("opacity", "1");
-            $(this).find(".note-menu-toggle").css("opacity", "0");
-          }
-        }
-      );
+      <!-- Dropdown Menu -->
+      <div class="notes-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30">
+        <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+          <i class="fa-solid fa-eye mr-2"></i> Show note
+        </a>
+        <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+          <i class="fas fa-plus-circle mr-3 text-sm"></i> Add to
+          sources
+        </a>
+        <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+          <i class="fas fa-trash-alt mr-3 text-sm"></i> Delete note
+        </a>
+      </div>
+    </div>`;
 
-      // Add click handler for the menu toggle
-      $newNote.on("click", ".note-menu-toggle", function (e) {
-        e.stopPropagation();
-        e.preventDefault();
+      // Create a unique ID for the new note
+      const noteId = "note-" + Date.now();
 
-        const $noteItem = $(this).closest(".note-item");
-        const $dropdown = $noteItem.find(".notes-menu-dropdown");
-        const isVisible = !$dropdown.hasClass("hidden");
+      // Create the new note HTML for collapsed view (just the icon)
+      const newCollapsedNoteHtml = `<button class="w-full flex items-center justify-center py-3 text-amber-400 hover:text-sky-400 transition-colors" data-note-id="${noteId}">
+        <i class="fa-solid fa-clipboard text-xl"></i>
+      </button>`;
 
-        // Hide all other dropdowns
-        $(".notes-menu-dropdown").not($dropdown).addClass("hidden");
+      // Add the new note to the top of the expanded notes list
+      $(".note-item").first().before(newNoteHtml);
 
-        if (!isVisible) {
-          // Position the dropdown relative to the note item
-          const noteOffset = $noteItem.offset();
-          const noteWidth = $noteItem.outerWidth();
-          const dropdownWidth = $dropdown.outerWidth();
+      // Add the new note to the collapsed view, right after the divider
+      const $divider = $(".collapsed-content .border-t");
+      if ($divider.length) {
+        $divider.after(newCollapsedNoteHtml);
+      } else {
+        // If no divider found, add to the end of the container
+        $(".collapsed-content .flex-1").append(newCollapsedNoteHtml);
+      }
 
-          // Position the dropdown to the right of the note item
-          let left = noteOffset.left + noteWidth - dropdownWidth;
-
-          // Make sure it doesn't go off screen
-          const windowWidth = $(window).width();
-          if (left + dropdownWidth > windowWidth) {
-            left = windowWidth - dropdownWidth - 10; // 10px padding from edge
-          }
-
-          // Position below the note item
-          const top = noteOffset.top + $noteItem.outerHeight() + 5;
-
-          $dropdown
-            .css({
-              position: "fixed",
-              top: `${top}px`,
-              left: `${left}px`,
-              display: "block",
-            })
-            .removeClass("hidden");
-
-          // Close dropdown when clicking outside
-          const closeDropdown = function (e) {
-            if (
-              !$dropdown.is(e.target) &&
-              $dropdown.has(e.target).length === 0
-            ) {
-              $dropdown.addClass("hidden");
-              $(document).off("click", closeDropdown);
-            }
-          };
-
-          // Add a small delay to prevent immediate closing
-          setTimeout(() => {
-            $(document).on("click", closeDropdown);
-          }, 10);
-        } else {
-          $dropdown.addClass("hidden");
-        }
-      });
-
-      // Handle menu option clicks
-      $newNote.on("click", ".menu-option", function (e) {
-        e.stopPropagation();
-        const $option = $(this);
-        const $noteItem = $option.closest(".note-item");
-
-        if ($option.hasClass("show-note")) {
-          // Handle show note
-          console.log("Show note clicked");
-        } else if ($option.hasClass("add-to-sources")) {
-          // Handle add to sources
-          e.preventDefault();
-          const title =
-            $noteItem.find(".font-medium.truncate").data("title") ||
-            $noteItem.find(".font-medium.truncate").text().trim();
-          const content =
-            $noteItem.find(".text-xs.text-slate-400").data("title") ||
-            $noteItem.find(".text-xs.text-slate-400").text().trim();
-
-          if (title && content) {
-            // Add the note as a source
-            noteActions.addSource(title, "note", content);
-
-            // Show a success message or visual feedback
-            const $feedback = $(
-              '<div class="text-green-400 text-xs mt-1">Added to sources</div>'
-            );
-            $noteItem.append($feedback);
-            setTimeout(
-              () => $feedback.fadeOut(500, () => $feedback.remove()),
-              2000
-            );
-          } else {
-            console.error("Could not find note title or content");
-          }
-        } else if ($option.hasClass("delete-note")) {
-          // Handle delete note
-          console.log("Delete note clicked");
-        }
-
-        // Close the dropdown
-        $noteItem.find(".notes-menu-dropdown").addClass("hidden");
-      });
-
-      // Add click handler for the note item
-      $newNote.on("click", function (e) {
-        if (
-          $(e.target).closest(".note-menu-toggle, .notes-menu-dropdown").length
-        ) {
-          return;
-        }
-
-        const $noteItem = $(this);
-        $noteItem.toggleClass("active").siblings().removeClass("active");
-
-        if ($noteItem.hasClass("active")) {
-          $noteItem.find(".note-icon").css("opacity", "0");
-          $noteItem.find(".note-menu-toggle").css("opacity", "1");
-        } else {
-          $noteItem.find(".note-icon").css("opacity", "1");
-          $noteItem.find(".note-menu-toggle").css("opacity", "0");
-          $noteItem.find(".notes-menu-dropdown").addClass("hidden");
-        }
-      });
-
-      // Add document click handler to close dropdown when clicking outside
-      $(document).on("click.noteMenu", function (e) {
-        if (
-          !$(e.target).closest(".note-menu-toggle, .notes-menu-dropdown").length
-        ) {
-          $(".notes-menu-dropdown").addClass("hidden");
-          $(".note-item").removeClass("active");
-          $(".note-icon").css("opacity", "1");
-          $(".note-menu-toggle").css("opacity", "0");
-        }
-      });
-
-      $(".note-list-container").prepend($newNote);
+      // Reset the form inputs
       $("#note-title-input").val("");
-      $("#note-content").html("");
+      $("#note-content").val("");
+      // Close the modal
       $("#add-note-modal").addClass("hidden");
     }
   },
