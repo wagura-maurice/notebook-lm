@@ -2442,44 +2442,6 @@ const MessageActions = {
 
     if (!messageContent) return;
 
-    // Create a unique ID for the new note
-    const noteId = "note-" + Date.now();
-
-    // Create the new note HTML for expanded view
-    const newNoteHtml = `
-      <div class="relative flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item" data-note-id="${noteId}">
-        <div class="relative mr-3 w-6 h-6 mt-1 flex-shrink-0">
-          <i class="fa-solid fa-clipboard text-amber-400 note-icon transition-opacity duration-200"></i>
-          <i class="fas fa-check text-green-400 absolute inset-0 flex items-center justify-center opacity-0 note-check-icon transition-opacity duration-200"></i>
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="text-sm font-medium text-white truncate note-title">
-            ${messageContent.substring(0, 50)}${
-      messageContent.length > 50 ? "..." : ""
-    }
-          </div>
-          <div class="text-xs text-gray-400 note-time">${timestamp}</div>
-        </div>
-      </div>`;
-
-    // Create the new note HTML for collapsed view (just the icon)
-    const newCollapsedNoteHtml = `
-      <button class="w-full flex items-center justify-center py-3 text-amber-400 hover:text-sky-400 transition-colors" data-note-id="${noteId}">
-        <i class="fa-solid fa-clipboard text-xl"></i>
-      </button>`;
-
-    // Add the new note to the top of the expanded notes list
-    $(".note-item").first().before(newNoteHtml);
-
-    // Add the new note to the collapsed view, right after the divider
-    const $divider = $(".collapsed-content .border-t");
-    if ($divider.length) {
-      $divider.after(newCollapsedNoteHtml);
-    } else {
-      // If no divider found, add to the end of the container
-      $(".collapsed-content .flex-1").append(newCollapsedNoteHtml);
-    }
-
     // Show a compact success message
     const $successMsg = $(
       `<div class="bg-green-500 text-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200 z-50 whitespace-nowrap">Added to notes</div>`
@@ -2491,11 +2453,11 @@ const MessageActions = {
 
     $successMsg.css({
       position: "fixed",
-      top: buttonRect.top + window.scrollY - 25 + "px",
+      top: buttonRect.top + window.scrollY - 30 + "px",
       left: buttonRect.left + window.scrollX + "px",
       transform: "translateX(-50%)",
       pointerEvents: "none",
-      "box-shadow": "0 1px 3px rgba(0,0,0,0.1)",
+      whiteSpace: "nowrap",
     });
 
     $("body").append($successMsg);
@@ -2506,7 +2468,7 @@ const MessageActions = {
       setTimeout(() => {
         $successMsg.removeClass("opacity-100");
         setTimeout(() => $successMsg.remove(), 200);
-      }, 1500);
+      }, 2000); // 2 seconds display time
     }, 10);
 
     console.log("Added new note:", messageContent);
