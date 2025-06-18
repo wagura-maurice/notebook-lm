@@ -51,7 +51,8 @@ const toolbarOptions = [
   ["clean"],
 ];
 
-const quill = new Quill("#editor", {
+// Create and expose Quill instance globally
+window.quill = new Quill("#editor", {
   theme: "snow",
   modules: {
     table: false,
@@ -79,6 +80,10 @@ const quill = new Quill("#editor", {
 // Note: For table support, install a Quill table module/plugin and uncomment the relevant lines above.
 // For image upload, you may want to add a custom handler to upload and insert images from local files or URLs.
 
+// Log Quill initialization
+console.log("Quill AI Editor initialized");
+console.log("Quill instance available at window.quill");
+
 // DOM elements
 const selectedTextEl = document.getElementById("selectedText");
 const positionInfoEl = document.getElementById("positionInfo");
@@ -93,7 +98,7 @@ const improveBtn = document.getElementById("improveBtn");
 const selectionState = {
   currentSelection: null,
   lastActiveSelection: null,
-  hasActiveSelection: false
+  hasActiveSelection: false,
 };
 
 // Helper to update the selection state
@@ -106,7 +111,7 @@ function updateSelectionState(selection) {
       startIndex: selection.range.index,
       endIndex: selection.range.index + selection.range.length,
       bounds: selection.bounds,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
     selectionState.lastActiveSelection = { ...selectionState.currentSelection };
     selectionState.hasActiveSelection = true;
@@ -121,7 +126,7 @@ quill.on("selection-change", function (range, oldRange, source) {
   if (range && range.length > 0) {
     // Get selected text
     const selectedText = quill.getText(range.index, range.length).trim();
-    
+
     // Only update if we have actual selected text (not just a cursor)
     if (selectedText.length > 0) {
       // Get position information
@@ -144,7 +149,7 @@ quill.on("selection-change", function (range, oldRange, source) {
 
       // Update the persistent selection state
       updateSelectionState(selection);
-      
+
       // Update UI
       updateSelectionDisplay();
       enableAIButtons(true);
@@ -161,7 +166,7 @@ quill.on("selection-change", function (range, oldRange, source) {
 });
 
 // Track clicks outside the editor to maintain selection state
-document.addEventListener('click', (e) => {
+document.addEventListener("click", (e) => {
   const isEditorClick = quill.container.contains(e.target);
   if (!isEditorClick && selectionState.lastActiveSelection) {
     // Restore the last active selection in the UI
@@ -171,7 +176,8 @@ document.addEventListener('click', (e) => {
 });
 
 function updateSelectionDisplay() {
-  const selection = selectionState.currentSelection || selectionState.lastActiveSelection;
+  const selection =
+    selectionState.currentSelection || selectionState.lastActiveSelection;
   if (!selection) {
     clearSelectionDisplay();
     return;
@@ -214,7 +220,8 @@ function hideAIResponse() {
 
 // AI Action handlers (simulated)
 explainBtn.addEventListener("click", () => {
-  const selection = selectionState.currentSelection || selectionState.lastActiveSelection;
+  const selection =
+    selectionState.currentSelection || selectionState.lastActiveSelection;
   if (!selection) return;
 
   const mockExplanation = `
@@ -234,7 +241,8 @@ explainBtn.addEventListener("click", () => {
 });
 
 expandBtn.addEventListener("click", () => {
-  const selection = selectionState.currentSelection || selectionState.lastActiveSelection;
+  const selection =
+    selectionState.currentSelection || selectionState.lastActiveSelection;
   if (!selection) return;
 
   const mockExpansion = `
@@ -254,7 +262,8 @@ expandBtn.addEventListener("click", () => {
 });
 
 summarizeBtn.addEventListener("click", () => {
-  const selection = selectionState.currentSelection || selectionState.lastActiveSelection;
+  const selection =
+    selectionState.currentSelection || selectionState.lastActiveSelection;
   if (!selection) return;
 
   const mockSummary = `
@@ -276,7 +285,8 @@ summarizeBtn.addEventListener("click", () => {
 });
 
 improveBtn.addEventListener("click", () => {
-  const selection = selectionState.currentSelection || selectionState.lastActiveSelection;
+  const selection =
+    selectionState.currentSelection || selectionState.lastActiveSelection;
   if (!selection) return;
 
   const mockImprovement = `
