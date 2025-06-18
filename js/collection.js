@@ -884,86 +884,6 @@ const SourceActions = {
     }
   },
 
-  // Add a note to a source
-  addNoteToSource: function (sourceId, noteTitle, noteContent) {
-    console.log("Adding note to source:", { sourceId, noteTitle, noteContent });
-
-    // Create a new note element
-    const $newNote = this.createNoteElement(noteTitle, noteContent);
-
-    // Add the note to the notes list
-    $(".note-list-container").prepend($newNote);
-
-    // Show success message
-    const $sourceItem = $(`[data-source-id="${sourceId}"]`).closest(
-      ".source-item"
-    );
-    const $feedback = $(
-      '<div class="text-green-400 text-xs mt-1">Note added</div>'
-    );
-    $sourceItem.append($feedback);
-    setTimeout(() => $feedback.fadeOut(500, () => $feedback.remove()), 2000);
-
-    // Close the dropdown
-    $sourceItem.find(".source-menu-dropdown").addClass("hidden");
-  },
-
-  // Create a new note element
-  createNoteElement: function (title, content) {
-    const truncatedContent =
-      content.length > 50 ? `${content.substring(0, 50)}...` : content;
-
-    // Create the note element
-    const $noteItem = $(`
-      <div class="relative flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item group mb-2">
-        <div class="relative mr-3 w-6 h-6 mt-1 flex-shrink-0">
-          <i class="fas fa-sticky-note text-amber-400 note-icon transition-opacity duration-200"></i>
-          <i class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 note-menu-toggle transition-opacity duration-200 flex items-center justify-center cursor-pointer"></i>
-        </div>
-        <div class="flex-1 min-w-0 overflow-hidden">
-          <div class="font-medium truncate note-title" data-title="${title}">${title}</div>
-          <div class="text-xs text-slate-400 truncate" data-title="${truncatedContent}">
-            <span class="key-topic hover:text-sky-400 cursor-pointer transition-colors">${truncatedContent}</span>
-          </div>
-        </div>`);
-
-    // Add click handler for the note title
-    $noteItem.find(".note-title").on("click", function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      const $menuItem = $noteItem.find(
-        '.notes-menu-dropdown a:contains("Show note")'
-      );
-      if ($menuItem.length) {
-        const mockEvent = {
-          currentTarget: $menuItem[0],
-          preventDefault: () => {},
-          stopPropagation: () => {},
-        };
-        NoteActions.showNoteContent(mockEvent);
-      }
-    });
-
-    // Append the rest of the note item
-    $noteItem.append(`
-        <!-- Dropdown Menu -->
-        <div class="notes-menu-dropdown hidden absolute right-0 mt-2 w-48 bg-slate-800 rounded-md shadow-lg py-1 border border-slate-700 z-30">
-          <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option show-note">
-            <i class="fa-solid fa-eye mr-2"></i> Show note
-          </a>
-          <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option add-to-sources">
-            <i class="fas fa-plus-circle mr-2"></i> Add to sources
-          </a>
-          <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option delete-note">
-            <i class="fas fa-trash-alt mr-2"></i> Delete note
-          </a>
-        </div>
-      </div>`);
-
-    return $noteItem;
-  },
-
   addSource: function (name, type, content) {
     const sourceId = "source-" + Date.now();
     const truncatedName =
@@ -1328,7 +1248,7 @@ const NoteActions = {
 
     $('#add-note-modal button:contains("Save Note")').on(
       "click",
-      this.saveNote.bind(this)
+      "" // this.saveNote.bind(this)
     );
 
     $('#delete-all-notes-modal button:contains("Delete")').on(
@@ -1344,31 +1264,150 @@ const NoteActions = {
 
   showNoteContent: function (e) {
     e.preventDefault();
-    e.stopPropagation();
+    const $noteItem = $(e.currentTarget).closest(SELECTORS.noteItem);
+    const title = $noteItem.find(".font-medium.truncate").text();
+    const content = $noteItem.find(".text-xs.text-slate-400.truncate").text();
 
-    const $noteItem = $(e.currentTarget).closest(".note-item");
-    const title = $noteItem.find(".font-medium.truncate").text().trim();
-    const content = $noteItem.find(".text-xs.text-slate-400").text().trim();
+    $(SELECTORS.rightColumn)
+      .find(SELECTORS.notesMenuDropdown)
+      .addClass("hidden");
+    const originalContent = $(SELECTORS.rightColumn).children().detach();
 
-    // Show the note content in the right column or a modal
-    this.showNoteModal(title, content);
+    const editForm = $(`
+      <div class="flex flex-col h-full expanded-content edit-note-content">
+        <div class="flex items-center justify-between px-5 py-3 border-b border-slate-700">
+          <h3 class="text-lg font-semibold">Edit Note</h3>
+          <button id="back-to-notes" class="text-sky-400 text-lg hover:text-sky-400">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+        </div>
+        <div class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent">
+          <div class="note-content-section p-4">
+            <h4 class="text-sm font-semibold text-slate-300 mb-2">Title</h4>
+            <input
+              type="text"
+              id="edit-note-title"
+              value="${title}"
+              class="w-full bg-slate-900 text-white border border-slate-600 rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              placeholder="Note Title"
+            />
+          </div>
+          <div class="note-content-section p-4">
+            <h4 class="text-sm font-semibold text-slate-300 mb-2">Content</h4>
+            <div class="bg-slate-800 border border-slate-600 rounded-t p-2 flex flex-wrap gap-2 items-center">
+              <div class="flex pr-2 mr-2">
+                <button class="wysiwyg-btn" data-command="bold" title="Bold"><i class="fas fa-bold"></i></button>
+                <button class="wysiwyg-btn" data-command="italic" title="Italic"><i class="fas fa-italic"></i></button>
+                <button class="wysiwyg-btn" data-command="underline" title="Underline"><i class="fas fa-underline"></i></button>
+                <button class="wysiwyg-btn" data-command="justifyLeft" title="Align Left"><i class="fas fa-align-left"></i></button>
+                <button class="wysiwyg-btn" data-command="justifyCenter" title="Align Center"><i class="fas fa-align-center"></i></button>
+                <button class="wysiwyg-btn" data-command="justifyRight" title="Align Right"><i class="fas fa-align-right"></i></button>
+                <button class="wysiwyg-btn" data-command="insertOrderedList" title="Numbered List"><i class="fas fa-list-ol"></i></button>
+                <button class="wysiwyg-btn" data-command="insertUnorderedList" title="Bullet List"><i class="fas fa-list-ul"></i></button>
+                <button class="wysiwyg-btn" data-command="createLink" title="Insert Link"><i class="fas fa-link"></i></button>
+              </div>
+            </div>
+            <div 
+              id="edit-note-content" 
+              class="w-full flex-1 min-h-[200px] max-h-[calc(100vh-300px)] bg-slate-900 text-white border border-t-0 border-slate-600 rounded-b px-3 py-2 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-sky-400" 
+              contenteditable="true"
+              style="min-height: 200px; max-height: calc(100vh - 300px);"
+            >${content}</div>
+          </div>
+          <div class="flex justify-end gap-0 p-4" id="add-note-modal-footer">
+            <div class="flex justify-end gap-0">
+              <button
+                class="px-4 py-2 rounded-l-full text-gray-300 hover:bg-blue-gray modal-close border border-r-0 border-gray-600"
+                id="cancel-note-changes"
+              >
+                Cancel
+              </button>
+              <button
+                class="px-4 py-2 rounded-r-full bg-accent-blue text-white border border-gray-600"
+                id="save-note-changes"
+              >
+                Update
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `);
 
-    // Close the dropdown menu
-    $noteItem.find(".notes-menu-dropdown").addClass("hidden");
-  },
+    editForm
+      .find(".wysiwyg-btn")
+      .css({
+        background: "transparent",
+        color: "#94a3b8",
+        border: "none",
+        padding: "4px 8px",
+        margin: "0 2px",
+        "border-radius": "4px",
+        cursor: "pointer",
+      })
+      .hover(
+        function () {
+          $(this).css("background-color", "#334155");
+        },
+        function () {
+          $(this).css("background-color", "transparent");
+        }
+      )
+      .on("mousedown", function () {
+        $(this).css("background-color", "#1e293b");
+      })
+      .on("mouseup mouseleave", function () {
+        $(this).css("background-color", "transparent");
+      });
 
-  showNoteModal: function (title, content) {
-    // You can implement a modal or use the right column to show the full note
-    // For now, we'll just show an alert with the note content
-    alert(`Title: ${title}\n\n${content}`);
+    editForm.find(".wysiwyg-btn").on("click", function (e) {
+      e.preventDefault();
+      const command = $(this).data("command");
+      if (command === "createLink") {
+        const url = prompt("Enter the link URL:");
+        if (url) document.execCommand(command, false, url);
+      } else {
+        document.execCommand(command, false, null);
+      }
+      $("#edit-note-content").focus();
+    });
 
-    // In a real implementation, you might want to show this in the right column:
-    // $(SELECTORS.rightColumn).html(`
-    //   <div class="p-4">
-    //     <h3 class="text-lg font-medium mb-2">${title}</h3>
-    //     <div class="text-sm">${content}</div>
-    //   </div>
-    // `);
+    editForm.find("#save-note-changes").on("click", () => {
+      const newTitle = $("#edit-note-title").val().trim();
+      const newContent = $("#edit-note-content").html().trim();
+
+      if (newTitle && newContent) {
+        $noteItem
+          .find(".font-medium.truncate")
+          .text(
+            newTitle.length > 30 ? `${newTitle.substring(0, 30)}...` : newTitle
+          );
+        $noteItem
+          .find(".text-xs.text-slate-400.truncate")
+          .text(
+            newContent.length > 50
+              ? `${newContent.substring(0, 50)}...`
+              : newContent
+          );
+      }
+
+      $(SELECTORS.rightColumn).empty().append(originalContent);
+      $(SELECTORS.rightColumn).removeClass("collapsed");
+    });
+
+    editForm.find("#cancel-note-changes").on("click", () => {
+      if (confirm("Discard changes?")) {
+        $(SELECTORS.rightColumn).empty().append(originalContent);
+        $(SELECTORS.rightColumn).removeClass("collapsed");
+      }
+    });
+
+    editForm.find("#back-to-notes").on("click", () => {
+      $(SELECTORS.rightColumn).empty().append(originalContent);
+      $(SELECTORS.rightColumn).removeClass("collapsed");
+    });
+
+    $(SELECTORS.rightColumn).append(editForm);
   },
 
   openAddNoteModal: function () {
@@ -1472,7 +1511,7 @@ const NoteActions = {
     });
   },
 
-  saveNote: function () {
+  /* saveNote: function () {
     const noteTitle = $("#note-title-input").val();
     const noteContent = $("#note-content").html();
 
@@ -1489,7 +1528,7 @@ const NoteActions = {
             <i class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 note-menu-toggle transition-opacity duration-200 flex items-center justify-center cursor-pointer"></i>
           </div>
           <div class="flex-1 min-w-0 overflow-hidden">
-            <div class="font-medium truncate" data-title="${noteTitle}">${noteTitle}</div>
+            <div class="font-medium truncate note-title" data-title="${noteTitle}">${noteTitle}</div>
             <div class="text-xs text-slate-400 truncate" data-title="${truncatedContent}">
               <span class="key-topic hover:text-sky-400 cursor-pointer transition-colors">${truncatedContent}</span>
             </div>
@@ -1664,7 +1703,7 @@ const NoteActions = {
       $("#note-content").html("");
       $("#add-note-modal").addClass("hidden");
     }
-  },
+  }, */
 
   showOpenCanvasNotesToCanvasModal: function (e) {
     // alert("Add logic to converge all notes to canvas");
@@ -2446,19 +2485,34 @@ const MessageActions = {
     const noteId = "note-" + Date.now();
 
     // Create the new note HTML for expanded view
-    const newNoteHtml = `
-      <div class="relative flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item" data-note-id="${noteId}">
+    const newNoteHtml = `      
+      <div class="relative flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item group mb-2">
         <div class="relative mr-3 w-6 h-6 mt-1 flex-shrink-0">
-          <i class="fa-solid fa-clipboard text-amber-400 note-icon transition-opacity duration-200"></i>
-          <i class="fas fa-check text-green-400 absolute inset-0 flex items-center justify-center opacity-0 note-check-icon transition-opacity duration-200"></i>
+          <i class="fas fa-sticky-note text-amber-400 note-icon transition-opacity duration-200"></i>
+          <i class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 note-menu-toggle transition-opacity duration-200 flex items-center justify-center cursor-pointer"></i>
         </div>
-        <div class="flex-1 min-w-0">
-          <div class="text-sm font-medium text-white truncate note-title">
-            ${messageContent.substring(0, 50)}${
-      messageContent.length > 50 ? "..." : ""
-    }
+        <div class="flex-1 min-w-0 overflow-hidden">
+          <div class="font-medium truncate note-title">${messageContent.substring(
+            0,
+            50
+          )}${messageContent.length > 50 ? "..." : ""}</div>
+          <div class="text-xs text-slate-400 truncate">
+            <span class="key-topic hover:text-sky-400 cursor-pointer transition-colors">${timestamp}</span>
           </div>
-          <div class="text-xs text-gray-400 note-time">${timestamp}</div>
+        </div>
+
+        <!-- Dropdown Menu -->
+        <div class="notes-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30">
+          <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+            <i class="fa-solid fa-eye mr-2"></i> Show note
+          </a>
+          <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+            <i class="fas fa-plus-circle mr-3 text-sm"></i> Add to
+            sources
+          </a>
+          <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+            <i class="fas fa-trash-alt mr-3 text-sm"></i> Delete note
+          </a>
         </div>
       </div>`;
 
