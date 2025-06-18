@@ -1248,7 +1248,7 @@ const NoteActions = {
 
     $('#add-note-modal button:contains("Save Note")').on(
       "click",
-      "" // this.saveNote.bind(this)
+      this.saveNote.bind(this)
     );
 
     $('#delete-all-notes-modal button:contains("Delete")').on(
@@ -1511,7 +1511,7 @@ const NoteActions = {
     });
   },
 
-  /* saveNote: function () {
+  saveNote: function () {
     const noteTitle = $("#note-title-input").val();
     const noteContent = $("#note-content").html();
 
@@ -1703,7 +1703,7 @@ const NoteActions = {
       $("#note-content").html("");
       $("#add-note-modal").addClass("hidden");
     }
-  }, */
+  },
 
   showOpenCanvasNotesToCanvasModal: function (e) {
     // alert("Add logic to converge all notes to canvas");
