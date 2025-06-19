@@ -49,8 +49,19 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
 
+    <!-- Quill CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/quill-table-better@1/dist/quill-table-better.css"
+      rel="stylesheet"
+    />
+
     <!-- Custom CSS -->
     <link href="./css/wizard.css" rel="stylesheet" />
+    <link href="./css/openCanvas.css" rel="stylesheet" />
   </head>
 
   <body class="h-screen flex flex-col bg-dark-blue overflow-hidden font-sans">
@@ -424,7 +435,7 @@
                   id="canvasSourceBtn"
                   class="flex items-center justify-center flex-1 py-2 px-3 bg-sky-500 hover:bg-sky-600 rounded-full text-sm font-medium transition-colors"
                 >
-                  <i class="fas fa-search mr-2"></i>
+                  <i class="fa-solid fa-pen-ruler mr-2"></i>
                   <span>Canvas</span>
                 </button>
               </div>
@@ -1685,6 +1696,15 @@
                 id="chatAboutSourcesIcon"
               ></i>
             </button> -->
+            <button
+              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              title="Chat about these sources"
+            >
+              <i
+                class="fa-solid fa-pen-ruler text-xl"
+                id="canvasSourcesIcon"
+              ></i>
+            </button>
             <div class="border-t border-slate-700 w-full my-2"></div>
 
             <button
@@ -2736,12 +2756,239 @@
       </div>
     </div>
 
+    <!-- Open Canvas Notes Modal -->
+    <div
+      class="modal fixed hidden inset-0 z-50 bg-black bg-opacity-70 w-screen h-screen"
+      id="open-canvas-notes-modal"
+    >
+      <!-- Main container - fills nearly entire screen -->
+      <div class="w-full h-full flex flex-col overflow-hidden">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center p-3">
+          <div class="flex items-center">
+            <button
+              id="open-canvas-notes-modal-back"
+              class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
+            >
+              <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            <h3
+              id="open-canvas-notes-modal-title"
+              class="text-xl font-bold text-white"
+            >
+              Open Canvas Notes
+            </h3>
+          </div>
+          <button
+            type="button"
+            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+          >
+            <i class="fa-solid fa-xmark"></i>
+            <span class="sr-only">Close modal</span>
+          </button>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex flex-1 overflow-hidden gap-x-2">
+          <!-- Left Sidebar (25%) - Chat -->
+          <div
+            class="w-1/4 flex flex-col bg-gray-900 rounded-lg border border-gray-700 overflow-hidden"
+          >
+            <!-- Chat Messages -->
+            <div
+              id="canvas-chat-messages"
+              class="flex-1 overflow-y-auto scrollbar-transparent relative"
+            >
+              <div
+                id="canvas-welcome-message"
+                class="text-center text-gray-300 py-12"
+              >
+                <div
+                  class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800 mb-4"
+                >
+                  <i class="fas fa-robot text-3xl text-purple-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-2">
+                  How can I help with your notes today?
+                </h3>
+                <p class="text-gray-400 text-sm px-4">
+                  Ask me anything about your notes or request help with writing,
+                  editing, or organizing your thoughts.
+                </p>
+              </div>
+              <!-- Messages will be inserted here by JavaScript -->
+              <div id="canvas-chat-messages-container" class="mt-2"></div>
+            </div>
+
+            <!-- Jump to Bottom Button -->
+            <div
+              class="sticky bottom-4 left-0 right-0 flex justify-center z-10"
+            >
+              <button
+                id="canvas-jump-to-bottom-btn"
+                class="bg-indigo-500 text-white rounded-full py-2 px-6 shadow-md hover:bg-indigo-600 focus:outline-none transition-opacity duration-300 opacity-0 pointer-events-none"
+              >
+                Jump to Bottom
+              </button>
+            </div>
+
+            <!-- Message Input -->
+            <div class="border-t-2 border-slate-700">
+              <form id="canvas-chat-form" class="p-3 bg-slate-800">
+                <div class="relative">
+                  <textarea
+                    id="canvas-message-input"
+                    class="w-full bg-slate-900 rounded-lg p-3 pr-12 text-white !text-white resize-none focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                    placeholder="Ask me anything..."
+                    rows="2"
+                  ></textarea>
+                  <button
+                    type="button"
+                    id="canvas-send-btn"
+                    class="absolute right-3 bottom-3 text-sky-400 hover:text-white p-1 rounded-full transition-colors"
+                  >
+                    <i class="fas fa-paper-plane text-sm"></i>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Middle Content Area (50%) - Quill Rich Text Editor -->
+          <div class="w-2/4 flex flex-col bg-gray-900 rounded-lg main-editor">
+            <div id="editor" class="flex-1 bg-slate-800 text-white rounded-lg">
+              <!-- <h1>AI-Enhanced Document Editor</h1>
+              <p>
+                This is a sample document with rich text editing capabilities.
+                Select any text to see AI integration features.
+              </p>
+
+              <h2>Key Features</h2>
+              <p>
+                You can highlight text, and the AI panel will show exactly where
+                in the document you've selected. This enables precise AI
+                assistance for content editing, expansion, or explanation.
+              </p>
+
+              <h3>How it Works</h3>
+              <ul>
+                <li>Select any text in this editor</li>
+                <li>See the selection details in the right panel</li>
+                <li>Use AI actions to modify or enhance your content</li>
+                <li>AI responses are inserted at the exact location</li>
+              </ul>
+
+              <p>
+                The system tracks the exact position of your selections, making
+                it perfect for collaborative editing with AI assistance.
+              </p>
+
+              <blockquote>
+                "The future of content creation is the seamless integration of
+                human creativity with AI assistance."
+              </blockquote> -->
+            </div>
+          </div>
+
+          <!-- Right Sidebar (25%) - Ai Tools -->
+          <div class="w-1/4 flex flex-col bg-gray-900 rounded-lg ai-panel">
+            <div
+              class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent"
+            >
+              <div class="p-4">
+                <div
+                  class="selection-info bg-slate-700 rounded-lg border-l-4 border-sky-500 mb-4"
+                >
+                  <h3 class="text-slate-200 text-sm font-semibold p-4">
+                    Selected Content
+                  </h3>
+                  <div
+                    class="selected-text bg-slate-900 p-3 rounded border border-slate-600 italic"
+                    id="selectedText"
+                  >
+                    Select text in the editor to see it here...
+                  </div>
+                  <div
+                    class="position-info text-xs text-slate-400 p-4"
+                    id="positionInfo"
+                  >
+                    Position: No selection
+                  </div>
+                </div>
+
+                <div class="ai-actions flex flex-col gap-2">
+                  <button
+                    class="ai-btn primary py-2 px-4 rounded bg-sky-500 hover:bg-sky-600 transition-colors text-white text-sm font-medium"
+                    id="explainBtn"
+                    disabled
+                  >
+                    🧠 Explain This
+                  </button>
+                  <button
+                    class="ai-btn primary py-2 px-4 rounded bg-sky-500 hover:bg-sky-600 transition-colors text-white text-sm font-medium"
+                    id="expandBtn"
+                    disabled
+                  >
+                    📝 Expand Content
+                  </button>
+                  <button
+                    class="ai-btn secondary py-2 px-4 rounded bg-slate-600 hover:bg-slate-700 transition-colors text-white text-sm font-medium"
+                    id="summarizeBtn"
+                    disabled
+                  >
+                    📋 Summarize
+                  </button>
+                  <button
+                    class="ai-btn secondary py-2 px-4 rounded bg-slate-600 hover:bg-slate-700 transition-colors text-white text-sm font-medium"
+                    id="improveBtn"
+                    disabled
+                  >
+                    ✨ Improve Writing
+                  </button>
+                </div>
+
+                <!-- chat input -->
+                <div class="border-t-2 border-slate-700 mt-2">
+                  <form id="ai-text-chat-form-right" class="p-3 bg-slate-800">
+                    <div class="relative">
+                      <textarea
+                        id="ai-text-input-right"
+                        class="w-full bg-slate-900 rounded-lg p-3 pr-12 text-white !text-white resize-none focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                        placeholder="Run custom Ai action..."
+                        rows="15"
+                      ></textarea>
+                      <button
+                        type="button"
+                        id="ai-text-send-right"
+                        class="absolute right-3 bottom-3 text-sky-400 hover:text-white p-1 rounded-full transition-colors"
+                      >
+                        <i class="fas fa-paper-plane text-sm"></i>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill-table-better@1/dist/quill-table-better.js"></script>
     <script src="js/wizard.js"></script>
-
-    <!-- Custom tooltip initialization -->
+    <script src="js/openCanvas.js"></script>
     <script>
+      $(document).ready(function () {
+        // Initialize the CanvasChat
+        if (typeof CanvasChat !== "undefined") {
+          CanvasChat.init();
+        }
+      });
+
+      // Custom tooltip initialization
       $(function () {
         // Initialize custom tooltips using the existing CSS
         $('[data-toggle="tooltip"]').each(function () {
