@@ -1755,9 +1755,6 @@ const RightColumnChat = {
 };
 
 /* ============================================ */
-/* === DOCUMENT READY === */
-/* ============================================ */
-/* ============================================ */
 /* === WIZARD TOGGLER === */
 /* ============================================ */
 const WizardToggler = {
@@ -1786,68 +1783,134 @@ const WizardToggler = {
 
   checkSourcesAndTogglePolicyInput: function () {
     const policyInput = document.getElementById("policy-input");
-    const policySendButton = document.getElementById("policy-send-message");
-    const policyWizard = document.querySelector(".policy-wizard");
-
-    if (!policyInput || !policyWizard || policyWizard.style.display === "none")
-      return;
-
-    // Get all source items in the left column's source list
-    const sourceItems = document.querySelectorAll(
-      "#left-column .source-list .source-item"
+    const policySendButton = document.querySelector(
+      "#policy-input-container button"
     );
+    const sourceItems = document.querySelectorAll(".source-item");
+    // Get wizard containers using class selectors
+    const policyWizard = document.querySelector(".policy-wizard");
+    const defaultWizard = document.querySelector(".default-wizard");
+    const chatInput = document.querySelector(SELECTORS.chatInput);
+
+    console.log('Policy Wizard Element:', policyWizard);
+    console.log('Default Wizard Element:', defaultWizard);
+
     const hasEnoughSources = sourceItems.length >= 2;
 
     console.log(
-      "Found source items:",
+      "Source items:",
+      sourceItems,
+      "Count:",
       sourceItems.length,
-      "Items:",
-      Array.from(sourceItems).map((el) => el.textContent.trim())
+      "Has enough:",
+      hasEnoughSources
     );
 
     // Toggle disabled state and visual feedback
-    policyInput.disabled = !hasEnoughSources;
-    policyInput.placeholder = hasEnoughSources
-      ? "Start typing your policy..."
-      : "Add at least 2 sources to enable policy creation";
+    if (policyInput) {
+      policyInput.disabled = !hasEnoughSources;
+      policyInput.placeholder = hasEnoughSources
+        ? "Start typing your policy..."
+        : "Add at least 2 sources to enable policy creation";
+      
+      // Add/remove visual indicator for disabled state
+      policyInput.classList.toggle("bg-slate-800/50", !hasEnoughSources);
+      policyInput.classList.toggle("cursor-not-allowed", !hasEnoughSources);
+    }
 
     // Toggle button state and visual feedback
     if (policySendButton) {
       policySendButton.disabled = !hasEnoughSources;
       policySendButton.classList.toggle("opacity-50", !hasEnoughSources);
-      policySendButton.classList.toggle(
-        "cursor-not-allowed",
-        !hasEnoughSources
-      );
+      policySendButton.classList.toggle("cursor-not-allowed", !hasEnoughSources);
       policySendButton.classList.toggle("hover:text-sky-400", hasEnoughSources);
     }
 
-    // Add/remove visual indicator for disabled state
-    policyInput.classList.toggle("bg-slate-800/50", !hasEnoughSources);
-    policyInput.classList.toggle("cursor-not-allowed", !hasEnoughSources);
+    // Handle message submission
+    const handleMessageSubmit = (e) => {
+      if (e) e.preventDefault();
+      if (!policyInput) return;
 
-    // Prevent form submission if not enough sources
-    $(policyInput)
-      .off("keydown.policyInput")
-      .on("keydown.policyInput", (e) => {
-        if ((e.key === "Enter" && !e.shiftKey) || !hasEnoughSources) {
-          e.preventDefault();
-          if (e.key === "Enter" && !hasEnoughSources) {
-            this.showInsufficientSourcesMessage();
-          }
-          return false;
+      const message = policyInput.value.trim();
+      if (!message || !hasEnoughSources) {
+        if (!hasEnoughSources) {
+          this.showInsufficientSourcesMessage();
         }
-      });
+        return;
+      }
 
-    // Handle button click
+      console.log("Submitting policy message:", message);
+
+      // Switch to default wizard and submit the message directly
+      console.log('Attempting to switch to default wizard...');
+      console.log('Policy Wizard:', policyWizard);
+      console.log('Default Wizard:', defaultWizard);
+      
+      if (defaultWizard && policyWizard) {
+        try {
+          // First, switch to default wizard
+          console.log('Hiding policy wizard, showing default wizard');
+          policyWizard.style.display = "none";
+          defaultWizard.style.display = "flex";
+          
+          // Force a reflow to ensure the display changes take effect
+          void defaultWizard.offsetHeight;
+          
+          console.log('Wizard display states after switch:', {
+            policyDisplay: window.getComputedStyle(policyWizard).display,
+            defaultDisplay: window.getComputedStyle(defaultWizard).display
+          });
+
+          // Submit the message using ChatFunctionality's submitMessage
+          if (typeof ChatFunctionality !== 'undefined' && 
+              typeof ChatFunctionality.submitMessage === 'function') {
+            // Clear the policy input for next time
+            if (policyInput) {
+              policyInput.value = "";
+            }
+            
+            // Focus the chat input for the next message
+            if (chatInput) {
+              chatInput.focus();
+            }
+            
+            console.log('Submitting message to default chat:', message);
+            // Use the same method as the chat functionality
+            ChatFunctionality.submitMessage(message);
+          } else {
+            console.error("ChatFunctionality.submitMessage not found");
+          }
+        } catch (error) {
+          console.error('Error during wizard switch:', error);
+        }
+      }
+    };
+
+    // Handle Enter key (but allow Shift+Enter for new lines)
+    if (policyInput) {
+      $(policyInput)
+        .off("keydown.policyInput")
+        .on("keydown.policyInput", (e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            if (hasEnoughSources) {
+              handleMessageSubmit(e);
+            } else {
+              this.showInsufficientSourcesMessage();
+            }
+            return false;
+          }
+        });
+    }
+
+    // Handle send button click
     if (policySendButton) {
       policySendButton.onclick = (e) => {
-        if (!hasEnoughSources) {
-          e.preventDefault();
+        if (hasEnoughSources) {
+          handleMessageSubmit(e);
+        } else {
           this.showInsufficientSourcesMessage();
-          return false;
         }
-        // Your existing send message logic here
       };
     }
   },
