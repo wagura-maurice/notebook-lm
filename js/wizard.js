@@ -544,10 +544,10 @@ const SourceActions = {
       this.openDiscoverModal.bind(this)
     );
 
-    /* $("#chatAboutSourcesBtn, #chatAboutSourcesIcon").on(
+    $("#chatAboutSourcesBtn, #chatAboutSourcesIcon").on(
       "click",
       this.showChatAboutSourcesContent.bind(this)
-    ); */
+    );
 
     $("#canvasSourceBtn, #canvasSourcesIcon").on(
       "click",
