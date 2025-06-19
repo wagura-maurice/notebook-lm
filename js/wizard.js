@@ -544,9 +544,14 @@ const SourceActions = {
       this.openDiscoverModal.bind(this)
     );
 
-    $("#chatAboutSourcesBtn, #chatAboutSourcesIcon").on(
+    /* $("#chatAboutSourcesBtn, #chatAboutSourcesIcon").on(
       "click",
       this.showChatAboutSourcesContent.bind(this)
+    ); */
+
+    $("#canvasSourceBtn, #canvasSourcesIcon").on(
+      "click",
+      this.showOpenCanvasNotesToCanvasModal.bind(this)
     );
 
     // Modal navigation
@@ -1093,6 +1098,15 @@ const SourceActions = {
       $(".view-source-content").remove();
       $(SELECTORS.leftColumn).append(originalContent);
     });
+  },
+
+  showOpenCanvasNotesToCanvasModal: function (e) {
+    // alert("Add logic to converge all notes to canvas");
+    e.preventDefault();
+    const $noteItems = $(e.currentTarget).closest(".note-list-container");
+    $("#open-canvas-notes-modal").removeClass("hidden");
+    // $("#open-canvas-notes-modal").data("note-list-container", $noteItems);
+    // alert($noteItems.count);
   },
 };
 
