@@ -1762,8 +1762,21 @@ const RightColumnChat = {
 /* ============================================ */
 const WizardToggler = {
   init: function () {
-    this.toggleWizardContent();
+    console.log("Initializing WizardToggler...");
     this.bindEvents();
+    this.toggleWizardContent();
+
+    // Check sources after a short delay to ensure DOM is fully loaded
+    setTimeout(() => {
+      console.log("Running initial source check...");
+      this.checkSourcesAndTogglePolicyInput();
+    }, 500);
+
+    // Listen for source updates
+    $(document).on("sourcesUpdated", () => {
+      console.log("Sources updated, rechecking...");
+      this.checkSourcesAndTogglePolicyInput();
+    });
   },
 
   bindEvents: function () {
@@ -1771,8 +1784,92 @@ const WizardToggler = {
     window.addEventListener("popstate", () => this.toggleWizardContent());
   },
 
+  checkSourcesAndTogglePolicyInput: function () {
+    const policyInput = document.getElementById("policy-input");
+    const policySendButton = document.getElementById("policy-send-message");
+    const policyWizard = document.querySelector(".policy-wizard");
+
+    if (!policyInput || !policyWizard || policyWizard.style.display === "none")
+      return;
+
+    // Get all source items in the left column's source list
+    const sourceItems = document.querySelectorAll(
+      "#left-column .source-list .source-item"
+    );
+    const hasEnoughSources = sourceItems.length >= 2;
+
+    console.log(
+      "Found source items:",
+      sourceItems.length,
+      "Items:",
+      Array.from(sourceItems).map((el) => el.textContent.trim())
+    );
+
+    // Toggle disabled state and visual feedback
+    policyInput.disabled = !hasEnoughSources;
+    policyInput.placeholder = hasEnoughSources
+      ? "Start typing your policy..."
+      : "Add at least 2 sources to enable policy creation";
+
+    // Toggle button state and visual feedback
+    if (policySendButton) {
+      policySendButton.disabled = !hasEnoughSources;
+      policySendButton.classList.toggle("opacity-50", !hasEnoughSources);
+      policySendButton.classList.toggle(
+        "cursor-not-allowed",
+        !hasEnoughSources
+      );
+      policySendButton.classList.toggle("hover:text-sky-400", hasEnoughSources);
+    }
+
+    // Add/remove visual indicator for disabled state
+    policyInput.classList.toggle("bg-slate-800/50", !hasEnoughSources);
+    policyInput.classList.toggle("cursor-not-allowed", !hasEnoughSources);
+
+    // Prevent form submission if not enough sources
+    $(policyInput)
+      .off("keydown.policyInput")
+      .on("keydown.policyInput", (e) => {
+        if ((e.key === "Enter" && !e.shiftKey) || !hasEnoughSources) {
+          e.preventDefault();
+          if (e.key === "Enter" && !hasEnoughSources) {
+            this.showInsufficientSourcesMessage();
+          }
+          return false;
+        }
+      });
+
+    // Handle button click
+    if (policySendButton) {
+      policySendButton.onclick = (e) => {
+        if (!hasEnoughSources) {
+          e.preventDefault();
+          this.showInsufficientSourcesMessage();
+          return false;
+        }
+        // Your existing send message logic here
+      };
+    }
+  },
+
+  showInsufficientSourcesMessage: function () {
+    // You can customize this to show a more prominent message if needed
+    const message = "Please add at least 2 sources to create a policy";
+    const notification = document.createElement("div");
+    notification.className =
+      "fixed bottom-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg z-50";
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+      notification.style.transition = "opacity 0.5s";
+      notification.style.opacity = "0";
+      setTimeout(() => notification.remove(), 500);
+    }, 3000);
+  },
+
   toggleWizardContent: function () {
-    const policyParam = Utils.getUrlParameter("policy");
     const defaultWizard = document.querySelector(".default-wizard");
     const policyWizard = document.querySelector(".policy-wizard");
     const rightColumn = document.getElementById("right-column");
@@ -1781,17 +1878,57 @@ const WizardToggler = {
     if (defaultWizard) defaultWizard.style.display = "none";
     if (policyWizard) policyWizard.style.display = "none";
 
-    if (policyParam === "true") {
-      // Show default wizard content
-      if (defaultWizard) {
-        defaultWizard.style.display = "flex";
-      }
-    } else {
-      // Show policy wizard content (default view)
-      if (policyWizard) {
-        policyWizard.style.display = "flex";
-      }
-    }
+    // Mock AJAX request to get wizard mode
+    const mockAjaxRequest = () => {
+      return new Promise((resolve) => {
+        // Simulate network delay
+        setTimeout(() => {
+          // Mock response - in a real app, this would come from your backend
+          const mockResponse = {
+            success: true,
+            isPolicyMode: false, // Default to false, change to true to test default wizard
+            message: "Successfully retrieved wizard mode",
+          };
+          console.log("Mock AJAX response:", mockResponse);
+          resolve(mockResponse);
+        }, 300); // Simulate network delay
+      });
+    };
+
+    // Make the mock AJAX request
+    mockAjaxRequest()
+      .then((response) => {
+        if (response.success) {
+          if (response.isPolicyMode) {
+            // Show default wizard
+            if (defaultWizard) {
+              defaultWizard.style.display = "flex";
+            }
+          } else {
+            // Show policy wizard (default view)
+            if (policyWizard) {
+              policyWizard.style.display = "flex";
+              // Check sources when policy wizard is shown
+              this.checkSourcesAndTogglePolicyInput();
+            }
+          }
+        } else {
+          console.error("Failed to load wizard mode:", response.message);
+          // Fallback to showing policy wizard on error
+          if (policyWizard) {
+            policyWizard.style.display = "flex";
+            this.checkSourcesAndTogglePolicyInput();
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching wizard mode:", error);
+        // Fallback to showing policy wizard on error
+        if (policyWizard) {
+          policyWizard.style.display = "flex";
+          this.checkSourcesAndTogglePolicyInput();
+        }
+      });
 
     // Make sure right column is visible
     if (rightColumn) {
