@@ -42,6 +42,10 @@ const SELECTORS = {
 /* === UTILITY FUNCTIONS === */
 /* ============================================ */
 const Utils = {
+  getUrlParameter: function (name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+  },
   debounce: function (func, wait) {
     let timeout;
     return function () {
@@ -308,7 +312,7 @@ const ColumnToggles = {
   bindEvents: function () {
     $("#collapse-left").on("click", this.toggleLeftColumn.bind(this));
     $("#expand-left").on("click", this.expandLeftColumn.bind(this));
-    $("#expand-right").on("click", this.toggleRightColumn.bind(this));
+    $(".expand-right").on("click", this.toggleRightColumn.bind(this));
     $(SELECTORS.rightColumn).on(
       "dblclick",
       this.toggleRightColumnSize.bind(this)
@@ -1753,7 +1757,61 @@ const RightColumnChat = {
 /* ============================================ */
 /* === DOCUMENT READY === */
 /* ============================================ */
+/* ============================================ */
+/* === WIZARD TOGGLER === */
+/* ============================================ */
+const WizardToggler = {
+  init: function () {
+    this.toggleWizardContent();
+    this.bindEvents();
+  },
+
+  bindEvents: function () {
+    // Handle browser back/forward buttons
+    window.addEventListener("popstate", () => this.toggleWizardContent());
+  },
+
+  toggleWizardContent: function () {
+    const policyParam = Utils.getUrlParameter("policy");
+    const defaultWizard = document.querySelector(".default-wizard");
+    const policyWizard = document.querySelector(".policy-wizard");
+    const rightColumn = document.getElementById("right-column");
+
+    // Hide both wizards initially
+    if (defaultWizard) defaultWizard.style.display = "none";
+    if (policyWizard) policyWizard.style.display = "none";
+
+    if (policyParam === "true") {
+      // Show default wizard content
+      if (defaultWizard) {
+        defaultWizard.style.display = "flex";
+      }
+    } else {
+      // Show policy wizard content (default view)
+      if (policyWizard) {
+        policyWizard.style.display = "flex";
+      }
+    }
+
+    // Make sure right column is visible
+    if (rightColumn) {
+      rightColumn.style.display = "flex";
+    }
+  },
+
+  navigateTo: function (showPolicyWizard) {
+    const newUrl = showPolicyWizard ? "?policy=false" : "?policy=true";
+    window.history.pushState({}, "", newUrl);
+    this.toggleWizardContent();
+  },
+};
+
+/* ============================================ */
+/* === DOCUMENT READY === */
+/* ============================================ */
 $(document).ready(function () {
+  // Initialize wizard toggler
+  WizardToggler.init();
   Preloader.init();
   ChatModule.init();
   MobileTabs.init();
