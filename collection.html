@@ -2036,6 +2036,12 @@
                 <i class="fa-solid fa-pen-ruler mr-2"></i>
                 <span>Canvas</span>
               </button>
+              <button
+                class="flex items-center justify-center py-1 px-2 bg-slate-700 hover:bg-slate-600 rounded text-sm transition-colors mind-map-btn hidden lg:flex"
+              >
+                <i class="fa-solid fa-brain mr-2"></i>
+                <span>Mind Map</span>
+              </button>
             </div>
 
             <!-- Notes header -->
@@ -4089,6 +4095,42 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mind Map Modal -->
+    <div
+      class="modal fixed hidden inset-0 z-50 bg-black bg-opacity-70 w-screen h-screen"
+      id="mind-map-modal"
+    >
+      <!-- Main container - fills nearly entire screen -->
+      <div class="w-full h-full flex flex-col overflow-hidden">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center p-3">
+          <div class="flex items-center">
+            <button
+              id="mind-map-modal-back"
+              class="hidden mr-4 text-gray-400 hover:text-white focus:outline-none"
+            >
+              <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            <h3 id="mind-map-modal-title" class="text-xl font-bold text-white">
+              Mind Map
+            </h3>
+          </div>
+          <button
+            type="button"
+            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+          >
+            <i class="fa-solid fa-xmark"></i>
+            <span class="sr-only">Close modal</span>
+          </button>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex flex-1 overflow-hidden gap-x-2">
+          <!-- content area -->
         </div>
       </div>
     </div>

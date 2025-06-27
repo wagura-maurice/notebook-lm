@@ -1304,6 +1304,10 @@ const NoteActions = {
           console.log("Opening canvas notes modal...");
           self.showOpenCanvasNotesToCanvasModal(e);
           break;
+        case "Mind Map":
+          console.log("Opening mind map modal...");
+          self.showMindMapModal(e);
+          break;
       }
     });
 
@@ -1676,6 +1680,12 @@ const NoteActions = {
     $("#open-canvas-notes-modal").removeClass("hidden");
     // $("#open-canvas-notes-modal").data("note-list-container", $noteItems);
     // alert($noteItems.count);
+  },
+
+  showMindMapModal: function (e) {
+    e.preventDefault();
+    const $noteItems = $(e.currentTarget).closest(".note-list-container");
+    $("#mind-map-modal").removeClass("hidden");
   },
 
   showDeleteAllNotesModal: function (e) {
