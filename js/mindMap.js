@@ -78,27 +78,83 @@ class MindMap {
   setupNodeHandlers() {
     if (!this.jm) return;
 
-    // Add click handler for node expand/collapse
     const container = document.getElementById(this.jm.options.container);
-    if (container) {
-      container.addEventListener("click", (e) => {
-        const nodeElement = e.target.closest("jmnode");
-        if (nodeElement) {
-          const nodeId = nodeElement.getAttribute("nodeid");
-          if (nodeId) {
-            const node = this.jm.get_node(nodeId);
-            if (node && node.children && node.children.length > 0) {
-              // Toggle expand/collapse state
-              if (node.expanded) {
-                this.jm.collapse_node(nodeId);
-              } else {
-                this.jm.expand_node(nodeId);
-              }
-              e.stopPropagation();
-            }
-          }
+    if (!container) return;
+
+    container.addEventListener("click", (e) => {
+      const nodeElement = e.target.closest("jmnode");
+      if (!nodeElement) return;
+
+      const nodeId = nodeElement.getAttribute("nodeid");
+      if (!nodeId) return;
+
+      const node = this.jm.get_node(nodeId);
+      if (!node) return;
+
+      // Toggle expand/collapse if the node has children
+      if (node.children && node.children.length > 0) {
+        e.stopPropagation();
+        if (node.expanded) {
+          this.jm.collapse_node(nodeId);
+        } else {
+          this.jm.expand_node(nodeId);
         }
-      });
+        // Update the chevron icon after toggling
+        this.updateChevron(nodeId, !node.expanded);
+      }
+    });
+  }
+
+  // Add Font Awesome chevron to a node
+  addChevronToNode(nodeId) {
+    if (!this.jm) return;
+
+    const node = this.jm.get_node(nodeId);
+    if (!node || !node.children || node.children.length === 0) return;
+
+    const nodeElement = document.querySelector(`[nodeid="${nodeId}"]`);
+    if (!nodeElement) return;
+
+    // Check if chevron already exists
+    if (nodeElement.querySelector(".chevron")) return;
+
+    const chevron = document.createElement("i");
+    chevron.className = "chevron fas fa-chevron-right";
+    chevron.style.marginRight = "5px";
+    chevron.style.cursor = "pointer";
+    chevron.style.transition = "transform 0.2s";
+
+    // Insert chevron before the node content
+    const content = nodeElement.querySelector(".jmnodes");
+    if (content) {
+      content.insertBefore(chevron, content.firstChild);
+    }
+
+    // Set initial state
+    this.updateChevron(nodeId, node.expanded);
+  }
+
+  // Update chevron icon based on node state
+  updateChevron(nodeId, isExpanded) {
+    const nodeElement = document.querySelector(`[nodeid="${nodeId}"]`);
+    if (!nodeElement) return;
+
+    const chevron = nodeElement.querySelector(".chevron");
+    if (!chevron) return;
+
+    if (isExpanded) {
+      chevron.className = "chevron fas fa-chevron-down";
+      chevron.style.transform = "rotate(0deg)";
+    } else {
+      // For right-pointing chevron, we'll rotate it -90deg when collapsed
+      const isRight = nodeElement
+        .closest(".jsmind-node")
+        .classList.contains("jsmind-node-right");
+      if (isRight) {
+        chevron.className = "chevron fas fa-chevron-left";
+      } else {
+        chevron.className = "chevron fas fa-chevron-right";
+      }
     }
   }
 
@@ -511,135 +567,55 @@ class MindMap {
             },
           ],
         },
-        format: "node_tree",
       };
-
-      // Style node function
-      const styleNode = (nodeId, isRoot = false) => {
-        try {
-          const element = document.querySelector(`[nodeid="${nodeId}"]`);
-          if (!element) return false;
-
-          const styles = isRoot
-            ? {
-                backgroundColor: "#3b82f6",
-                color: "#ffffff",
-                fontSize: "16px",
-                fontWeight: "bold",
-                width: "120px",
-                height: "40px",
-              }
-            : {
-                backgroundColor: "#4b5563",
-                color: "#f3f4f6",
-                fontSize: "14px",
-                width: "100px",
-                height: "36px",
-              };
-
-          // Apply common styles
-          Object.assign(element.style, {
-            ...styles,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: "4px",
-            padding: "4px 8px",
-            boxSizing: "border-box",
-            transition: "all 0.2s ease",
-          });
-
-          return true;
-        } catch (e) {
-          console.error("Error styling node:", e);
-          return false;
-        }
-      };
-
-      // Apply styles after mind map is rendered
-      const applyStyles = () => {
-        try {
-          // Style root node
-          styleNode("root", true);
-
-          // Style child nodes
-          ["child1", "child2"].forEach((id) => styleNode(id));
-
-          // Add a small delay to ensure styles are applied
-          setTimeout(() => {
-            // Force a reflow to ensure styles are applied
-            const container = document.getElementById(
-              this.jm.options.container
-            );
-            if (container) {
-              container.style.display = "none";
-              container.offsetHeight; // Trigger reflow
-              container.style.display = "";
-            }
-          }, 50);
-        } catch (e) {
-          console.error("Error applying styles:", e);
-        }
-      };
-
-      // Call applyStyles after the mind map is shown
-      applyStyles();
 
       console.log("Mind map data prepared:", mindData);
 
-      console.log("Initializing jsMind with container:", container);
-      console.log("Mind data:", mindData);
-
       // Initialize jsMind
       console.log("Creating new jsMind instance...");
-      try {
-        this.jm = new jsMind(options);
-        console.log("jsMind instance created:", this.jm);
+      this.jm = new jsMind(options);
+      console.log("jsMind instance created:", this.jm);
 
-        // Show the mind map with the initial data
-        console.log("Showing mind map with data...");
-        this.jm.show(mindData);
-        console.log("Mind map shown successfully");
+      // Show the mind map with the initial data
+      console.log("Showing mind map with data...");
+      this.jm.show(mindData);
+      console.log("Mind map shown successfully");
 
-        // Make all nodes collapsible
-        const nodes = this.jm.mind.nodes;
-        for (const nodeId in nodes) {
-          if (nodes.hasOwnProperty(nodeId)) {
-            const node = nodes[nodeId];
-            if (node.children && node.children.length > 0) {
-              // Set node as expandable
-              node.expand = true;
-              // Collapse all nodes except the root by default
-              if (nodeId !== "root") {
-                this.jm.collapse_node(nodeId);
-              }
+      // Make all nodes collapsible and add Font Awesome chevrons
+      const nodes = this.jm.mind.nodes;
+      for (const nodeId in nodes) {
+        if (nodes.hasOwnProperty(nodeId)) {
+          const node = nodes[nodeId];
+          if (node.children && node.children.length > 0) {
+            // Set node as expandable
+            node.expand = true;
+            // Collapse all nodes except the root by default
+            if (nodeId !== "root") {
+              this.jm.collapse_node(nodeId);
             }
+
+            // Add Font Awesome chevron
+            this.addChevronToNode(nodeId);
           }
         }
-
-        // Store the mind map instance for debugging
-        window.jm = this.jm;
-
-        // Mark as initialized
-        this.mindMapInitialized = true;
-        console.log("Mind map initialized");
-
-        // Add click handlers for expand/collapse
-        this.setupNodeHandlers();
-
-        // Trigger a resize to ensure proper rendering
-        setTimeout(() => {
-          if (this.jm && typeof this.jm.resize === "function") {
-            this.jm.resize();
-          }
-        }, 100);
-
-        this.updateStatus("Mind map ready");
-        return true;
-      } catch (showError) {
-        console.error("Error showing mind map:", showError);
-        throw new Error("Failed to display mind map: " + showError.message);
       }
+
+      // Store the mind map instance for debugging
+      window.jm = this.jm;
+
+      // Mark as initialized
+      this.mindMapInitialized = true;
+      this.updateStatus("Mind map ready");
+
+      // Add event listeners for node clicks
+      this.setupNodeHandlers();
+
+      // Apply custom styles after a short delay to ensure the DOM is ready
+      setTimeout(() => {
+        this.applyCustomStyles();
+      }, 100);
+
+      return true;
     } catch (error) {
       console.error("Error initializing jsMind:", error);
       this.showError(
