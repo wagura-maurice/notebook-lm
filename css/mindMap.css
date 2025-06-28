@@ -68,7 +68,7 @@ jmexpander {
 
 /* Add chevron-right icon for collapsed nodes */
 jmexpander::before {
-  content: "\f054"; /* Font Awesome chevron-right */
+  content: "\f054" !important; /* Font Awesome chevron-right */
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
   font-size: 12px;
@@ -78,9 +78,9 @@ jmexpander::before {
   transition: transform 0.2s ease, color 0.2s ease;
 }
 
-/* Change to chevron-down for expanded nodes */
+/* Change to chevron-left for expanded nodes */
 jmnode.expanded > jmexpander::before {
-  content: "\f078"; /* Font Awesome chevron-down */
+  content: "\f053" !important; /* Font Awesome chevron-left */
 }
 
 /* Hover effect */
@@ -96,11 +96,6 @@ jmnode:not([haschild="true"]) > jmexpander {
 /* Ensure the expander is visible on nodes with children */
 jmnode[haschild="true"] > jmexpander {
   display: inline-flex !important;
-}
-
-/* Ensure the expanded class is properly applied */
-jmnode.expanded > jmexpander::before {
-  content: "\f078" !important; /* Force the down chevron for expanded nodes */
 }
 
 /* Ensure the node content is properly aligned */
