@@ -53,23 +53,48 @@ jmnode {
 
 jmexpander {
   position: absolute;
-  width: 11px;
-  /* height: 11px; */
-  display: block;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
-  line-height: 12px;
-  font-size: 10px;
+  line-height: 18px;
+  font-size: 16px;
   text-align: center;
-  border-radius: 6px;
-  border-width: 1px;
-  border-style: solid;
   cursor: pointer;
-  margin-left: 4px;
-  margin-right: 4px;
+  margin-left: 6px;
+  margin-right: 6px;
+  font-weight: bold;
+  color: #ec2bf7;
+  transition: all 0.2s ease;
+  border-radius: 3px;
+  background-color: rgba(236, 43, 247, 0.1);
 }
 
 jmexpander:hover {
-  border-color: #2563eb !important;
+  color: #ffffff;
+  background-color: #ec2bf7;
+  transform: scale(1.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Add a subtle pulse animation on hover */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+jmexpander:active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease;
 }
 
 .jmnode-overflow-wrap jmnodes {
