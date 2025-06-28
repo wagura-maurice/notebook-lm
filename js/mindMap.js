@@ -625,6 +625,83 @@ class MindMap {
     }
   }
 
+  /**
+   * Applies custom styles to the mind map elements
+   */
+  applyCustomStyles() {
+    // Add custom styles for nodes
+    const style = document.createElement('style');
+    style.textContent = `
+      /* Custom node styles */
+      jmnode {
+        border-radius: 6px;
+        transition: all 0.2s ease;
+      }
+      
+      jmnode:hover {
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+      }
+      
+      /* Selected node */
+      jmnode.selected {
+        background-color: rgba(59, 130, 246, 0.1);
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.8);
+      }
+      
+      /* Node content */
+      jmnodes jmcate, jmnode jmnode-title {
+        color: #f3f4f6;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      }
+      
+      /* Expander styles */
+      jmexpander {
+        width: 16px;
+        height: 16px;
+        margin-right: 4px;
+        background: transparent;
+        border: none;
+        color: #9ca3af;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s;
+      }
+      
+      jmexpander:hover {
+        color: #3b82f6;
+      }
+      
+      /* Root node specific styles */
+      jmnode.root-node {
+        background-color: #1e40af;
+      }
+      
+      jmnode.root-node jmnode-title {
+        color: white;
+        font-weight: 600;
+      }
+      
+      /* Connection lines */
+      jmnode:not(.root-node) > jmnode-line {
+        stroke: #4b5563;
+        stroke-width: 2px;
+      }
+    `;
+    
+    document.head.appendChild(style);
+    
+    // Add root node class if not already present
+    const rootNode = this.jm?.mind?.root;
+    if (rootNode) {
+      const rootElement = document.querySelector(`[nodeid="${rootNode.id}"]`);
+      if (rootElement) {
+        rootElement.classList.add('root-node');
+      }
+    }
+  }
+
   addNode() {
     if (!this.jm) {
       this.updateStatus("Mind map not initialized", true);
