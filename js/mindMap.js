@@ -244,12 +244,21 @@ class MindMap {
           contentWrapper.style.width = "100%";
           contentWrapper.style.position = "relative";
 
-          // Create the jsMind container
+          // Create a container for the mind map with scrolling
+          const mapContainer = document.createElement("div");
+          mapContainer.style.flex = "1";
+          mapContainer.style.display = "flex";
+          mapContainer.style.flexDirection = "column";
+          mapContainer.style.overflow = "hidden";
+
+          // Create the jsMind container - this needs to be directly in the DOM for jsMind to work
           const jsmindContainer = document.createElement("div");
           jsmindContainer.id = "jsmind_container";
+          jsmindContainer.style.flex = "1";
           jsmindContainer.style.width = "100%";
-          jsmindContainer.style.height = "calc(100% - 40px)";
+          jsmindContainer.style.overflow = "auto";
           jsmindContainer.style.position = "relative";
+          jsmindContainer.style.backgroundColor = "#1f2937"; // Match the dark theme
 
           // Create a toolbar
           const toolbar = document.createElement("div");
@@ -282,7 +291,9 @@ class MindMap {
           this.statusEl.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
           this.statusEl.style.borderRadius = "4px";
           this.statusEl.style.position = "absolute";
-          this.statusEl.style.bottom = "10px";
+          this.statusEl.style.bottom = "20px";
+          this.statusEl.style.left = "20px";
+          this.statusEl.style.zIndex = "10";
           this.statusEl.style.left = "50%";
           this.statusEl.style.transform = "translateX(-50%)";
           this.statusEl.style.zIndex = "1000";
