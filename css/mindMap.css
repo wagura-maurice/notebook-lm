@@ -43,11 +43,6 @@ jmnode.root {
   border-color: #2563eb !important;
 }
 
-jmexpander {
-  visibility: visible !important;
-  margin: 4px !important;
-}
-
 /* Toolbar styles */
 .mind-map-toolbar {
   position: absolute;
