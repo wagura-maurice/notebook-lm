@@ -244,20 +244,12 @@ class MindMap {
           contentWrapper.style.width = "100%";
           contentWrapper.style.position = "relative";
 
-          // Create a container for the mind map with scrolling
-          const mapContainer = document.createElement("div");
-          mapContainer.style.flex = "1";
-          mapContainer.style.display = "flex";
-          mapContainer.style.flexDirection = "column";
-          mapContainer.style.overflow = "hidden";
-
-          // Create the jsMind container - this needs to be directly in the DOM for jsMind to work
+          // Create the jsMind container
           const jsmindContainer = document.createElement("div");
           jsmindContainer.id = "jsmind_container";
           jsmindContainer.style.flex = "1";
-          jsmindContainer.style.width = "100%";
-          jsmindContainer.style.overflow = "auto";
           jsmindContainer.style.position = "relative";
+          jsmindContainer.style.overflow = "auto";
           jsmindContainer.style.backgroundColor = "#1f2937"; // Match the dark theme
 
           // Create a toolbar
@@ -298,10 +290,21 @@ class MindMap {
           this.statusEl.style.transform = "translateX(-50%)";
           this.statusEl.style.zIndex = "1000";
 
-          // Assemble the UI
+          // Set up content wrapper
+          contentWrapper.style.display = "flex";
+          contentWrapper.style.flexDirection = "column";
+          contentWrapper.style.height = "100vh";
+          contentWrapper.style.overflow = "hidden";
+          contentWrapper.style.position = "relative";
+
+          // Add elements to the container
           contentWrapper.appendChild(toolbar);
           contentWrapper.appendChild(jsmindContainer);
           contentWrapper.appendChild(this.statusEl);
+
+          // Ensure container takes full height
+          this.container.style.height = "100vh";
+          this.container.style.overflow = "hidden";
           this.container.appendChild(contentWrapper);
 
           // Initialize jsMind
@@ -429,9 +432,10 @@ class MindMap {
 
       // Set container styles if not already set
       container.style.width = "100%";
-      container.style.height = "calc(100% - 40px)";
+      container.style.flex = "1";
       container.style.position = "relative";
-      container.style.overflow = "hidden";
+      container.style.overflow = "auto";
+      container.style.minHeight = "0"; // Important for flex children to respect overflow
       container.style.backgroundColor = "#1f2937"; // Match the dark theme
 
       console.log("Container styles applied");
