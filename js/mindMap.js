@@ -370,24 +370,111 @@ class MindMap {
       // Create a simple mind map structure with the exact format jsMind expects
       const mindData = {
         meta: {
-          name: "My Mind Map",
+          name: "Information Assessment and Management",
           author: "You",
           version: "1.0",
         },
         format: "node_tree",
         data: {
           id: "root",
-          topic: "Central Idea",
+          topic: "Information Assessment and Management",
           children: [
             {
-              id: "child1",
-              topic: "First Idea",
+              id: "reliability",
+              topic: "Assessing Reliability & Credibility",
               direction: "right",
-              children: [],
+              children: [
+                {
+                  id: "grey-lit",
+                  topic: "Grey Literature",
+                  direction: "right",
+                  children: [],
+                },
+                {
+                  id: "archival",
+                  topic: "Archival Research",
+                  direction: "right",
+                  children: [],
+                },
+                {
+                  id: "think-tanks",
+                  topic: "Think Tanks",
+                  direction: "right",
+                  children: [],
+                },
+                {
+                  id: "push-protocol",
+                  topic: "Push Protocol (2KTeco Devices)",
+                  direction: "right",
+                  children: [],
+                },
+                {
+                  id: "icea",
+                  topic: "ICEA LION Financial Services",
+                  direction: "right",
+                  children: [],
+                },
+                {
+                  id: "kingo",
+                  topic: "Kingo Edwin Rwaro (Clinical Professional)",
+                  direction: "right",
+                  children: [],
+                },
+                {
+                  id: "invoices",
+                  topic: "Invoices",
+                  direction: "right",
+                  children: [],
+                },
+                {
+                  id: "national-switch",
+                  topic:
+                    "National Switch and Micro Finance Transaction Hub Upgrade",
+                  direction: "right",
+                  children: [],
+                },
+              ],
             },
             {
-              id: "child2",
-              topic: "Second Idea",
+              id: "publication",
+              topic: "Publication Types",
+              direction: "right",
+              children: [
+                {
+                  id: "orgs",
+                  topic: "Producing Organizations",
+                  direction: "right",
+                  children: [],
+                },
+                {
+                  id: "challenges",
+                  topic: "Challenges (Problems)",
+                  direction: "right",
+                  children: [],
+                },
+                {
+                  id: "impact",
+                  topic: "Impact/Importance",
+                  direction: "right",
+                  children: [],
+                },
+                {
+                  id: "access",
+                  topic: "Accessibility",
+                  direction: "right",
+                  children: [],
+                },
+                {
+                  id: "dbs",
+                  topic: "Databases/Resources",
+                  direction: "right",
+                  children: [],
+                },
+              ],
+            },
+            {
+              id: "psc-form",
+              topic: "Public Service Commission Application Form",
               direction: "right",
               children: [],
             },
@@ -551,20 +638,49 @@ class MindMap {
   }
 
   editNode(nodeId) {
-    if (!this.jm) return;
-
-    const node = this.jm.get_node(nodeId);
-    if (!node) return;
-
-    const newTopic = prompt("Edit node:", node.topic);
-    if (newTopic !== null && newTopic !== node.topic) {
-      try {
-        this.jm.set_node_topic(nodeId, newTopic);
-        this.updateStatus("Node updated");
-      } catch (error) {
-        console.error("Error updating node:", error);
-        this.updateStatus("Error updating node: " + error.message, true);
+    try {
+      if (!this.jm) {
+        console.error("jsMind instance not available");
+        return;
       }
+
+      const node = this.jm.get_node(nodeId);
+      if (!node) {
+        console.error("Node not found:", nodeId);
+        return;
+      }
+
+      // Get current topic, ensuring it's a string
+      const currentTopic = node.topic || "";
+
+      // Show prompt with current topic
+      const newTopic = prompt("Edit node:", currentTopic);
+
+      // If user cancelled the prompt
+      if (newTopic === null) return;
+
+      // Trim whitespace
+      const trimmedTopic = newTopic.trim();
+
+      // Check if empty after trim
+      if (trimmedTopic === "") {
+        this.updateStatus("Node title cannot be empty", true);
+        return;
+      }
+
+      // Only update if the topic has actually changed
+      if (trimmedTopic !== currentTopic) {
+        // Use the jm.update_node method with the node object
+        const updatedNode = Object.assign({}, node, { topic: trimmedTopic });
+        this.jm.update_node(updatedNode);
+        this.updateStatus("Node updated");
+      }
+    } catch (error) {
+      console.error("Error in editNode:", error);
+      this.updateStatus(
+        "Error updating node: " + (error.message || "Unknown error"),
+        true
+      );
     }
   }
 
