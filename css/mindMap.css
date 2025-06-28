@@ -43,6 +43,64 @@ jmnode.root {
   border-color: #2563eb !important;
 }
 
+/* Expand/Collapse Indicators */
+jmexpander {
+  /* Hide the default + and - text */
+  color: transparent !important;
+  font-size: 0 !important;
+  /* Make room for the chevron */
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
+  margin: 0 4px 0 0 !important;
+  padding: 0 !important;
+  position: relative;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: none !important;
+  border: none !important;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+/* Add chevron-right icon for collapsed nodes */
+jmexpander::before {
+  content: "\f054"; /* Font Awesome chevron-right */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 12px;
+  color: #9ca3af;
+  position: absolute;
+  display: block;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+/* Change to chevron-left for expanded nodes */
+jmnode.expanded > jmexpander::before {
+  content: "\f053"; /* Font Awesome chevron-left */
+}
+
+/* Hover effect */
+jmexpander:hover::before {
+  color: #3b82f6;
+}
+
+/* Hide expander when node has no children */
+jmnode:not([haschild="true"]) > jmexpander {
+  display: none !important;
+}
+
+/* Ensure the node content is properly aligned */
+.jsmind-inner {
+  display: flex !important;
+  align-items: center;
+  padding: 4px 0 !important;
+  line-height: 1.4 !important;
+}
+
 /* Toolbar styles */
 .mind-map-toolbar {
   position: absolute;
