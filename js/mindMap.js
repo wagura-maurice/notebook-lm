@@ -79,14 +79,14 @@ class MindMap {
     if (!this.jm) return;
 
     // Handle node clicks to toggle expand/collapse
-    document.addEventListener('click', (e) => {
-      const expander = e.target.closest('jmexpander');
+    document.addEventListener("click", (e) => {
+      const expander = e.target.closest("jmexpander");
       if (!expander) return;
 
-      const nodeElement = expander.closest('jmnode');
+      const nodeElement = expander.closest("jmnode");
       if (!nodeElement) return;
 
-      const nodeId = nodeElement.getAttribute('nodeid');
+      const nodeId = nodeElement.getAttribute("nodeid");
       if (!nodeId) return;
 
       // Toggle the expanded state
@@ -98,23 +98,27 @@ class MindMap {
     });
 
     // Listen for expand/collapse events to update the UI
-    this.jm.add_event_listener('expand_node', (e) => {
+    this.jm.add_event_listener("expand_node", (e) => {
       const nodeId = e.node;
       if (nodeId) {
-        const nodeElement = document.querySelector(`jmnode[nodeid="${nodeId}"]`);
+        const nodeElement = document.querySelector(
+          `jmnode[nodeid="${nodeId}"]`
+        );
         if (nodeElement) {
-          nodeElement.classList.add('expanded');
+          nodeElement.classList.add("expanded");
           this.updateChevron(nodeId, true);
         }
       }
     });
 
-    this.jm.add_event_listener('collapse_node', (e) => {
+    this.jm.add_event_listener("collapse_node", (e) => {
       const nodeId = e.node;
       if (nodeId) {
-        const nodeElement = document.querySelector(`jmnode[nodeid="${nodeId}"]`);
+        const nodeElement = document.querySelector(
+          `jmnode[nodeid="${nodeId}"]`
+        );
         if (nodeElement) {
-          nodeElement.classList.remove('expanded');
+          nodeElement.classList.remove("expanded");
           this.updateChevron(nodeId, false);
         }
       }
@@ -133,9 +137,9 @@ class MindMap {
 
     // Set initial state
     this.updateChevron(nodeId, node.expanded);
-    
+
     // Ensure the node has the haschild attribute for CSS targeting
-    nodeElement.setAttribute('haschild', 'true');
+    nodeElement.setAttribute("haschild", "true");
   }
 
   // Update chevron icon based on node state
@@ -143,14 +147,14 @@ class MindMap {
     const nodeElement = document.querySelector(`[nodeid="${nodeId}"]`);
     if (!nodeElement) return;
 
-    const expander = nodeElement.querySelector('jmexpander');
+    const expander = nodeElement.querySelector("jmexpander");
     if (!expander) return;
 
     // Update the expanded class on the node
     if (isExpanded) {
-      nodeElement.classList.add('expanded');
+      nodeElement.classList.add("expanded");
     } else {
-      nodeElement.classList.remove('expanded');
+      nodeElement.classList.remove("expanded");
     }
   }
 
