@@ -78,29 +78,45 @@ class MindMap {
   setupNodeHandlers() {
     if (!this.jm) return;
 
-    const container = document.getElementById(this.jm.options.container);
-    if (!container) return;
+    // Handle node clicks to toggle expand/collapse
+    document.addEventListener('click', (e) => {
+      const expander = e.target.closest('jmexpander');
+      if (!expander) return;
 
-    container.addEventListener("click", (e) => {
-      const nodeElement = e.target.closest("jmnode");
+      const nodeElement = expander.closest('jmnode');
       if (!nodeElement) return;
 
-      const nodeId = nodeElement.getAttribute("nodeid");
+      const nodeId = nodeElement.getAttribute('nodeid');
       if (!nodeId) return;
 
+      // Toggle the expanded state
       const node = this.jm.get_node(nodeId);
-      if (!node) return;
+      if (node) {
+        this.jm.toggle_node(nodeId);
+        // The toggle will trigger the event handlers we set up below
+      }
+    });
 
-      // Toggle expand/collapse if the node has children
-      if (node.children && node.children.length > 0) {
-        e.stopPropagation();
-        if (node.expanded) {
-          this.jm.collapse_node(nodeId);
-        } else {
-          this.jm.expand_node(nodeId);
+    // Listen for expand/collapse events to update the UI
+    this.jm.add_event_listener('expand_node', (e) => {
+      const nodeId = e.node;
+      if (nodeId) {
+        const nodeElement = document.querySelector(`jmnode[nodeid="${nodeId}"]`);
+        if (nodeElement) {
+          nodeElement.classList.add('expanded');
+          this.updateChevron(nodeId, true);
         }
-        // Update the chevron icon after toggling
-        this.updateChevron(nodeId, !node.expanded);
+      }
+    });
+
+    this.jm.add_event_listener('collapse_node', (e) => {
+      const nodeId = e.node;
+      if (nodeId) {
+        const nodeElement = document.querySelector(`jmnode[nodeid="${nodeId}"]`);
+        if (nodeElement) {
+          nodeElement.classList.remove('expanded');
+          this.updateChevron(nodeId, false);
+        }
       }
     });
   }
@@ -115,23 +131,11 @@ class MindMap {
     const nodeElement = document.querySelector(`[nodeid="${nodeId}"]`);
     if (!nodeElement) return;
 
-    // Check if chevron already exists
-    if (nodeElement.querySelector(".chevron")) return;
-
-    const chevron = document.createElement("i");
-    chevron.className = "chevron fas fa-chevron-right";
-    chevron.style.marginRight = "5px";
-    chevron.style.cursor = "pointer";
-    chevron.style.transition = "transform 0.2s";
-
-    // Insert chevron before the node content
-    const content = nodeElement.querySelector(".jmnodes");
-    if (content) {
-      content.insertBefore(chevron, content.firstChild);
-    }
-
     // Set initial state
     this.updateChevron(nodeId, node.expanded);
+    
+    // Ensure the node has the haschild attribute for CSS targeting
+    nodeElement.setAttribute('haschild', 'true');
   }
 
   // Update chevron icon based on node state
@@ -139,22 +143,14 @@ class MindMap {
     const nodeElement = document.querySelector(`[nodeid="${nodeId}"]`);
     if (!nodeElement) return;
 
-    const chevron = nodeElement.querySelector(".chevron");
-    if (!chevron) return;
+    const expander = nodeElement.querySelector('jmexpander');
+    if (!expander) return;
 
+    // Update the expanded class on the node
     if (isExpanded) {
-      chevron.className = "chevron fas fa-chevron-down";
-      chevron.style.transform = "rotate(0deg)";
+      nodeElement.classList.add('expanded');
     } else {
-      // For right-pointing chevron, we'll rotate it -90deg when collapsed
-      const isRight = nodeElement
-        .closest(".jsmind-node")
-        .classList.contains("jsmind-node-right");
-      if (isRight) {
-        chevron.className = "chevron fas fa-chevron-left";
-      } else {
-        chevron.className = "chevron fas fa-chevron-right";
-      }
+      nodeElement.classList.remove('expanded');
     }
   }
 
