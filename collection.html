@@ -59,67 +59,10 @@
       rel="stylesheet"
     />
 
-    <link
-      href="https://cdn.jsdelivr.net/npm/react-flow-renderer@10.3.17/dist/style.min.css"
-      rel="stylesheet"
-    />
-
     <!-- Custom CSS -->
     <link href="./css/collection.css" rel="stylesheet" />
     <link href="./css/openCanvas.css" rel="stylesheet" />
-
-    <!-- ReactFlow Styles -->
-    <style>
-      .react-flow__node {
-        padding: 10px;
-        border-radius: 5px;
-        background: white;
-        border: 1px solid #ddd;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      }
-
-      .react-flow__node.selected {
-        border-color: #38bdf8;
-        box-shadow: 0 0 0 1px #38bdf8;
-      }
-
-      .react-flow__handle {
-        width: 8px;
-        height: 8px;
-        background: #38bdf8;
-      }
-
-      .mindmap-toolbar {
-        position: absolute;
-        top: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 10;
-        background: #1e293b;
-        padding: 8px;
-        border-radius: 4px;
-        display: flex;
-        gap: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      }
-
-      .mindmap-toolbar button {
-        background: #334155;
-        border: none;
-        color: white;
-        padding: 6px 12px;
-        border-radius: 4px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 12px;
-      }
-
-      .mindmap-toolbar button:hover {
-        background: #475569;
-      }
-    </style>
+    <link href="./css/mindMap.css" rel="stylesheet" />
   </head>
 
   <body class="h-screen flex flex-col bg-dark-blue overflow-hidden font-sans">
@@ -4184,99 +4127,6 @@
         </div>
       </div>
     </div>
-
-    <style>
-      /* jsMind container styles */
-      #mind-map-content {
-        width: 100%;
-        height: 100%;
-        position: relative;
-        overflow: hidden;
-      }
-
-      #jsmind_container {
-        width: 100%;
-        height: 100%;
-        min-height: 500px;
-        background: #1f2937;
-        position: relative;
-      }
-
-      /* Node styles */
-      jmnode {
-        border-radius: 6px !important;
-        padding: 8px 12px !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
-        transition: all 0.2s ease;
-        background: #374151 !important;
-        border: 1px solid #4b5563 !important;
-        color: #f3f4f6 !important;
-      }
-
-      jmnode:hover {
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
-          0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
-        transform: translateY(-1px);
-      }
-
-      /* Selected node */
-      jmnode.selected {
-        box-shadow: 0 0 0 2px #3b82f6 !important;
-      }
-
-      /* Root node */
-      jmnode.root {
-        background: #3b82f6 !important;
-        color: white !important;
-        border-color: #2563eb !important;
-      }
-
-      /* Toolbar styles */
-      .mind-map-toolbar {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        z-index: 1000;
-        display: flex;
-        gap: 5px;
-      }
-
-      .mind-map-toolbar button {
-        padding: 6px 12px;
-        background: #374151;
-        border: 1px solid #4b5563;
-        border-radius: 4px;
-        color: #f3f4f6;
-        cursor: pointer;
-        font-size: 13px;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-
-      .mind-map-toolbar button:hover {
-        background: #4b5563;
-        border-color: #6b7280;
-      }
-
-      .mind-map-toolbar button i {
-        font-size: 14px;
-      }
-
-      /* Status message */
-      .mind-map-status {
-        position: absolute;
-        bottom: 10px;
-        left: 10px;
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 12px;
-        z-index: 1000;
-      }
-    </style>
 
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
