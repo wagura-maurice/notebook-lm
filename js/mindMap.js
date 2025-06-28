@@ -74,6 +74,34 @@ class MindMap {
     this.modalObserver = observer;
   }
 
+  // Setup click handlers for node expand/collapse
+  setupNodeHandlers() {
+    if (!this.jm) return;
+
+    // Add click handler for node expand/collapse
+    const container = document.getElementById(this.jm.options.container);
+    if (container) {
+      container.addEventListener("click", (e) => {
+        const nodeElement = e.target.closest("jmnode");
+        if (nodeElement) {
+          const nodeId = nodeElement.getAttribute("nodeid");
+          if (nodeId) {
+            const node = this.jm.get_node(nodeId);
+            if (node && node.children && node.children.length > 0) {
+              // Toggle expand/collapse state
+              if (node.expanded) {
+                this.jm.collapse_node(nodeId);
+              } else {
+                this.jm.expand_node(nodeId);
+              }
+              e.stopPropagation();
+            }
+          }
+        }
+      });
+    }
+  }
+
   // Clean up resources when the mind map is no longer needed
   cleanup() {
     console.log("Cleaning up mind map resources...");
@@ -89,6 +117,9 @@ class MindMap {
     if (container) {
       container.replaceWith(container.cloneNode(true));
     }
+
+    // Setup click handlers for node expand/collapse
+    this.setupNodeHandlers();
 
     // Clear the mind map if it exists
     if (this.jm) {
@@ -480,50 +511,54 @@ class MindMap {
             },
           ],
         },
+        format: "node_tree",
       };
 
-      // Apply styles after the mind map is created
+      // Style node function
+      const styleNode = (nodeId, isRoot = false) => {
+        try {
+          const element = document.querySelector(`[nodeid="${nodeId}"]`);
+          if (!element) return false;
+
+          const styles = isRoot
+            ? {
+                backgroundColor: "#3b82f6",
+                color: "#ffffff",
+                fontSize: "16px",
+                fontWeight: "bold",
+                width: "120px",
+                height: "40px",
+              }
+            : {
+                backgroundColor: "#4b5563",
+                color: "#f3f4f6",
+                fontSize: "14px",
+                width: "100px",
+                height: "36px",
+              };
+
+          // Apply common styles
+          Object.assign(element.style, {
+            ...styles,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "4px",
+            padding: "4px 8px",
+            boxSizing: "border-box",
+            transition: "all 0.2s ease",
+          });
+
+          return true;
+        } catch (e) {
+          console.error("Error styling node:", e);
+          return false;
+        }
+      };
+
+      // Apply styles after mind map is rendered
       const applyStyles = () => {
         try {
-          // Helper function to apply styles to a node
-          const styleNode = (nodeId, isRoot = false) => {
-            const element = document.querySelector(
-              `#${this.jm.options.container} jmnode[nodeid="${nodeId}"]`
-            );
-            if (!element) return false;
-
-            const styles = isRoot
-              ? {
-                  backgroundColor: "#3b82f6",
-                  color: "#ffffff",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  width: "120px",
-                  height: "40px",
-                }
-              : {
-                  backgroundColor: "#4b5563",
-                  color: "#f3f4f6",
-                  fontSize: "14px",
-                  width: "100px",
-                  height: "36px",
-                };
-
-            // Apply common styles
-            Object.assign(element.style, {
-              ...styles,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: "4px",
-              padding: "4px 8px",
-              boxSizing: "border-box",
-              transition: "all 0.2s ease",
-            });
-
-            return true;
-          };
-
           // Style root node
           styleNode("root", true);
 
@@ -547,6 +582,9 @@ class MindMap {
         }
       };
 
+      // Call applyStyles after the mind map is shown
+      applyStyles();
+
       console.log("Mind map data prepared:", mindData);
 
       console.log("Initializing jsMind with container:", container);
@@ -558,48 +596,43 @@ class MindMap {
         this.jm = new jsMind(options);
         console.log("jsMind instance created:", this.jm);
 
-        // Show the mind map
+        // Show the mind map with the initial data
         console.log("Showing mind map with data...");
         this.jm.show(mindData);
         console.log("Mind map shown successfully");
 
-        // Apply styles after the mind map is rendered
+        // Make all nodes collapsible
+        const nodes = this.jm.mind.nodes;
+        for (const nodeId in nodes) {
+          if (nodes.hasOwnProperty(nodeId)) {
+            const node = nodes[nodeId];
+            if (node.children && node.children.length > 0) {
+              // Set node as expandable
+              node.expand = true;
+              // Collapse all nodes except the root by default
+              if (nodeId !== "root") {
+                this.jm.collapse_node(nodeId);
+              }
+            }
+          }
+        }
+
+        // Store the mind map instance for debugging
+        window.jm = this.jm;
+
+        // Mark as initialized
+        this.mindMapInitialized = true;
+        console.log("Mind map initialized");
+
+        // Add click handlers for expand/collapse
+        this.setupNodeHandlers();
+
+        // Trigger a resize to ensure proper rendering
         setTimeout(() => {
-          if (this.jm) {
-            console.log("Applying styles to mind map...");
-            applyStyles();
-
-            // Force a resize to ensure proper rendering
-            if (typeof this.jm.resize === "function") {
-              console.log("Triggering initial resize...");
-              this.jm.resize();
-            }
-          }
-        }, 300);
-
-        // Add double-click to edit
-        container.addEventListener("dblclick", (e) => {
-          const target = e.target;
-          const nodeElement = target.closest("jmnode");
-          if (nodeElement) {
-            const nodeId = nodeElement.getAttribute("nodeid");
-            if (nodeId) {
-              this.editNode(nodeId);
-            }
-          }
-        });
-
-        // Handle window resize
-        const handleResize = () => {
           if (this.jm && typeof this.jm.resize === "function") {
-            setTimeout(() => this.jm.resize(), 100);
+            this.jm.resize();
           }
-        };
-
-        window.addEventListener("resize", handleResize);
-
-        // Store the resize handler for cleanup
-        this._resizeHandler = handleResize;
+        }, 100);
 
         this.updateStatus("Mind map ready");
         return true;
