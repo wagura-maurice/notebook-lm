@@ -630,7 +630,7 @@ class MindMap {
    */
   applyCustomStyles() {
     // Add custom styles for nodes
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     style.textContent = `
       /* Custom node styles */
       jmnode {
@@ -689,15 +689,15 @@ class MindMap {
         stroke-width: 2px;
       }
     `;
-    
+
     document.head.appendChild(style);
-    
+
     // Add root node class if not already present
     const rootNode = this.jm?.mind?.root;
     if (rootNode) {
       const rootElement = document.querySelector(`[nodeid="${rootNode.id}"]`);
       if (rootElement) {
-        rootElement.classList.add('root-node');
+        rootElement.classList.add("root-node");
       }
     }
   }
