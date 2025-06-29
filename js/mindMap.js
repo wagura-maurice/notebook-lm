@@ -410,19 +410,23 @@ class MindMap {
   setupMindMapContainer() {
     // Create a wrapper for the mind map content
     const contentWrapper = document.createElement("div");
+    contentWrapper.id = "mind-map-content";
     contentWrapper.style.display = "flex";
     contentWrapper.style.flexDirection = "column";
     contentWrapper.style.height = "100vh";
     contentWrapper.style.width = "100%";
     contentWrapper.style.position = "relative";
-    contentWrapper.style.overflow = "hidden";
+    contentWrapper.style.overflow = "auto"; // Changed from hidden to auto
 
     // Create the jsMind container
     const jsmindContainer = document.createElement("div");
     jsmindContainer.id = "jsmind_container";
-    jsmindContainer.style.flex = "1";
+    jsmindContainer.style.minWidth = "100%";
+    jsmindContainer.style.minHeight = "100vh";
     jsmindContainer.style.position = "relative";
-    jsmindContainer.style.overflow = "auto";
+    jsmindContainer.style.display = "inline-block";
+    jsmindContainer.style.whiteSpace = "nowrap";
+    jsmindContainer.style.padding = "40px";
     jsmindContainer.style.backgroundColor = "#1f2937"; // Match the dark theme
 
     // Create a toolbar
