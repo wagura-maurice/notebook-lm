@@ -62,6 +62,7 @@
     <!-- Custom CSS -->
     <link href="./css/wizard.css" rel="stylesheet" />
     <link href="./css/openCanvas.css" rel="stylesheet" />
+    <link href="./css/mindMap.css" rel="stylesheet" />
   </head>
 
   <body class="h-screen flex flex-col bg-dark-blue overflow-hidden font-sans">
@@ -422,14 +423,11 @@
               </div>
               <div class="flex items-center mb-4 gap-2 actions-row">
                 <button
-                  id="chatAboutSourcesBtn"
+                  id="mindMapSourceBtn"
                   class="flex items-center justify-center flex-1 py-2 px-3 bg-sky-500 hover:bg-sky-600 rounded-full text-sm font-medium transition-colors"
                 >
-                  <i class="fa-brands fa-rocketchat mr-2"></i>
-                  <span
-                    >Chat
-                    <!-- about these  -->sources</span
-                  >
+                  <i class="fa-solid fa-brain mr-2"></i>
+                  <span>Mind Map</span>
                 </button>
                 <button
                   id="canvasSourceBtn"
@@ -439,6 +437,13 @@
                   <span>Canvas</span>
                 </button>
               </div>
+              <button
+                id="chatAboutSourcesBtn"
+                class="w-full flex items-center justify-center flex-1 py-2 px-3 bg-sky-500 hover:bg-sky-600 rounded-full text-sm font-medium transition-colors"
+              >
+                <i class="fa-brands fa-rocketchat mr-2"></i>
+                <span>Chat about these sources</span>
+              </button>
             </div>
 
             <!-- Select source -->
@@ -2975,12 +2980,131 @@
       </div>
     </div>
 
+    <!-- Mind Map Modal -->
+    <div
+      class="fixed inset-0 z-50 hidden w-full h-full overflow-hidden bg-gray-900 bg-opacity-90"
+      id="mind-map-modal"
+    >
+      <div class="flex flex-col h-full">
+        <!-- Header -->
+        <div
+          class="flex items-center justify-between px-4 py-3 bg-gray-800 border-b border-gray-700"
+        >
+          <h3 class="text-lg font-semibold text-white">Mind Map</h3>
+          <button
+            type="button"
+            class="p-2 text-gray-400 rounded-full hover:bg-gray-700 hover:text-white focus:outline-none"
+            onclick="document.getElementById('mind-map-modal').classList.add('hidden')"
+          >
+            <i class="w-5 h-5 fa-solid fa-xmark"></i>
+            <span class="sr-only">Close modal</span>
+          </button>
+        </div>
+
+        <!-- Mind Map Container -->
+        <div
+          id="mind-map-content"
+          class="flex-1 relative scrollbar-transparent"
+        >
+          <!-- jsMind will render here -->
+        </div>
+      </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/quill-table-better@1/dist/quill-table-better.js"></script>
-    <script src="js/wizard.js"></script>
-    <script src="js/openCanvas.js"></script>
+
+    <!-- jsMind -->
+    <link href="assets/jsmind/jsmind.css" rel="stylesheet" />
+    <script src="assets/jsmind/jsmind.js"></script>
+    <script src="assets/jsmind/jsmind.draggable-node.js"></script>
+
+    <!-- Application Scripts -->
+    <script>
+      // Load scripts with error handling
+      function loadScript(src, onLoad) {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = src;
+          script.onload = () => {
+            console.log("Loaded:", src);
+            if (onLoad) onLoad();
+            resolve();
+          };
+          script.onerror = (error) => {
+            console.error("Script failed to load:", src, error);
+            reject(new Error(`Failed to load script: ${src}`));
+          };
+          document.body.appendChild(script);
+        });
+      }
+
+      // Load application scripts in order
+      async function loadAppScripts() {
+        try {
+          // First load wizard.js and openCanvas.js in parallel
+          await Promise.all([
+            loadScript("./js/wizard.js"),
+            loadScript("js/openCanvas.js"),
+          ]);
+
+          // Load mindMap.js after ensuring jsMind is available
+          if (!window.jsMind) {
+            console.error(
+              "jsMind not loaded. Make sure the jsMind scripts are included before mindMap.js"
+            );
+            throw new Error("jsMind library not found");
+          }
+
+          await loadScript("./js/mindMap.js");
+          console.log("All application scripts loaded successfully");
+        } catch (error) {
+          console.error("Error loading scripts:", error);
+          // Show error to user
+          const errorDiv = document.createElement("div");
+          errorDiv.style.position = "fixed";
+          errorDiv.style.top = "10px";
+          errorDiv.style.left = "50%";
+          errorDiv.style.transform = "translateX(-50%)";
+          errorDiv.style.backgroundColor = "#fee2e2";
+          errorDiv.style.color = "#b91c1c";
+          errorDiv.style.padding = "16px";
+          errorDiv.style.borderRadius = "8px";
+          errorDiv.style.zIndex = "9999";
+          errorDiv.style.maxWidth = "80%";
+          errorDiv.style.textAlign = "center";
+          errorDiv.innerHTML = `
+                <h3 style="margin-top: 0; margin-bottom: 8px; color: #991b1b;">Error Loading Application</h3>
+                <p style="margin: 0 0 12px;">${
+                  error.message ||
+                  "An error occurred while loading the application."
+                }</p>
+                <button onclick="window.location.reload()" style="
+                  background: #ef4444;
+                  color: white;
+                  border: none;
+                  padding: 8px 16px;
+                  border-radius: 4px;
+                  cursor: pointer;
+                  font-weight: 500;
+                ">
+                  Reload Page
+                </button>
+              `;
+          document.body.appendChild(errorDiv);
+        }
+      }
+
+      // Start loading the application when DOM is ready
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", loadAppScripts);
+      } else {
+        loadAppScripts();
+      }
+    </script>
+
     <script>
       $(document).ready(function () {
         // Initialize the CanvasChat

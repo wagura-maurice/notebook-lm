@@ -544,14 +544,19 @@ const SourceActions = {
       this.openDiscoverModal.bind(this)
     );
 
-    $("#chatAboutSourcesBtn, #chatAboutSourcesIcon").on(
+    $("#mindMapSourceBtn, #mindMapSourcesIcon").on(
       "click",
-      this.showChatAboutSourcesContent.bind(this)
+      this.showMindMapModal.bind(this)
     );
 
     $("#canvasSourceBtn, #canvasSourcesIcon").on(
       "click",
       this.showOpenCanvasNotesToCanvasModal.bind(this)
+    );
+
+    $("#chatAboutSourcesBtn, #chatAboutSourcesIcon").on(
+      "click",
+      this.showChatAboutSourcesContent.bind(this)
     );
 
     // Modal navigation
@@ -996,6 +1001,21 @@ const SourceActions = {
     });
   },
 
+  showMindMapModal: function (e) {
+    e.preventDefault();
+    const $noteItems = $(e.currentTarget).closest(".note-list-container");
+    $("#mind-map-modal").removeClass("hidden");
+  },
+
+  showOpenCanvasNotesToCanvasModal: function (e) {
+    // alert("Add logic to converge all notes to canvas");
+    e.preventDefault();
+    const $noteItems = $(e.currentTarget).closest(".note-list-container");
+    $("#open-canvas-notes-modal").removeClass("hidden");
+    // $("#open-canvas-notes-modal").data("note-list-container", $noteItems);
+    // alert($noteItems.count);
+  },
+
   showChatAboutSourcesContent: function (e) {
     e.preventDefault();
 
@@ -1098,15 +1118,6 @@ const SourceActions = {
       $(".view-source-content").remove();
       $(SELECTORS.leftColumn).append(originalContent);
     });
-  },
-
-  showOpenCanvasNotesToCanvasModal: function (e) {
-    // alert("Add logic to converge all notes to canvas");
-    e.preventDefault();
-    const $noteItems = $(e.currentTarget).closest(".note-list-container");
-    $("#open-canvas-notes-modal").removeClass("hidden");
-    // $("#open-canvas-notes-modal").data("note-list-container", $noteItems);
-    // alert($noteItems.count);
   },
 };
 
@@ -2027,11 +2038,14 @@ const WizardToggler = {
 /* === RESPONSIVE TEXTAREA === */
 /* ============================================ */
 function updateTextareaRows() {
-  const textarea = document.getElementById('policy-input');
+  const textarea = document.getElementById("policy-input");
   if (!textarea) return; // Exit if textarea doesn't exist
-  
-  if (window.innerWidth >= 1024) { // lg breakpoint
-    textarea.rows = parseInt(textarea.getAttribute('data-desktop-rows') || '15');
+
+  if (window.innerWidth >= 1024) {
+    // lg breakpoint
+    textarea.rows = parseInt(
+      textarea.getAttribute("data-desktop-rows") || "15"
+    );
   } else {
     textarea.rows = 7;
   }
@@ -2040,7 +2054,7 @@ function updateTextareaRows() {
 // Run on load and on window resize
 function initResponsiveTextarea() {
   updateTextareaRows();
-  window.addEventListener('resize', updateTextareaRows);
+  window.addEventListener("resize", updateTextareaRows);
 }
 
 /* ============================================ */
