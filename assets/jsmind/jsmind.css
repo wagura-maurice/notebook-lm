@@ -63,8 +63,10 @@ jmexpander {
   font-size: 16px;
   text-align: center;
   cursor: pointer;
-  margin-left: 6px;
-  margin-right: 6px;
+  margin-left: 10px;
+  margin-right: 10px;
+  /* padding-left: 6px; */
+  /* padding-right: 6px; */
   font-weight: bold;
   color: #ec2bf7;
   transition: all 0.2s ease;

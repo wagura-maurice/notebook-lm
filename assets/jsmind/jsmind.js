@@ -2282,12 +2282,32 @@
     get_expander_point: function (node) {
       var p = this.get_node_point_out(node);
       var ex_p = {};
-      if (node._data.layout.direction == jm.direction.right) {
-        ex_p.x = p.x - this.opts.pspace;
-      } else {
-        ex_p.x = p.x;
+      // Get the expander element
+      var expander = document.querySelector(
+        `jmnode[nodeid="${node.id}"] jmexpander`
+      );
+      var expanderWidth = 20; // Default width from CSS
+      var expanderHeight = 20; // Default height from CSS
+
+      if (expander) {
+        // If we can get the actual rendered size, use that
+        var rect = expander.getBoundingClientRect();
+        expanderWidth = rect.width;
+        expanderHeight = rect.height;
       }
-      ex_p.y = p.y - Math.ceil(this.opts.pspace / 2);
+
+      // Calculate the center point of the expander
+      if (node._data.layout.direction === jm.direction.right) {
+        // For right direction, expander is to the right of the node
+        ex_p.x = p.x - this.opts.pspace / 2 - expanderWidth / 2;
+      } else {
+        // For left direction, expander is to the left of the node
+        ex_p.x = p.x + this.opts.pspace / 2 + expanderWidth / 2;
+      }
+
+      // Center vertically on the expander
+      ex_p.y = p.y - expanderHeight / 2;
+
       return ex_p;
     },
 
