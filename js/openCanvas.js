@@ -1,5 +1,5 @@
 // js/openCanvas.js
-// Register quill-table-better module (must be loaded via <script> before this runs)
+// Register quill-table-better module (must be loaded via <script type="application/JavaScript"> before this runs)
 Quill.register(
   {
     "modules/table-better": QuillTableBetter,
