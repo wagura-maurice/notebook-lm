@@ -2024,6 +2024,26 @@ const WizardToggler = {
 };
 
 /* ============================================ */
+/* === RESPONSIVE TEXTAREA === */
+/* ============================================ */
+function updateTextareaRows() {
+  const textarea = document.getElementById('policy-input');
+  if (!textarea) return; // Exit if textarea doesn't exist
+  
+  if (window.innerWidth >= 1024) { // lg breakpoint
+    textarea.rows = parseInt(textarea.getAttribute('data-desktop-rows') || '15');
+  } else {
+    textarea.rows = 7;
+  }
+}
+
+// Run on load and on window resize
+function initResponsiveTextarea() {
+  updateTextareaRows();
+  window.addEventListener('resize', updateTextareaRows);
+}
+
+/* ============================================ */
 /* === DOCUMENT READY === */
 /* ============================================ */
 $(document).ready(function () {
@@ -2041,4 +2061,5 @@ $(document).ready(function () {
   Utilities.init();
   ModalHandling.init();
   RightColumnChat.init();
+  initResponsiveTextarea();
 });
