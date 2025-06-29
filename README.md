@@ -43,10 +43,12 @@ notebook-lm/
 ## Getting Started
 
 ### Prerequisites
+
 - A modern web browser
 - [Optional] Node.js and npm (for future build tools and enhancements)
 
 ### Running Locally
+
 1. Clone the repository:
    ```bash
    git clone <repo-url>
@@ -55,6 +57,7 @@ notebook-lm/
 2. Open `index.html` in your browser to explore the main interface.
 
 ### File Overview
+
 - `index.html`: Main entry point for the app.
 - `collection.html`: Page for managing document collections.
 - `auth/`: Contains authentication-related HTML pages (sign-in, sign-up, password reset).
@@ -63,26 +66,31 @@ notebook-lm/
 - `images/`, `fonts/`: Static assets.
 
 ## Usage
+
 - Upload documents to create a collection.
 - Use the AI-powered chat to ask questions about your documents.
 - Take notes in the note-taking studio and organize them within collections.
 
 ## Development Notes
+
 - The project currently uses vanilla HTML, CSS, and JS. No frameworks are required for basic usage.
 - See `notebook-lm-logic.md` for future plans:
   - Rebuild using TailwindCSS, Vanilla JS (no jQuery), and modern build tools (Vite, Gulp).
   - UI/UX improvements (e.g., modal positioning, responsive design).
 
 ## Contributing
+
 1. Fork the repository
 2. Create a new branch (`git checkout -b feature/your-feature`)
 3. Commit your changes
 4. Push to your fork and submit a pull request
 
 ## License
+
 Specify your license here (e.g., MIT, Apache 2.0).
 
 ## Contact
+
 For questions or suggestions, open an issue or contact the project maintainer.
 
 ---
