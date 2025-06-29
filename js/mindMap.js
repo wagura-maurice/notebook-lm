@@ -871,11 +871,12 @@ class MindMap {
       input.style.fontFamily = "Verdana, Arial, Helvetica, sans-serif";
       input.style.zIndex = "1000";
 
-      // Set custom dark theme for the input
+      // Set dark theme for editing with white text
       input.style.backgroundColor = "#1a1a1a"; // Dark background
-      input.style.color = "#f9f9f9"; // White text
-      input.style.boxShadow = "0 2px 4px rgba(0,0,0,0.3)"; // Subtle shadow
-      input.style.border = "1px solid #333"; // Dark border
+      input.style.color = "#ffffff"; // White text
+      input.style.boxShadow = "0 2px 8px rgba(0,0,0,0.4)"; // Slightly stronger shadow
+      input.style.border = "2px solid #4a90e2"; // Blue border to indicate edit mode
+      input.style.fontWeight = "500"; // Slightly bolder text for better readability
 
       // Add to container
       const container = this.container.querySelector("#jsmind_container");
