@@ -164,7 +164,7 @@ class MindMap {
       // Clear the container but keep the structure
       if (this.container) {
         // Instead of clearing the entire container, just hide it
-        this.container.style.display = 'none';
+        this.container.style.display = "none";
       }
     }
 
@@ -172,17 +172,17 @@ class MindMap {
     if (this.jm) {
       try {
         // Don't reset the data if we're just refreshing
-        if (!preserveState && typeof this.jm.show === 'function') {
+        if (!preserveState && typeof this.jm.show === "function") {
           this.jm.show({
             meta: {},
-            format: 'node_tree',
-            data: { id: 'root', topic: 'New Mind Map' }
+            format: "node_tree",
+            data: { id: "root", topic: "New Mind Map" },
           });
         }
-        
+
         // Don't destroy the instance completely, just clean up event listeners
         if (this.jm.view) {
-          if (typeof this.jm.view.remove_event_listener === 'function') {
+          if (typeof this.jm.view.remove_event_listener === "function") {
             this.jm.view.remove_event_listener();
           }
         }
@@ -201,10 +201,10 @@ class MindMap {
 
   initialize() {
     console.log("Initializing mind map...");
-    
+
     // Make sure container is visible
     if (this.container) {
-      this.container.style.display = 'flex';
+      this.container.style.display = "flex";
     }
 
     // If already initialized, just refresh the display
@@ -241,7 +241,7 @@ class MindMap {
       this.showError("Error setting up mind map container: " + error.message);
       return;
     }
-    
+
     try {
       // Create a loading indicator
       const loadingDiv = document.createElement("div");
@@ -846,28 +846,104 @@ class MindMap {
       // Get current topic, ensuring it's a string
       const currentTopic = node.topic || "";
 
-      // Show prompt with current topic
-      const newTopic = prompt("Edit node:", currentTopic);
-
-      // If user cancelled the prompt
-      if (newTopic === null) return;
-
-      // Trim whitespace
-      const trimmedTopic = newTopic.trim();
-
-      // Check if empty after trim
-      if (trimmedTopic === "") {
-        this.updateStatus("Node title cannot be empty", true);
+      // Get the node element
+      const nodeElement = document.querySelector(`jmnode[nodeid="${nodeId}"]`);
+      if (!nodeElement) {
+        console.error("Node element not found in DOM");
         return;
       }
 
-      // Only update if the topic has actually changed
-      if (trimmedTopic !== currentTopic) {
-        // Use the jm.update_node method with the node object
-        const updatedNode = Object.assign({}, node, { topic: trimmedTopic });
-        this.jm.update_node(updatedNode);
-        this.updateStatus("Node updated");
-      }
+      // Create input element
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = currentTopic;
+      input.style.position = "absolute";
+      input.style.left = nodeElement.offsetLeft + "px";
+      input.style.top = nodeElement.offsetTop + "px";
+      input.style.width = Math.max(200, nodeElement.offsetWidth) + "px";
+      input.style.height = nodeElement.offsetHeight + "px";
+      input.style.padding = "10px";
+      input.style.borderRadius = "5px";
+      input.style.border = "none";
+      input.style.outline = "2px solid #4a90e2";
+      input.style.boxSizing = "border-box";
+      input.style.fontSize = "16px";
+      input.style.fontFamily = "Verdana, Arial, Helvetica, sans-serif";
+      input.style.zIndex = "1000";
+
+      // Set custom dark theme for the input
+      input.style.backgroundColor = "#1a1a1a"; // Dark background
+      input.style.color = "#f9f9f9"; // White text
+      input.style.boxShadow = "0 2px 4px rgba(0,0,0,0.3)"; // Subtle shadow
+      input.style.border = "1px solid #333"; // Dark border
+
+      // Add to container
+      const container = this.container.querySelector("#jsmind_container");
+      container.appendChild(input);
+
+      // Focus and select all text
+      input.focus();
+      input.select();
+
+      // Handle key events
+      const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+          finishEdit();
+        } else if (e.key === "Escape") {
+          cancelEdit();
+        }
+      };
+
+      // Handle blur (when clicking outside)
+      const handleBlur = () => {
+        finishEdit();
+      };
+
+      // Handle clicks outside
+      const handleClickOutside = (e) => {
+        if (e.target !== input) {
+          finishEdit();
+        }
+      };
+
+      // Add event listeners
+      input.addEventListener("keydown", handleKeyDown);
+      input.addEventListener("blur", handleBlur);
+      document.addEventListener("mousedown", handleClickOutside);
+
+      // Clean up function
+      const cleanup = () => {
+        input.removeEventListener("keydown", handleKeyDown);
+        input.removeEventListener("blur", handleBlur);
+        document.removeEventListener("mousedown", handleClickOutside);
+        if (input.parentNode) {
+          input.parentNode.removeChild(input);
+        }
+      };
+
+      // Handle edit completion
+      const finishEdit = () => {
+        const newTopic = input.value.trim();
+        cleanup();
+
+        // Check if empty after trim
+        if (newTopic === "") {
+          this.updateStatus("Node title cannot be empty", true);
+          return;
+        }
+
+        // Only update if the topic has actually changed
+        if (newTopic !== currentTopic) {
+          const updatedNode = Object.assign({}, node, { topic: newTopic });
+          this.jm.update_node(updatedNode);
+          this.updateStatus("Node updated");
+        }
+      };
+
+      // Handle edit cancellation
+      const cancelEdit = () => {
+        cleanup();
+      };
     } catch (error) {
       console.error("Error in editNode:", error);
       this.updateStatus(
