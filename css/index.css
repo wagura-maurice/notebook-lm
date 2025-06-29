@@ -54,7 +54,9 @@ body {
   overflow: hidden;
 }
 
-/* Modals */
+/* ============================================ */
+/* === MODALS === */
+/* ============================================ */
 .modal {
   position: fixed;
   top: 0;
@@ -79,11 +81,94 @@ body {
 .modal > div:not(.modal-overlay) {
   position: relative;
   z-index: 1002 !important;
-  background-color: #1e293b; /* Slate-800 */
+  background-color: #1e293b; /* Slate-800, matches index.css */
+  color: #f8fafc; /* Light text for readability */
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  max-width: 28rem;
   width: 100%;
   padding: 1.5rem;
+}
+
+/* ============================================ */
+/* === RESPONSIVE ADJUSTMENTS === */
+/* ============================================ */
+/* Mobile (below 1024px) */
+@media (max-width: 1023px) {
+  /*  */
+}
+
+/* Small mobile (below 640px) */
+@media (max-width: 639px) {
+  /*  */
+}
+
+/* Tablet (640px - 1023px) */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .modal > div:not(.modal-overlay) {
+    max-width: 90%;
+  }
+}
+
+/* Modal responsiveness (below 767px) */
+@media (max-width: 767px) {
+  .modal > div:not(.modal-overlay) {
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+
+  .modal-footer button {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* =================================== */
+/* Add these styles to your collection.css file */
+@media (max-width: 767px) {
+  .modal {
+    align-items: flex-start; /* Align to top instead of center */
+    padding-top: 1rem; /* Add some top padding */
+    padding-bottom: 1rem; /* Add bottom padding */
+    overflow-y: auto; /* Enable scrolling for the modal container */
+  }
+
+  .modal > div:not(.modal-overlay) {
+    margin: 1rem auto; /* Center with auto margins */
+    max-height: calc(100vh - 2rem); /* Limit height to viewport minus padding */
+    overflow-y: auto; /* Enable scrolling for modal content */
+    transform: none !important; /* Remove any transforms that might affect positioning */
+  }
+
+  /* Modal header adjustments */
+  .modal > div:not(.modal-overlay) > div:first-child {
+    position: sticky;
+    top: 0;
+    background-color: var(--slate-800);
+    z-index: 10;
+  }
+
+  /* Modal body adjustments */
+  .modal > div:not(.modal-overlay) > div:nth-child(2) {
+    padding-bottom: 1rem; /* Add bottom padding */
+  }
+
+  /* Modal footer adjustments */
+  .modal > div:not(.modal-overlay) > div:last-child {
+    position: sticky;
+    bottom: 0;
+    background-color: var(--slate-800);
+    z-index: 10;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
+/* Additional improvements for all screen sizes */
+.modal {
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+.modal > div:not(.modal-overlay) {
+  display: flex;
+  flex-direction: column;
 }
