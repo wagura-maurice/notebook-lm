@@ -14,8 +14,8 @@
     />
 
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
+    <script type="application/JavaScript" src="https://cdn.tailwindcss.com"></script>
+    <script type="application/JavaScript">
       tailwind.config = {
         theme: {
           fontFamily: {
@@ -164,7 +164,7 @@
                 </div>
               </div>
             </div>
-            <script>
+            <script type="application/JavaScript">
               document.addEventListener("DOMContentLoaded", function () {
                 const dropdownTrigger = document.getElementById(
                   "avatar-dropdown-trigger"
@@ -314,7 +314,7 @@
               </div>
             </div>
           </div>
-          <script>
+          <script type="application/JavaScript">
             document.addEventListener("DOMContentLoaded", function () {
               const dropdownTrigger = document.getElementById(
                 "desktop-avatar-dropdown-trigger"
@@ -4118,12 +4118,12 @@ Please generate a comprehensive Active Labor Market Policy (ALMPs) document. The
       </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/quill-table-better@1/dist/quill-table-better.js"></script>
-    <script src="js/collection.js"></script>
-    <script src="js/openCanvas.js"></script>
-    <script>
+    <script type="application/JavaScript" src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script type="application/JavaScript" src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <script type="application/JavaScript" src="https://cdn.jsdelivr.net/npm/quill-table-better@1/dist/quill-table-better.js"></script>
+    <script type="application/JavaScript" src="js/collection.js"></script>
+    <script type="application/JavaScript" src="js/openCanvas.js"></script>
+    <script type="application/JavaScript">
       $(document).ready(function () {
         // Initialize the CanvasChat
         if (typeof CanvasChat !== "undefined") {
