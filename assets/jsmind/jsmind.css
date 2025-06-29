@@ -53,13 +53,13 @@ jmnode {
 
 jmexpander {
   position: absolute;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  line-height: 18px;
+  overflow: visible;
+  line-height: 20px;
   font-size: 16px;
   text-align: center;
   cursor: pointer;
@@ -68,15 +68,18 @@ jmexpander {
   font-weight: bold;
   color: #ec2bf7;
   transition: all 0.2s ease;
-  border-radius: 3px;
+  border-radius: 50%;
   background-color: rgba(236, 43, 247, 0.1);
+  z-index: 10;
+  border: 1px solid rgba(236, 43, 247, 0.3);
 }
 
 jmexpander:hover {
   color: #ffffff;
   background-color: #ec2bf7;
   transform: scale(1.1);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(236, 43, 247, 0.5);
+  border-color: #ec2bf7;
 }
 
 /* Add a subtle pulse animation on hover */
