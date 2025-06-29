@@ -43,22 +43,13 @@ class MindMap {
           console.log("Modal visibility changed, isVisible:", isVisible);
 
           if (isVisible) {
-            if (!this.mindMapInitialized) {
-              console.log("Initializing mind map for the first time...");
-              this.initialize();
-            } else if (this.jm) {
-              console.log("Refreshing mind map display...");
-              // Refresh the display if already initialized
-              setTimeout(() => {
-                if (this.jm && typeof this.jm.resize === "function") {
-                  this.jm.resize();
-                }
-              }, 100);
-            }
+            // Always reinitialize when modal becomes visible
+            console.log("Modal shown, initializing mind map...");
+            this.initialize();
           } else {
-            // Clean up when modal is hidden
+            // Clean up when modal is hidden but keep the instance
             console.log("Modal hidden, cleaning up resources...");
-            this.cleanup();
+            this.cleanup(true); // Preserve state
           }
         }
       });
@@ -159,50 +150,79 @@ class MindMap {
   }
 
   // Clean up resources when the mind map is no longer needed
-  cleanup() {
+  cleanup(preserveState = false) {
     console.log("Cleaning up mind map resources...");
 
-    // Stop observing modal changes
-    if (this.modalObserver) {
-      this.modalObserver.disconnect();
-      this.modalObserver = null;
+    // Clear any existing status timeout
+    if (this.statusTimeout) {
+      clearTimeout(this.statusTimeout);
+      this.statusTimeout = null;
     }
 
-    // Remove event listeners
-    const container = document.getElementById("jsmind_container");
-    if (container) {
-      container.replaceWith(container.cloneNode(true));
+    // Don't clean up the observer or container if we're just refreshing
+    if (!preserveState) {
+      // Clear the container but keep the structure
+      if (this.container) {
+        // Instead of clearing the entire container, just hide it
+        this.container.style.display = 'none';
+      }
     }
 
-    // Setup click handlers for node expand/collapse
-    this.setupNodeHandlers();
-
-    // Clear the mind map if it exists
+    // Clean up the mind map instance
     if (this.jm) {
       try {
-        this.jm.destroy();
+        // Don't reset the data if we're just refreshing
+        if (!preserveState && typeof this.jm.show === 'function') {
+          this.jm.show({
+            meta: {},
+            format: 'node_tree',
+            data: { id: 'root', topic: 'New Mind Map' }
+          });
+        }
+        
+        // Don't destroy the instance completely, just clean up event listeners
+        if (this.jm.view) {
+          if (typeof this.jm.view.remove_event_listener === 'function') {
+            this.jm.view.remove_event_listener();
+          }
+        }
       } catch (e) {
-        console.error("Error destroying jsMind instance:", e);
+        console.error("Error cleaning up jsMind instance:", e);
+      } finally {
+        if (!preserveState) {
+          // Don't set jm to null, just mark as not initialized
+          this.mindMapInitialized = false;
+        }
       }
-      this.jm = null;
     }
 
-    this.mindMapInitialized = false;
     console.log("Mind map cleanup complete");
   }
 
   initialize() {
+    console.log("Initializing mind map...");
+    
+    // Make sure container is visible
+    if (this.container) {
+      this.container.style.display = 'flex';
+    }
+
+    // If already initialized, just refresh the display
     if (this.mindMapInitialized && this.jm) {
-      console.log("Mind map already initialized, refreshing...");
-      // If already initialized, just refresh the display
+      console.log("Mind map already initialized, refreshing display...");
       try {
-        this.jm.show();
-        // Force a resize to ensure proper rendering
+        // Just refresh the display
         setTimeout(() => {
-          if (this.jm && typeof this.jm.resize === "function") {
-            this.jm.resize();
+          if (this.jm) {
+            if (typeof this.jm.resize === "function") {
+              this.jm.resize();
+            }
+            if (typeof this.jm.refresh === "function") {
+              this.jm.refresh();
+            }
           }
         }, 100);
+        return;
       } catch (error) {
         console.error("Error refreshing mind map:", error);
         this.showError(
@@ -215,7 +235,14 @@ class MindMap {
     try {
       // Set up the container
       this.container.innerHTML = "";
-
+      this.setupMindMapContainer();
+    } catch (error) {
+      console.error("Error setting up mind map container:", error);
+      this.showError("Error setting up mind map container: " + error.message);
+      return;
+    }
+    
+    try {
       // Create a loading indicator
       const loadingDiv = document.createElement("div");
       loadingDiv.style.display = "flex";
@@ -377,6 +404,71 @@ class MindMap {
     container.appendChild(fileInput);
 
     return container;
+  }
+
+  // Set up the mind map container
+  setupMindMapContainer() {
+    // Create a wrapper for the mind map content
+    const contentWrapper = document.createElement("div");
+    contentWrapper.style.display = "flex";
+    contentWrapper.style.flexDirection = "column";
+    contentWrapper.style.height = "100vh";
+    contentWrapper.style.width = "100%";
+    contentWrapper.style.position = "relative";
+    contentWrapper.style.overflow = "hidden";
+
+    // Create the jsMind container
+    const jsmindContainer = document.createElement("div");
+    jsmindContainer.id = "jsmind_container";
+    jsmindContainer.style.flex = "1";
+    jsmindContainer.style.position = "relative";
+    jsmindContainer.style.overflow = "auto";
+    jsmindContainer.style.backgroundColor = "#1f2937"; // Match the dark theme
+
+    // Create a toolbar
+    const toolbar = document.createElement("div");
+    toolbar.className = "mind-map-toolbar";
+    toolbar.style.padding = "8px";
+    toolbar.style.backgroundColor = "#1f2937";
+    toolbar.style.borderBottom = "1px solid #374151";
+
+    // Add buttons
+    const addNodeBtn = this.createButton("Add Node", () => this.addNode());
+    const saveBtn = this.createButton("Save", () => this.saveMindMap());
+    const loadBtn = this.createLoadButton();
+    const closeBtn = this.createButton("Close", () => {
+      document.getElementById("mind-map-modal").classList.add("hidden");
+    });
+
+    toolbar.appendChild(addNodeBtn);
+    toolbar.appendChild(saveBtn);
+    toolbar.appendChild(loadBtn);
+    toolbar.appendChild(closeBtn);
+
+    // Status element
+    this.statusEl = document.createElement("div");
+    this.statusEl.className = "mind-map-status";
+    this.statusEl.style.padding = "4px 8px";
+    this.statusEl.style.fontSize = "14px";
+    this.statusEl.style.color = "#f3f4f6";
+    this.statusEl.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+    this.statusEl.style.borderRadius = "4px";
+    this.statusEl.style.position = "absolute";
+    this.statusEl.style.bottom = "20px";
+    this.statusEl.style.left = "50%";
+    this.statusEl.style.transform = "translateX(-50%)";
+    this.statusEl.style.zIndex = "1000";
+
+    // Add elements to the container
+    contentWrapper.appendChild(toolbar);
+    contentWrapper.appendChild(jsmindContainer);
+    contentWrapper.appendChild(this.statusEl);
+
+    // Clear and set up the container
+    this.container.innerHTML = "";
+    this.container.style.height = "100vh";
+    this.container.style.overflow = "hidden";
+    this.container.appendChild(contentWrapper);
   }
 
   initJsMind() {
