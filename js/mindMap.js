@@ -287,18 +287,12 @@ class MindMap {
           toolbar.style.borderBottom = "1px solid #374151";
 
           // Add buttons
-          const addNodeBtn = this.createButton("Add Node", () =>
-            this.addNode()
-          );
           const saveBtn = this.createButton("Save", () => this.saveMindMap());
-          const loadBtn = this.createLoadButton();
           const closeBtn = this.createButton("Close", () => {
             document.getElementById("mind-map-modal").classList.add("hidden");
           });
 
-          toolbar.appendChild(addNodeBtn);
           toolbar.appendChild(saveBtn);
-          toolbar.appendChild(loadBtn);
           toolbar.appendChild(closeBtn);
 
           // Status element
@@ -384,28 +378,6 @@ class MindMap {
     return btn;
   }
 
-  createLoadButton() {
-    const container = document.createElement("div");
-    container.style.position = "relative";
-    container.style.display = "inline-block";
-
-    const label = this.createButton("Load", () => {
-      document.getElementById("load-mindmap").click();
-    });
-
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.id = "load-mindmap";
-    fileInput.accept = ".jm,.json";
-    fileInput.style.display = "none";
-    fileInput.addEventListener("change", (e) => this.loadMindMap(e));
-
-    container.appendChild(label);
-    container.appendChild(fileInput);
-
-    return container;
-  }
-
   // Set up the mind map container
   setupMindMapContainer() {
     // Create a wrapper for the mind map content
@@ -437,16 +409,12 @@ class MindMap {
     toolbar.style.borderBottom = "1px solid #374151";
 
     // Add buttons
-    const addNodeBtn = this.createButton("Add Node", () => this.addNode());
     const saveBtn = this.createButton("Save", () => this.saveMindMap());
-    const loadBtn = this.createLoadButton();
     const closeBtn = this.createButton("Close", () => {
       document.getElementById("mind-map-modal").classList.add("hidden");
     });
 
-    toolbar.appendChild(addNodeBtn);
     toolbar.appendChild(saveBtn);
-    toolbar.appendChild(loadBtn);
     toolbar.appendChild(closeBtn);
 
     // Status element
@@ -813,151 +781,6 @@ class MindMap {
     }
   }
 
-  addNode() {
-    if (!this.jm) {
-      this.updateStatus("Mind map not initialized", true);
-      return;
-    }
-
-    const selectedNode = this.jm.get_selected_node();
-    const parentId = selectedNode ? selectedNode.id : "root";
-
-    const newNodeId = "node-" + Date.now();
-    const newNodeTopic = "New Idea";
-
-    try {
-      this.jm.add_node(parentId, newNodeId, newNodeTopic);
-      this.updateStatus("Added new node");
-    } catch (error) {
-      console.error("Error adding node:", error);
-      this.updateStatus("Error adding node: " + error.message, true);
-    }
-  }
-
-  editNode(nodeId) {
-    try {
-      if (!this.jm) {
-        console.error("jsMind instance not available");
-        return;
-      }
-
-      const node = this.jm.get_node(nodeId);
-      if (!node) {
-        console.error("Node not found:", nodeId);
-        return;
-      }
-
-      // Get current topic, ensuring it's a string
-      const currentTopic = node.topic || "";
-
-      // Get the node element
-      const nodeElement = document.querySelector(`jmnode[nodeid="${nodeId}"]`);
-      if (!nodeElement) {
-        console.error("Node element not found in DOM");
-        return;
-      }
-
-      // Create input element
-      const input = document.createElement("input");
-      input.type = "text";
-      input.value = currentTopic;
-      input.style.position = "absolute";
-      input.style.left = nodeElement.offsetLeft + "px";
-      input.style.top = nodeElement.offsetTop + "px";
-      input.style.width = Math.max(200, nodeElement.offsetWidth) + "px";
-      input.style.height = nodeElement.offsetHeight + "px";
-      input.style.padding = "10px";
-      input.style.borderRadius = "5px";
-      input.style.border = "none";
-      input.style.outline = "2px solid #4a90e2";
-      input.style.boxSizing = "border-box";
-      input.style.fontSize = "16px";
-      input.style.fontFamily = "Verdana, Arial, Helvetica, sans-serif";
-      input.style.zIndex = "1000";
-
-      // Set dark theme for editing with white text
-      input.style.backgroundColor = "#1a1a1a"; // Dark background
-      input.style.color = "#ffffff"; // White text
-      input.style.boxShadow = "0 2px 8px rgba(0,0,0,0.4)"; // Slightly stronger shadow
-      input.style.border = "2px solid #4a90e2"; // Blue border to indicate edit mode
-      input.style.fontWeight = "500"; // Slightly bolder text for better readability
-
-      // Add to container
-      const container = this.container.querySelector("#jsmind_container");
-      container.appendChild(input);
-
-      // Focus and select all text
-      input.focus();
-      input.select();
-
-      // Handle key events
-      const handleKeyDown = (e) => {
-        if (e.key === "Enter") {
-          finishEdit();
-        } else if (e.key === "Escape") {
-          cancelEdit();
-        }
-      };
-
-      // Handle blur (when clicking outside)
-      const handleBlur = () => {
-        finishEdit();
-      };
-
-      // Handle clicks outside
-      const handleClickOutside = (e) => {
-        if (e.target !== input) {
-          finishEdit();
-        }
-      };
-
-      // Add event listeners
-      input.addEventListener("keydown", handleKeyDown);
-      input.addEventListener("blur", handleBlur);
-      document.addEventListener("mousedown", handleClickOutside);
-
-      // Clean up function
-      const cleanup = () => {
-        input.removeEventListener("keydown", handleKeyDown);
-        input.removeEventListener("blur", handleBlur);
-        document.removeEventListener("mousedown", handleClickOutside);
-        if (input.parentNode) {
-          input.parentNode.removeChild(input);
-        }
-      };
-
-      // Handle edit completion
-      const finishEdit = () => {
-        const newTopic = input.value.trim();
-        cleanup();
-
-        // Check if empty after trim
-        if (newTopic === "") {
-          this.updateStatus("Node title cannot be empty", true);
-          return;
-        }
-
-        // Only update if the topic has actually changed
-        if (newTopic !== currentTopic) {
-          const updatedNode = Object.assign({}, node, { topic: newTopic });
-          this.jm.update_node(updatedNode);
-          this.updateStatus("Node updated");
-        }
-      };
-
-      // Handle edit cancellation
-      const cancelEdit = () => {
-        cleanup();
-      };
-    } catch (error) {
-      console.error("Error in editNode:", error);
-      this.updateStatus(
-        "Error updating node: " + (error.message || "Unknown error"),
-        true
-      );
-    }
-  }
-
   saveMindMap() {
     if (!this.jm) {
       this.updateStatus("Mind map not initialized", true);
@@ -984,35 +807,6 @@ class MindMap {
       console.error("Error saving mind map:", error);
       this.updateStatus("Error saving mind map: " + error.message, true);
     }
-  }
-
-  loadMindMap(event) {
-    if (!this.jm) {
-      this.updateStatus("Mind map not initialized", true);
-      return;
-    }
-
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      try {
-        const mindData = JSON.parse(e.target.result);
-        this.jm.show(mindData);
-        this.updateStatus("Mind map loaded");
-      } catch (error) {
-        console.error("Error loading mind map:", error);
-        this.updateStatus("Error loading mind map: " + error.message, true);
-      }
-    };
-
-    reader.onerror = () => {
-      this.updateStatus("Error reading file", true);
-    };
-
-    reader.readAsText(file);
   }
 
   showError(message) {
