@@ -459,11 +459,68 @@ class MindMap {
     // Get the node data
     try {
       const node = this.jm.get_node(nodeId);
+      
+      // First, log the basic node info
+      console.log('Node basic info:', {
+        id: nodeId,
+        hasNode: !!node,
+        nodeType: node ? typeof node : 'null'
+      });
+      
+      if (node) {
+        // Log available properties
+        console.log('Available node properties:', Object.keys(node));
+        
+        // Check for metadata in different possible locations
+        const possibleMetadata = {
+          'node.metadata': node.metadata,
+          'node.data.metadata': node.data?.metadata,
+          'node.data': node.data,
+          'node._data': node._data,
+          'node._node_data': node._node_data
+        };
+        
+        console.log('Checking for metadata in:', Object.keys(possibleMetadata));
+        
+        // Find the first non-undefined metadata-like object
+        const [foundIn, metadata] = Object.entries(possibleMetadata).find(([_, value]) => value) || [];
+        
+        if (metadata) {
+          console.log(`Found metadata in ${foundIn}:`, metadata);
+          console.log('Metadata keys:', Object.keys(metadata));
+          
+          // Try to find an answer or content
+          const answer = metadata.answer || metadata.content || metadata.text || metadata.desc;
+          console.log('Possible answer/content:', answer);
+          
+          // Update the node text with whatever we found
+          const nodeText = answer || 'No additional information available';
+          
+          Swal.fire({
+            title: node.topic || 'Node',
+            text: nodeText,
+            icon: 'info',
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'OK',
+          });
+          
+          return; // Exit after showing the alert
+        } else {
+          console.log('No metadata found in any expected location');
+        }
+      }
+      
       if (node && node.topic) {
         // Show an alert with the node's text
+        const nodeText =
+          node.metadata && node.metadata.answer !== undefined
+            ? node.metadata.answer
+            : "No additional information available";
+
         Swal.fire({
           title: node.topic,
-          text: node.metadata.answer,
+          text: nodeText,
           icon: "info",
           showCloseButton: true,
           showCancelButton: true,
