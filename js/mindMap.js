@@ -561,21 +561,33 @@ class MindMap {
             metadata.desc;
           console.log("Possible answer/content:", answer);
 
-          // Update the node text with whatever we found
-          const nodeText = answer || "No additional information available";
+          if (answer) {
+            // Format answer with HTML if we have content
+            const nodeTextLines = answer
+              .split(".")
+              .filter((line) => line.trim() !== "")
+              .map((line) => `<p style="text-align: left">${line}.</p>`)
+              .join("");
 
-          const nodeTextLines = nodeText
-            .split(".")
-            .map((line) => `<p style="text-align: left">${line}.</p>`)
-            .join("<br>");
-          Swal.fire({
-            title: node.topic || "Node",
-            html: nodeTextLines,
-            icon: "success",
-            showCloseButton: true,
-            showCancelButton: true,
-            confirmButtonText: "Continue",
-          });
+            Swal.fire({
+              title: node.topic || "Node",
+              html: nodeTextLines,
+              icon: "info",
+              showCloseButton: true,
+              showCancelButton: true,
+              confirmButtonText: "Continue",
+            });
+          } else {
+            // Use plain text for the default message
+            Swal.fire({
+              title: node.topic || "Node",
+              text: "No additional information available",
+              icon: "info",
+              showCloseButton: true,
+              showCancelButton: true,
+              confirmButtonText: "Continue",
+            });
+          }
 
           return; // Exit after showing the alert
         } else {
