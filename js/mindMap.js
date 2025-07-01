@@ -529,7 +529,7 @@ class MindMap {
     }
 
     // Format the message
-    const message = `Topic: ${node?.topic || "Untitled topic"}\n\nAnswer:\n${
+    const message = `Topic: ${node?.topic || "Untitled topic"}\n\nAnswer: ${
       metadata?.answer || "No additional information available"
     }`;
 
