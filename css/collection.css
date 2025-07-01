@@ -672,6 +672,30 @@ header {
   scrollbar-color: transparent transparent;
 }
 
+/* Textarea specific scrollbar styles */
+#ai-text-input-right {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+#ai-text-input-right::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+#ai-text-input-right::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#ai-text-input-right::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 3px;
+}
+
+#ai-text-input-right:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 116, 139, 0.3);
+}
+
 .scrollbar-transparent::-webkit-scrollbar {
   width: 6px;
   height: 6px;
