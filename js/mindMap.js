@@ -261,7 +261,7 @@ class MindMap {
   getDefaultMindData() {
     return {
       meta: {
-        name: "Information Assessment and Management",
+        name: "ALMPs",
         author: "Peter Thirikwa",
         version: "1.0",
       },
@@ -279,7 +279,7 @@ class MindMap {
         },
         {
           id: "reliability",
-          topic: "Assessing Reliability & Credibility",
+          topic: "Assessing Reliability & Credibility?",
           parentid: "root",
           direction: "right",
           priority: "high",
@@ -291,7 +291,7 @@ class MindMap {
         },
         {
           id: "grey-lit",
-          topic: "Grey Literature",
+          topic: "Grey Literature?",
           parentid: "reliability",
           direction: "right",
           priority: "high",
@@ -303,7 +303,7 @@ class MindMap {
         },
         {
           id: "archival",
-          topic: "Archival Research",
+          topic: "Archival Research?",
           parentid: "reliability",
           direction: "right",
           priority: "high",
@@ -315,7 +315,7 @@ class MindMap {
         },
         {
           id: "think-tanks",
-          topic: "Think Tanks",
+          topic: "Think Tanks?",
           parentid: "reliability",
           direction: "right",
           priority: "high",
@@ -327,7 +327,7 @@ class MindMap {
         },
         {
           id: "push-protocol",
-          topic: "Push Protocol (2KTeco Devices)",
+          topic: "Push Protocol (2KTeco Devices)?",
           parentid: "reliability",
           direction: "right",
           priority: "high",
@@ -339,7 +339,7 @@ class MindMap {
         },
         {
           id: "icea",
-          topic: "ICEA LION Financial Services",
+          topic: "ICEA LION Financial Services?",
           parentid: "reliability",
           direction: "right",
           priority: "high",
@@ -351,7 +351,7 @@ class MindMap {
         },
         {
           id: "kingo",
-          topic: "Kingo Edwin Rwaro (Clinical Professional)",
+          topic: "Kingo Edwin Rwaro (Clinical Professional)?",
           parentid: "reliability",
           direction: "right",
           priority: "high",
@@ -363,7 +363,7 @@ class MindMap {
         },
         {
           id: "invoices",
-          topic: "Invoices",
+          topic: "Invoices?",
           parentid: "reliability",
           direction: "right",
           priority: "high",
@@ -375,7 +375,7 @@ class MindMap {
         },
         {
           id: "national-switch",
-          topic: "National Switch and Micro Finance Transaction Hub Upgrade",
+          topic: "National Switch and Micro Finance Transaction Hub Upgrade?",
           parentid: "reliability",
           direction: "right",
           priority: "high",
@@ -387,7 +387,7 @@ class MindMap {
         },
         {
           id: "publication",
-          topic: "Publication Types",
+          topic: "Publication Types?",
           parentid: "root",
           direction: "right",
           priority: "high",
@@ -399,7 +399,7 @@ class MindMap {
         },
         {
           id: "orgs",
-          topic: "Producing Organizations",
+          topic: "Producing Organizations?",
           parentid: "publication",
           direction: "right",
           priority: "high",
@@ -411,7 +411,7 @@ class MindMap {
         },
         {
           id: "challenges",
-          topic: "Challenges (Problems)",
+          topic: "Challenges (Problems)?",
           parentid: "publication",
           direction: "right",
           priority: "high",
@@ -423,7 +423,7 @@ class MindMap {
         },
         {
           id: "impact",
-          topic: "Impact/Importance",
+          topic: "Impact/Importance?",
           parentid: "publication",
           direction: "right",
           priority: "high",
@@ -435,7 +435,7 @@ class MindMap {
         },
         {
           id: "access",
-          topic: "Accessibility",
+          topic: "Accessibility?",
           parentid: "publication",
           direction: "right",
           priority: "high",
@@ -447,7 +447,7 @@ class MindMap {
         },
         {
           id: "dbs",
-          topic: "Databases/Resources",
+          topic: "Databases/Resources?",
           parentid: "publication",
           direction: "right",
           priority: "high",
@@ -459,7 +459,7 @@ class MindMap {
         },
         {
           id: "psc-form",
-          topic: "Public Service Commission Application Form",
+          topic: "Public Service Commission Application Form?",
           parentid: "root",
           direction: "right",
           priority: "high",
@@ -574,7 +574,9 @@ class MindMap {
     // Add click event listener using event delegation
     const mindMapContainer = document.getElementById("jsmind_container");
     if (mindMapContainer) {
-      mindMapContainer.addEventListener("click", (e) => this.handleNodeClick(e));
+      mindMapContainer.addEventListener("click", (e) =>
+        this.handleNodeClick(e)
+      );
       console.log("Added click event listener to mind map container");
     } else {
       console.error("Could not find mind map container for click events");
