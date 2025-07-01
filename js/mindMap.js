@@ -474,18 +474,117 @@ class MindMap {
   }
 
   /**
+   * Handles click events on mind map nodes
+   * @param {Event} event - The click event
+   */
+  handleNodeClick(event) {
+    // Find the closest jmnode element
+    const nodeElement = event.target.closest("jmnode");
+    if (!nodeElement) return;
+
+    // Get the node ID from the element
+    const nodeId = nodeElement.getAttribute("nodeid");
+    if (!nodeId) return;
+
+    // Get the node data
+    try {
+      const node = this.jm.get_node(nodeId);
+
+      // First, log the basic node info
+      console.log("Node basic info:", {
+        id: nodeId,
+        hasNode: !!node,
+        nodeType: node ? typeof node : "null",
+      });
+
+      if (node) {
+        // Log available properties
+        console.log("Available node properties:", Object.keys(node));
+
+        // Check for metadata in different possible locations
+        const possibleMetadata = {
+          "node.metadata": node.metadata,
+          "node.data.metadata": node.data?.metadata,
+          "node.data": node.data,
+          "node._data": node._data,
+          "node._node_data": node._node_data,
+        };
+
+        console.log("Checking for metadata in:", Object.keys(possibleMetadata));
+
+        // Find the first non-undefined metadata-like object
+        const [foundIn, metadata] =
+          Object.entries(possibleMetadata).find(([_, value]) => value) || [];
+
+        if (metadata) {
+          console.log(`Found metadata in ${foundIn}:`, metadata);
+          console.log("Metadata keys:", Object.keys(metadata));
+
+          // Try to find an answer or content
+          const answer =
+            metadata.answer ||
+            metadata.content ||
+            metadata.text ||
+            metadata.desc;
+          console.log("Possible answer/content:", answer);
+
+          // Update the node text with whatever we found
+          const nodeText = answer || "No additional information available";
+
+          const nodeTextLines = nodeText
+            .split(".")
+            .map((line) => `<p style="text-align: left">${line}.</p>`)
+            .join("<br>");
+          Swal.fire({
+            title: node.topic || "Node",
+            html: nodeTextLines,
+            icon: "success",
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Continue",
+          });
+
+          return; // Exit after showing the alert
+        } else {
+          // console.log("No metadata found in any expected location");
+          Swal.fire({
+            title: node.topic,
+            text: "No metadata found in any expected location",
+            icon: "info",
+            showCloseButton: true,
+            showCancelButton: true,
+            // confirmButtonText: "Continue",
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error handling node click:", error);
+    }
+
+    // Prevent default behavior
+    event.stopPropagation();
+  }
+
+  /**
    * Set up node event handlers
    */
   setupNodeHandlers() {
     if (!this.jm) return;
 
-    // Add click handler for node selection
+    // Add click event listener using event delegation
+    const mindMapContainer = document.getElementById("jsmind_container");
+    if (mindMapContainer) {
+      mindMapContainer.addEventListener("click", (e) => this.handleNodeClick(e));
+      console.log("Added click event listener to mind map container");
+    } else {
+      console.error("Could not find mind map container for click events");
+    }
+
+    // Keep the existing event handlers for compatibility
     this.jm.view.add_event(this.jm, "select_node", (node) => {
       console.log("Node selected:", node);
-      // Add custom logic for node selection
     });
 
-    // Add handler for node editing
     this.jm.view.add_event(this.jm, "edit_begin", () => {
       console.log("Node edit started");
     });
