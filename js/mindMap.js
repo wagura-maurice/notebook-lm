@@ -244,8 +244,16 @@ class MindMap {
       // Set up event handlers
       this.setupNodeHandlers();
       this.applyCustomStyles();
+      
+      // Initialize progress indicator
+      this.updateProgressIndicator();
+      
+      // Update progress after any changes
+      this.jm.add_event_listener('edit_finish', () => {
+        this.updateProgressIndicator();
+      });
 
-      return true;
+      return true
     } catch (error) {
       console.error("Error initializing jsMind:", error);
       this.showError(
@@ -692,6 +700,88 @@ class MindMap {
   showError(message) {
     console.error(message);
     this.showStatus(message, true);
+  }
+
+  /**
+   * Update the progress indicator based on answered questions
+   */
+  updateProgressIndicator() {
+    if (!this.jm) return;
+
+    // Get all nodes
+    const mindData = this.jm.get_data('node_array');
+    if (!mindData?.data?.length) return;
+
+    const nodes = mindData.data;
+
+    // Find all leaf nodes (nodes that are not parents of any other node)
+    const parentIds = new Set();
+    nodes.forEach(node => {
+      if (node.parentid) {
+        parentIds.add(node.parentid);
+      }
+    });
+
+    const leafNodes = nodes.filter(node => {
+      // A node is a leaf if it's not a parent of any other node
+      return !parentIds.has(node.id);
+    });
+
+    if (leafNodes.length === 0) return;
+
+    // Count how many leaf nodes have answers
+    const answeredCount = leafNodes.filter(node => {
+      // Check if node has metadata with answer or any other answer field
+      return (node.metadata?.answer || 
+             node.data?.metadata?.answer || 
+             node._data?.answer ||
+             node.answer) ? true : false;
+    }).length;
+
+    // Calculate percentage
+    const percentage = Math.round((answeredCount / leafNodes.length) * 100);
+
+    // Get the progress elements
+    const progressCircle = this.progressElements?.circle;
+    const progressText = this.progressElements?.text;
+
+    if (!progressCircle || !progressText) return;
+
+    // Update progress text
+    progressText.textContent = `${percentage}%`;
+
+    // Calculate the circle's circumference
+    const radius = 10;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (percentage / 100) * circumference;
+
+    // Update circle progress
+    progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+    progressCircle.style.strokeDashoffset = offset;
+
+    // Set color based on percentage
+    let color;
+    if (percentage <= 10) {
+      color = '#ef4444'; // Red
+    } else if (percentage <= 30) {
+      color = '#f97316'; // Orange
+    } else if (percentage <= 60) {
+      color = '#eab308'; // Yellow
+    } else if (percentage <= 90) {
+      color = '#22c55e'; // Light Green
+    } else {
+      color = '#16a34a'; // Dark Green
+    }
+
+    progressCircle.style.stroke = color;
+    
+    // Update the title with emoji indicator
+    const indicator = 
+      percentage <= 10 ? '🔴' :
+      percentage <= 30 ? '🟠' :
+      percentage <= 60 ? '🟡' : '🟢';
+      
+    this.progressElements.container.title = `Form completion progress: ${percentage}% ${indicator}`;
   }
 
   /**
