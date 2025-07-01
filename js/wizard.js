@@ -952,7 +952,7 @@ const SourceActions = {
     const originalContent = $(SELECTORS.leftColumn).children().detach();
 
     const viewForm = $(`
-      <div class="flex flex-col h-full expanded-content view-source-content">
+      <div class="flex flex-col h-full view-source-content">
         <div class="flex items-center justify-between px-5 py-3 border-b border-slate-700">
           <h3 class="text-lg font-semibold">View Source</h3>
           <button id="back-to-sources" class="text-sky-400 text-lg hover:text-sky-400">

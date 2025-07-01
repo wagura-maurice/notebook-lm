@@ -951,6 +951,10 @@ header {
   .expanded-content > div:first-child {
     margin-top: 1.5rem;
   }
+
+  .view-source-content > div:first-child {
+    margin-top: 2.5rem;
+  }
 }
 
 /* Tablet (640px - 1023px) */
