@@ -646,7 +646,7 @@ class MindMap {
               .split(".")
               .filter((line) => line.trim() !== "")
               .map((line) => `<p style="text-align: left">${line}.</p>`)
-              .join("");
+              .join("<br>");
 
             Swal.fire({
               title: node.topic || "Node",
