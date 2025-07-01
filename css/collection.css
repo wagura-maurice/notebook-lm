@@ -871,6 +871,11 @@ header {
   .group:active .copy-message-btn {
     opacity: 1 !important;
   }
+
+  /* Expanded Content */
+  .expanded-content > div:first-child {
+    margin-top: 1.5rem;
+  }
 }
 
 /* Tablet (640px - 1023px) */
