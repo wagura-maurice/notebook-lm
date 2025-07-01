@@ -2665,6 +2665,9 @@ const ModalHandling = {
 /* ============================================ */
 const CanvasChat = {
   init: function () {
+    console.log('CanvasChat.init() called');
+    
+    // Cache DOM elements
     this.$form = $("#canvas-chat-form");
     this.$input = $("#canvas-message-input");
     this.$sendBtn = $("#canvas-send-btn");
@@ -2672,23 +2675,53 @@ const CanvasChat = {
     this.$welcomeMessage = $("#canvas-welcome-message");
     this.$chatContainer = $("#canvas-chat-messages-container");
 
-    this.bindEvents();
-    this.initJumpToBottom();
+    console.log('Form element:', this.$form.length ? 'Found' : 'Not found');
+    console.log('Input element:', this.$input.length ? 'Found' : 'Not found');
+    console.log('Send button:', this.$sendBtn.length ? 'Found' : 'Not found');
+
+    if (this.$form.length && this.$input.length && this.$sendBtn.length) {
+      this.bindEvents();
+      this.initJumpToBottom();
+      console.log('CanvasChat initialized successfully');
+    } else {
+      console.error('CanvasChat: Required elements not found');
+    }
   },
 
   bindEvents: function () {
+    console.log('Binding events...');
+    
     // Handle form submission
-    this.$form.on("submit", this.handleSubmit.bind(this));
+    this.$form.off('submit').on("submit", (e) => {
+      console.log('Form submitted');
+      this.handleSubmit(e);
+    });
+
+    // Handle send button click
+    this.$sendBtn.off('click').on("click", (e) => {
+      console.log('Send button clicked');
+      this.handleSubmit(e);
+    });
 
     // Handle input events to enable/disable send button
-    this.$input.on("input", this.handleInput.bind(this));
+    this.$input.off('input').on("input", () => {
+      this.handleInput();
+    });
 
     // Handle Enter/Shift+Enter for sending/new line
-    this.$input.on("keydown", this.handleKeydown.bind(this));
+    this.$input.off('keydown').on("keydown", (e) => {
+      this.handleKeydown(e);
+    });
+    
+    console.log('Events bound successfully');
   },
 
   handleSubmit: function (e) {
-    e.preventDefault();
+    console.log('handleSubmit called');
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     this.sendMessage();
   },
 
@@ -2881,4 +2914,9 @@ $(document).ready(function () {
   MessageActions.init();
   Utilities.init();
   ModalHandling.init();
+  
+  // Initialize CanvasChat
+  if (typeof CanvasChat !== 'undefined') {
+    CanvasChat.init();
+  }
 });

@@ -4255,10 +4255,15 @@
       }
     </script>
 
+    <!-- Main application script -->
+    <script src="js/collection.js"></script>
+
+    <!-- Initialize modules after DOM is loaded -->
     <script type="application/JavaScript">
       $(document).ready(function () {
         // Initialize the CanvasChat
-        if (typeof CanvasChat !== "undefined") {
+        if (typeof CanvasChat !== 'undefined') {
+          console.log('Initializing CanvasChat...');
           CanvasChat.init();
         }
       });
