@@ -507,6 +507,19 @@ class MindMap {
   }
 
   /**
+   * Handles the continue action from node click
+   * @param {Object} node - The node data
+   * @param {Object} metadata - The node's metadata
+   */
+  handleNodeContinue(node, metadata) {
+    console.log("Node Continue Clicked:", {
+      topic: node.topic,
+      answer: metadata.answer,
+    });
+    // You can add additional actions here when continue is clicked
+  }
+
+  /**
    * Handles click events on mind map nodes
    * @param {Event} event - The click event
    */
@@ -572,10 +585,18 @@ class MindMap {
             Swal.fire({
               title: node.topic || "Node",
               html: nodeTextLines,
-              icon: "info",
+              icon: "success",
               showCloseButton: true,
               showCancelButton: true,
               confirmButtonText: "Continue",
+              preConfirm: () => {
+                this.handleNodeContinue(node, metadata);
+                return false; // Prevent the modal from closing automatically
+              },
+            }).then((result) => {
+              if (result.isConfirmed) {
+                this.handleNodeContinue(node, metadata);
+              }
             });
           } else {
             // Use plain text for the default message
@@ -586,6 +607,14 @@ class MindMap {
               showCloseButton: true,
               showCancelButton: true,
               confirmButtonText: "Continue",
+              preConfirm: () => {
+                this.handleNodeContinue(node, metadata);
+                return false; // Prevent the modal from closing automatically
+              },
+            }).then((result) => {
+              if (result.isConfirmed) {
+                this.handleNodeContinue(node, metadata);
+              }
             });
           }
 
