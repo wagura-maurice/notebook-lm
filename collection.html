@@ -3889,28 +3889,32 @@
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const textarea = document.getElementById("ai-text-input-right");
+        const ROW_HEIGHT = 24; // Approximate height of one row in pixels
+        const DEFAULT_ROWS = 15;
 
         // Initial setup
         if (textarea) {
-          // Set initial height
-          textarea.style.height = "auto";
-          textarea.style.height =
-            Math.min(textarea.scrollHeight, 15 * 24) + "px";
+          // Force initial height to 15 rows
+          textarea.style.height = ROW_HEIGHT * DEFAULT_ROWS + "px";
 
-          // Handle input events
+          // Handle input events - maintain minimum height of 15 rows
           textarea.addEventListener("input", function () {
-            this.style.height = "auto";
-            this.style.height = Math.min(this.scrollHeight, 15 * 24) + "px";
+            this.style.height = ROW_HEIGHT * DEFAULT_ROWS + "px";
+            this.style.height =
+              Math.max(this.scrollHeight, ROW_HEIGHT * DEFAULT_ROWS) + "px";
 
             // Scroll to bottom of the textarea
             this.scrollTop = this.scrollHeight;
 
             // Ensure parent container scrolls to show the bottom of the textarea
-            const parent = this.closest(".overflow-y-auto");
+            const parent = this.closest(".flex-1");
             if (parent) {
               parent.scrollTop = parent.scrollHeight;
             }
           });
+
+          // Initial trigger to set the height
+          textarea.dispatchEvent(new Event("input"));
         }
       });
     </script>
@@ -3986,15 +3990,16 @@
               </button>
             </div>
 
-            <!-- Message Input -->
-            <div class="border-t border-gray-700">
-              <form id="canvas-chat-form" class="p-3 bg-slate-800">
+            <!-- Right Column Fixed Bottom Message Input -->
+            <div class="border-t border-gray-700 bg-gray-900 p-4">
+              <form id="canvas-chat-form">
                 <div class="relative">
                   <textarea
                     id="canvas-message-input"
-                    class="w-full bg-slate-900 rounded-lg p-3 pr-12 text-white resize-none focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                    class="w-full bg-slate-800 rounded-lg p-3 pr-12 text-white text-sm resize-none focus:ring-2 focus:ring-sky-500 focus:outline-none overflow-y-auto scrollbar-transparent"
                     placeholder="Ask me anything..."
-                    rows="2"
+                    rows="4"
+                    style="min-height: 8rem; max-height: 20rem"
                   ></textarea>
                   <button
                     type="button"
@@ -4080,7 +4085,7 @@
               </div>
             </div>
 
-            <!-- Fixed Bottom Input -->
+            <!-- Right Column Fixed Bottom Message Input -->
             <div class="border-t border-gray-700 bg-gray-900 p-4">
               <form id="ai-text-chat-form-right">
                 <div class="relative">
@@ -4088,9 +4093,8 @@
                     id="ai-text-input-right"
                     class="w-full bg-slate-800 rounded-lg p-3 pr-12 text-white text-sm resize-none focus:ring-2 focus:ring-sky-500 focus:outline-none overflow-y-auto scrollbar-transparent"
                     placeholder="Run custom AI action..."
-                    rows="1"
-                    style="min-height: 2.5rem; max-height: 15rem"
-                    oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 15 * 24) + 'px';"
+                    rows="4"
+                    style="min-height: 8rem; max-height: 20rem"
                   ></textarea>
                   <button
                     type="button"
