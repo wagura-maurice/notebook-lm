@@ -22,7 +22,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px;
+  padding-top: 60px;
+  padding-bottom: 40px;
+  padding-left: 20px;
+  padding-right: 20px;
   transform: translateZ(0); /* Force hardware acceleration */
 }
 
