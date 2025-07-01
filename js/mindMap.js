@@ -459,73 +459,73 @@ class MindMap {
     // Get the node data
     try {
       const node = this.jm.get_node(nodeId);
-      
+
       // First, log the basic node info
-      console.log('Node basic info:', {
+      console.log("Node basic info:", {
         id: nodeId,
         hasNode: !!node,
-        nodeType: node ? typeof node : 'null'
+        nodeType: node ? typeof node : "null",
       });
-      
+
       if (node) {
         // Log available properties
-        console.log('Available node properties:', Object.keys(node));
-        
+        console.log("Available node properties:", Object.keys(node));
+
         // Check for metadata in different possible locations
         const possibleMetadata = {
-          'node.metadata': node.metadata,
-          'node.data.metadata': node.data?.metadata,
-          'node.data': node.data,
-          'node._data': node._data,
-          'node._node_data': node._node_data
+          "node.metadata": node.metadata,
+          "node.data.metadata": node.data?.metadata,
+          "node.data": node.data,
+          "node._data": node._data,
+          "node._node_data": node._node_data,
         };
-        
-        console.log('Checking for metadata in:', Object.keys(possibleMetadata));
-        
+
+        console.log("Checking for metadata in:", Object.keys(possibleMetadata));
+
         // Find the first non-undefined metadata-like object
-        const [foundIn, metadata] = Object.entries(possibleMetadata).find(([_, value]) => value) || [];
-        
+        const [foundIn, metadata] =
+          Object.entries(possibleMetadata).find(([_, value]) => value) || [];
+
         if (metadata) {
           console.log(`Found metadata in ${foundIn}:`, metadata);
-          console.log('Metadata keys:', Object.keys(metadata));
-          
+          console.log("Metadata keys:", Object.keys(metadata));
+
           // Try to find an answer or content
-          const answer = metadata.answer || metadata.content || metadata.text || metadata.desc;
-          console.log('Possible answer/content:', answer);
-          
+          const answer =
+            metadata.answer ||
+            metadata.content ||
+            metadata.text ||
+            metadata.desc;
+          console.log("Possible answer/content:", answer);
+
           // Update the node text with whatever we found
-          const nodeText = answer || 'No additional information available';
-          
+          const nodeText = answer || "No additional information available";
+
+          const nodeTextLines = nodeText
+            .split(".")
+            .map((line) => `<p style="text-align: left">${line}.</p>`)
+            .join("<br>");
           Swal.fire({
-            title: node.topic || 'Node',
-            text: nodeText,
-            icon: 'info',
+            title: node.topic || "Node",
+            html: nodeTextLines,
+            icon: "success",
             showCloseButton: true,
             showCancelButton: true,
-            confirmButtonText: 'OK',
+            confirmButtonText: "Continue",
           });
-          
+
           return; // Exit after showing the alert
         } else {
-          console.log('No metadata found in any expected location');
+          // console.log("No metadata found in any expected location");
+          Swal.fire({
+            title: node.topic,
+            text: "No metadata found in any expected location",
+            icon: "info",
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Continue",
+          });
         }
-      }
-      
-      if (node && node.topic) {
-        // Show an alert with the node's text
-        const nodeText =
-          node.metadata && node.metadata.answer !== undefined
-            ? node.metadata.answer
-            : "No additional information available";
-
-        Swal.fire({
-          title: node.topic,
-          text: nodeText,
-          icon: "info",
-          showCloseButton: true,
-          showCancelButton: true,
-          confirmButtonText: "OK",
-        });
       }
     } catch (error) {
       console.error("Error handling node click:", error);
@@ -728,6 +728,12 @@ class MindMap {
                 {
                   id: "invoices",
                   topic: "Invoices",
+                  priority: "high",
+                  metadata: {
+                    answer:
+                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+                    createdAt: "2025-06-30",
+                  },
                   direction: "right",
                   children: [],
                 },
