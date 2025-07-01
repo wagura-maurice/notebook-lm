@@ -94,40 +94,59 @@ class MindMap {
     progressContainer.className = "progress-indicator";
     progressContainer.title = "Form completion progress";
 
+    // Create SVG container
     const progressSvg = document.createElementNS(
       "http://www.w3.org/2000/svg",
       "svg"
     );
     progressSvg.setAttribute("class", "progress-ring");
-    progressSvg.setAttribute("width", "24");
-    progressSvg.setAttribute("height", "24");
+    progressSvg.setAttribute("width", "36");
+    progressSvg.setAttribute("height", "36");
+    progressSvg.setAttribute("viewBox", "0 0 36 36");
 
+    // Background circle
     const circleBg = document.createElementNS(
       "http://www.w3.org/2000/svg",
       "circle"
     );
     circleBg.setAttribute("class", "progress-ring-circle");
-    circleBg.setAttribute("cx", "12");
-    circleBg.setAttribute("cy", "12");
-    circleBg.setAttribute("r", "10");
+    circleBg.setAttribute("cx", "18");
+    circleBg.setAttribute("cy", "18");
+    circleBg.setAttribute("r", "15");
+    circleBg.setAttribute("stroke-width", "3");
 
-    const circleProgress = document.createElementNS(
+    // Progress circle
+    const circle = document.createElementNS(
       "http://www.w3.org/2000/svg",
       "circle"
     );
-    circleProgress.setAttribute("class", "progress-ring-progress");
-    circleProgress.setAttribute("cx", "12");
-    circleProgress.setAttribute("cy", "12");
-    circleProgress.setAttribute("r", "10");
+    circle.setAttribute("class", "progress-ring-progress");
+    circle.setAttribute("cx", "18");
+    circle.setAttribute("cy", "18");
+    circle.setAttribute("r", "15");
+    circle.setAttribute("stroke-width", "3");
+    circle.setAttribute("stroke-dasharray", "94.2 94.2");
+    circle.setAttribute("stroke-dashoffset", "94.2");
 
+    // Add circles to SVG
     progressSvg.appendChild(circleBg);
-    progressSvg.appendChild(circleProgress);
-    progressContainer.appendChild(progressSvg);
+    progressSvg.appendChild(circle);
 
-    const progressText = document.createElement("span");
+    // Add percentage text
+    const progressText = document.createElement("div");
     progressText.className = "progress-text";
     progressText.textContent = "0%";
+
+    // Add elements to container
+    progressContainer.appendChild(progressSvg);
     progressContainer.appendChild(progressText);
+
+    // Store references for updates
+    this.progressElements = {
+      container: progressContainer,
+      circle: circle,
+      text: progressText,
+    };
 
     // Add elements to toolbar
     toolbar.appendChild(progressContainer);
@@ -174,7 +193,7 @@ class MindMap {
     // Store progress elements for updates
     this.progressElements = {
       container: progressContainer,
-      circle: circleProgress,
+      circle: circle, // Using the circle variable we created earlier
       text: progressText,
     };
 
@@ -244,16 +263,16 @@ class MindMap {
       // Set up event handlers
       this.setupNodeHandlers();
       this.applyCustomStyles();
-      
+
       // Initialize progress indicator
       this.updateProgressIndicator();
-      
+
       // Update progress after any changes
-      this.jm.add_event_listener('edit_finish', () => {
+      this.jm.add_event_listener("edit_finish", () => {
         this.updateProgressIndicator();
       });
 
-      return true
+      return true;
     } catch (error) {
       console.error("Error initializing jsMind:", error);
       this.showError(
@@ -709,20 +728,20 @@ class MindMap {
     if (!this.jm) return;
 
     // Get all nodes
-    const mindData = this.jm.get_data('node_array');
+    const mindData = this.jm.get_data("node_array");
     if (!mindData?.data?.length) return;
 
     const nodes = mindData.data;
 
     // Find all leaf nodes (nodes that are not parents of any other node)
     const parentIds = new Set();
-    nodes.forEach(node => {
+    nodes.forEach((node) => {
       if (node.parentid) {
         parentIds.add(node.parentid);
       }
     });
 
-    const leafNodes = nodes.filter(node => {
+    const leafNodes = nodes.filter((node) => {
       // A node is a leaf if it's not a parent of any other node
       return !parentIds.has(node.id);
     });
@@ -730,12 +749,14 @@ class MindMap {
     if (leafNodes.length === 0) return;
 
     // Count how many leaf nodes have answers
-    const answeredCount = leafNodes.filter(node => {
+    const answeredCount = leafNodes.filter((node) => {
       // Check if node has metadata with answer or any other answer field
-      return (node.metadata?.answer || 
-             node.data?.metadata?.answer || 
-             node._data?.answer ||
-             node.answer) ? true : false;
+      return node.metadata?.answer ||
+        node.data?.metadata?.answer ||
+        node._data?.answer ||
+        node.answer
+        ? true
+        : false;
     }).length;
 
     // Calculate percentage
@@ -762,25 +783,29 @@ class MindMap {
     // Set color based on percentage
     let color;
     if (percentage <= 10) {
-      color = '#ef4444'; // Red
+      color = "#ef4444"; // Red
     } else if (percentage <= 30) {
-      color = '#f97316'; // Orange
+      color = "#f97316"; // Orange
     } else if (percentage <= 60) {
-      color = '#eab308'; // Yellow
+      color = "#eab308"; // Yellow
     } else if (percentage <= 90) {
-      color = '#22c55e'; // Light Green
+      color = "#22c55e"; // Light Green
     } else {
-      color = '#16a34a'; // Dark Green
+      color = "#16a34a"; // Dark Green
     }
 
     progressCircle.style.stroke = color;
-    
+
     // Update the title with emoji indicator
-    const indicator = 
-      percentage <= 10 ? '🔴' :
-      percentage <= 30 ? '🟠' :
-      percentage <= 60 ? '🟡' : '🟢';
-      
+    const indicator =
+      percentage <= 10
+        ? "🔴"
+        : percentage <= 30
+        ? "🟠"
+        : percentage <= 60
+        ? "🟡"
+        : "🟢";
+
     this.progressElements.container.title = `Form completion progress: ${percentage}% ${indicator}`;
   }
 
