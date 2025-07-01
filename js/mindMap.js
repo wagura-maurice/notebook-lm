@@ -120,13 +120,19 @@ class MindMap {
       "http://www.w3.org/2000/svg",
       "circle"
     );
+    const radius = 15;
+    const circumference = 2 * Math.PI * radius;
+
     circle.setAttribute("class", "progress-ring-progress");
     circle.setAttribute("cx", "18");
     circle.setAttribute("cy", "18");
-    circle.setAttribute("r", "15");
+    circle.setAttribute("r", radius.toString());
     circle.setAttribute("stroke-width", "3");
-    circle.setAttribute("stroke-dasharray", "94.2 94.2");
-    circle.setAttribute("stroke-dashoffset", "94.2");
+    circle.setAttribute(
+      "stroke-dasharray",
+      `${circumference} ${circumference}`
+    );
+    circle.setAttribute("stroke-dashoffset", circumference.toString());
 
     // Add circles to SVG
     progressSvg.appendChild(circleBg);
@@ -771,8 +777,8 @@ class MindMap {
     // Update progress text
     progressText.textContent = `${percentage}%`;
 
-    // Calculate the circle's circumference
-    const radius = 10;
+    // Calculate the circle's circumference and offset
+    const radius = 15; // Must match the radius used in circle creation
     const circumference = 2 * Math.PI * radius;
     const offset = circumference - (percentage / 100) * circumference;
 
