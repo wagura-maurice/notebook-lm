@@ -1366,7 +1366,7 @@ const NoteActions = {
     const originalContent = $(SELECTORS.rightColumn).children().detach();
 
     const editForm = $(`
-      <div class="flex flex-col h-full edit-note-content">
+      <div class="flex flex-col h-full expanded-content edit-note-content">
         <div class="flex items-center justify-between px-5 py-3 border-b border-slate-700">
           <h3 class="text-lg font-semibold">Edit Note</h3>
           <button id="back-to-notes" class="text-sky-400 text-lg hover:text-sky-400">
