@@ -516,7 +516,71 @@ class MindMap {
       topic: node.topic,
       answer: metadata.answer,
     });
-    // You can add additional actions here when continue is clicked
+    
+    // Close SweetAlert dialog if open
+    if (window.Swal && Swal.isVisible()) {
+      Swal.close();
+    }
+    
+    // Close the mind map modal if we're in the collection page
+    const mindMapModal = document.getElementById('mind-map-modal');
+    if (mindMapModal) {
+      mindMapModal.classList.add('hidden');
+    }
+    
+    // Format the message
+    const message = `Topic: ${node.topic}\n\n${metadata.answer || 'No additional information available'}`;
+    
+    // Try to find the chat input and trigger send message
+    const chatInput = document.getElementById('chat-input');
+    if (chatInput) {
+      // Set the message in the chat input
+      chatInput.value = message;
+      
+      // Trigger input event to update any listeners
+      const inputEvent = new Event('input', { bubbles: true });
+      chatInput.dispatchEvent(inputEvent);
+      
+      // Try to trigger the send message functionality
+      try {
+        // Try jQuery first (if available)
+        if (window.$) {
+          const $chatInput = $(chatInput);
+          // Set the value using jQuery to ensure proper event handling
+          $chatInput.val(message).trigger('input');
+          
+          // Try to find and click the send button
+          const $sendButton = $('.send-message-button, #send-message');
+          if ($sendButton.length) {
+            $sendButton.trigger('click');
+          } else {
+            // If no send button found, trigger Enter key on the input
+            const enterEvent = new KeyboardEvent('keydown', {
+              key: 'Enter',
+              code: 'Enter',
+              keyCode: 13,
+              which: 13,
+              bubbles: true,
+              cancelable: true
+            });
+            chatInput.dispatchEvent(enterEvent);
+          }
+        } else {
+          // Fallback to native events if jQuery is not available
+          const enterEvent = new KeyboardEvent('keydown', {
+            key: 'Enter',
+            code: 'Enter',
+            keyCode: 13,
+            which: 13,
+            bubbles: true,
+            cancelable: true
+          });
+          chatInput.dispatchEvent(enterEvent);
+        }
+      } catch (error) {
+        console.error("Error triggering send message:", error);
+      }
+    }
   }
 
   /**
