@@ -523,7 +523,7 @@ class MindMap {
             icon: "info",
             showCloseButton: true,
             showCancelButton: true,
-            confirmButtonText: "Continue",
+            // confirmButtonText: "Continue",
           });
         }
       }
