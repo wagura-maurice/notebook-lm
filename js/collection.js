@@ -1736,8 +1736,8 @@ const NoteActions = {
     console.log("Adding note to sources:", { title, content });
 
     if (title && content) {
-      // Add the note as a source
-      this.addSource(title, "note", content);
+      // Add the note as a source using the global SourceActions
+      SourceActions.addSource(title, "note", content);
 
       // Show a success message or visual feedback
       const $feedback = $(
@@ -2430,15 +2430,18 @@ const ChatFunctionality = {
     }
   },
 };
-
-/* ============================================ */
 /* === MODULE: MESSAGE ACTIONS === */
 /* ============================================ */
 const MessageActions = {
   init: function () {
     $(document)
       .on("click", ".add-to-note-btn", this.addToNote.bind(this))
-      .on("click", ".copy-message-btn", this.copyMessage.bind(this));
+      .on("click", ".copy-message-btn", this.copyMessage.bind(this))
+      .on(
+        "click",
+        ".add-to-sources-btn",
+        NoteActions.addNoteToSources.bind(NoteActions)
+      );
   },
 
   addToNote: function (e) {
@@ -2668,8 +2671,8 @@ const ModalHandling = {
 /* ============================================ */
 const CanvasChat = {
   init: function () {
-    console.log('CanvasChat.init() called');
-    
+    console.log("CanvasChat.init() called");
+
     // Cache DOM elements
     this.$form = $("#canvas-chat-form");
     this.$input = $("#canvas-message-input");
@@ -2678,49 +2681,146 @@ const CanvasChat = {
     this.$welcomeMessage = $("#canvas-welcome-message");
     this.$chatContainer = $("#canvas-chat-messages-container");
 
-    console.log('Form element:', this.$form.length ? 'Found' : 'Not found');
-    console.log('Input element:', this.$input.length ? 'Found' : 'Not found');
-    console.log('Send button:', this.$sendBtn.length ? 'Found' : 'Not found');
+    console.log("Form element:", this.$form.length ? "Found" : "Not found");
+    console.log("Input element:", this.$input.length ? "Found" : "Not found");
+    console.log("Send button:", this.$sendBtn.length ? "Found" : "Not found");
 
     if (this.$form.length && this.$input.length && this.$sendBtn.length) {
       this.bindEvents();
       this.initJumpToBottom();
-      console.log('CanvasChat initialized successfully');
+      console.log("CanvasChat initialized successfully");
     } else {
-      console.error('CanvasChat: Required elements not found');
+      console.error("CanvasChat: Required elements not found");
     }
   },
 
   bindEvents: function () {
-    console.log('Binding events...');
-    
+    console.log("Binding events...");
+
     // Handle form submission
-    this.$form.off('submit').on("submit", (e) => {
-      console.log('Form submitted');
+    this.$form.off("submit").on("submit", (e) => {
+      console.log("Form submitted");
       this.handleSubmit(e);
     });
 
     // Handle send button click
-    this.$sendBtn.off('click').on("click", (e) => {
-      console.log('Send button clicked');
+    this.$sendBtn.off("click").on("click", (e) => {
+      console.log("Send button clicked");
       this.handleSubmit(e);
     });
 
     // Handle input events to enable/disable send button
-    this.$input.off('input').on("input", () => {
+    this.$input.off("input").on("input", () => {
       this.handleInput();
     });
 
     // Handle Enter/Shift+Enter for sending/new line
-    this.$input.off('keydown').on("keydown", (e) => {
+    this.$input.off("keydown").on("keydown", (e) => {
       this.handleKeydown(e);
     });
-    
-    console.log('Events bound successfully');
+
+    // Handle add to notes button click
+    this.$chatContainer
+      .off("click", ".add-to-notes-btn")
+      .on("click", ".add-to-notes-btn", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const $button = $(e.currentTarget);
+        const messageContent = $button.data("message");
+        const timestamp = new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        if (!messageContent) return;
+
+        // Create a unique ID for the new note
+        const noteId = "note-" + Date.now();
+
+        // Create the new note HTML for expanded view
+        const newNoteHtml = `      
+    <div class="relative flex items-start p-2 hover:bg-slate-700 rounded cursor-pointer transition-colors note-item group mb-2">
+      <div class="relative mr-3 w-6 h-6 mt-1 flex-shrink-0">
+        <i class="fas fa-sticky-note text-amber-400 note-icon transition-opacity duration-200"></i>
+        <i class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 note-menu-toggle transition-opacity duration-200 flex items-center justify-center cursor-pointer"></i>
+      </div>
+      <div class="flex-1 min-w-0 overflow-hidden">
+        <div class="font-medium truncate note-title">${messageContent.substring(
+          0,
+          50
+        )}${messageContent.length > 50 ? "..." : ""}</div>
+        <div class="text-xs text-slate-400 truncate">
+          <span class="key-topic hover:text-sky-400 cursor-pointer transition-colors">${timestamp}</span>
+        </div>
+      </div>
+
+      <!-- Dropdown Menu -->
+      <div class="notes-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30">
+        <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+          <i class="fa-solid fa-eye mr-2"></i> Show note
+        </a>
+        <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+          <i class="fas fa-plus-circle mr-3 text-sm"></i> Add to sources
+        </a>
+        <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+          <i class="fas fa-trash-alt mr-3 text-sm"></i> Delete note
+        </a>
+      </div>
+    </div>`;
+
+        // Create the new note HTML for collapsed view (just the icon)
+        const newCollapsedNoteHtml = `
+        <button class="w-full flex items-center justify-center py-3 text-amber-400 hover:text-sky-400 transition-colors" data-note-id="${noteId}">
+          <i class="fa-solid fa-clipboard text-xl"></i>
+        </button>`;
+
+        // Add the new note to the top of the expanded notes list
+        $(".note-item").first().before(newNoteHtml);
+
+        // Add the new note to the collapsed view, right after the divider
+        const $divider = $(".collapsed-content .border-t");
+        if ($divider.length) {
+          $divider.after(newCollapsedNoteHtml);
+        } else {
+          // If no divider found, add to the end of the container
+          $(".collapsed-content .flex-1").append(newCollapsedNoteHtml);
+        }
+
+        // Show success feedback
+        const $successMsg = $(`
+        <div class="bg-green-500 text-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200 z-50 whitespace-nowrap">
+          Added to notes
+        </div>
+      `);
+
+        const buttonRect = e.currentTarget.getBoundingClientRect();
+        $successMsg.css({
+          position: "fixed",
+          top: buttonRect.top + window.scrollY - 30 + "px",
+          left: buttonRect.left + window.scrollX + "px",
+          transform: "translateX(-50%)",
+          pointerEvents: "none",
+          whiteSpace: "nowrap",
+        });
+
+        $("body").append($successMsg);
+
+        // Animate the success message
+        setTimeout(() => {
+          $successMsg.addClass("opacity-100");
+          setTimeout(() => {
+            $successMsg.removeClass("opacity-100");
+            setTimeout(() => $successMsg.remove(), 200);
+          }, 1500);
+        }, 10);
+      });
+
+    console.log("Events bound successfully");
   },
 
   handleSubmit: function (e) {
-    console.log('handleSubmit called');
+    console.log("handleSubmit called");
     if (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -2781,17 +2881,24 @@ const CanvasChat = {
       `);
       this.$chatContainer.append(message);
     } else {
-      // AI message styling (full width with copy button)
+      // AI message styling (full width with copy and add to sources buttons)
       const message = $(`
         <div class="w-full px-4 py-2 group">
           <div class="text-white text-sm">${content}</div>
           <div class="flex justify-between items-center mt-2">
             <div class="text-xs text-gray-300">${Utils.formatTime()}</div>
-            <button
-              class="text-xs text-gray-300 hover:text-white flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity"
-              data-message="${content.replace(/"/g, '"')}">
-              <i class="fas fa-copy mr-1"></i> Copy
-            </button>
+            <div class="flex items-center space-x-2">
+              <button
+                class="text-xs text-gray-300 hover:text-white flex items-center add-to-notes-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600"
+                data-message="${content.replace(/"/g, "&quot;")}">
+                <i class="fas fa-plus-circle mr-1"></i> Add to Notes
+              </button>
+              <button
+                class="text-xs text-gray-300 hover:text-white flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-slate-600"
+                data-message="${content.replace(/"/g, "&quot;")}">
+                <i class="fas fa-copy mr-1"></i> Copy
+              </button>
+            </div>
           </div>
         </div>
       `);
@@ -2917,9 +3024,9 @@ $(document).ready(function () {
   MessageActions.init();
   Utilities.init();
   ModalHandling.init();
-  
+
   // Initialize CanvasChat
-  if (typeof CanvasChat !== 'undefined') {
+  if (typeof CanvasChat !== "undefined") {
     CanvasChat.init();
   }
 });
