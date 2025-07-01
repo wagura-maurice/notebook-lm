@@ -13,6 +13,13 @@
       rel="stylesheet"
     />
 
+    <!-- jQuery -->
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+
     <!-- Tailwind CSS -->
     <script
       type="application/JavaScript"
@@ -4255,18 +4262,6 @@
       }
     </script>
 
-    <!-- Main application script -->
-    <script src="js/collection.js"></script>
-
-    <!-- Initialize modules after DOM is loaded -->
-    <script type="application/JavaScript">
-      $(document).ready(function () {
-        // Initialize the CanvasChat
-        if (typeof CanvasChat !== 'undefined') {
-          console.log('Initializing CanvasChat...');
-          CanvasChat.init();
-        }
-      });
-    </script>
+    <!-- All JavaScript initialization is handled in collection.js -->
   </body>
 </html>

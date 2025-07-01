@@ -1,6 +1,7 @@
 /* ============================================ */
 /* === CONSTANTS & CONFIGURATION === */
 /* ============================================ */
+// Define ALMPS content at the top of the file
 const ALMPS_CONTENT = `Please generate a comprehensive Active Labor Market Policy (ALMPs) document. The document should follow international best practice standards and include the following sections:
 
 Title Page: Include the title, date, and authors.
@@ -313,8 +314,10 @@ const ChatModule = {
       aiSendButton.disabled = aiTextInput.value.trim() === "";
     });
 
-    // Set initial content and adjust height
-    aiTextInput.value = ALMPS_CONTENT;
+    // Set initial content and adjust height if not already set
+    if (!aiTextInput.value.trim()) {
+      aiTextInput.value = ALMPS_CONTENT;
+    }
 
     // Initial state
     aiSendButton.disabled = aiTextInput.value.trim() === "";
