@@ -19,6 +19,10 @@
       integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
       crossorigin="anonymous"
     ></script>
+    
+    <!-- Shepherd.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/css/shepherd.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/js/shepherd.min.js"></script>
 
     <!-- Tailwind CSS -->
     <script
@@ -4264,5 +4268,16 @@
     </script>
 
     <!-- All JavaScript initialization is handled in collection.js -->
+    
+    <!-- Help Button (Floating) -->
+    <button id="help-button" class="fixed bottom-6 right-6 bg-sky-500 hover:bg-sky-600 text-white rounded-full p-3 shadow-lg transition-all duration-200 transform hover:scale-110 z-[9999]" 
+            title="Show help tour" style="display: none;">
+      <i class="fas fa-question text-xl"></i>
+    </button>
+    
+    <!-- Tour Script -->
+    <script src="./js/tour.js"></script>
+    
+    <!-- Help button initialization is handled in tour.js -->
   </body>
 </html>
