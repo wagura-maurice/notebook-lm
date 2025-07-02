@@ -1652,16 +1652,17 @@ const NoteActions = {
         <i class="fa-solid fa-clipboard text-xl"></i>
       </button>`;
 
-      // Check if we're in empty state (no notes)
-      const $emptyState = $(".empty-notes-state");
-      const $noteListContainer = $(".note-list-container");
+      // Get the notes list container
+      const $notesList = $(".notes-list");
 
-      if ($emptyState.length > 0) {
-        // If empty state exists, replace it with the new note
-        $emptyState.replaceWith(newNoteHtml);
+      // Clear any empty state messages
+      $notesList.find('div:contains("No notes yet")').remove();
+
+      // Add the new note to the top of the list
+      if ($notesList.children().length === 0) {
+        $notesList.append(newNoteHtml);
       } else {
-        // Otherwise, add to the top of the notes list
-        $(".note-item").first().before(newNoteHtml);
+        $notesList.prepend(newNoteHtml);
       }
 
       // Add the new note to the collapsed view, right after the divider
@@ -2806,46 +2807,21 @@ const MessageActions = {
         <i class="fa-solid fa-clipboard text-xl"></i>
       </button>`;
 
-    // Get the notes list container - this is the div that contains all the note items
-    let $notesListContainer = $(
-      "#right-column .expanded-content > .notes-list"
-    ).first();
-
-    // If we couldn't find it, try to find any notes-list container in the right column
-    if ($notesListContainer.length === 0) {
-      $notesListContainer = $(
-        "#right-column .expanded-content .notes-list"
-      ).first();
-    }
-
-    // Check if we have any notes or if the container has the empty state
-    const $existingNotes = $(".note-item");
-    const isEmptyState = $(".empty-notes-state").length > 0;
-
-    // Remove any existing note with the same ID to prevent duplicates
-    $(`#note-${noteId}`).remove();
-
-    if ($existingNotes.length === 0 || isEmptyState) {
-      // If no notes exist or only empty state is shown, replace the content
-      if (isEmptyState) {
-        $(".empty-notes-state").remove(); // Remove the empty state
-      }
-      // Find or create the notes list container and prepend the new note
-      const $container = $(
-        "#right-column .expanded-content > .notes-list"
-      ).first();
-      if ($container.length) {
-        $container.prepend(newNoteHtml);
-      } else {
-        // Fallback: append to the expanded content if we can't find the specific container
-        $("#right-column .expanded-content .notes-list").append(
-          `${newNoteHtml}`
-        );
-      }
+    // Get the notes list container
+    const $notesList = $(".notes-list");
+    
+    // Clear any empty state messages
+    $notesList.find('div:contains("No notes yet")').remove();
+    
+    // Add the new note to the top of the list
+    if ($notesList.children().length === 0) {
+      $notesList.append(newNoteHtml);
     } else {
-      // Add to the top of the notes list
-      $existingNotes.first().before(newNoteHtml);
+      $notesList.prepend(newNoteHtml);
     }
+    
+    // Update the collapsed view
+    $(`[data-note-id="${noteId}"]`).remove();
 
     // Update the collapsed view
     $(`.collapsed-content [data-note-id="${noteId}"]`).remove();
@@ -3118,8 +3094,18 @@ const CanvasChat = {
           <i class="fa-solid fa-clipboard text-xl"></i>
         </button>`;
 
-        // Add the new note to the top of the expanded notes list
-        $(".note-item").first().before(newNoteHtml);
+        // Get the notes list container
+        const $notesList = $(".notes-list");
+
+        // Clear any empty state messages
+        $notesList.find('div:contains("No notes yet")').remove();
+
+        // Add the new note to the top of the list
+        if ($notesList.children().length === 0) {
+          $notesList.append(newNoteHtml);
+        } else {
+          $notesList.prepend(newNoteHtml);
+        }
 
         // Add the new note to the collapsed view, right after the divider
         const $divider = $(".collapsed-content .border-t");
