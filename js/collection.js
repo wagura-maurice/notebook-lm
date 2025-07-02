@@ -1706,19 +1706,7 @@ const NoteActions = {
   deleteAllNotes: function () {
     // Get all note items
     const $noteItems = $(".note-item");
-
-    // Find the notes list container in the right column
-    let $notesListContainer = $(
-      "#right-column .expanded-content > .notes-list"
-    ).first();
-
-    // If we can't find the container, create it
-    if ($notesListContainer.length === 0) {
-      $notesListContainer = $("");
-      $("#right-column .expanded-content .notes-list").append(
-        $notesListContainer
-      );
-    }
+    const $notesList = $(".notes-list");
 
     // If there are no notes, just hide the modal and return
     if ($noteItems.length === 0) {
@@ -1729,18 +1717,15 @@ const NoteActions = {
     // Remove all notes with animation
     $noteItems.fadeOut(300, function () {
       // After animation, remove the notes
-      $(".note-item, [data-note-id]").remove();
+      $(".note-item").remove();
 
       // Clear any note-related data
       $("#delete-note-modal, #edit-note-modal").removeData("note-item");
 
-      // Clear the notes list container and add empty state
-      $notesListContainer.html(`
-        <div class="empty-notes-state text-center py-8 text-slate-400">
-          <i class="fas fa-sticky-note text-4xl mb-2 opacity-30"></i>
-          <p>No notes yet. Add a note to get started.</p>
-        </div>
-      `);
+      // Show empty state message
+      $notesList.html(
+        '<div class="text-center py-8 text-slate-400">No notes yet. Click the + button to add a note.</div>'
+      );
     });
 
     // Hide the modal
