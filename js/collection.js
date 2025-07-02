@@ -982,50 +982,33 @@ const SourceActions = {
     const truncatedName =
       name.length > 30 ? `${name.substring(0, 30)}...` : name;
 
-    const $newSource = $(`
-      <li class="group py-2 px-3 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item">
+    const $newSource = $(
+      `<li class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item" data-source-id="${sourceId}">
         <div class="relative mr-3 w-6 h-6">
           <i class="fas fa-file-alt text-green-400 group-hover:opacity-0 transition-opacity source-icon"></i>
           <i class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center source-menu-toggle"></i>
         </div>
-        <span class="flex-1 truncate" data-source-id="${sourceId}">${truncatedName}</span>
+        <span class="flex-1 truncate">${truncatedName}</span>
         <input type="checkbox" class="ml-2 source-checkbox" />
         <div class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30">
           <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option show-source">
-            <i class="fas fa-eye mr-2"></i> Show source
-          </a>
-          <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option add-note-to-source">
-            <i class="fas fa-sticky-note mr-2"></i> Add note
+            <i class="fa-solid fa-eye mr-2"></i> Show source
           </a>
           <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option rename-source">
-            <i class="fas fa-pencil-alt mr-2"></i> Rename
+            <i class="fas fa-pencil-alt mr-2"></i> Rename source
           </a>
           <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option delete-source">
-            <i class="fas fa-trash-alt mr-2"></i> Delete
+            <i class="fas fa-trash-alt mr-2"></i> Delete source
           </a>
         </div>
-      </li>
-    `);
+      </li>`
+    );
 
-    // Add click handler for the source menu
-    $newSource.on("click", ".add-note-to-source", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      // Get the source title
-      const sourceTitle = $newSource.find("span").text().trim();
-
-      // Create a default note title based on the source title
-      const noteTitle = `Note on ${sourceTitle}`;
-
-      // Add the note to the source
-      this.addNoteToSource(sourceId, noteTitle, `Note about ${sourceTitle}`);
-    });
-
+    // Add the new source to the DOM
     $(".source-list").prepend($newSource);
 
-    // Return the source ID for reference
-    return sourceId;
+    // Return the jQuery object for the new source
+    return $newSource;
   },
 
   addSourceFromModal: function () {
@@ -1339,7 +1322,7 @@ const NoteActions = {
       )
       .on(
         "click",
-        '.notes-menu-dropdown a:contains("Add to sources")',
+        '.notes-menu-dropdown a:contains("Add to")',
         this.addNoteToSources.bind(this)
       );
 
@@ -1638,9 +1621,8 @@ const NoteActions = {
         <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
           <i class="fa-solid fa-eye mr-2"></i> Show note
         </a>
-        <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
-          <i class="fas fa-plus-circle mr-3 text-sm"></i> Add to
-          sources
+        <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option add-to-sources">
+          <i class="fas fa-plus-circle mr-3 text-sm"></i> Add to sources
         </a>
         <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
           <i class="fas fa-trash-alt mr-3 text-sm"></i> Delete note
@@ -1656,8 +1638,17 @@ const NoteActions = {
         <i class="fa-solid fa-clipboard text-xl"></i>
       </button>`;
 
-      // Add the new note to the top of the expanded notes list
-      $(".note-item").first().before(newNoteHtml);
+      // Check if we're in empty state (no notes)
+      const $emptyState = $(".empty-notes-state");
+      const $noteListContainer = $(".note-list-container");
+
+      if ($emptyState.length > 0) {
+        // If empty state exists, replace it with the new note
+        $emptyState.replaceWith(newNoteHtml);
+      } else {
+        // Otherwise, add to the top of the notes list
+        $(".note-item").first().before(newNoteHtml);
+      }
 
       // Add the new note to the collapsed view, right after the divider
       const $divider = $(".collapsed-content .border-t");
@@ -1699,11 +1690,69 @@ const NoteActions = {
   },
 
   deleteAllNotes: function () {
-    const $noteItems = $("#delete-all-notes-modal").data("note-list-container");
-    if ($noteItems) {
-      $noteItems.empty();
+    // Get all note items
+    const $noteItems = $(".note-item");
+
+    // Find the notes list container in the right column
+    let $notesListContainer = $(
+      "#right-column .expanded-content > .notes-list"
+    ).first();
+
+    // If we can't find the container, create it
+    if ($notesListContainer.length === 0) {
+      $notesListContainer = $("");
+      $("#right-column .expanded-content .notes-list").append(
+        $notesListContainer
+      );
     }
+
+    // If there are no notes, just hide the modal and return
+    if ($noteItems.length === 0) {
+      $("#delete-all-notes-modal").addClass("hidden");
+      return;
+    }
+
+    // Remove all notes with animation
+    $noteItems.fadeOut(300, function () {
+      // After animation, remove the notes
+      $(".note-item, [data-note-id]").remove();
+
+      // Clear any note-related data
+      $("#delete-note-modal, #edit-note-modal").removeData("note-item");
+
+      // Clear the notes list container and add empty state
+      $notesListContainer.html(`
+        <div class="empty-notes-state text-center py-8 text-slate-400">
+          <i class="fas fa-sticky-note text-4xl mb-2 opacity-30"></i>
+          <p>No notes yet. Add a note to get started.</p>
+        </div>
+      `);
+    });
+
+    // Hide the modal
     $("#delete-all-notes-modal").addClass("hidden");
+
+    // Re-initialize the note list container to ensure event bindings work
+    setTimeout(() => {
+      // Re-initialize any necessary components
+      if (
+        typeof NoteActions !== "undefined" &&
+        typeof NoteActions.init === "function"
+      ) {
+        NoteActions.init();
+      }
+    }, 100);
+
+    // Show a success message
+    const $successMsg = $(
+      '<div class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg">All notes have been deleted</div>'
+    );
+    $("body").append($successMsg);
+
+    // Remove the success message after 3 seconds
+    setTimeout(() => {
+      $successMsg.fadeOut(500, () => $successMsg.remove());
+    }, 3000);
   },
 
   showDeleteNoteModal: function (e) {
@@ -1725,62 +1774,164 @@ const NoteActions = {
     e.preventDefault();
     e.stopPropagation();
 
-    const $noteItem = $(e.currentTarget).closest(SELECTORS.noteItem);
-    const title =
-      $noteItem.find(".font-medium.truncate").data("title") ||
-      $noteItem.find(".font-medium.truncate").text().trim();
-    const content =
-      $noteItem.find(".text-xs.text-slate-400").data("title") ||
-      $noteItem.find(".text-xs.text-slate-400").text().trim();
+    const $menuItem = $(e.currentTarget);
+    const $noteItem = $menuItem.closest(SELECTORS.noteItem);
+    const $titleElement = $noteItem.find(".font-medium.truncate");
+    const $contentElement = $noteItem.find(".text-xs.text-slate-400");
 
-    console.log("Adding note to sources:", { title, content });
+    const title = $titleElement.data("title") || $titleElement.text().trim();
+    const content =
+      $contentElement.data("title") || $contentElement.text().trim();
+
+    console.log("Converting note to source:", { title, content });
 
     if (title && content) {
-      // Add the note as a source using the global SourceActions
-      SourceActions.addSource(title, "note", content);
+      try {
+        // Add the note as a source with full functionality
+        const $newSource = SourceActions.addSource(title, "note", content);
 
-      // Show a success message or visual feedback
-      const $feedback = $(
-        '<div class="text-green-400 text-xs mt-1">Added to sources</div>'
-      );
-      $noteItem.append($feedback);
-      setTimeout(() => $feedback.fadeOut(500, () => $feedback.remove()), 2000);
+        if ($newSource) {
+          // Show success message
+          const $successMsg = $(
+            '<div class="text-green-400 text-xs mt-1">Note converted to source</div>'
+          );
+          $noteItem.append($successMsg);
+
+          // Remove the success message after delay
+          setTimeout(() => {
+            $successMsg.fadeOut(500, () => $successMsg.remove());
+          }, 2000);
+
+          // Close the dropdown menu
+          $noteItem.find(".notes-menu-dropdown").addClass("hidden");
+
+          // After a short delay, delete the original note
+          setTimeout(() => {
+            // Trigger the delete functionality
+            const $deleteButton = $noteItem.find(
+              '.menu-option:contains("Delete note")'
+            );
+            if ($deleteButton.length) {
+              $deleteButton.trigger("click");
+            } else {
+              // Fallback: remove the note item if delete button not found
+              $noteItem.fadeOut(300, () => $noteItem.remove());
+            }
+          }, 1000);
+        } else {
+          throw new Error("Failed to create source");
+        }
+      } catch (error) {
+        console.error("Error converting note to source:", error);
+        // Show error message
+        const $errorMsg = $(
+          '<div class="text-red-400 text-xs mt-1">Failed to convert note to source</div>'
+        );
+        $noteItem.append($errorMsg);
+        setTimeout(
+          () => $errorMsg.fadeOut(500, () => $errorMsg.remove()),
+          3000
+        );
+      }
     } else {
       console.error("Could not find note title or content");
+      const $errorMsg = $(
+        '<div class="text-red-400 text-xs mt-1">Missing note content</div>'
+      );
+      $noteItem.append($errorMsg);
+      setTimeout(() => $errorMsg.fadeOut(500, () => $errorMsg.remove()), 3000);
     }
-
-    // Close the dropdown menu
-    $noteItem.find(".notes-menu-dropdown").addClass("hidden");
   },
 
   addSource: function (name, type, content) {
+    // Check if we already have a source with this name to prevent duplicates
+    const existingSource = $(`.source-item:contains('${name}')`).filter(
+      function () {
+        return $(this).find("span:first").text().trim() === name.trim();
+      }
+    );
+
+    if (existingSource.length > 0) {
+      // If source already exists, show a message
+      const $existingSource = $(existingSource[0]);
+
+      // Add a visual indicator
+      $existingSource.css("background-color", "rgba(59, 130, 246, 0.3)");
+
+      // Remove the highlight after 1.5 seconds
+      setTimeout(() => {
+        $existingSource.css("background-color", "");
+      }, 1500);
+
+      return; // Exit if source already exists
+    }
+
     const truncatedName =
       name.length > 30 ? `${name.substring(0, 30)}...` : name;
+    const sourceId = "source-" + Date.now();
 
     const $newSource = $(`
-      <li class="group py-2 px-3 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item">
+      <li class="group py-2 px-3 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item" data-source-id="${sourceId}">
         <div class="relative mr-3 w-6 h-6">
           <i class="fas fa-file-alt text-green-400 group-hover:opacity-0 transition-opacity source-icon"></i>
           <i class="fas fa-ellipsis-vertical absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center source-menu-toggle"></i>
         </div>
-        <span class="flex-1 truncate">${truncatedName}</span>
-        <input type="checkbox" class="ml-2 source-checkbox" />
+        <span class="flex-1 truncate" title="${name}">${truncatedName}</span>
+        <div class="source-actions opacity-0 group-hover:opacity-100 transition-opacity flex items-center">
+          <input type="checkbox" class="ml-2 source-checkbox" />
+        </div>
         <div class="source-menu hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30">
-          <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+          <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option show-source">
             <i class="fas fa-eye mr-2"></i> Show source
           </a>
-          <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+          <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option rename-source">
             <i class="fas fa-pencil-alt mr-2"></i> Rename
           </a>
-          <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option">
+          <a href="#" class="flex items-center px-4 py-2 text-sm text-red-400 hover:bg-slate-700 menu-option delete-source">
             <i class="fas fa-trash-alt mr-2"></i> Delete
           </a>
         </div>
       </li>
     `);
 
+    // Add the new source to the sources list
+    const $sourcesList = $("#sources-list");
+    if ($sourcesList.length === 0) {
+      // If sources list doesn't exist, create it
+      const $sourcesSection = $(
+        '<div id="sources-section" class="mb-6">' +
+          '  <div class="flex items-center justify-between px-5 py-3 border-b border-slate-700">' +
+          '    <h3 class="text-lg font-semibold">Sources</h3>' +
+          '    <div class="flex items-center space-x-2">' +
+          '      <button id="add-source-btn" class="text-sky-400 hover:text-sky-300">' +
+          '        <i class="fas fa-plus"></i>' +
+          "      </button>" +
+          "    </div>" +
+          "  </div>" +
+          '  <ul id="sources-list" class="max-h-96 overflow-y-auto"></ul>' +
+          "</div>"
+      );
+
+      // Insert the sources section before the notes section
+      $("#right-column .expanded-content").prepend($sourcesSection);
+
+      // Initialize the new sources list
+      $sourcesSection.find("#sources-list").append($newSource);
+    } else {
+      // Add to existing sources list
+      $sourcesList.append($newSource);
+    }
+
+    // Initialize the source item
+    this.initSourceItem($newSource);
+
+    // Show success message
+    this.showSuccessMessage(`"${truncatedName}" added to sources`);
+  },
+
+  initSourceItem: function ($sourceItem) {
     // Add hover effect for the source item
-    $newSource.hover(
+    $sourceItem.hover(
       function () {
         $(this).find(".source-icon").css("opacity", "0");
         $(this).find(".source-menu-toggle").css("opacity", "1");
@@ -1794,10 +1945,9 @@ const NoteActions = {
     );
 
     // Add click handler for the menu toggle
-    $newSource.find(".source-menu-toggle").on("click", function (e) {
+    $sourceItem.find(".source-menu-toggle").on("click", function (e) {
       e.stopPropagation();
-      const $sourceItem = $(this).closest(".source-item");
-      const $dropdown = $sourceItem.find(".source-menu");
+      const $dropdown = $(this).siblings(".source-menu");
       const isVisible = !$dropdown.hasClass("hidden");
 
       // Hide all other dropdowns
@@ -1834,19 +1984,90 @@ const NoteActions = {
       }
     });
 
-    // Toggle note menu dropdown
+    // Handle source clicks
+    $sourceItem.on("click", ".show-source", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const title = $sourceItem.find("span:first").text().trim();
+      const content = $sourceItem.data("content") || "No content available";
+      this.showSourceModal(title, content);
+    });
+
+    // Handle rename
+    $sourceItem.on("click", ".rename-source", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const $titleSpan = $sourceItem.find("span:first");
+      const currentTitle = $titleSpan.attr("title") || $titleSpan.text().trim();
+      const newTitle = prompt("Enter new name:", currentTitle);
+      if (newTitle && newTitle !== currentTitle) {
+        const truncated =
+          newTitle.length > 30 ? `${newTitle.substring(0, 30)}...` : newTitle;
+        $titleSpan.text(truncated).attr("title", newTitle);
+      }
+      $sourceItem.find(".source-menu").addClass("hidden");
+    });
+
+    // Handle delete
+    $sourceItem.on("click", ".delete-source", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (confirm("Are you sure you want to delete this source?")) {
+        $sourceItem.fadeOut(300, () => $sourceItem.remove());
+        // If no sources left, remove the sources section
+        if ($(".source-item").length === 0) {
+          $("#sources-section").remove();
+        }
+      }
+      $sourceItem.find(".source-menu").addClass("hidden");
+    });
+
+    // Close menu when clicking outside
+    $(document).on("click", (e) => {
+      if (!$(e.target).closest(".source-item").length) {
+        $sourceItem.find(".source-menu").addClass("hidden");
+      }
+    });
+  },
+
+  showSuccessMessage: function (message) {
+    const $msg = $(`
+      <div class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg">
+        ${message}
+      </div>
+    `);
+    $("body").append($msg);
+    setTimeout(() => {
+      $msg.fadeOut(500, () => $msg.remove());
+    }, 3000);
+  },
+
+  showSourceModal: function (title, content) {
+    // Implementation for showing source modal
+    console.log("Show source:", title, content);
+  },
+
+  toggleNoteMenu: function () {
+    // Implementation for toggling note menu
+    console.log("Toggling note menu");
+  },
+
+  initEventListeners: function () {
+    // Note menu toggle
     $(document).on(
       "click",
       ".note-menu-toggle",
       this.toggleNoteMenu.bind(this)
     );
+
     // Close note menu when clicking outside
     $(document).on("click", (e) => {
       if (!$(e.target).closest(".notes-menu-dropdown").length) {
         $(".notes-menu-dropdown").addClass("hidden");
       }
     });
-    // Handle note menu options
+
+    // Note menu options
     $(document).on("click", ".menu-option.show-note", (e) => {
       e.preventDefault();
       const $noteItem = $(e.currentTarget).closest(".note-item");
@@ -1854,13 +2075,15 @@ const NoteActions = {
       const content = $noteItem.find(".text-xs").text().trim();
       this.showNoteModal(title, content);
     });
-    // Handle delete note
+
+    // Delete note
     $(document).on("click", ".menu-option.delete-note", (e) => {
       e.preventDefault();
       const $noteItem = $(e.currentTarget).closest(".note-item");
       $noteItem.fadeOut(300, () => $noteItem.remove());
     });
-    // Handle add to sources
+
+    // Add to sources
     $(document).on("click", ".menu-option.add-to-sources", (e) => {
       e.preventDefault();
       const $noteItem = $(e.currentTarget).closest(".note-item");
@@ -1868,7 +2091,8 @@ const NoteActions = {
       const content = $noteItem.find(".text-xs").text().trim();
       this.addSource(title, "note", content);
     });
-    // Handle source menu options
+
+    // Source menu options
     $(document).on(
       "click",
       ".source-menu-dropdown .menu-option.show-source",
@@ -1880,6 +2104,8 @@ const NoteActions = {
         this.showSourceModal(title, "Source content would appear here");
       }
     );
+
+    // Rename source
     $(document).on(
       "click",
       ".source-menu-dropdown .menu-option.rename-source",
@@ -1895,6 +2121,8 @@ const NoteActions = {
         }
       }
     );
+
+    // Delete source
     $(document).on(
       "click",
       ".source-menu-dropdown .menu-option.delete-source",
@@ -1910,14 +2138,14 @@ const NoteActions = {
         }
       }
     );
+
     // Source menu click handler - default behavior for menu options
     $(document).on("click", ".source-menu-dropdown .menu-option", (e) => {
-      // Default click handler for menu options
       e.stopPropagation();
     });
 
     // Edit note content functionality
-    const editNoteContent = (content = "") => {
+    this.editNoteContent = function (content = "") {
       return `
         <div class="flex flex-col h-full expanded-content edit-note-content">
           <div class="flex items-center justify-between px-5 py-3 border-b border-slate-700">
@@ -2182,7 +2410,7 @@ const SourceItemInteractions = {
     this.updateNoteTitles();
 
     // Set up MutationObserver for dynamically added note items
-    const notesList = document.querySelector("#right-column .px-5.py-3");
+    const notesList = document.querySelector("#right-column .notes-list");
     if (notesList) {
       const observer = new MutationObserver(() => {
         this.updateNoteTitles();
@@ -2502,13 +2730,52 @@ const MessageActions = {
         <i class="fa-solid fa-clipboard text-xl"></i>
       </button>`;
 
-    // Add the new note to the top of the expanded notes list
-    $(".note-item").first().before(newNoteHtml);
+    // Get the notes list container - this is the div that contains all the note items
+    let $notesListContainer = $(
+      "#right-column .expanded-content > .notes-list"
+    ).first();
 
-    // Add the new note to the collapsed view, right after the divider
-    const $divider = $(".collapsed-content .border-t");
-    if ($divider.length) {
-      $divider.after(newCollapsedNoteHtml);
+    // If we couldn't find it, try to find any notes-list container in the right column
+    if ($notesListContainer.length === 0) {
+      $notesListContainer = $(
+        "#right-column .expanded-content .notes-list"
+      ).first();
+    }
+
+    // Check if we have any notes or if the container has the empty state
+    const $existingNotes = $(".note-item");
+    const isEmptyState = $(".empty-notes-state").length > 0;
+
+    // Remove any existing note with the same ID to prevent duplicates
+    $(`#note-${noteId}`).remove();
+
+    if ($existingNotes.length === 0 || isEmptyState) {
+      // If no notes exist or only empty state is shown, replace the content
+      if (isEmptyState) {
+        $(".empty-notes-state").remove(); // Remove the empty state
+      }
+      // Find or create the notes list container and prepend the new note
+      const $container = $(
+        "#right-column .expanded-content > .notes-list"
+      ).first();
+      if ($container.length) {
+        $container.prepend(newNoteHtml);
+      } else {
+        // Fallback: append to the expanded content if we can't find the specific container
+        $("#right-column .expanded-content .notes-list").append(
+          `${newNoteHtml}`
+        );
+      }
+    } else {
+      // Add to the top of the notes list
+      $existingNotes.first().before(newNoteHtml);
+    }
+
+    // Update the collapsed view
+    $(`.collapsed-content [data-note-id="${noteId}"]`).remove();
+    const $collapsedDivider = $(".collapsed-content .border-t").first();
+    if ($collapsedDivider.length) {
+      $collapsedDivider.after(newCollapsedNoteHtml);
     } else {
       // If no divider found, add to the end of the container
       $(".collapsed-content .flex-1").append(newCollapsedNoteHtml);
