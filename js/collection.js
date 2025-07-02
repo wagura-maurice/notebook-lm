@@ -1232,6 +1232,20 @@ const SourceActions = {
 /* ============================================ */
 const NoteActions = {
   init: function () {
+    // Bind note actions
+    $(document)
+      .on("click", ".show-note", this.showNoteContent.bind(this))
+      .on("click", ".add-note", this.openAddNoteModal.bind(this))
+      .on("click", ".delete-note", this.showDeleteNoteModal.bind(this))
+      .on("click", ".add-to-sources", this.addNoteToSources.bind(this))
+      .on("click", ".add-all-to-sources", this.addAllNotesToSources.bind(this))
+      .on("click", ".delete-all-notes", this.showDeleteAllNotesModal.bind(this))
+      .on(
+        "click",
+        ".open-canvas-notes",
+        this.showOpenCanvasNotesToCanvasModal.bind(this)
+      )
+      .on("click", ".open-mindmap", this.showMindMapModal.bind(this));
     this.bindEvents();
   },
 
@@ -1770,6 +1784,67 @@ const NoteActions = {
     $("#delete-note-modal").addClass("hidden");
   },
 
+  addAllNotesToSources: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const $noteItems = $(".note-item");
+    let addedCount = 0;
+    const $notesToRemove = [];
+
+    $noteItems.each((_, noteItem) => {
+      const $noteItem = $(noteItem);
+      const $titleElement = $noteItem.find(".font-medium.truncate");
+      const $contentElement = $noteItem.find(".text-xs.text-slate-400");
+
+      const title = $titleElement.data("title") || $titleElement.text().trim();
+      const content =
+        $contentElement.data("title") || $contentElement.text().trim();
+
+      if (title && content) {
+        try {
+          // Add the note as a source
+          SourceActions.addSource(title, "note", content);
+          addedCount++;
+          $notesToRemove.push($noteItem);
+        } catch (error) {
+          console.error("Error adding note to sources:", error);
+        }
+      }
+    });
+
+    // Show success message
+    if (addedCount > 0) {
+      const $successMsg = $(
+        `<div class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg">
+          Successfully added ${addedCount} ${
+          addedCount === 1 ? "note" : "notes"
+        } to sources
+        </div>`
+      );
+      $("body").append($successMsg);
+      setTimeout(() => {
+        $successMsg.fadeOut(500, () => $successMsg.remove());
+      }, 3000);
+
+      // Remove all notes that were added to sources
+      $notesToRemove.forEach(($note) => {
+        $note.fadeOut(300, function () {
+          $(this).remove();
+          // Show empty state if no notes left
+          if ($(".note-item").length === 0) {
+            $(".notes-list").html(
+              '<div class="text-center py-8 text-slate-400">No notes yet. Click the + button to add a note.</div>'
+            );
+          }
+        });
+      });
+    }
+
+    // Close any open dropdowns
+    $(".notes-menu-dropdown").addClass("hidden");
+  },
+
   addNoteToSources: function (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -1793,31 +1868,26 @@ const NoteActions = {
         if ($newSource) {
           // Show success message
           const $successMsg = $(
-            '<div class="text-green-400 text-xs mt-1">Note converted to source</div>'
+            '<div class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg">Note added to sources</div>'
           );
-          $noteItem.append($successMsg);
-
-          // Remove the success message after delay
+          $("body").append($successMsg);
           setTimeout(() => {
             $successMsg.fadeOut(500, () => $successMsg.remove());
-          }, 2000);
+          }, 3000);
 
           // Close the dropdown menu
           $noteItem.find(".notes-menu-dropdown").addClass("hidden");
 
-          // After a short delay, delete the original note
-          setTimeout(() => {
-            // Trigger the delete functionality
-            const $deleteButton = $noteItem.find(
-              '.menu-option:contains("Delete note")'
-            );
-            if ($deleteButton.length) {
-              $deleteButton.trigger("click");
-            } else {
-              // Fallback: remove the note item if delete button not found
-              $noteItem.fadeOut(300, () => $noteItem.remove());
+          // Remove the note from the notes list
+          $noteItem.fadeOut(300, function () {
+            $(this).remove();
+            // Show empty state if no notes left
+            if ($(".note-item").length === 0) {
+              $(".notes-list").html(
+                '<div class="text-center py-8 text-slate-400">No notes yet. Click the + button to add a note.</div>'
+              );
             }
-          }, 1000);
+          });
         } else {
           throw new Error("Failed to create source");
         }
@@ -1833,6 +1903,27 @@ const NoteActions = {
           3000
         );
       }
+    } else {
+      console.error("Could not find note title or content");
+      const $errorMsg = $(
+        '<div class="text-red-400 text-xs mt-1">Missing note content</div>'
+      );
+      $noteItem.append($errorMsg);
+      setTimeout(() => $errorMsg.fadeOut(500, () => $errorMsg.remove()), 3000);
+    }
+  },
+
+  addSource: function (name, type, content) {
+    // Check if we already have a source with this name to prevent duplicates
+    const existingSource = $(`.source-item:contains('${name}')`).filter(
+      function () {
+        return $(this).find("span:first").text().trim() === name.trim();
+      }
+    );
+
+    if (existingSource.length > 0) {
+      // If source already exists, show a message
+      const $existingSource = $(existingSource[0]);
     } else {
       console.error("Could not find note title or content");
       const $errorMsg = $(
