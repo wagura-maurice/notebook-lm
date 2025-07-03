@@ -21,39 +21,12 @@ function cleanupExistingTour() {
 }
 
 /**
- * Add custom styles for the tour
+ * Initialize tour styles
+ * Note: All styles are now in /css/tour.css
  */
 function addTourStyles() {
-  // Only add styles once
-  if (document.getElementById("shepherd-styles")) return;
-
-  const style = document.createElement("style");
-  style.id = "shepherd-styles";
-  style.textContent = `
-    .shepherd-theme-custom {
-      max-width: 400px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    }
-    .shepherd-target-highlight {
-      position: relative;
-      z-index: 9999;
-    }
-    .shepherd-button {
-      background: #4f46e5;
-      border: none;
-      border-radius: 4px;
-      color: white;
-      cursor: pointer;
-      margin-right: 8px;
-      padding: 6px 12px;
-    }
-    .shepherd-button-secondary {
-      background: #e5e7eb;
-      color: #4b5563;
-    }
-  `;
-  document.head.appendChild(style);
+  // No need to add styles here as they're in the external CSS file
+  // This function is kept for backward compatibility
 }
 
 /**
@@ -85,6 +58,8 @@ function initTour() {
         arrow: true,
         canClickTarget: false,
         highlightClass: "shepherd-target-highlight",
+        modalOverlayOpeningPadding: 8,
+        modalOverlayOpeningRadius: 6,
         popperOptions: {
           modifiers: [
             {
@@ -93,11 +68,53 @@ function initTour() {
                 offset: [0, 15],
               },
             },
+            {
+              name: 'preventOverflow',
+              options: {
+                padding: 10,
+                boundary: 'viewport',
+                tether: false
+              }
+            }
           ],
         },
+        when: {
+          show: function() {
+            // Ensure our highlight class is applied
+            const currentStep = tour.getCurrentStep();
+            if (currentStep && currentStep.options.highlightClass) {
+              const targetElement = currentStep.target;
+              if (targetElement) {
+                // Remove any existing highlight classes first
+                targetElement.classList.remove(
+                  'shepherd-target-highlight',
+                  'tour-highlight-welcome',
+                  'tour-highlight-column',
+                  'tour-highlight-button',
+                  'tour-highlight-item',
+                  'tour-highlight-message-area',
+                  'tour-highlight-input'
+                );
+                // Add the current step's highlight class
+                targetElement.classList.add(currentStep.options.highlightClass);
+              }
+            }
+          },
+          hide: function() {
+            // Clean up highlight classes when hiding the step
+            const currentStep = tour.getCurrentStep();
+            if (currentStep && currentStep.options.highlightClass) {
+              const targetElement = currentStep.target;
+              if (targetElement) {
+                targetElement.classList.remove(currentStep.options.highlightClass);
+              }
+            }
+          }
+        }
       },
       exitOnEsc: true,
       keyboardNavigation: true,
+      tourName: 'notebook-lm-tour',
     });
 
     // Store the tour instance globally
@@ -110,17 +127,46 @@ function initTour() {
 }
 
 /**
+ * Detect which wizard view is currently active
+ * @returns {string} 'default' or 'policy' based on which wizard is visible
+ */
+function getActiveWizardView() {
+  const defaultWizard = document.querySelector(".default-wizard");
+  const policyWizard = document.querySelector(".policy-wizard");
+
+  if (defaultWizard && getComputedStyle(defaultWizard).display !== "none") {
+    return "default";
+  } else if (
+    policyWizard &&
+    getComputedStyle(policyWizard).display !== "none"
+  ) {
+    return "policy";
+  }
+  return "default"; // Default to default wizard if none is visible
+}
+
+/**
  * Add steps to the tour
  * @param {Object} tour - The Shepherd tour instance
  */
 function addTourSteps(tour) {
   if (!tour) return;
 
+  // Get the active wizard view
+  const activeView = getActiveWizardView();
+  const isDefaultWizard = activeView === "default";
+
   // Welcome step with better styling and engagement
   tour.addStep({
     id: "welcome",
-    title: "👋 Welcome to NotebookLM",
-    text: "Let's take a quick tour to help you get the most out of NotebookLM. You'll learn how to manage sources, chat with your documents, and create notes efficiently.",
+    title: `👋 Welcome to ${isDefaultWizard ? "Default" : "Policy"} Wizard`,
+    text: `Let's take a quick tour of the ${
+      isDefaultWizard ? "Default" : "Policy"
+    } Wizard. You'll learn how to ${
+      isDefaultWizard
+        ? "chat with your documents and generate insights"
+        : "create and manage policies"
+    } using this powerful tool.`,
     buttons: [
       {
         text: "Start Tour",
@@ -199,41 +245,265 @@ function addTourSteps(tour) {
       show: function () {
         // Ensure the left column is expanded
         const leftColumn = document.querySelector("#left-column");
-        if (leftColumn) {
-          leftColumn.classList.remove("collapsed");
+        if (leftColumn && leftColumn.classList.contains("collapsed")) {
+          const toggleBtn = document.querySelector(".toggle-left-column");
+          if (toggleBtn) toggleBtn.click();
         }
       },
     },
   });
 
+  // Add conditional steps based on active wizard view
+  if (isDefaultWizard) {
+    // Default Wizard specific steps
+    tour.addStep({
+      id: "default-wizard-chat",
+      title: "💬 Chat with Your Documents",
+      text: "Ask questions and get insights from your documents. The AI will use the selected sources to provide relevant answers.",
+      attachTo: {
+        element: "#chat-messages",
+        on: "left",
+      },
+      buttons: [
+        {
+          text: "← Back",
+          action: tour.back,
+          classes: "shepherd-button-secondary",
+        },
+        { text: "Next →", action: tour.next, classes: "shepherd-button" },
+      ],
+      highlightClass: "tour-highlight-chat",
+      canClickTarget: true,
+      scrollTo: { behavior: "smooth", block: "center" },
+    });
+
+    tour.addStep({
+      id: "default-wizard-input",
+      title: "✍️ Your Input",
+      text: "Type your questions or requests here. The AI will analyze your selected sources to provide relevant responses.",
+      attachTo: {
+        element: "#chat-input-container",
+        on: "top",
+      },
+      buttons: [
+        {
+          text: "← Back",
+          action: tour.back,
+          classes: "shepherd-button-secondary",
+        },
+        { text: "Next →", action: tour.next, classes: "shepherd-button" },
+      ],
+      highlightClass: "tour-highlight-input",
+      canClickTarget: true,
+    });
+  } else {
+    // Policy Wizard specific steps
+    tour.addStep({
+      id: "policy-wizard-overview",
+      title: "🛡️ Policy Management",
+      text: "The Policy Wizard helps you create and manage access policies for your documents and resources.",
+      attachTo: {
+        element: ".policy-wizard",
+        on: "left",
+      },
+      buttons: [
+        {
+          text: "← Back",
+          action: tour.back,
+          classes: "shepherd-button-secondary",
+        },
+        { text: "Next →", action: tour.next, classes: "shepherd-button" },
+      ],
+      highlightClass: "tour-highlight-policy",
+      canClickTarget: true,
+      scrollTo: { behavior: "smooth", block: "center" },
+    });
+
+    tour.addStep({
+      id: "policy-wizard-messages",
+      title: "💬 Policy Assistant",
+      text: "Here you can chat with the Policy Assistant to create, improve, or analyze policies. Type your request or question in the input below.",
+      attachTo: {
+        element: "#policy-messages",
+        on: "left",
+      },
+      buttons: [
+        {
+          text: "← Back",
+          action: tour.back,
+          classes: "shepherd-button-secondary",
+        },
+        { text: "Next →", action: tour.next, classes: "shepherd-button" },
+      ],
+      highlightClass: "tour-highlight-message-area",
+      canClickTarget: true,
+      scrollTo: { behavior: "smooth", block: "center" },
+      beforeShowPromise: function() {
+        // Ensure the messages container is visible
+        const messages = document.querySelector("#policy-messages");
+        if (messages) {
+          messages.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return Promise.resolve();
+      }
+    });
+  }
+
+  // Common final step
+  tour.addStep({
+    id: "tour-complete",
+    title: "🎉 Tour Complete!",
+    text: "You've completed the tour! Feel free to explore the wizard on your own. You can always take this tour again by clicking the help button.",
+    buttons: [
+      {
+        text: "Finish",
+        action: tour.complete,
+        classes: "shepherd-button-primary",
+      },
+    ],
+    highlightClass: "tour-highlight-complete",
+    canClickTarget: true,
+  });
+
   // Add Source Button with interactive tips
   tour.addStep({
     id: "add-source-button",
-    title: "➕ Add Content",
-    text: "Click here to upload documents, import from cloud storage, or paste text. NotebookLM supports PDFs, Word docs, and more!",
+    title: "➕ Add Sources",
+    text: "Upload documents, import from cloud storage, or paste text. Supports PDFs, Word docs, and more. Click to add new content to your knowledge base.",
     attachTo: {
       element: "#addSourceBtn",
-      on: "bottom",
+      on: "right"
     },
     buttons: [
       {
         text: "← Back",
         action: tour.back,
-        classes: "shepherd-button-secondary",
+        classes: "shepherd-button-secondary"
       },
       {
-        text: "Got it! Next →",
+        text: "Next →",
         action: tour.next,
-        classes: "shepherd-button",
-      },
+        classes: "shepherd-button"
+      }
     ],
     highlightClass: "tour-highlight-button",
     canClickTarget: true,
-    scrollTo: { behavior: "smooth", block: "center" },
+    scrollTo: { behavior: "smooth", block: "center" }
+  });
+
+  // Discover Source Button
+  tour.addStep({
+    id: "discover-source-button",
+    title: "🔍 Discover Sources",
+    text: "Find and add relevant sources from your connected accounts or the web. Great for discovering new content related to your research.",
+    attachTo: {
+      element: "#discoverSourceBtn",
+      on: "right"
+    },
+    buttons: [
+      {
+        text: "← Back",
+        action: tour.back,
+        classes: "shepherd-button-secondary"
+      },
+      {
+        text: "Next →",
+        action: tour.next,
+        classes: "shepherd-button"
+      }
+    ],
+    highlightClass: "tour-highlight-button",
+    canClickTarget: true
+  });
+
+  // Mind Map Button
+  tour.addStep({
+    id: "mindmap-button",
+    title: "🧠 Mind Map",
+    text: "Visualize the connections between your sources and ideas. Create interactive mind maps to organize your thoughts and see relationships between concepts.",
+    attachTo: {
+      element: "#mindMapSourceBtn",
+      on: "right"
+    },
+    buttons: [
+      {
+        text: "← Back",
+        action: tour.back,
+        classes: "shepherd-button-secondary"
+      },
+      {
+        text: "Next →",
+        action: tour.next,
+        classes: "shepherd-button"
+      }
+    ],
+    highlightClass: "tour-highlight-button",
+    canClickTarget: true
+  });
+
+  // Canvas Button (only show if visible)
+  const canvasBtn = document.querySelector("#canvasSourceBtn");
+  if (canvasBtn && window.getComputedStyle(canvasBtn).display !== "none") {
+    tour.addStep({
+      id: "canvas-button",
+      title: "🎨 Canvas",
+      text: "Create free-form visualizations and diagrams. Organize your ideas spatially and make connections between different concepts in your research.",
+      attachTo: {
+        element: "#canvasSourceBtn",
+        on: "right"
+      },
+      buttons: [
+        {
+          text: "← Back",
+          action: tour.back,
+          classes: "shepherd-button-secondary"
+        },
+        {
+          text: "Next →",
+          action: tour.next,
+          classes: "shepherd-button"
+        }
+      ],
+      highlightClass: "tour-highlight-button",
+      canClickTarget: true
+    });
+  }
+
+  // Chat about these sources Button
+  tour.addStep({
+    id: "chat-about-sources-button",
+    title: "💬 Chat About Sources",
+    text: "Start a conversation about your selected sources. The AI will analyze all selected documents to provide comprehensive answers and insights.",
+    attachTo: {
+      element: "#chatAboutSourcesBtn",
+      on: "right"
+    },
+    buttons: [
+      {
+        text: "← Back",
+        action: tour.back,
+        classes: "shepherd-button-secondary"
+      },
+      {
+        text: "Next →",
+        action: tour.next,
+        classes: "shepherd-button"
+      }
+    ],
+    highlightClass: "tour-highlight-button",
+    canClickTarget: true,
+    beforeShowPromise: function() {
+      // Ensure the button is visible by scrolling if needed
+      const btn = document.querySelector("#chatAboutSourcesBtn");
+      if (btn) {
+        btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return Promise.resolve();
+    },
     when: {
       show: function () {
         // Add a pulsing effect to the button
-        const btn = document.querySelector("#addSourceBtn");
+        const btn = document.querySelector("#chatAboutSourcesBtn");
         if (btn) {
           btn.classList.add("pulse-animation");
           // Remove the class after animation completes
@@ -656,6 +926,19 @@ function startTour() {
       return false;
     }
 
+    // Determine which wizard view is active and show appropriate notification
+    const activeView = getActiveWizardView();
+    const welcomeMessage =
+      activeView === "default"
+        ? "Welcome to the Default Wizard! Let's get started with the tour."
+        : "Welcome to the Policy Wizard! Let's get started with the tour.";
+
+    // Show welcome notification
+    showNotification(welcomeMessage, "info");
+
+    // Start the tour
+    tour.start();
+
     // Add completion handler
     tour.on("complete", () => {
       showNotification(
@@ -670,9 +953,6 @@ function startTour() {
         "info"
       );
     });
-
-    // Start the tour
-    tour.start();
 
     console.log("Tour started with", tour.steps.length, "steps");
     return true;
