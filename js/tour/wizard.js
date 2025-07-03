@@ -6,6 +6,166 @@
 // Global tour instance
 let currentTour = null;
 
+// Chat simulation state
+const chatSimulation = {
+  isSimulating: false,
+  currentStep: 0,
+  defaultWizardMessages: [
+    {
+      sender: 'ai',
+      text: 'Hello! I\'m your AI assistant. I can help you analyze and understand your sources. What would you like to know?',
+      timestamp: new Date().toISOString(),
+      sources: []
+    },
+    {
+      sender: 'user',
+      text: 'Can you summarize the key points from my documents?',
+      timestamp: new Date().toISOString()
+    },
+    {
+      sender: 'ai',
+      text: 'Of course! Based on the documents you\'ve uploaded, here are the key points...',
+      timestamp: new Date().toISOString(),
+      sources: [
+        { id: 'doc1', title: 'Research Paper 1', page: 3 },
+        { id: 'doc2', title: 'Article Summary', page: 1 }
+      ]
+    }
+  ],
+  policyWizardMessages: [
+    {
+      sender: 'ai',
+      text: 'Welcome to the Policy Wizard! I can help you create and manage access policies for your documents.',
+      timestamp: new Date().toISOString()
+    },
+    {
+      sender: 'user',
+      text: 'How do I restrict access to sensitive documents?',
+      timestamp: new Date().toISOString()
+    },
+    {
+      sender: 'ai',
+      text: 'You can restrict access by creating a policy that specifies which users or groups can view or edit specific documents. Would you like me to help you create one?',
+      timestamp: new Date().toISOString(),
+      action: 'suggest_policy_creation'
+    }
+  ],
+  
+  // Initialize chat simulation
+  init: function() {
+    this.isSimulating = true;
+    this.currentStep = 0;
+    this.clearChat();
+  },
+  
+  // Clear existing chat messages
+  clearChat: function() {
+    const chatContainer = document.querySelector('#chat-messages, #policy-messages');
+    if (chatContainer) {
+      chatContainer.innerHTML = '';
+    }
+  },
+  
+  // Add a message to the chat
+  addMessage: function(message) {
+    const chatContainer = document.querySelector('#chat-messages, #policy-messages');
+    if (!chatContainer) return;
+    
+    const messageEl = document.createElement('div');
+    messageEl.className = `chat-message ${message.sender}-message`;
+    
+    const timestamp = new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    messageEl.innerHTML = `
+      <div class="message-content">
+        <div class="message-text">${message.text}</div>
+        ${message.sources ? this.renderSources(message.sources) : ''}
+        <div class="message-time">${timestamp}</div>
+      </div>
+    `;
+    
+    chatContainer.appendChild(messageEl);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  },
+  
+  // Render source citations
+  renderSources: function(sources) {
+    if (!sources || sources.length === 0) return '';
+    
+    const sourcesHtml = sources.map(source => 
+      `<div class="source-citation">
+        <i class="fas fa-file-alt"></i>
+        <span>${source.title}${source.page ? `, page ${source.page}` : ''}</span>
+      </div>`
+    ).join('');
+    
+    return `<div class="message-sources">${sourcesHtml}</div>`;
+  },
+  
+  // Simulate typing effect
+  simulateTyping: function(message, callback) {
+    const input = document.querySelector('#chat-input, #policy-input');
+    if (!input) return;
+    
+    input.value = '';
+    let i = 0;
+    const speed = 30; // milliseconds per character
+    
+    function typeWriter() {
+      if (i < message.length) {
+        input.value += message.charAt(i);
+        i++;
+        setTimeout(typeWriter, speed);
+      } else if (callback) {
+        callback();
+      }
+    }
+    
+    typeWriter();
+  },
+  
+  // Run the simulation
+  runSimulation: function() {
+    if (!this.isSimulating) return;
+    
+    const messages = getActiveWizardView() === 'policy' 
+      ? this.policyWizardMessages 
+      : this.defaultWizardMessages;
+    
+    if (this.currentStep >= messages.length) {
+      this.isSimulating = false;
+      return;
+    }
+    
+    const message = messages[this.currentStep];
+    
+    if (message.sender === 'user') {
+      this.simulateTyping(message.text, () => {
+        setTimeout(() => {
+          this.addMessage(message);
+          this.currentStep++;
+          this.runSimulation();
+        }, 500);
+      });
+    } else {
+      this.addMessage(message);
+      this.currentStep++;
+      setTimeout(() => this.runSimulation(), 1500);
+    }
+  },
+  
+  // Start the simulation
+  start: function() {
+    this.init();
+    this.runSimulation();
+  },
+  
+  // Stop the simulation
+  stop: function() {
+    this.isSimulating = false;
+  }
+};
+
 /**
  * Clean up any existing tour instance
  */
@@ -751,6 +911,11 @@ function startTour() {
     // Show welcome notification
     showNotification(welcomeMessage, "info");
 
+    // Start the simulation when the tour starts
+    setTimeout(() => {
+      chatSimulation.start();
+    }, 1000);
+
     // Start the tour
     tour.start();
 
@@ -759,10 +924,12 @@ function startTour() {
       showNotification(
         "Tour completed! 🎉 You're all set to explore NotebookLM."
       );
+      chatSimulation.stop();
     });
 
     // Add cancel handler
     tour.on("cancel", () => {
+      chatSimulation.stop();
       showNotification(
         "Tour skipped. You can restart it anytime using the help button.",
         "info"
