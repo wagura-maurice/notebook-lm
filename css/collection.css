@@ -1,71 +1,4 @@
 /* ============================================ */
-/* === TOUR HIGHLIGHT STYLES === */
-/* ============================================ */
-
-/* Base highlight style for tour steps */
-.tour-highlight {
-  position: relative;
-  z-index: 1000 !important;
-  transition: all 0.3s ease;
-}
-
-/* Highlight effect for interactive elements */
-.tour-highlight:not(.shepherd-target-clickable) {
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(56, 189, 248, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
-  }
-}
-
-/* Highlight for source items */
-.source-item.tour-highlight {
-  background-color: rgba(56, 189, 248, 0.1) !important;
-  outline: 2px solid rgba(56, 189, 248, 0.5);
-  border-radius: 0.375rem;
-}
-
-/* Highlight for buttons */
-button.tour-highlight {
-  transform: scale(1.05);
-  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.5);
-}
-
-/* Highlight for notes */
-.note-item.tour-highlight {
-  background-color: rgba(139, 92, 246, 0.1) !important;
-  outline: 2px solid rgba(139, 92, 246, 0.5);
-  border-radius: 0.375rem;
-}
-
-/* Highlight for chat input */
-#chat-input.tour-highlight {
-  border-color: rgba(56, 189, 248, 0.5) !important;
-  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
-}
-
-/* Highlight for columns */
-#left-column.tour-highlight,
-#middle-column.tour-highlight,
-#right-column.tour-highlight {
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3);
-  border-radius: 0.5rem;
-}
-
-/* Ensure tour elements are above modals */
-.shepherd-element {
-  z-index: 1100 !important;
-}
-
-/* ============================================ */
 /* === GLOBAL & BASE STYLES === */
 /* ============================================ */
 
@@ -1108,4 +1041,3 @@ header {
   display: flex;
   flex-direction: column;
 }
-
