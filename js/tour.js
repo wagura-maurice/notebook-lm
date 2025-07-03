@@ -116,182 +116,403 @@ function initTour() {
 function addTourSteps(tour) {
   if (!tour) return;
 
-  // Welcome step
+  // Welcome step with better styling and engagement
   tour.addStep({
     id: "welcome",
-    title: "Welcome to NotebookLM",
-    text: "This comprehensive tour will guide you through all the interactive elements of NotebookLM. Let's get started!",
+    title: "👋 Welcome to NotebookLM",
+    text: "Let's take a quick tour to help you get the most out of NotebookLM. You'll learn how to manage sources, chat with your documents, and create notes efficiently.",
     buttons: [
       {
-        text: "Next",
-        action: tour.next
+        text: "Start Tour",
+        action: tour.next,
+        classes: "shepherd-button-primary"
       },
       {
-        text: "Skip",
+        text: "Skip for now",
         action: tour.cancel,
         classes: "shepherd-button-secondary",
       },
     ],
-    cancelIcon: { enabled: true },
-    highlightClass: 'tour-highlight',
-    canClickTarget: false
+    cancelIcon: { 
+      enabled: true,
+      label: 'Close'
+    },
+    highlightClass: 'tour-highlight-welcome',
+    canClickTarget: true,
+    scrollTo: { behavior: 'smooth', block: 'center' },
+    beforeShowPromise: function() {
+      return new Promise(function(resolve) {
+        // Add a slight delay for a smoother experience
+        setTimeout(resolve, 300);
+      });
+    },
+    when: {
+      show: function() {
+        // Add a class to the body when tour starts
+        document.body.classList.add('tour-active');
+      },
+      hide: function() {
+        // Remove the class when tour ends or is skipped
+        if (tour.isActive()) {
+          document.body.classList.remove('tour-active');
+        }
+      }
+    }
   });
 
-  // Left Column - Overview
+  // Left Column - Overview with more engaging content
   tour.addStep({
     id: "left-column-overview",
-    title: "Sources Column",
-    text: "This is where all your sources (documents, PDFs, etc.) are listed. You can manage and organize them here.",
-    attachTo: { element: "#left-column", on: "right" },
+    title: "📚 Your Knowledge Base",
+    text: "This is your Sources panel where all your documents live. You can upload PDFs, Word docs, and more. Each source can be selected, organized, and used to generate insights.",
+    attachTo: { 
+      element: "#left-column", 
+      on: "right" 
+    },
     buttons: [
-      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
-      { text: "Next", action: tour.next, classes: "shepherd-button" }
+      { 
+        text: "← Back", 
+        action: tour.back, 
+        classes: "shepherd-button-secondary",
+        secondary: true
+      },
+      { 
+        text: "Next →", 
+        action: tour.next, 
+        classes: "shepherd-button" 
+      }
     ],
-    highlightClass: 'tour-highlight',
-    canClickTarget: true
+    highlightClass: 'tour-highlight-column',
+    canClickTarget: true,
+    scrollTo: { behavior: 'smooth', block: 'center' },
+    popperOptions: {
+      modifiers: [
+        {
+          name: 'offset',
+          options: {
+            offset: [0, 15]
+          }
+        }
+      ]
+    },
+    when: {
+      show: function() {
+        // Ensure the left column is expanded
+        const leftColumn = document.querySelector('#left-column');
+        if (leftColumn) {
+          leftColumn.classList.remove('collapsed');
+        }
+      }
+    }
   });
 
-  // Add Source Button
+  // Add Source Button with interactive tips
   tour.addStep({
     id: "add-source-button",
-    title: "Add New Source",
-    text: "Click here to add new sources like PDFs, Word documents, or text directly.",
-    attachTo: { element: "#addSourceBtn", on: "bottom" },
+    title: "➕ Add Content",
+    text: "Click here to upload documents, import from cloud storage, or paste text. NotebookLM supports PDFs, Word docs, and more!",
+    attachTo: { 
+      element: "#addSourceBtn", 
+      on: "bottom" 
+    },
     buttons: [
-      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
-      { text: "Next", action: tour.next, classes: "shepherd-button" }
+      { 
+        text: "← Back", 
+        action: tour.back, 
+        classes: "shepherd-button-secondary" 
+      },
+      { 
+        text: "Got it! Next →", 
+        action: tour.next, 
+        classes: "shepherd-button" 
+      }
     ],
-    highlightClass: 'tour-highlight',
-    canClickTarget: true
+    highlightClass: 'tour-highlight-button',
+    canClickTarget: true,
+    scrollTo: { behavior: 'smooth', block: 'center' },
+    when: {
+      show: function() {
+        // Add a pulsing effect to the button
+        const btn = document.querySelector('#addSourceBtn');
+        if (btn) {
+          btn.classList.add('pulse-animation');
+          // Remove the class after animation completes
+          setTimeout(() => {
+            btn.classList.remove('pulse-animation');
+          }, 2000);
+        }
+      },
+      hide: function() {
+        // Clean up animation class
+        const btn = document.querySelector('#addSourceBtn');
+        if (btn) {
+          btn.classList.remove('pulse-animation');
+        }
+      }
+    }
   });
 
-  // Discover Sources Button
+  // Discover Sources Button with more context
   tour.addStep({
     id: "discover-sources-button",
-    title: "Discover Sources",
-    text: "Browse and add from your existing sources or connect to external services.",
-    attachTo: { element: "#discoverSourceBtn", on: "bottom" },  // Fixed ID
+    title: "🔍 Discover Content",
+    text: "Find and add existing sources or connect to external services like Google Drive, Dropbox, or OneDrive. Great for accessing your previously uploaded documents!",
+    attachTo: { 
+      element: "#discoverSourceBtn", 
+      on: "bottom" 
+    },
     buttons: [
-      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
-      { text: "Next", action: tour.next, classes: "shepherd-button" }
+      { 
+        text: "← Back", 
+        action: tour.back, 
+        classes: "shepherd-button-secondary" 
+      },
+      { 
+        text: "Next →", 
+        action: tour.next, 
+        classes: "shepherd-button" 
+      }
     ],
-    highlightClass: 'tour-highlight',
-    canClickTarget: true
+    highlightClass: 'tour-highlight-button',
+    canClickTarget: true,
+    scrollTo: { behavior: 'smooth', block: 'center' },
+    when: {
+      show: function() {
+        // Ensure the left column is still expanded
+        const leftColumn = document.querySelector('#left-column');
+        if (leftColumn) {
+          leftColumn.classList.remove('collapsed');
+        }
+      }
+    }
   });
 
   // Note: Removed Select All Checkbox step as the element doesn't exist in the HTML
 
-  // Source List Items
+  // Source List Items with interactive example
   tour.addStep({
     id: "source-list-items",
-    title: "Source Items",
-    text: "Each source shows its name, type, and status. Click to view, or use the menu (⋮) for more options.",
-    attachTo: { element: ".source-item:first-child", on: "right" },
+    title: "📑 Your Documents",
+    text: "Each source shows its name, type, and status. <br><br>💡 <em>Try clicking on a document to view its contents or use the menu (⋮) to access more options like renaming or removing.</em>",
+    attachTo: { 
+      element: ".source-item:first-child", 
+      on: "right" 
+    },
     buttons: [
-      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
-      { text: "Next", action: tour.next, classes: "shepherd-button" }
+      { 
+        text: "← Back", 
+        action: tour.back, 
+        classes: "shepherd-button-secondary" 
+      },
+      { 
+        text: "Got it! Next →", 
+        action: tour.next, 
+        classes: "shepherd-button" 
+      }
     ],
-    highlightClass: 'tour-highlight',
-    canClickTarget: true
+    highlightClass: 'tour-highlight-item',
+    canClickTarget: true,
+    scrollTo: { behavior: 'smooth', block: 'center' },
+    when: {
+      show: function() {
+        // Highlight the first source item
+        const firstSource = document.querySelector('.source-item:first-child');
+        if (firstSource) {
+          firstSource.classList.add('highlighted-item');
+          setTimeout(() => {
+            firstSource.classList.remove('highlighted-item');
+          }, 1500);
+        }
+      }
+    }
   });
 
-  // Chat Messages
+  // Chat Messages with interactive tips
   tour.addStep({
     id: "chat-messages",
-    title: "Chat Messages",
-    text: "Your conversation appears here. Hover over messages to see options like 'Add to note' or 'Copy'.",
-    attachTo: { element: "#chat-messages", on: "left" },
+    title: "📜 Conversation History",
+    text: "Your chat history appears here. <br><br>💡 <em>Hover over messages to see options like 'Add to note' or 'Copy'. You can also click on citations to jump to the source.</em>",
+    attachTo: { 
+      element: "#chat-messages", 
+      on: "left" 
+    },
     buttons: [
-      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
-      { text: "Next", action: tour.next, classes: "shepherd-button" }
+      { 
+        text: "← Back", 
+        action: tour.back, 
+        classes: "shepherd-button-secondary" 
+      },
+      { 
+        text: "Next →", 
+        action: tour.next, 
+        classes: "shepherd-button" 
+      }
     ],
-    highlightClass: 'tour-highlight',
-    canClickTarget: true
+    highlightClass: 'tour-highlight-message-area',
+    canClickTarget: true,
+    scrollTo: { behavior: 'smooth', block: 'center' },
+    when: {
+      show: function() {
+        // Add a subtle animation to the message area
+        const messageArea = document.querySelector('#chat-messages');
+        if (messageArea) {
+          messageArea.classList.add('highlight-message-area');
+          setTimeout(() => {
+            messageArea.classList.remove('highlight-message-area');
+          }, 1500);
+        }
+      }
+    }
   });
 
-  // Chat Input
-  tour.addStep({
-    id: "chat-input",
-    title: "Chat Input",
-    text: "Type your questions here. Press Enter or click the send button to submit.",
-    attachTo: { element: "#chat-input", on: "top" },
-    buttons: [
-      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
-      { text: "Next", action: tour.next, classes: "shepherd-button" }
-    ],
-    highlightClass: 'tour-highlight',
-    canClickTarget: true
-  });
-
-  // Right Column - Overview
-  tour.addStep({
-    id: "right-column-overview",
-    title: "Studio",
-    text: "Organize your notes and create structured content based on your sources.",
-    attachTo: { element: "#right-column", on: "left" },
-    buttons: [
-      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
-      { text: "Next", action: tour.next, classes: "shepherd-button" }
-    ],
-    highlightClass: 'tour-highlight',
-    canClickTarget: true
-  });
-
-  // Add Note Button
-  tour.addStep({
-    id: "add-note-button",
-    title: "Create Notes",
-    text: "Click here to create new notes from your sources or start from scratch.",
-    attachTo: { element: "#add-note-btn", on: "bottom" },
-    buttons: [
-      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
-      { text: "Next", action: tour.next, classes: "shepherd-button" }
-    ],
-    highlightClass: 'tour-highlight',
-    canClickTarget: true
-  });
-
-  // Notes List
-  tour.addStep({
-    id: "notes-list",
-    title: "Your Notes",
-    text: "All your notes appear here. Click to view or use the menu (⋮) for more options.",
-    attachTo: { element: ".notes-list", on: "left" },  // Changed from .note-list to .notes-list
-    buttons: [
-      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
-      { text: "Next", action: tour.next, classes: "shepherd-button" }
-    ],
-    highlightClass: 'tour-highlight',
-    canClickTarget: true
-  });
-
-  // User Menu - Using avatar button as fallback
-  const userMenuButton = document.querySelector("#avatar-dropdown-trigger, #desktop-avatar-dropdown-trigger");
-  if (userMenuButton) {
+  // Chat Input with suggestions
+  const chatInput = document.querySelector('#chat-input');
+  if (chatInput) {
     tour.addStep({
-      id: "user-menu",
-      title: "Your Account",
-      text: "Access your profile, settings, and sign out options here.",
-      attachTo: { element: userMenuButton, on: "bottom" },
+      id: "chat-input",
+      title: "💬 Chat with NotebookLM",
+      text: "Type your questions here. The AI will analyze your documents and provide helpful responses. <br><br>💡 <em>Try asking about the content of your documents or request summaries!</em>",
+      attachTo: { 
+        element: chatInput, 
+        on: "top" 
+      },
       buttons: [
-        { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
-        { text: "Finish", action: tour.complete, classes: "shepherd-button" }
+        { 
+          text: "← Back", 
+          action: tour.back, 
+          classes: "shepherd-button-secondary" 
+        },
+        { 
+          text: "Got it! Next →", 
+          action: tour.next, 
+          classes: "shepherd-button" 
+        }
       ],
-      highlightClass: 'tour-highlight',
-      canClickTarget: true
+      highlightClass: 'tour-highlight-input',
+      canClickTarget: true,
+      scrollTo: { behavior: 'smooth', block: 'center' },
+      when: {
+        show: function() {
+          // Add focus to the input
+          chatInput.focus({ preventScroll: true });
+          chatInput.classList.add('input-highlight');
+          setTimeout(() => {
+            chatInput.classList.remove('input-highlight');
+          }, 1500);
+        }
+      }
+    });
+  }
+
+  // Notes List with interactive example
+  const firstNote = document.querySelector('.notes-list .note-item:first-child');
+  if (firstNote) {
+    tour.addStep({
+      id: "notes-list",
+      title: "📝 Your Notes",
+      text: "Your saved notes will appear here. <br><br>💡 <em>Click on a note to view or edit it. You can also create new notes from the chat!</em>",
+      attachTo: { 
+        element: firstNote, 
+        on: "left" 
+      },
+      buttons: [
+        { 
+          text: "← Back", 
+          action: tour.back, 
+          classes: "shepherd-button-secondary" 
+        },
+        { 
+          text: "Finish Tour", 
+          action: tour.complete, 
+          classes: "shepherd-button" 
+        }
+      ],
+      highlightClass: 'tour-highlight-item',
+      canClickTarget: true,
+      scrollTo: { behavior: 'smooth', block: 'center' },
+      when: {
+        show: function() {
+          // Highlight the first note
+          firstNote.classList.add('highlighted-item');
+          setTimeout(() => {
+            firstNote.classList.remove('highlighted-item');
+          }, 1500);
+        }
+      }
     });
   } else {
-    // If no user menu button found, make the previous step the last one
-    const lastStep = tour.steps[tour.steps.length - 1];
-    if (lastStep) {
-      lastStep.options.buttons = [
-        { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
-        { text: "Finish", action: tour.complete, classes: "shepherd-button" }
-      ];
-    }
+    // Fallback if no notes exist
+    tour.addStep({
+      id: "notes-list-empty",
+      title: "📝 Your Notes",
+      text: "Your saved notes will appear here. Create your first note to get started!",
+      attachTo: { 
+        element: ".notes-list", 
+        on: "left" 
+      },
+      buttons: [
+        { 
+          text: "← Back", 
+          action: tour.back, 
+          classes: "shepherd-button-secondary" 
+        },
+        { 
+          text: "Finish Tour", 
+          action: tour.complete, 
+          classes: "shepherd-button" 
+        }
+      ],
+      highlightClass: 'tour-highlight-item',
+      canClickTarget: true
+    });
   }
-  
-  // Note: Removed Theme Toggle step as the element doesn't exist in the HTML
+
+  // Final step - completion
+  tour.addStep({
+    id: "tour-complete",
+    title: "🎉 Tour Complete!",
+    text: "You've completed the NotebookLM tour! Here are some next steps to get started:<br><br>" +
+         "1. Upload or connect your documents<br>" +
+         "2. Ask questions about your content<br>" +
+         "3. Create notes to organize your insights<br><br>" +
+         "<em>You can always access this tour again by clicking the help button in the bottom right corner.</em>",
+    buttons: [
+      {
+        text: "Start Exploring! 🚀",
+        action: tour.complete,
+        classes: "shepherd-button shepherd-button-primary"
+      }
+    ],
+    cancelIcon: { enabled: false },
+    highlightClass: 'tour-highlight-welcome',
+    canClickTarget: true,
+    when: {
+      hide: function() {
+        // Clean up any tour-related classes
+        document.body.classList.remove('tour-active');
+        
+        // Show a thank you message
+        const notification = document.createElement('div');
+        notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center';
+        notification.innerHTML = `
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <span>Tour completed! Happy exploring!</span>
+        `;
+        document.body.appendChild(notification);
+        
+        // Remove the notification after 3 seconds
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          notification.style.transition = 'opacity 0.5s ease';
+          setTimeout(() => {
+            notification.remove();
+          }, 500);
+        }, 3000);
+      }
+    }
+  });
 }
 
 /**
@@ -351,18 +572,67 @@ function startTour() {
 /**
  * Add a help button to start the tour
  */
+// Add help button to the page
 function addHelpButton() {
-  // Check if button already exists
-  if (document.getElementById("help-tour-button")) return;
+  // Check if help button already exists
+  if (document.getElementById('tour-help-button')) return;
 
-  const helpButton = document.createElement("button");
-  helpButton.id = "help-tour-button";
-  helpButton.className =
-    "fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg";
-  helpButton.textContent = "Need Help?";
-  helpButton.onclick = startTour;
-
+  const helpButton = document.createElement('button');
+  helpButton.id = 'tour-help-button';
+  helpButton.className = 'fixed bottom-6 right-6 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full p-3 shadow-lg z-50 transition-all duration-200 transform hover:scale-110 flex items-center justify-center';
+  helpButton.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-yellow-400 text-xs font-bold text-gray-800">?</span>
+  `;
+  helpButton.title = 'Take a tour';
+  helpButton.setAttribute('aria-label', 'Help and tour');
+  
+  // Add pulse animation on page load
+  helpButton.classList.add('animate-bounce');
+  setTimeout(() => {
+    helpButton.classList.remove('animate-bounce');
+  }, 3000);
+  
+  // Add hover effect
+  helpButton.addEventListener('mouseenter', () => {
+    helpButton.classList.add('ring-2', 'ring-offset-2', 'ring-indigo-400');
+  });
+  
+  helpButton.addEventListener('mouseleave', () => {
+    helpButton.classList.remove('ring-2', 'ring-offset-2', 'ring-indigo-400');
+  });
+  
+  // Start tour on click
+  helpButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    helpButton.classList.remove('ring-2', 'ring-offset-2', 'ring-indigo-400');
+    helpButton.classList.add('opacity-0', 'scale-90');
+    setTimeout(() => {
+      startTour();
+      helpButton.classList.remove('opacity-0', 'scale-90');
+    }, 200);
+  });
+  
   document.body.appendChild(helpButton);
+  
+  // Add styles for the help button
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    .animate-bounce {
+      animation: bounce 1s infinite;
+    }
+    #tour-help-button:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
+    }
+  `;
+  document.head.appendChild(style);
 }
 
 // Add help button when DOM is loaded

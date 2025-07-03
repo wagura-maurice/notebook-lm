@@ -1,4 +1,199 @@
 /* ============================================ */
+/* === TOUR STYLES === */
+/* ============================================ */
+
+/* Enhanced Tour Styles */
+.shepherd-target-highlight {
+  position: relative;
+  z-index: 9999;
+  border-radius: 6px;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.7);
+  transition: all 0.3s ease;
+  animation: pulse 2s infinite;
+}
+
+/* Tour highlight variations */
+.tour-highlight-welcome {
+  box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.9);
+  animation: pulse 1.5s infinite;
+}
+
+.tour-highlight-column {
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.6);
+  animation: pulse 2s infinite;
+}
+
+.tour-highlight-button {
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.7);
+  animation: pulse 1.5s infinite;
+  transform: scale(1.02);
+  transition: transform 0.3s ease;
+}
+
+.tour-highlight-item {
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.5);
+  animation: pulse 1.8s infinite;
+}
+
+.tour-highlight-message-area {
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.4);
+  animation: pulse 2.2s infinite;
+}
+
+.tour-highlight-input {
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.7);
+  animation: pulse 1.5s infinite;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
+}
+
+/* Highlight effects */
+.highlighted-item {
+  background-color: rgba(99, 102, 241, 0.1);
+  transition: background-color 0.5s ease;
+}
+
+.highlight-message-area {
+  position: relative;
+  overflow: hidden;
+}
+
+.highlight-message-area::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.8), transparent);
+  animation: slide 1.5s ease-in-out infinite;
+}
+
+@keyframes slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.input-highlight {
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5) !important;
+  transition: all 0.3s ease;
+}
+
+/* Tour active state */
+body.tour-active {
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Pulse animation for buttons */
+.pulse-animation {
+  animation: pulse 2s infinite;
+  position: relative;
+  z-index: 10000;
+}
+
+/* Shepherd theme overrides */
+.shepherd-element {
+  border-radius: 10px !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
+  max-width: 400px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.shepherd-header {
+  padding: 1.2em 1.2em 0.5em;
+  background: #fff;
+  border-radius: 10px 10px 0 0 !important;
+  border-bottom: 1px solid #eee;
+}
+
+.shepherd-title {
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  padding: 0;
+}
+
+.shepherd-text {
+  padding: 1em 1.2em;
+  color: #4b5563;
+  line-height: 1.5;
+  font-size: 0.95em;
+}
+
+.shepherd-text em {
+  color: #6366f1;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.shepherd-footer {
+  padding: 0.5em 1.2em 1.2em;
+  border-radius: 0 0 10px 10px !important;
+  background: #f9fafb;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.shepherd-button {
+  padding: 0.5em 1.2em;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  flex: 1;
+  text-align: center;
+  cursor: pointer;
+}
+
+.shepherd-button.shepherd-button-primary {
+  background-color: #6366f1;
+  color: white;
+}
+
+.shepherd-button.shepherd-button-primary:hover {
+  background-color: #4f46e5;
+  transform: translateY(-1px);
+}
+
+.shepherd-button.shepherd-button-secondary {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+.shepherd-button.shepherd-button-secondary:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.shepherd-cancel-icon {
+  color: #9ca3af;
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 0.5em;
+  transition: color 0.2s ease;
+}
+
+.shepherd-cancel-icon:hover {
+  color: #6b7280;
+}
+
+/* ============================================ */
 /* === GLOBAL & BASE STYLES === */
 /* ============================================ */
 
