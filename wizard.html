@@ -2782,15 +2782,50 @@
       </div>
     </div>
 
+    <!-- Auto-expand textarea script -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const textarea = document.getElementById("ai-text-input-right");
+        const ROW_HEIGHT = 24; // Approximate height of one row in pixels
+        const DEFAULT_ROWS = 15;
+
+        // Initial setup
+        if (textarea) {
+          // Force initial height to 15 rows
+          textarea.style.height = ROW_HEIGHT * DEFAULT_ROWS + "px";
+
+          // Handle input events - maintain minimum height of 15 rows
+          textarea.addEventListener("input", function () {
+            this.style.height = ROW_HEIGHT * DEFAULT_ROWS + "px";
+            this.style.height =
+              Math.max(this.scrollHeight, ROW_HEIGHT * DEFAULT_ROWS) + "px";
+
+            // Scroll to bottom of the textarea
+            this.scrollTop = this.scrollHeight;
+
+            // Ensure parent container scrolls to show the bottom of the textarea
+            const parent = this.closest(".flex-1");
+            if (parent) {
+              parent.scrollTop = parent.scrollHeight;
+            }
+          });
+
+          // Initial trigger to set the height
+          textarea.dispatchEvent(new Event("input"));
+        }
+      });
+    </script>
+
     <!-- Open Canvas Notes Modal -->
     <div
-      class="modal fixed hidden inset-0 z-50 bg-black bg-opacity-70 w-screen h-screen"
+      class="fixed inset-0 z-50 hidden w-full h-full overflow-hidden bg-gray-900 bg-opacity-90"
       id="open-canvas-notes-modal"
     >
-      <!-- Main container - fills nearly entire screen -->
-      <div class="w-full h-full flex flex-col overflow-hidden">
-        <!-- Modal Header -->
-        <div class="flex justify-between items-center p-3">
+      <div class="flex flex-col h-full w-full">
+        <!-- Header -->
+        <div
+          class="flex items-center justify-between px-4 py-3 bg-gray-800 border-b border-gray-700"
+        >
           <div class="flex items-center">
             <button
               id="open-canvas-notes-modal-back"
@@ -2798,27 +2833,23 @@
             >
               <i class="fas fa-arrow-left text-xl"></i>
             </button>
-            <h3
-              id="open-canvas-notes-modal-title"
-              class="text-xl font-bold text-white"
-            >
-              Open Canvas Notes
-            </h3>
+            <h3 class="text-lg font-semibold text-white">Open Canvas Notes</h3>
           </div>
           <button
             type="button"
-            class="modal-close text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+            class="p-2 text-gray-400 rounded-full hover:bg-gray-700 hover:text-white focus:outline-none modal-close"
+            onclick="document.getElementById('open-canvas-notes-modal').classList.add('hidden')"
           >
-            <i class="fa-solid fa-xmark"></i>
+            <i class="w-5 h-5 fa-solid fa-xmark"></i>
             <span class="sr-only">Close modal</span>
           </button>
         </div>
 
         <!-- Main Content Area -->
-        <div class="flex flex-1 overflow-hidden gap-x-2">
-          <!-- Left Sidebar (25%) - Chat -->
+        <div class="flex-1 flex flex-col md:flex-row overflow-hidden p-2 gap-2">
+          <!-- Left Sidebar - Chat (25% on desktop, full width on mobile) -->
           <div
-            class="w-1/4 flex flex-col bg-gray-900 rounded-lg border border-gray-700 overflow-hidden"
+            class="w-full md:w-1/4 flex flex-col bg-gray-900 rounded-lg border border-gray-700 overflow-hidden"
           >
             <!-- Chat Messages -->
             <div
@@ -2827,7 +2858,7 @@
             >
               <div
                 id="canvas-welcome-message"
-                class="text-center text-gray-300 py-12"
+                class="text-center text-gray-300 py-12 px-4"
               >
                 <div
                   class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800 mb-4"
@@ -2837,12 +2868,11 @@
                 <h3 class="text-xl font-semibold text-white mb-2">
                   How can I help with your notes today?
                 </h3>
-                <p class="text-gray-400 text-sm px-4">
+                <p class="text-gray-400 text-sm">
                   Ask me anything about your notes or request help with writing,
                   editing, or organizing your thoughts.
                 </p>
               </div>
-              <!-- Messages will be inserted here by JavaScript -->
               <div id="canvas-chat-messages-container" class="mt-2"></div>
             </div>
 
@@ -2858,15 +2888,16 @@
               </button>
             </div>
 
-            <!-- Message Input -->
-            <div class="border-t-2 border-slate-700">
-              <form id="canvas-chat-form" class="p-3 bg-slate-800">
+            <!-- Right Column Fixed Bottom Message Input -->
+            <div class="border-t border-gray-700 bg-gray-900 p-4">
+              <form id="canvas-chat-form">
                 <div class="relative">
                   <textarea
                     id="canvas-message-input"
-                    class="w-full bg-slate-900 rounded-lg p-3 pr-12 text-white !text-white resize-none focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                    class="w-full bg-slate-800 rounded-lg p-3 pr-12 text-white text-sm resize-none focus:ring-2 focus:ring-sky-500 focus:outline-none overflow-y-auto scrollbar-transparent"
                     placeholder="Ask me anything..."
-                    rows="2"
+                    rows="4"
+                    style="min-height: 8rem; max-height: 20rem"
                   ></textarea>
                   <button
                     type="button"
@@ -2880,120 +2911,98 @@
             </div>
           </div>
 
-          <!-- Middle Content Area (50%) - Quill Rich Text Editor -->
-          <div class="w-2/4 flex flex-col bg-gray-900 rounded-lg main-editor">
-            <div id="editor" class="flex-1 bg-slate-800 text-white rounded-lg">
-              <!-- <h1>AI-Enhanced Document Editor</h1>
-              <p>
-                This is a sample document with rich text editing capabilities.
-                Select any text to see AI integration features.
-              </p>
-
-              <h2>Key Features</h2>
-              <p>
-                You can highlight text, and the AI panel will show exactly where
-                in the document you've selected. This enables precise AI
-                assistance for content editing, expansion, or explanation.
-              </p>
-
-              <h3>How it Works</h3>
-              <ul>
-                <li>Select any text in this editor</li>
-                <li>See the selection details in the right panel</li>
-                <li>Use AI actions to modify or enhance your content</li>
-                <li>AI responses are inserted at the exact location</li>
-              </ul>
-
-              <p>
-                The system tracks the exact position of your selections, making
-                it perfect for collaborative editing with AI assistance.
-              </p>
-
-              <blockquote>
-                "The future of content creation is the seamless integration of
-                human creativity with AI assistance."
-              </blockquote> -->
+          <!-- Middle Content - Editor (50% on desktop, full width on mobile) -->
+          <div
+            class="w-full md:w-2/4 flex flex-col bg-gray-900 rounded-lg border border-gray-700"
+          >
+            <div
+              id="editor"
+              class="flex-1 bg-slate-800 text-white overflow-auto scrollbar-transparent"
+            >
+              <!-- Editor content will be inserted here by JavaScript -->
             </div>
           </div>
 
-          <!-- Right Sidebar (25%) - Ai Tools -->
-          <div class="w-1/4 flex flex-col bg-gray-900 rounded-lg ai-panel">
-            <div
-              class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent"
-            >
-              <div class="p-4">
+          <!-- Right Sidebar - AI Tools (25% on desktop, full width on mobile) -->
+          <div
+            class="w-full md:w-1/4 flex flex-col bg-gray-900 rounded-lg border border-gray-700 overflow-hidden"
+          >
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto scrollbar-transparent p-4">
+              <div
+                class="selection-info bg-slate-700 rounded-lg border-l-4 border-sky-500 mb-4"
+              >
+                <h3 class="text-slate-200 text-sm font-semibold p-4">
+                  Selected Content
+                </h3>
                 <div
-                  class="selection-info bg-slate-700 rounded-lg border-l-4 border-sky-500 mb-4"
+                  class="selected-text bg-slate-900 p-3 rounded border border-slate-600 italic text-sm"
+                  id="selectedText"
                 >
-                  <h3 class="text-slate-200 text-sm font-semibold p-4">
-                    Selected Content
-                  </h3>
-                  <div
-                    class="selected-text bg-slate-900 p-3 rounded border border-slate-600 italic"
-                    id="selectedText"
-                  >
-                    Select text in the editor to see it here...
-                  </div>
-                  <div
-                    class="position-info text-xs text-slate-400 p-4"
-                    id="positionInfo"
-                  >
-                    Position: No selection
-                  </div>
+                  Select text in the editor to see it here...
                 </div>
-
-                <div class="ai-actions flex flex-col gap-2">
-                  <button
-                    class="ai-btn primary py-2 px-4 rounded bg-sky-500 hover:bg-sky-600 transition-colors text-white text-sm font-medium"
-                    id="explainBtn"
-                    disabled
-                  >
-                    🧠 Explain This
-                  </button>
-                  <button
-                    class="ai-btn primary py-2 px-4 rounded bg-sky-500 hover:bg-sky-600 transition-colors text-white text-sm font-medium"
-                    id="expandBtn"
-                    disabled
-                  >
-                    📝 Expand Content
-                  </button>
-                  <button
-                    class="ai-btn secondary py-2 px-4 rounded bg-slate-600 hover:bg-slate-700 transition-colors text-white text-sm font-medium"
-                    id="summarizeBtn"
-                    disabled
-                  >
-                    📋 Summarize
-                  </button>
-                  <button
-                    class="ai-btn secondary py-2 px-4 rounded bg-slate-600 hover:bg-slate-700 transition-colors text-white text-sm font-medium"
-                    id="improveBtn"
-                    disabled
-                  >
-                    ✨ Improve Writing
-                  </button>
-                </div>
-
-                <!-- chat input -->
-                <div class="border-t-2 border-slate-700 mt-2">
-                  <form id="ai-text-chat-form-right" class="p-3 bg-slate-800">
-                    <div class="relative">
-                      <textarea
-                        id="ai-text-input-right"
-                        class="w-full bg-slate-900 rounded-lg p-3 pr-12 text-white !text-white resize-none focus:ring-2 focus:ring-sky-500 focus:outline-none"
-                        placeholder="Run custom Ai action..."
-                        rows="15"
-                      ></textarea>
-                      <button
-                        type="button"
-                        id="ai-text-send-right"
-                        class="absolute right-3 bottom-3 text-sky-400 hover:text-white p-1 rounded-full transition-colors"
-                      >
-                        <i class="fas fa-paper-plane text-sm"></i>
-                      </button>
-                    </div>
-                  </form>
+                <div
+                  class="position-info text-xs text-slate-400 p-4"
+                  id="positionInfo"
+                >
+                  Position: No selection
                 </div>
               </div>
+
+              <div
+                class="ai-actions grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-2 mb-4"
+              >
+                <button
+                  class="ai-btn primary w-full py-2 px-3 rounded bg-sky-500 hover:bg-sky-600 transition-colors text-white text-sm font-medium"
+                  id="explainBtn"
+                  disabled
+                >
+                  🧠 Explain This
+                </button>
+                <button
+                  class="ai-btn primary w-full py-2 px-3 rounded bg-sky-500 hover:bg-sky-600 transition-colors text-white text-sm font-medium"
+                  id="expandBtn"
+                  disabled
+                >
+                  📝 Expand Content
+                </button>
+                <button
+                  class="ai-btn secondary w-full py-2 px-3 rounded bg-slate-600 hover:bg-slate-700 transition-colors text-white text-sm font-medium"
+                  id="summarizeBtn"
+                  disabled
+                >
+                  📋 Summarize
+                </button>
+                <button
+                  class="ai-btn secondary w-full py-2 px-3 rounded bg-slate-600 hover:bg-slate-700 transition-colors text-white text-sm font-medium"
+                  id="improveBtn"
+                  disabled
+                >
+                  ✨ Improve Writing
+                </button>
+              </div>
+            </div>
+
+            <!-- Right Column Fixed Bottom Message Input -->
+            <div class="border-t border-gray-700 bg-gray-900 p-4">
+              <form id="ai-text-chat-form-right">
+                <div class="relative">
+                  <textarea
+                    id="ai-text-input-right"
+                    class="w-full bg-slate-800 rounded-lg p-3 pr-12 text-white text-sm resize-none focus:ring-2 focus:ring-sky-500 focus:outline-none overflow-y-auto scrollbar-transparent"
+                    placeholder="Run custom AI action..."
+                    rows="4"
+                    style="min-height: 8rem; max-height: 20rem"
+                  ></textarea>
+                  <button
+                    type="button"
+                    id="ai-text-send-right"
+                    class="absolute right-3 bottom-3 text-sky-400 hover:text-white p-1 rounded-full transition-colors"
+                  >
+                    <i class="fas fa-paper-plane text-sm"></i>
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
