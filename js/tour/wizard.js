@@ -69,17 +69,17 @@ function initTour() {
               },
             },
             {
-              name: 'preventOverflow',
+              name: "preventOverflow",
               options: {
                 padding: 10,
-                boundary: 'viewport',
-                tether: false
-              }
-            }
+                boundary: "viewport",
+                tether: false,
+              },
+            },
           ],
         },
         when: {
-          show: function() {
+          show: function () {
             // Ensure our highlight class is applied
             const currentStep = tour.getCurrentStep();
             if (currentStep && currentStep.options.highlightClass) {
@@ -87,34 +87,36 @@ function initTour() {
               if (targetElement) {
                 // Remove any existing highlight classes first
                 targetElement.classList.remove(
-                  'shepherd-target-highlight',
-                  'tour-highlight-welcome',
-                  'tour-highlight-column',
-                  'tour-highlight-button',
-                  'tour-highlight-item',
-                  'tour-highlight-message-area',
-                  'tour-highlight-input'
+                  "shepherd-target-highlight",
+                  "tour-highlight-welcome",
+                  "tour-highlight-column",
+                  "tour-highlight-button",
+                  "tour-highlight-item",
+                  "tour-highlight-message-area",
+                  "tour-highlight-input"
                 );
                 // Add the current step's highlight class
                 targetElement.classList.add(currentStep.options.highlightClass);
               }
             }
           },
-          hide: function() {
+          hide: function () {
             // Clean up highlight classes when hiding the step
             const currentStep = tour.getCurrentStep();
             if (currentStep && currentStep.options.highlightClass) {
               const targetElement = currentStep.target;
               if (targetElement) {
-                targetElement.classList.remove(currentStep.options.highlightClass);
+                targetElement.classList.remove(
+                  currentStep.options.highlightClass
+                );
               }
             }
-          }
-        }
+          },
+        },
       },
       exitOnEsc: true,
       keyboardNavigation: true,
-      tourName: 'notebook-lm-tour',
+      tourName: "notebook-lm-tour",
     });
 
     // Store the tour instance globally
@@ -132,13 +134,13 @@ function initTour() {
  */
 function getActiveWizardView() {
   // First try to determine from URL if possible
-  if (window.location.href.includes('policy-wizard')) {
-    return 'policy';
+  if (window.location.href.includes("policy-wizard")) {
+    return "policy";
   }
-  if (window.location.href.includes('default-wizard')) {
-    return 'default';
+  if (window.location.href.includes("default-wizard")) {
+    return "default";
   }
-  
+
   // Fallback to DOM detection if URL doesn't specify
   const defaultWizard = document.querySelector(".default-wizard");
   const policyWizard = document.querySelector(".policy-wizard");
@@ -146,7 +148,7 @@ function getActiveWizardView() {
   if (policyWizard && getComputedStyle(policyWizard).display !== "none") {
     return "policy";
   }
-  
+
   // Default to default wizard
   return "default";
 }
@@ -158,7 +160,9 @@ function getActiveWizardView() {
  */
 function elementExistsAndVisible(selector) {
   const el = document.querySelector(selector);
-  return el && getComputedStyle(el).display !== 'none' && el.offsetParent !== null;
+  return (
+    el && getComputedStyle(el).display !== "none" && el.offsetParent !== null
+  );
 }
 
 /**
@@ -180,7 +184,9 @@ function addStepIfElementExists(tour, step) {
     return true;
   }
 
-  console.warn(`Skipping step "${step.id}": Element "${step.attachTo.element}" not found or not visible`);
+  console.warn(
+    `Skipping step "${step.id}": Element "${step.attachTo.element}" not found or not visible`
+  );
   return false;
 }
 
@@ -299,25 +305,29 @@ function addTourSteps(tour) {
     text: "Click here to upload documents, import from cloud storage, or paste text. Supports PDFs, Word docs, and more.",
     attachTo: {
       element: "#addSourceBtn",
-      on: "right"
+      on: "right",
     },
     buttons: [
-      { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
-      { text: "Next →", action: tour.next, classes: "shepherd-button" }
+      {
+        text: "← Back",
+        action: tour.back,
+        classes: "shepherd-button-secondary",
+      },
+      { text: "Next →", action: tour.next, classes: "shepherd-button" },
     ],
     highlightClass: "tour-highlight-button",
     canClickTarget: true,
     scrollTo: { behavior: "smooth", block: "center" },
     when: {
-      show: function() {
+      show: function () {
         const btn = document.querySelector("#addSourceBtn");
         if (btn) btn.classList.add("pulse-animation");
       },
-      hide: function() {
+      hide: function () {
         const btn = document.querySelector("#addSourceBtn");
         if (btn) btn.classList.remove("pulse-animation");
-      }
-    }
+      },
+    },
   });
 
   // Add Discover Source button step
@@ -327,14 +337,18 @@ function addTourSteps(tour) {
     text: "Find and add relevant sources from your connected accounts or the web. Great for discovering new content related to your research.",
     attachTo: {
       element: "#discoverSourceBtn",
-      on: "right"
+      on: "right",
     },
     buttons: [
-      { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
-      { text: "Next →", action: tour.next, classes: "shepherd-button" }
+      {
+        text: "← Back",
+        action: tour.back,
+        classes: "shepherd-button-secondary",
+      },
+      { text: "Next →", action: tour.next, classes: "shepherd-button" },
     ],
     highlightClass: "tour-highlight-button",
-    canClickTarget: true
+    canClickTarget: true,
   });
 
   // Add Chat About Sources button step
@@ -344,19 +358,23 @@ function addTourSteps(tour) {
     text: "Start a conversation about your selected sources. The AI will analyze all selected documents to provide comprehensive answers and insights.",
     attachTo: {
       element: "#chatAboutSourcesBtn",
-      on: "right"
+      on: "right",
     },
     buttons: [
-      { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
-      { text: "Next →", action: tour.next, classes: "shepherd-button" }
+      {
+        text: "← Back",
+        action: tour.back,
+        classes: "shepherd-button-secondary",
+      },
+      { text: "Next →", action: tour.next, classes: "shepherd-button" },
     ],
     highlightClass: "tour-highlight-button",
     canClickTarget: true,
-    beforeShowPromise: function() {
+    beforeShowPromise: function () {
       // Ensure the button is visible by scrolling if needed
       const btn = document.querySelector("#chatAboutSourcesBtn");
       if (btn) {
-        btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        btn.scrollIntoView({ behavior: "smooth", block: "center" });
       }
       return Promise.resolve();
     },
@@ -385,25 +403,29 @@ function addTourSteps(tour) {
     text: "Visualize the connections between your sources and ideas. Create interactive mind maps to organize your thoughts and see relationships between concepts.",
     attachTo: {
       element: "#mindMapSourceBtn",
-      on: "right"
+      on: "right",
     },
     buttons: [
-      { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
-      { text: "Next →", action: tour.next, classes: "shepherd-button" }
+      {
+        text: "← Back",
+        action: tour.back,
+        classes: "shepherd-button-secondary",
+      },
+      { text: "Next →", action: tour.next, classes: "shepherd-button" },
     ],
     highlightClass: "tour-highlight-button",
     canClickTarget: true,
     scrollTo: { behavior: "smooth", block: "center" },
     when: {
-      show: function() {
+      show: function () {
         const btn = document.querySelector("#mindMapSourceBtn");
         if (btn) btn.classList.add("pulse-animation");
       },
-      hide: function() {
+      hide: function () {
         const btn = document.querySelector("#mindMapSourceBtn");
         if (btn) btn.classList.remove("pulse-animation");
-      }
-    }
+      },
+    },
   });
 
   // Add Canvas button step (only if it exists)
@@ -415,25 +437,29 @@ function addTourSteps(tour) {
       text: "Create free-form visualizations and diagrams. Organize your ideas spatially and make connections between different concepts in your research.",
       attachTo: {
         element: "#canvasSourceBtn",
-        on: "right"
+        on: "right",
       },
       buttons: [
-        { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
-        { text: "Next →", action: tour.next, classes: "shepherd-button" }
+        {
+          text: "← Back",
+          action: tour.back,
+          classes: "shepherd-button-secondary",
+        },
+        { text: "Next →", action: tour.next, classes: "shepherd-button" },
       ],
       highlightClass: "tour-highlight-button",
       canClickTarget: true,
       scrollTo: { behavior: "smooth", block: "center" },
       when: {
-        show: function() {
+        show: function () {
           const btn = document.querySelector("#canvasSourceBtn");
           if (btn) btn.classList.add("pulse-animation");
         },
-        hide: function() {
+        hide: function () {
           const btn = document.querySelector("#canvasSourceBtn");
           if (btn) btn.classList.remove("pulse-animation");
-        }
-      }
+        },
+      },
     });
   }
 
@@ -444,15 +470,19 @@ function addTourSteps(tour) {
     text: "Your uploaded sources appear here. Select one or more sources to work with them.",
     attachTo: {
       element: ".source-list",
-      on: "right"
+      on: "right",
     },
     buttons: [
-      { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
-      { text: "Next →", action: tour.next, classes: "shepherd-button" }
+      {
+        text: "← Back",
+        action: tour.back,
+        classes: "shepherd-button-secondary",
+      },
+      { text: "Next →", action: tour.next, classes: "shepherd-button" },
     ],
     highlightClass: "tour-highlight-sources",
     canClickTarget: true,
-    scrollTo: { behavior: "smooth", block: "start" }
+    scrollTo: { behavior: "smooth", block: "start" },
   });
 
   // Add right column overview step
@@ -462,52 +492,67 @@ function addTourSteps(tour) {
     text: "This is your main workspace where you'll interact with your content. The view changes based on your current task - whether you're chatting with sources, creating mind maps, or working with the canvas.",
     attachTo: {
       element: "#right-column",
-      on: "left"
+      on: "left",
     },
     buttons: [
-      { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
-      { text: "Next →", action: tour.next, classes: "shepherd-button" }
+      {
+        text: "← Back",
+        action: tour.back,
+        classes: "shepherd-button-secondary",
+      },
+      { text: "Next →", action: tour.next, classes: "shepherd-button" },
     ],
     highlightClass: "tour-highlight-workspace",
     canClickTarget: true,
     scrollTo: { behavior: "smooth", block: "center" },
     when: {
-      show: function() {
+      show: function () {
         // Ensure the right column is visible
         const rightColumn = document.querySelector("#right-column");
         if (rightColumn) rightColumn.style.zIndex = "1000";
       },
-      hide: function() {
+      hide: function () {
         const rightColumn = document.querySelector("#right-column");
         if (rightColumn) rightColumn.style.zIndex = "";
-      }
-    }
+      },
+    },
   });
 
   // Add chat interface steps if in default wizard view
-  if (document.querySelector(".default-wizard") && document.querySelector("#chat-messages")) {
+  if (
+    document.querySelector(".default-wizard") &&
+    document.querySelector("#chat-messages")
+  ) {
     addStepIfElementExists(tour, {
       id: "chat-interface",
       title: "💬 Chat with Your Sources",
       text: "Here you can have conversations about your selected sources. The AI will analyze the content and provide relevant answers based on your documents.",
       attachTo: {
         element: "#chat-messages",
-        on: "left"
+        on: "left",
       },
       buttons: [
-        { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
-        { text: "Next →", action: tour.next, classes: "shepherd-button" }
+        {
+          text: "← Back",
+          action: tour.back,
+          classes: "shepherd-button-secondary",
+        },
+        { text: "Next →", action: tour.next, classes: "shepherd-button" },
       ],
       highlightClass: "tour-highlight-chat",
       canClickTarget: true,
       scrollTo: { behavior: "smooth", block: "center" },
       when: {
-        show: function() {
+        show: function () {
           // Ensure chat messages are visible
           const chatMessages = document.querySelector("#chat-messages");
-          if (chatMessages) chatMessages.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }
+          if (chatMessages)
+            chatMessages.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+        },
+      },
     });
 
     // Add chat input step
@@ -516,15 +561,20 @@ function addTourSteps(tour) {
       title: "✍️ Your Input",
       text: "Type your questions or requests here. The AI will analyze your selected sources to provide relevant responses.",
       attachTo: {
-        element: "#chat-input-container, .chat-input-container, [role='textbox']",
-        on: "top"
+        element:
+          "#chat-input-container, .chat-input-container, [role='textbox']",
+        on: "top",
       },
       buttons: [
-        { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
-        { text: "Next →", action: tour.next, classes: "shepherd-button" }
+        {
+          text: "← Back",
+          action: tour.back,
+          classes: "shepherd-button-secondary",
+        },
+        { text: "Next →", action: tour.next, classes: "shepherd-button" },
       ],
       highlightClass: "tour-highlight-input",
-      canClickTarget: true
+      canClickTarget: true,
     });
   }
 
@@ -557,7 +607,8 @@ function addTourSteps(tour) {
       title: "✍️ Your Input",
       text: "Type your questions or requests here. The AI will analyze your selected sources to provide relevant responses.",
       attachTo: {
-        element: "#chat-input-container, .chat-input-container, [role='textbox']",
+        element:
+          "#chat-input-container, .chat-input-container, [role='textbox']",
         on: "top",
       },
       buttons: [
@@ -572,7 +623,7 @@ function addTourSteps(tour) {
       canClickTarget: true,
     });
   }
-  
+
   // Add steps for policy wizard
   if (document.querySelector(".policy-wizard")) {
     addStepIfElementExists(tour, {
@@ -615,14 +666,14 @@ function addTourSteps(tour) {
       highlightClass: "tour-highlight-message-area",
       canClickTarget: true,
       scrollTo: { behavior: "smooth", block: "center" },
-      beforeShowPromise: function() {
+      beforeShowPromise: function () {
         // Ensure the messages container is visible
         const messages = document.querySelector("#policy-messages");
         if (messages) {
-          messages.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          messages.scrollIntoView({ behavior: "smooth", block: "center" });
         }
         return Promise.resolve();
-      }
+      },
     });
   }
 
@@ -641,14 +692,19 @@ function addTourSteps(tour) {
     highlightClass: "tour-highlight-complete",
     canClickTarget: true,
   });
-  
+
   // If no steps were added (all elements were missing), show an error
   if (tour.steps.length === 0) {
-    console.error("No valid tour steps could be added - required elements not found");
-    showNotification("Could not start the tour - required elements not found. Please refresh the page and try again.", "error");
+    console.error(
+      "No valid tour steps could be added - required elements not found"
+    );
+    showNotification(
+      "Could not start the tour - required elements not found. Please refresh the page and try again.",
+      "error"
+    );
     return false;
   }
-  
+
   return true;
 }
 
@@ -672,7 +728,7 @@ function startTour() {
 
     // Add steps to the tour
     const stepsAdded = addTourSteps(tour);
-    
+
     if (!stepsAdded) {
       // addTourSteps will have already shown an error message
       return false;
@@ -687,9 +743,10 @@ function startTour() {
 
     // Determine which wizard view is active and show appropriate notification
     const activeView = getActiveWizardView();
-    const welcomeMessage = activeView === "default"
-      ? "Welcome to the Default Wizard! Let's get started with the tour."
-      : "Welcome to the Policy Wizard! Let's get started with the tour.";
+    const welcomeMessage =
+      activeView === "default"
+        ? "Welcome to the Default Wizard! Let's get started with the tour."
+        : "Welcome to the Policy Wizard! Let's get started with the tour.";
 
     // Show welcome notification
     showNotification(welcomeMessage, "info");
