@@ -404,13 +404,89 @@ function addTourSteps(tour) {
     });
   }
 
+  // Studio Column Overview
+  const rightColumn = document.querySelector('#right-column');
+  if (rightColumn) {
+    tour.addStep({
+      id: "studio-overview",
+      title: "📚 Studio Workspace",
+      text: "Welcome to your Studio workspace! This is where you can organize your notes, create structured content, and build upon your research.<br><br>💡 <em>You can drag and drop content from chat or sources directly into your notes!</em>",
+      attachTo: {
+        element: rightColumn,
+        on: "left"
+      },
+      buttons: [
+        {
+          text: "← Back",
+          action: tour.back,
+          classes: "shepherd-button-secondary"
+        },
+        {
+          text: "Next →",
+          action: tour.next,
+          classes: "shepherd-button"
+        }
+      ],
+      highlightClass: 'tour-highlight-column',
+      canClickTarget: true,
+      scrollTo: { behavior: 'smooth', block: 'center' },
+      when: {
+        show: function() {
+          // Ensure right column is expanded
+          rightColumn.classList.remove('collapsed');
+          rightColumn.classList.add('expanded');
+        }
+      }
+    });
+  }
+
+  // Add Note Button
+  const addNoteBtn = document.querySelector('#add-note-btn');
+  if (addNoteBtn) {
+    tour.addStep({
+      id: "add-note-button",
+      title: "📝 Create New Notes",
+      text: "Click here to create a new note. You can organize your thoughts, save important information, and structure your research.<br><br>💡 <em>Try creating different types of notes for different topics or projects!</em>",
+      attachTo: {
+        element: addNoteBtn,
+        on: "bottom"
+      },
+      buttons: [
+        {
+          text: "← Back",
+          action: tour.back,
+          classes: "shepherd-button-secondary"
+        },
+        {
+          text: "Next →",
+          action: tour.next,
+          classes: "shepherd-button"
+        }
+      ],
+      highlightClass: 'tour-highlight-button',
+      canClickTarget: true,
+      scrollTo: { behavior: 'smooth', block: 'center' },
+      when: {
+        show: function() {
+          // Add a pulsing effect to the button
+          addNoteBtn.classList.add('pulse-animation');
+          // Remove the class after animation completes
+          setTimeout(() => {
+            addNoteBtn.classList.remove('pulse-animation');
+          }, 2000);
+        }
+      }
+    });
+  }
+
   // Notes List with interactive example
   const firstNote = document.querySelector('.notes-list .note-item:first-child');
   if (firstNote) {
+    // Note item actions
     tour.addStep({
-      id: "notes-list",
-      title: "📝 Your Notes",
-      text: "Your saved notes will appear here. <br><br>💡 <em>Click on a note to view or edit it. You can also create new notes from the chat!</em>",
+      id: "note-actions",
+      title: "📌 Note Actions",
+      text: "Each note has several actions available on hover:<br>• Click to view/edit<br>• Use the menu (⋮) for more options<br>• Drag to reorder notes<br><br>💡 <em>Try right-clicking a note for quick actions!</em>",
       attachTo: { 
         element: firstNote, 
         on: "left" 
@@ -422,8 +498,8 @@ function addTourSteps(tour) {
           classes: "shepherd-button-secondary" 
         },
         { 
-          text: "Finish Tour", 
-          action: tour.complete, 
+          text: "Next →", 
+          action: tour.next, 
           classes: "shepherd-button" 
         }
       ],
@@ -432,11 +508,16 @@ function addTourSteps(tour) {
       scrollTo: { behavior: 'smooth', block: 'center' },
       when: {
         show: function() {
-          // Highlight the first note
-          firstNote.classList.add('highlighted-item');
-          setTimeout(() => {
-            firstNote.classList.remove('highlighted-item');
-          }, 1500);
+          // Simulate hover on the first note
+          firstNote.classList.add('highlighted-note');
+          // Show the menu toggle
+          const menuToggle = firstNote.querySelector('.note-menu-toggle');
+          if (menuToggle) menuToggle.style.opacity = '1';
+        },
+        hide: function() {
+          firstNote.classList.remove('highlighted-note');
+          const menuToggle = firstNote.querySelector('.note-menu-toggle');
+          if (menuToggle) menuToggle.style.opacity = '';
         }
       }
     });
@@ -445,7 +526,7 @@ function addTourSteps(tour) {
     tour.addStep({
       id: "notes-list-empty",
       title: "📝 Your Notes",
-      text: "Your saved notes will appear here. Create your first note to get started!",
+      text: "Your saved notes will appear here. Create your first note to get started!<br><br>💡 <em>Notes help you organize information from different sources in one place.</em>",
       attachTo: { 
         element: ".notes-list", 
         on: "left" 
@@ -457,12 +538,40 @@ function addTourSteps(tour) {
           classes: "shepherd-button-secondary" 
         },
         { 
-          text: "Finish Tour", 
-          action: tour.complete, 
+          text: "Next →", 
+          action: tour.next, 
           classes: "shepherd-button" 
         }
       ],
       highlightClass: 'tour-highlight-item',
+      canClickTarget: true
+    });
+  }
+
+  // Note Organization
+  const notesList = document.querySelector('.notes-list');
+  if (notesList) {
+    tour.addStep({
+      id: "note-organization",
+      title: "🗂️ Organize Your Notes",
+      text: "Keep your research organized with these tips:<br>• Use descriptive titles<br>• Group related notes together<br>• Use tags for easy filtering<br>• Pin important notes to the top<br><br>💡 <em>You can create folders to better organize your notes!</em>",
+      attachTo: {
+        element: notesList,
+        on: "top"
+      },
+      buttons: [
+        {
+          text: "← Back",
+          action: tour.back,
+          classes: "shepherd-button-secondary"
+        },
+        {
+          text: "Next →",
+          action: tour.next,
+          classes: "shepherd-button"
+        }
+      ],
+      highlightClass: 'tour-highlight-section',
       canClickTarget: true
     });
   }
