@@ -128,21 +128,27 @@ function initTour() {
 
 /**
  * Detect which wizard view is currently active
- * @returns {string} 'default' or 'policy' based on which wizard is visible
+ * @returns {string} 'default' or 'policy' based on URL or wizard visibility
  */
 function getActiveWizardView() {
+  // First try to determine from URL if possible
+  if (window.location.href.includes('policy-wizard')) {
+    return 'policy';
+  }
+  if (window.location.href.includes('default-wizard')) {
+    return 'default';
+  }
+  
+  // Fallback to DOM detection if URL doesn't specify
   const defaultWizard = document.querySelector(".default-wizard");
   const policyWizard = document.querySelector(".policy-wizard");
 
-  if (defaultWizard && getComputedStyle(defaultWizard).display !== "none") {
-    return "default";
-  } else if (
-    policyWizard &&
-    getComputedStyle(policyWizard).display !== "none"
-  ) {
+  if (policyWizard && getComputedStyle(policyWizard).display !== "none") {
     return "policy";
   }
-  return "default"; // Default to default wizard if none is visible
+  
+  // Default to default wizard
+  return "default";
 }
 
 /**
@@ -286,9 +292,9 @@ function addTourSteps(tour) {
     },
   });
 
-  // Add conditional steps based on active wizard view
-  if (isDefaultWizard) {
-    // Default Wizard specific steps
+  // Add all steps regardless of active view, let addStepIfElementExists handle visibility
+  // Default wizard steps
+  if (document.querySelector(".default-wizard")) {
     addStepIfElementExists(tour, {
       id: "default-wizard-chat",
       title: "💬 Chat with Your Sources",
@@ -330,8 +336,10 @@ function addTourSteps(tour) {
       highlightClass: "tour-highlight-input",
       canClickTarget: true,
     });
-  } else {
-    // Policy Wizard specific steps
+  }
+  
+  // Policy Wizard specific steps (add these even if default wizard is active)
+  if (document.querySelector(".policy-wizard")) {
     addStepIfElementExists(tour, {
       id: "policy-wizard-overview",
       title: "🛡️ Policy Management",
