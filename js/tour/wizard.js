@@ -292,8 +292,243 @@ function addTourSteps(tour) {
     },
   });
 
-  // Add all steps regardless of active view, let addStepIfElementExists handle visibility
-  // Default wizard steps
+  // Add Add Source button step
+  addStepIfElementExists(tour, {
+    id: "add-source-button",
+    title: "➕ Add Source",
+    text: "Click here to upload documents, import from cloud storage, or paste text. Supports PDFs, Word docs, and more.",
+    attachTo: {
+      element: "#addSourceBtn",
+      on: "right"
+    },
+    buttons: [
+      { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
+      { text: "Next →", action: tour.next, classes: "shepherd-button" }
+    ],
+    highlightClass: "tour-highlight-button",
+    canClickTarget: true,
+    scrollTo: { behavior: "smooth", block: "center" },
+    when: {
+      show: function() {
+        const btn = document.querySelector("#addSourceBtn");
+        if (btn) btn.classList.add("pulse-animation");
+      },
+      hide: function() {
+        const btn = document.querySelector("#addSourceBtn");
+        if (btn) btn.classList.remove("pulse-animation");
+      }
+    }
+  });
+
+  // Add Discover Source button step
+  addStepIfElementExists(tour, {
+    id: "discover-source-button",
+    title: "🔍 Discover Sources",
+    text: "Find and add relevant sources from your connected accounts or the web. Great for discovering new content related to your research.",
+    attachTo: {
+      element: "#discoverSourceBtn",
+      on: "right"
+    },
+    buttons: [
+      { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
+      { text: "Next →", action: tour.next, classes: "shepherd-button" }
+    ],
+    highlightClass: "tour-highlight-button",
+    canClickTarget: true
+  });
+
+  // Add Chat About Sources button step
+  addStepIfElementExists(tour, {
+    id: "chat-about-sources-button",
+    title: "💬 Chat About Sources",
+    text: "Start a conversation about your selected sources. The AI will analyze all selected documents to provide comprehensive answers and insights.",
+    attachTo: {
+      element: "#chatAboutSourcesBtn",
+      on: "right"
+    },
+    buttons: [
+      { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
+      { text: "Next →", action: tour.next, classes: "shepherd-button" }
+    ],
+    highlightClass: "tour-highlight-button",
+    canClickTarget: true,
+    beforeShowPromise: function() {
+      // Ensure the button is visible by scrolling if needed
+      const btn = document.querySelector("#chatAboutSourcesBtn");
+      if (btn) {
+        btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return Promise.resolve();
+    },
+    when: {
+      show: function () {
+        // Add a pulsing effect to the button
+        const btn = document.querySelector("#chatAboutSourcesBtn");
+        if (btn) {
+          btn.classList.add("pulse-animation");
+        }
+      },
+      hide: function () {
+        // Clean up animation class
+        const btn = document.querySelector("#chatAboutSourcesBtn");
+        if (btn) {
+          btn.classList.remove("pulse-animation");
+        }
+      },
+    },
+  });
+
+  // Add Mind Map button step
+  addStepIfElementExists(tour, {
+    id: "mind-map-button",
+    title: "🧠 Mind Map",
+    text: "Visualize the connections between your sources and ideas. Create interactive mind maps to organize your thoughts and see relationships between concepts.",
+    attachTo: {
+      element: "#mindMapSourceBtn",
+      on: "right"
+    },
+    buttons: [
+      { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
+      { text: "Next →", action: tour.next, classes: "shepherd-button" }
+    ],
+    highlightClass: "tour-highlight-button",
+    canClickTarget: true,
+    scrollTo: { behavior: "smooth", block: "center" },
+    when: {
+      show: function() {
+        const btn = document.querySelector("#mindMapSourceBtn");
+        if (btn) btn.classList.add("pulse-animation");
+      },
+      hide: function() {
+        const btn = document.querySelector("#mindMapSourceBtn");
+        if (btn) btn.classList.remove("pulse-animation");
+      }
+    }
+  });
+
+  // Add Canvas button step (only if it exists)
+  const canvasBtn = document.querySelector("#canvasSourceBtn");
+  if (canvasBtn) {
+    addStepIfElementExists(tour, {
+      id: "canvas-button",
+      title: "🎨 Canvas",
+      text: "Create free-form visualizations and diagrams. Organize your ideas spatially and make connections between different concepts in your research.",
+      attachTo: {
+        element: "#canvasSourceBtn",
+        on: "right"
+      },
+      buttons: [
+        { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
+        { text: "Next →", action: tour.next, classes: "shepherd-button" }
+      ],
+      highlightClass: "tour-highlight-button",
+      canClickTarget: true,
+      scrollTo: { behavior: "smooth", block: "center" },
+      when: {
+        show: function() {
+          const btn = document.querySelector("#canvasSourceBtn");
+          if (btn) btn.classList.add("pulse-animation");
+        },
+        hide: function() {
+          const btn = document.querySelector("#canvasSourceBtn");
+          if (btn) btn.classList.remove("pulse-animation");
+        }
+      }
+    });
+  }
+
+  // Add source list step
+  addStepIfElementExists(tour, {
+    id: "source-list",
+    title: "📚 Your Sources",
+    text: "Your uploaded sources appear here. Select one or more sources to work with them.",
+    attachTo: {
+      element: ".source-list",
+      on: "right"
+    },
+    buttons: [
+      { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
+      { text: "Next →", action: tour.next, classes: "shepherd-button" }
+    ],
+    highlightClass: "tour-highlight-sources",
+    canClickTarget: true,
+    scrollTo: { behavior: "smooth", block: "start" }
+  });
+
+  // Add right column overview step
+  addStepIfElementExists(tour, {
+    id: "right-column-overview",
+    title: "📝 Active Workspace",
+    text: "This is your main workspace where you'll interact with your content. The view changes based on your current task - whether you're chatting with sources, creating mind maps, or working with the canvas.",
+    attachTo: {
+      element: "#right-column",
+      on: "left"
+    },
+    buttons: [
+      { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
+      { text: "Next →", action: tour.next, classes: "shepherd-button" }
+    ],
+    highlightClass: "tour-highlight-workspace",
+    canClickTarget: true,
+    scrollTo: { behavior: "smooth", block: "center" },
+    when: {
+      show: function() {
+        // Ensure the right column is visible
+        const rightColumn = document.querySelector("#right-column");
+        if (rightColumn) rightColumn.style.zIndex = "1000";
+      },
+      hide: function() {
+        const rightColumn = document.querySelector("#right-column");
+        if (rightColumn) rightColumn.style.zIndex = "";
+      }
+    }
+  });
+
+  // Add chat interface steps if in default wizard view
+  if (document.querySelector(".default-wizard") && document.querySelector("#chat-messages")) {
+    addStepIfElementExists(tour, {
+      id: "chat-interface",
+      title: "💬 Chat with Your Sources",
+      text: "Here you can have conversations about your selected sources. The AI will analyze the content and provide relevant answers based on your documents.",
+      attachTo: {
+        element: "#chat-messages",
+        on: "left"
+      },
+      buttons: [
+        { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
+        { text: "Next →", action: tour.next, classes: "shepherd-button" }
+      ],
+      highlightClass: "tour-highlight-chat",
+      canClickTarget: true,
+      scrollTo: { behavior: "smooth", block: "center" },
+      when: {
+        show: function() {
+          // Ensure chat messages are visible
+          const chatMessages = document.querySelector("#chat-messages");
+          if (chatMessages) chatMessages.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    });
+
+    // Add chat input step
+    addStepIfElementExists(tour, {
+      id: "chat-input",
+      title: "✍️ Your Input",
+      text: "Type your questions or requests here. The AI will analyze your selected sources to provide relevant responses.",
+      attachTo: {
+        element: "#chat-input-container, .chat-input-container, [role='textbox']",
+        on: "top"
+      },
+      buttons: [
+        { text: "← Back", action: tour.back, classes: "shepherd-button-secondary" },
+        { text: "Next →", action: tour.next, classes: "shepherd-button" }
+      ],
+      highlightClass: "tour-highlight-input",
+      canClickTarget: true
+    });
+  }
+
+  // Add steps for default wizard
   if (document.querySelector(".default-wizard")) {
     addStepIfElementExists(tour, {
       id: "default-wizard-chat",
@@ -338,7 +573,7 @@ function addTourSteps(tour) {
     });
   }
   
-  // Policy Wizard specific steps (add these even if default wizard is active)
+  // Add steps for policy wizard
   if (document.querySelector(".policy-wizard")) {
     addStepIfElementExists(tour, {
       id: "policy-wizard-overview",
