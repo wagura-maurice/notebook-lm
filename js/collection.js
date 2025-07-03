@@ -2809,17 +2809,17 @@ const MessageActions = {
 
     // Get the notes list container
     const $notesList = $(".notes-list");
-    
+
     // Clear any empty state messages
     $notesList.find('div:contains("No notes yet")').remove();
-    
+
     // Add the new note to the top of the list
     if ($notesList.children().length === 0) {
       $notesList.append(newNoteHtml);
     } else {
       $notesList.prepend(newNoteHtml);
     }
-    
+
     // Update the collapsed view
     $(`[data-note-id="${noteId}"]`).remove();
 
