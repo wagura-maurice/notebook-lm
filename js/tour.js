@@ -120,182 +120,178 @@ function addTourSteps(tour) {
   tour.addStep({
     id: "welcome",
     title: "Welcome to NotebookLM",
-    text: "This quick tour will show you around the interface and help you get started.",
+    text: "This comprehensive tour will guide you through all the interactive elements of NotebookLM. Let's get started!",
     buttons: [
+      {
+        text: "Next",
+        action: tour.next
+      },
       {
         text: "Skip",
         action: tour.cancel,
         classes: "shepherd-button-secondary",
       },
-      {
-        text: "Next",
-        action: tour.next,
-        classes: "shepherd-button",
-      },
     ],
+    cancelIcon: { enabled: true },
+    highlightClass: 'tour-highlight',
+    canClickTarget: false
   });
 
-  // Left Column - Sources
+  // Left Column - Overview
   tour.addStep({
-    id: "sources-column",
-    title: "Document Management",
-    text: "The left panel is your document hub where you can:<ul><li>Upload and organize PDFs, Word docs, and text files</li><li>Access recently opened documents</li><li>Create collections to group related materials</li><li>Search through all your sources</li></ul>",
-    attachTo: {
-      element: "#left-column",
-      on: "right",
-    },
+    id: "left-column-overview",
+    title: "Sources Column",
+    text: "This is where all your sources (documents, PDFs, etc.) are listed. You can manage and organize them here.",
+    attachTo: { element: "#left-column", on: "right" },
     buttons: [
-      {
-        text: "Back",
-        action: tour.back,
-        classes: "shepherd-button-secondary",
-      },
-      {
-        text: "Next",
-        action: tour.next,
-        classes: "shepherd-button",
-      },
+      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
+      { text: "Next", action: tour.next, classes: "shepherd-button" }
     ],
+    highlightClass: 'tour-highlight',
+    canClickTarget: true
   });
 
   // Add Source Button
   tour.addStep({
-    id: "add-source",
-    title: "Adding Content",
-    text: "Easily add new content to your collection:<ul><li>Upload files from your device</li><li>Import from cloud storage</li><li>Add web pages by URL</li><li>Paste text directly</li><li>Connect to external sources</li></ul>",
-    attachTo: {
-      element: "#addSourceBtn",
-      on: "bottom",
-    },
+    id: "add-source-button",
+    title: "Add New Source",
+    text: "Click here to add new sources like PDFs, Word documents, or text directly.",
+    attachTo: { element: "#addSourceBtn", on: "bottom" },
     buttons: [
-      {
-        text: "Back",
-        action: tour.back,
-        classes: "shepherd-button-secondary",
-      },
-      {
-        text: "Next",
-        action: tour.next,
-        classes: "shepherd-button",
-      },
+      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
+      { text: "Next", action: tour.next, classes: "shepherd-button" }
     ],
+    highlightClass: 'tour-highlight',
+    canClickTarget: true
   });
 
-  // Middle Column - Chat
+  // Discover Sources Button
   tour.addStep({
-    id: "chat-column",
-    title: "AI-Powered Chat",
-    text: "Interact with your documents using AI:<ul><li>Ask questions about your content</li><li>Get summaries of documents</li><li>Find connections between sources</li><li>Generate insights and analysis</li><li>Get help with research and writing</li></ul>",
-    attachTo: {
-      element: "#middle-column",
-      on: "left",
-    },
+    id: "discover-sources-button",
+    title: "Discover Sources",
+    text: "Browse and add from your existing sources or connect to external services.",
+    attachTo: { element: "#discoverSourceBtn", on: "bottom" },  // Fixed ID
     buttons: [
-      {
-        text: "Back",
-        action: tour.back,
-        classes: "shepherd-button-secondary",
-      },
-      {
-        text: "Next",
-        action: tour.next,
-        classes: "shepherd-button",
-      },
+      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
+      { text: "Next", action: tour.next, classes: "shepherd-button" }
     ],
+    highlightClass: 'tour-highlight',
+    canClickTarget: true
   });
 
-  // Right Column - Notes
+  // Note: Removed Select All Checkbox step as the element doesn't exist in the HTML
+
+  // Source List Items
   tour.addStep({
-    id: "notes-column",
-    title: "Smart Note-Taking",
-    text: "Enhance your workflow with notes:<ul><li>Create and organize notes</li><li>Link notes to specific documents</li><li>Use rich text formatting</li><li>Add tags for better organization</li><li>Convert notes into new sources</li></ul>",
-    attachTo: {
-      element: "#right-column",
-      on: "left",
-    },
+    id: "source-list-items",
+    title: "Source Items",
+    text: "Each source shows its name, type, and status. Click to view, or use the menu (⋮) for more options.",
+    attachTo: { element: ".source-item:first-child", on: "right" },
     buttons: [
-      {
-        text: "Back",
-        action: tour.back,
-        classes: "shepherd-button-secondary",
-      },
-      {
-        text: "Next",
-        action: tour.next,
-        classes: "shepherd-button",
-      },
+      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
+      { text: "Next", action: tour.next, classes: "shepherd-button" }
     ],
+    highlightClass: 'tour-highlight',
+    canClickTarget: true
+  });
+
+  // Chat Messages
+  tour.addStep({
+    id: "chat-messages",
+    title: "Chat Messages",
+    text: "Your conversation appears here. Hover over messages to see options like 'Add to note' or 'Copy'.",
+    attachTo: { element: "#chat-messages", on: "left" },
+    buttons: [
+      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
+      { text: "Next", action: tour.next, classes: "shepherd-button" }
+    ],
+    highlightClass: 'tour-highlight',
+    canClickTarget: true
+  });
+
+  // Chat Input
+  tour.addStep({
+    id: "chat-input",
+    title: "Chat Input",
+    text: "Type your questions here. Press Enter or click the send button to submit.",
+    attachTo: { element: "#chat-input", on: "top" },
+    buttons: [
+      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
+      { text: "Next", action: tour.next, classes: "shepherd-button" }
+    ],
+    highlightClass: 'tour-highlight',
+    canClickTarget: true
+  });
+
+  // Right Column - Overview
+  tour.addStep({
+    id: "right-column-overview",
+    title: "Studio",
+    text: "Organize your notes and create structured content based on your sources.",
+    attachTo: { element: "#right-column", on: "left" },
+    buttons: [
+      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
+      { text: "Next", action: tour.next, classes: "shepherd-button" }
+    ],
+    highlightClass: 'tour-highlight',
+    canClickTarget: true
   });
 
   // Add Note Button
   tour.addStep({
-    id: "add-note",
-    title: "Advanced Note Features",
-    text: "Create powerful notes with these features:<ul><li>Rich text formatting with markdown support</li><li>Link notes to specific document sections</li><li>Add images, tables, and code blocks</li><li>Use @mentions to link to other notes</li><li>Convert notes into new sources</li></ul>",
-    attachTo: {
-      element: "#add-note-btn",
-      on: "left",
-    },
+    id: "add-note-button",
+    title: "Create Notes",
+    text: "Click here to create new notes from your sources or start from scratch.",
+    attachTo: { element: "#add-note-btn", on: "bottom" },
     buttons: [
-      {
-        text: "Back",
-        action: tour.back,
-        classes: "shepherd-button-secondary",
-      },
-      {
-        text: "Next",
-        action: tour.next,
-        classes: "shepherd-button",
-      },
+      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
+      { text: "Next", action: tour.next, classes: "shepherd-button" }
     ],
+    highlightClass: 'tour-highlight',
+    canClickTarget: true
   });
 
-  // Search Functionality - Made optional with better error handling
-  const searchElement = document.querySelector(
-    '.search-bar, [id*="search"], [class*="search"], [data-testid*="search"]'
-  );
+  // Notes List
+  tour.addStep({
+    id: "notes-list",
+    title: "Your Notes",
+    text: "All your notes appear here. Click to view or use the menu (⋮) for more options.",
+    attachTo: { element: ".notes-list", on: "left" },  // Changed from .note-list to .notes-list
+    buttons: [
+      { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
+      { text: "Next", action: tour.next, classes: "shepherd-button" }
+    ],
+    highlightClass: 'tour-highlight',
+    canClickTarget: true
+  });
 
-  if (searchElement) {
+  // User Menu - Using avatar button as fallback
+  const userMenuButton = document.querySelector("#avatar-dropdown-trigger, #desktop-avatar-dropdown-trigger");
+  if (userMenuButton) {
     tour.addStep({
-      id: "search",
-      title: "Smart Search",
-      text: "Quickly find what you need with powerful search capabilities:<ul><li>Full-text search across all documents and notes</li><li>Filter by document type, date, or tags</li><li>Search within specific collections</li><li>Save frequent searches for quick access</li><li>Use advanced search operators for precise results</li></ul>",
-      attachTo: {
-        element: searchElement,
-        on: "bottom",
-      },
+      id: "user-menu",
+      title: "Your Account",
+      text: "Access your profile, settings, and sign out options here.",
+      attachTo: { element: userMenuButton, on: "bottom" },
       buttons: [
-        {
-          text: "Back",
-          action: tour.back,
-          classes: "shepherd-button-secondary",
-        },
-        {
-          text: "Finish",
-          action: tour.complete,
-          classes: "shepherd-button",
-        },
+        { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
+        { text: "Finish", action: tour.complete, classes: "shepherd-button" }
       ],
+      highlightClass: 'tour-highlight',
+      canClickTarget: true
     });
   } else {
-    console.log("Search element not found, adjusting tour flow");
-    // If search is not found, make the previous step the last one
+    // If no user menu button found, make the previous step the last one
     const lastStep = tour.steps[tour.steps.length - 1];
     if (lastStep) {
       lastStep.options.buttons = [
-        {
-          text: "Back",
-          action: tour.back,
-          classes: "shepherd-button-secondary",
-        },
-        {
-          text: "Finish",
-          action: tour.complete,
-          classes: "shepherd-button",
-        },
+        { text: "Back", action: tour.back, classes: "shepherd-button-secondary" },
+        { text: "Finish", action: tour.complete, classes: "shepherd-button" }
       ];
     }
   }
+  
+  // Note: Removed Theme Toggle step as the element doesn't exist in the HTML
 }
 
 /**
