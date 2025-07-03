@@ -679,77 +679,52 @@ function startTour() {
 }
 
 /**
- * Add a help button to start the tour
+ * Initialize the tour when the help button is clicked
  */
-// Add help button to the page
-function addHelpButton() {
-  // Check if help button already exists
-  if (document.getElementById('tour-help-button')) return;
-
-  const helpButton = document.createElement('button');
-  helpButton.id = 'tour-help-button';
-  helpButton.className = 'fixed bottom-6 right-6 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full p-3 shadow-lg z-50 transition-all duration-200 transform hover:scale-110 flex items-center justify-center';
-  helpButton.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-    <span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-yellow-400 text-xs font-bold text-gray-800">?</span>
-  `;
-  helpButton.title = 'Take a tour';
-  helpButton.setAttribute('aria-label', 'Help and tour');
+document.addEventListener('DOMContentLoaded', function() {
+  const tourHelpBtn = document.getElementById('tourHelpBtn');
   
-  // Add pulse animation on page load
-  helpButton.classList.add('animate-bounce');
-  setTimeout(() => {
-    helpButton.classList.remove('animate-bounce');
-  }, 3000);
-  
-  // Add hover effect
-  helpButton.addEventListener('mouseenter', () => {
-    helpButton.classList.add('ring-2', 'ring-offset-2', 'ring-indigo-400');
-  });
-  
-  helpButton.addEventListener('mouseleave', () => {
-    helpButton.classList.remove('ring-2', 'ring-offset-2', 'ring-indigo-400');
-  });
-  
-  // Start tour on click
-  helpButton.addEventListener('click', (e) => {
-    e.preventDefault();
-    helpButton.classList.remove('ring-2', 'ring-offset-2', 'ring-indigo-400');
-    helpButton.classList.add('opacity-0', 'scale-90');
-    setTimeout(() => {
+  if (tourHelpBtn) {
+    // Add pulse animation to the help button
+    const addPulse = () => {
+      if (!tourHelpBtn.classList.contains('pulse-animation')) {
+        tourHelpBtn.classList.add('pulse-animation');
+      }
+    };
+    
+    // Remove pulse animation
+    const removePulse = () => {
+      tourHelpBtn.classList.remove('pulse-animation');
+    };
+    
+    // Add initial pulse animation after a short delay
+    setTimeout(addPulse, 1000);
+    
+    // Add hover effect
+    tourHelpBtn.addEventListener('mouseenter', () => {
+      tourHelpBtn.classList.add('ring-2', 'ring-offset-2', 'ring-indigo-400');
+    });
+    
+    tourHelpBtn.addEventListener('mouseleave', () => {
+      tourHelpBtn.classList.remove('ring-2', 'ring-offset-2', 'ring-indigo-400');
+    });
+    
+    // Initialize the tour when the help button is clicked
+    tourHelpBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Remove the pulse animation when clicked
+      removePulse();
+      
+      // Initialize and start the tour
       startTour();
-      helpButton.classList.remove('opacity-0', 'scale-90');
-    }, 200);
-  });
-  
-  document.body.appendChild(helpButton);
-  
-  // Add styles for the help button
-  const style = document.createElement('style');
-  style.textContent = `
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-    }
-    .animate-bounce {
-      animation: bounce 1s infinite;
-    }
-    #tour-help-button:focus {
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
-    }
-  `;
-  document.head.appendChild(style);
-}
-
-// Add help button when DOM is loaded
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", addHelpButton);
-} else {
-  addHelpButton();
-}
+    });
+    
+    // Re-add pulse animation when the tour ends
+    document.addEventListener('shepherd:inactive', addPulse);
+  }
+});
 
 /**
  * Show a notification message in the bottom-right corner
