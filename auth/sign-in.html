@@ -92,11 +92,16 @@
           </div>
 
           <div>
-            <label
-              for="password"
-              class="block text-sm font-medium text-gray-300 mb-1"
-              >Password</label
-            >
+            <div class="flex justify-between items-center mb-1">
+              <label for="password" class="text-sm font-medium text-gray-300"
+                >Password</label
+              >
+              <a
+                href="forgot-password.html"
+                class="text-accent-blue hover:text-blue-500 transition-colors text-xs hover:underline underline-offset-4"
+                >Forgot Password?</a
+              >
+            </div>
             <input
               type="password"
               id="password"
@@ -106,22 +111,15 @@
             />
           </div>
 
-          <div class="flex items-center justify-between">
-            <div class="flex items-center">
-              <input
-                type="checkbox"
-                id="remember"
-                name="remember"
-                class="h-4 w-4 text-accent-blue focus:ring-accent-blue border-gray-600 rounded"
-              />
-              <label for="remember" class="ml-2 text-sm text-gray-300"
-                >Remember me</label
-              >
-            </div>
-            <a
-              href="forgot-password.html"
-              class="text-accent-blue hover:text-blue-500 transition-colors"
-              >Forgot Password?</a
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="remember"
+              name="remember"
+              class="h-4 w-4 text-accent-blue focus:ring-accent-blue border-gray-600 rounded"
+            />
+            <label for="remember" class="ml-2 text-sm text-gray-300"
+              >Remember me</label
             >
           </div>
 
@@ -133,34 +131,17 @@
               Sign In
             </button>
           </div>
-
-          <div class="mt-4 text-center text-sm text-gray-400">
-            By signing in, you agree to our
-            <a
-              href="/terms.html"
-              class="text-accent-blue hover:text-blue-500 transition-colors"
-              >Terms of Service</a
-            >
-            and
-            <a
-              href="/privacy.html"
-              class="text-accent-blue hover:text-blue-500 transition-colors"
-              >Privacy Policy</a
-            >
-          </div>
         </form>
 
-        <div class="mt-6 text-center space-y-2">
-          <a
-            href="forgot-password.html"
-            class="text-accent-blue hover:text-blue-500 transition-colors"
-            >Forgot Password?</a
-          >
-          <a
-            href="sign-up.html"
-            class="text-accent-blue hover:text-blue-500 transition-colors"
-            >Create an Account</a
-          >
+        <div class="mt-6 text-center">
+          <p class="text-gray-400">
+            Don't have an account?
+            <a
+              href="sign-up.html"
+              class="text-accent-blue hover:text-blue-500 transition-colors hover:underline underline-offset-4"
+              >Sign Up</a
+            >
+          </p>
         </div>
       </div>
     </div>
