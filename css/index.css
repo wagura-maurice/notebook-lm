@@ -1,8 +1,8 @@
 /* css/index.css */
 /* Custom CSS */
 body {
-  background-color: #0f172a;
-  color: #f8fafc;
+  background: #f9f9f9 !important;
+  color: #003087;
 }
 
 .notebook-icon {
@@ -27,8 +27,8 @@ body {
   position: absolute;
   right: 0;
   top: 100%;
-  background-color: #1e293b;
-  border: 1px solid #334155;
+  background: #f9f9f9 !important;
+  border: 1px solid #003087 !important;
   border-radius: 0.375rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   z-index: 50;
@@ -39,12 +39,15 @@ body {
 .dropdown-menu a {
   display: block;
   padding: 0.5rem 1rem;
-  color: #f8fafc;
+  color: #003087 !important;
+  background: #f9f9f9 !important;
   transition: background-color 0.2s;
 }
 
-.dropdown-menu a:hover {
-  background-color: #2d3748;
+.dropdown-menu a:hover,
+.dropdown-menu a:focus {
+  background: #FF6900 !important;
+  color: #f9f9f9 !important;
 }
 
 .line-clamp-2 {
@@ -81,8 +84,9 @@ body {
 .modal > div:not(.modal-overlay) {
   position: relative;
   z-index: 1002 !important;
-  background-color: #1e293b; /* Slate-800, matches index.css */
-  color: #f8fafc; /* Light text for readability */
+  background: #f9f9f9 !important;
+  color: #003087 !important;
+  border: 1px solid #003087 !important;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -171,4 +175,162 @@ body {
 .modal > div:not(.modal-overlay) {
   display: flex;
   flex-direction: column;
+}
+
+/* Remove all dark mode and dark backgrounds */
+body {
+  background: #f9f9f9 !important;
+  color: #003087;
+}
+
+.bg-eu-blue {
+  background-color: #003087 !important;
+}
+.bg-eu-orange {
+  background-color: #FF6900 !important;
+}
+.bg-eu-white {
+  background-color: #f9f9f9 !important;
+}
+.text-eu-blue {
+  color: #003087 !important;
+}
+.text-eu-orange {
+  color: #FF6900 !important;
+}
+.text-eu-white {
+  color: #f9f9f9 !important;
+}
+.border-eu {
+  border-color: #003087 !important;
+}
+
+/* Preloader spinner */
+#preloader .animate-spin {
+  border-color: #FF6900 !important;
+}
+
+/* Header */
+header {
+  background: #003087 !important;
+}
+header .text-eu-white {
+  color: #f9f9f9 !important;
+}
+header button:hover,
+header .hover\:text-eu-orange:hover {
+  color: #FF6900 !important;
+}
+
+/* Action Bar and Dropdowns */
+.view-toggle,
+.dropdown-menu {
+  background: #f9f9f9 !important;
+  border: 1px solid #003087 !important;
+}
+.dropdown-menu a {
+  color: #003087 !important;
+  background: #f9f9f9 !important;
+}
+.dropdown-menu a:hover,
+.dropdown-menu a:focus {
+  background: #FF6900 !important;
+  color: #f9f9f9 !important;
+}
+
+/* List/Grid View */
+#list-view,
+.card {
+  background: #f9f9f9 !important;
+  border: 1px solid #003087 !important;
+}
+.notebook-list-item:hover,
+.card:hover {
+  background: #FF6900 !important;
+  color: #f9f9f9 !important;
+}
+.notebook-list-item .dropdown-menu,
+.card .dropdown-menu {
+  background: #f9f9f9 !important;
+  border: 1px solid #003087 !important;
+}
+.notebook-list-item .dropdown-menu a:hover,
+.card .dropdown-menu a:hover {
+  background: #FF6900 !important;
+  color: #f9f9f9 !important;
+}
+
+/* Modals */
+.modal > div {
+  background: #f9f9f9 !important;
+  border: 1px solid #003087 !important;
+}
+.modal h3,
+.modal label {
+  color: #003087 !important;
+}
+.modal .modal-close {
+  color: #dc2626 !important;
+  border-color: #dc2626 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.modal .modal-close:hover,
+.modal .modal-close:focus,
+.modal .modal-close:active {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  border-color: #dc2626 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.modal input,
+.modal textarea,
+.modal select {
+  background: #f9f9f9 !important;
+  border: 1px solid #003087 !important;
+  color: #003087 !important;
+}
+.modal button {
+  border: 1px solid #003087 !important;
+}
+.modal button.bg-eu-orange,
+.modal button.bg-eu-blue {
+  color: #f9f9f9 !important;
+}
+
+/* Modal action buttons */
+.modal .action-button {
+  background-color: #003087 !important;
+  color: white !important;
+  border-color: #003087 !important;
+  transition: opacity 0.2s ease-in-out !important;
+}
+
+.modal .action-button:hover,
+.modal .action-button:focus {
+  opacity: 0.9 !important;
+  background-color: #003087 !important;
+  color: white !important;
+  border-color: #003087 !important;
+}
+.modal button.bg-eu-orange {
+  background: #FF6900 !important;
+}
+.modal button.bg-eu-blue {
+  background: #003087 !important;
+}
+.modal button:hover,
+.modal button:focus {
+  background: #FF6900 !important;
+  color: #f9f9f9 !important;
+}
+
+/* Remove all dark: classes and dark backgrounds */
+[class*="dark:"] {
+  /* Remove dark mode styles */
+  background: none !important;
+  color: inherit !important;
+  border-color: inherit !important;
 }
