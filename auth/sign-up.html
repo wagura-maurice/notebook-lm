@@ -26,10 +26,12 @@
           },
           extend: {
             colors: {
-              "dark-blue": "#0f172a",
-              "blue-gray": "#1e293b",
-              "accent-blue": "#38bdf8",
-              "purple-500": "#8b5cf6",
+              "eu-blue": "#003087",
+              "eu-orange": "#FF6900",
+              "eu-white": "#F9F9F9",
+              "text-primary": "#003087",
+              "text-secondary": "#333333",
+              "border-eu": "#003087",
             },
             animation: {
               "bounce-slow": "bounce 2s infinite",
@@ -51,35 +53,45 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <link href="../css/index.css" rel="stylesheet" />
   </head>
-  <body class="h-screen bg-dark-blue font-sans">
+  <body class="min-h-screen bg-eu-white font-sans text-text-primary">
     <!-- Preloader -->
     <div
       id="preloader"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-purple-500"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-eu-blue"
     >
       <div
-        class="animate-spin rounded-full h-12 w-12 border-b-2 border-white"
+        class="animate-spin rounded-full h-12 w-12 border-b-2"
+        style="border-color: #ff6900"
       ></div>
     </div>
 
     <div class="min-h-screen flex items-center justify-center p-4">
-      <div class="bg-blue-gray rounded-lg shadow-xl max-w-md w-full p-8">
+      <div
+        class="bg-eu-white border border-eu rounded-lg shadow-xl max-w-md w-full p-8"
+      >
         <div class="text-center mb-8">
-          <img
-            src="../images/rgb-logo_white_onblue.svg"
-            alt="Microidea Logo"
-            class="h-12 mx-auto mb-4"
-          />
-          <h1 class="text-2xl font-bold text-accent-blue">Create Account</h1>
-          <p class="text-gray-400">Start your journey with Microidea today</p>
+          <div
+            class="inline-flex items-center justify-center bg-eu-blue rounded-full h-16 w-16 mx-auto mb-4"
+          >
+            <img
+              src="../images/rgb-logo_white_onblue.svg"
+              alt="Microidea Logo"
+              class="h-12 w-12"
+            />
+          </div>
+          <h1 class="text-2xl font-bold text-eu-blue">Create Account</h1>
+          <p class="text-text-secondary">
+            Start your journey with Microidea today
+          </p>
         </div>
 
         <form id="signUpForm" class="space-y-6">
           <div>
             <label
               for="name"
-              class="block text-sm font-medium text-gray-300 mb-1"
+              class="block text-sm font-medium text-eu-blue mb-1"
               >Full Name</label
             >
             <input
@@ -87,14 +99,14 @@
               id="name"
               name="name"
               required
-              class="w-full px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-accent-blue transition-colors"
+              class="w-full px-4 py-2 rounded-lg bg-eu-white border border-eu text-eu-blue focus:outline-none focus:border-eu-orange transition-colors"
             />
           </div>
 
           <div>
             <label
               for="email"
-              class="block text-sm font-medium text-gray-300 mb-1"
+              class="block text-sm font-medium text-eu-blue mb-1"
               >Email</label
             >
             <input
@@ -102,14 +114,14 @@
               id="email"
               name="email"
               required
-              class="w-full px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-accent-blue transition-colors"
+              class="w-full px-4 py-2 rounded-lg bg-eu-white border border-eu text-eu-blue focus:outline-none focus:border-eu-orange transition-colors"
             />
           </div>
 
           <div>
             <label
               for="password"
-              class="block text-sm font-medium text-gray-300 mb-1"
+              class="block text-sm font-medium text-eu-blue mb-1"
               >Password</label
             >
             <input
@@ -117,14 +129,14 @@
               id="password"
               name="password"
               required
-              class="w-full px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-accent-blue transition-colors"
+              class="w-full px-4 py-2 rounded-lg bg-eu-white border border-eu text-eu-blue focus:outline-none focus:border-eu-orange transition-colors"
             />
           </div>
 
           <div>
             <label
               for="confirmPassword"
-              class="block text-sm font-medium text-gray-300 mb-1"
+              class="block text-sm font-medium text-eu-blue mb-1"
               >Confirm Password</label
             >
             <input
@@ -132,7 +144,7 @@
               id="confirmPassword"
               name="confirmPassword"
               required
-              class="w-full px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-accent-blue transition-colors"
+              class="w-full px-4 py-2 rounded-lg bg-eu-white border border-eu text-eu-blue focus:outline-none focus:border-eu-orange transition-colors"
             />
           </div>
 
@@ -141,19 +153,19 @@
               type="checkbox"
               id="terms"
               name="terms"
-              class="h-4 w-4 text-accent-blue focus:ring-accent-blue border-gray-600 rounded"
+              class="h-4 w-4 text-eu-orange focus:ring-eu-orange border-eu rounded"
             />
-            <label for="terms" class="ml-2 text-sm text-gray-300"
+            <label for="terms" class="ml-2 text-sm text-eu-blue"
               >By creating an account, you agree to our
               <a
                 href="/terms.html"
-                class="text-accent-blue hover:text-blue-500 transition-colors hover:underline underline-offset-4"
+                class="text-eu-orange hover:text-eu-blue transition-colors hover:underline underline-offset-4"
                 >Terms of Service</a
               >
               and
               <a
                 href="/privacy.html"
-                class="text-accent-blue hover:text-blue-500 transition-colors hover:underline underline-offset-4"
+                class="text-eu-orange hover:text-eu-blue transition-colors hover:underline underline-offset-4"
                 >Privacy Policy</a
               ></label
             >
@@ -162,7 +174,7 @@
           <div class="flex justify-center">
             <button
               type="submit"
-              class="w-full bg-accent-blue hover:bg-blue-500 text-dark-blue font-semibold py-2 px-4 rounded-lg transition-colors"
+              class="w-full bg-eu-blue hover:bg-eu-orange text-eu-white font-semibold py-2 px-4 rounded-lg transition-colors"
             >
               Create Account
             </button>
@@ -170,11 +182,11 @@
         </form>
 
         <div class="mt-6 text-center">
-          <p class="text-gray-400">
+          <p class="text-text-secondary">
             Already have an account?
             <a
               href="sign-in.html"
-              class="text-accent-blue hover:text-blue-500 transition-colors hover:underline underline-offset-4"
+              class="text-eu-orange hover:text-eu-blue transition-colors hover:underline underline-offset-4"
               >Sign In</a
             >
           </p>
