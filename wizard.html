@@ -82,10 +82,11 @@
     <!-- Preloader -->
     <div
       id="preloader"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-purple-500"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-eu-blue"
     >
       <div
-        class="animate-spin rounded-full h-12 w-12 border-b-2 border-white"
+        class="animate-spin rounded-full h-12 w-12 border-b-2"
+        style="border-color: #FF6900"
       ></div>
     </div>
 
@@ -377,7 +378,7 @@
 
     <!-- Mobile Tabs -->
     <div
-      class="lg:hidden flex border-b border-gray-700 bg-blue-gray sticky top-16 z-10"
+      class="lg:hidden flex border-b border-eu-blue/20 bg-eu-blue sticky top-16 z-10"
     >
       <button
         class="tab-button flex-1 py-3 text-center font-medium"
@@ -401,36 +402,36 @@
       <!-- Left Column - Sources (35%) -->
       <div
         id="left-column"
-        class="mobile-tab-content w-full lg:w-72 bg-slate-800 text-white transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(147,51,234,0.3),0_2px_4px_-1px_rgba(147,51,234,0.1)] lg:block hidden"
+        class="mobile-tab-content w-full lg:w-72 bg-eu-white text-text-primary transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.1),0_2px_4px_-1px_rgba(0,48,135,0.05)] lg:block hidden border border-eu-blue/20"
       >
         <!-- Expanded view -->
         <div class="flex flex-col h-full expanded-content">
           <!-- Header -->
           <div
-            class="flex items-center justify-between px-5 py-3 border-b border-slate-700"
+            class="flex items-center justify-between px-5 py-3 border-b border-eu-blue/20"
           >
             <h2 class="text-lg font-semibold lg:block hidden">Sources</h2>
             <button
               id="collapse-left"
-              class="text-white text-lg hover:text-sky-400"
+              class="text-eu-blue text-lg hover:text-eu-orange"
             >
               <i class="fas fa-chevron-left"></i>
             </button>
           </div>
-          <div class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent">
+          <div class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent bg-eu-white">
             <!-- Actions -->
-            <div class="px-5 py-3 border-b border-slate-700">
+            <div class="px-5 py-3 border-b border-eu-blue/20">
               <div class="flex items-center mb-4 gap-2 actions-row">
                 <button
                   id="addSourceBtn"
-                  class="flex items-center justify-center flex-1 py-2 px-3 bg-sky-500 hover:bg-sky-600 rounded-full text-sm font-medium transition-colors"
+                  class="flex items-center justify-center flex-1 py-2 px-3 bg-eu-blue hover:bg-eu-orange rounded-full text-sm font-medium text-eu-white transition-colors shadow-sm hover:shadow-md"
                 >
                   <i class="fas fa-plus mr-2"></i>
                   <span>Add</span>
                 </button>
                 <button
                   id="discoverSourceBtn"
-                  class="flex items-center justify-center flex-1 py-2 px-3 bg-sky-500 hover:bg-sky-600 rounded-full text-sm font-medium transition-colors"
+                  class="flex items-center justify-center flex-1 py-2 px-3 bg-eu-blue hover:bg-eu-orange rounded-full text-sm font-medium text-eu-white transition-colors shadow-sm hover:shadow-md"
                 >
                   <i class="fas fa-search mr-2"></i>
                   <span>Discover</span>
@@ -439,14 +440,14 @@
               <div class="flex items-center mb-4 gap-2 actions-row">
                 <button
                   id="mindMapSourceBtn"
-                  class="flex items-center justify-center flex-1 py-2 px-3 bg-sky-500 hover:bg-sky-600 rounded-full text-sm font-medium transition-colors"
+                  class="flex items-center justify-center flex-1 py-2 px-3 bg-eu-blue hover:bg-eu-orange rounded-full text-sm font-medium text-eu-white transition-colors shadow-sm hover:shadow-md"
                 >
                   <i class="fa-solid fa-brain mr-2"></i>
                   <span>Mind Map</span>
                 </button>
                 <button
                   id="canvasSourceBtn"
-                  class="flex items-center justify-center flex-1 py-2 px-3 bg-sky-500 hover:bg-sky-600 rounded-full text-sm font-medium transition-colors hidden lg:flex"
+                  class="flex items-center justify-center flex-1 py-2 px-3 bg-eu-blue hover:bg-eu-orange rounded-full text-sm font-medium text-eu-white transition-colors shadow-sm hover:shadow-md hidden lg:flex"
                 >
                   <i class="fa-solid fa-pen-ruler mr-2"></i>
                   <span>Canvas</span>
@@ -454,7 +455,7 @@
               </div>
               <button
                 id="chatAboutSourcesBtn"
-                class="w-full flex items-center justify-center flex-1 py-2 px-3 bg-sky-500 hover:bg-sky-600 rounded-full text-sm font-medium transition-colors"
+                class="w-full flex items-center justify-center flex-1 py-2 px-3 bg-eu-blue hover:bg-eu-orange rounded-full text-sm font-medium text-eu-white transition-colors shadow-sm hover:shadow-md"
               >
                 <i class="fa-brands fa-rocketchat mr-2"></i>
                 <span>Chat about these sources</span>
@@ -463,13 +464,13 @@
 
             <!-- Select source -->
             <div
-              class="px-5 py-3 flex justify-between items-center border-b border-slate-700 select-source-row"
+              class="px-5 py-3 flex justify-between items-center border-b border-eu-blue/20 select-source-row"
             >
-              <h3 class="text-sm font-medium text-slate-300">Select sources</h3>
+              <h3 class="text-sm font-medium text-eu-blue">Select sources</h3>
               <input
                 type="checkbox"
                 id="select-all"
-                class="ml-2 source-checkbox"
+                class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue"
               />
             </div>
 
@@ -477,7 +478,7 @@
             <div class="px-5 py-3">
               <ul class="source-list">
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -490,25 +491,25 @@
                   <span class="flex-1 truncate"
                     >Introduction to Machine Learning</span
                   >
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -516,7 +517,7 @@
                 </li>
 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -525,30 +526,30 @@
                   </div>
                   <span class="flex-1 truncate">Data Analysis Techniques</span>
                   <button
-                    class="ml-2 processing-btn"
+                    class="ml-2 processing-btn text-eu-blue hover:text-eu-orange transition-colors"
                     title="Process document"
                     data-processing="false"
                   >
                     <i class="fa-solid fa-arrows-rotate"></i>
                   </button>
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -556,7 +557,7 @@
                 </li>
 
                 <!-- <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -567,25 +568,25 @@
                     ></i>
                   </div>
                   <span class="flex-1 truncate">Research Methodology</span>
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -593,7 +594,7 @@
                 </li>
 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -606,25 +607,25 @@
                   <span class="flex-1 truncate"
                     >Introduction to Machine Learning</span
                   >
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -632,7 +633,7 @@
                 </li>
 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -641,30 +642,30 @@
                   </div>
                   <span class="flex-1 truncate">Data Analysis Techniques</span>
                   <button
-                    class="ml-2 processing-btn"
+                    class="ml-2 processing-btn text-eu-blue hover:text-eu-orange transition-colors"
                     title="Process document"
                     data-processing="false"
                   >
                     <i class="fa-solid fa-arrows-rotate"></i>
                   </button>
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -672,7 +673,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -683,25 +684,25 @@
                     ></i>
                   </div>
                   <span class="flex-1 truncate">Research Methodology</span>
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -709,7 +710,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -722,25 +723,25 @@
                   <span class="flex-1 truncate"
                     >Introduction to Machine Learning</span
                   >
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -748,7 +749,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -757,30 +758,30 @@
                   </div>
                   <span class="flex-1 truncate">Data Analysis Techniques</span>
                   <button
-                    class="ml-2 processing-btn"
+                    class="ml-2 processing-btn text-eu-blue hover:text-eu-orange transition-colors"
                     title="Process document"
                     data-processing="false"
                   >
                     <i class="fa-solid fa-arrows-rotate"></i>
                   </button>
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -788,7 +789,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -799,25 +800,25 @@
                     ></i>
                   </div>
                   <span class="flex-1 truncate">Research Methodology</span>
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -825,7 +826,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -838,25 +839,25 @@
                   <span class="flex-1 truncate"
                     >Introduction to Machine Learning</span
                   >
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -864,7 +865,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -873,30 +874,30 @@
                   </div>
                   <span class="flex-1 truncate">Data Analysis Techniques</span>
                   <button
-                    class="ml-2 processing-btn"
+                    class="ml-2 processing-btn text-eu-blue hover:text-eu-orange transition-colors"
                     title="Process document"
                     data-processing="false"
                   >
                     <i class="fa-solid fa-arrows-rotate"></i>
                   </button>
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -904,7 +905,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -915,25 +916,25 @@
                     ></i>
                   </div>
                   <span class="flex-1 truncate">Research Methodology</span>
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -941,7 +942,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -954,25 +955,25 @@
                   <span class="flex-1 truncate"
                     >Introduction to Machine Learning</span
                   >
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -980,7 +981,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -989,30 +990,30 @@
                   </div>
                   <span class="flex-1 truncate">Data Analysis Techniques</span>
                   <button
-                    class="ml-2 processing-btn"
+                    class="ml-2 processing-btn text-eu-blue hover:text-eu-orange transition-colors"
                     title="Process document"
                     data-processing="false"
                   >
                     <i class="fa-solid fa-arrows-rotate"></i>
                   </button>
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1020,7 +1021,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -1031,25 +1032,25 @@
                     ></i>
                   </div>
                   <span class="flex-1 truncate">Research Methodology</span>
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1057,7 +1058,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -1070,25 +1071,25 @@
                   <span class="flex-1 truncate"
                     >Introduction to Machine Learning</span
                   >
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1096,7 +1097,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -1105,30 +1106,30 @@
                   </div>
                   <span class="flex-1 truncate">Data Analysis Techniques</span>
                   <button
-                    class="ml-2 processing-btn"
+                    class="ml-2 processing-btn text-eu-blue hover:text-eu-orange transition-colors"
                     title="Process document"
                     data-processing="false"
                   >
                     <i class="fa-solid fa-arrows-rotate"></i>
                   </button>
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1136,7 +1137,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -1147,25 +1148,25 @@
                     ></i>
                   </div>
                   <span class="flex-1 truncate">Research Methodology</span>
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1173,7 +1174,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -1186,25 +1187,25 @@
                   <span class="flex-1 truncate"
                     >Introduction to Machine Learning</span
                   >
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1212,7 +1213,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -1221,30 +1222,30 @@
                   </div>
                   <span class="flex-1 truncate">Data Analysis Techniques</span>
                   <button
-                    class="ml-2 processing-btn"
+                    class="ml-2 processing-btn text-eu-blue hover:text-eu-orange transition-colors"
                     title="Process document"
                     data-processing="false"
                   >
                     <i class="fa-solid fa-arrows-rotate"></i>
                   </button>
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1252,7 +1253,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -1263,25 +1264,25 @@
                     ></i>
                   </div>
                   <span class="flex-1 truncate">Research Methodology</span>
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1289,7 +1290,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -1302,25 +1303,25 @@
                   <span class="flex-1 truncate"
                     >Introduction to Machine Learning</span
                   >
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1328,7 +1329,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -1337,30 +1338,30 @@
                   </div>
                   <span class="flex-1 truncate">Data Analysis Techniques</span>
                   <button
-                    class="ml-2 processing-btn"
+                    class="ml-2 processing-btn text-eu-blue hover:text-eu-orange transition-colors"
                     title="Process document"
                     data-processing="false"
                   >
                     <i class="fa-solid fa-arrows-rotate"></i>
                   </button>
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1368,7 +1369,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -1377,30 +1378,30 @@
                   </div>
                   <span class="flex-1 truncate">Data Analysis Techniques</span>
                   <button
-                    class="ml-2 processing-btn"
+                    class="ml-2 processing-btn text-eu-blue hover:text-eu-orange transition-colors"
                     title="Process document"
                     data-processing="false"
                   >
                     <i class="fa-solid fa-arrows-rotate"></i>
                   </button>
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1408,7 +1409,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -1419,25 +1420,25 @@
                     ></i>
                   </div>
                   <span class="flex-1 truncate">Research Methodology</span>
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1445,7 +1446,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -1458,25 +1459,25 @@
                   <span class="flex-1 truncate"
                     >Introduction to Machine Learning</span
                   >
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1484,7 +1485,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -1493,30 +1494,30 @@
                   </div>
                   <span class="flex-1 truncate">Data Analysis Techniques</span>
                   <button
-                    class="ml-2 processing-btn"
+                    class="ml-2 processing-btn text-eu-blue hover:text-eu-orange transition-colors"
                     title="Process document"
                     data-processing="false"
                   >
                     <i class="fa-solid fa-arrows-rotate"></i>
                   </button>
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1524,7 +1525,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -1535,25 +1536,25 @@
                     ></i>
                   </div>
                   <span class="flex-1 truncate">Research Methodology</span>
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1561,7 +1562,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -1574,25 +1575,25 @@
                   <span class="flex-1 truncate"
                     >Introduction to Machine Learning</span
                   >
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1600,7 +1601,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -1609,30 +1610,30 @@
                   </div>
                   <span class="flex-1 truncate">Data Analysis Techniques</span>
                   <button
-                    class="ml-2 processing-btn"
+                    class="ml-2 processing-btn text-eu-blue hover:text-eu-orange transition-colors"
                     title="Process document"
                     data-processing="false"
                   >
                     <i class="fa-solid fa-arrows-rotate"></i>
                   </button>
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1640,7 +1641,7 @@
                 </li>
                 
                 <li
-                  class="group py-2 hover:bg-slate-700 rounded cursor-pointer flex items-center relative source-item"
+                  class="group py-2 hover:bg-eu-blue/10 rounded cursor-pointer flex items-center relative source-item"
                 >
                   <div class="relative mr-3 w-6 h-6">
                     <i
@@ -1651,25 +1652,25 @@
                     ></i>
                   </div>
                   <span class="flex-1 truncate">LAST ONE</span>
-                  <input type="checkbox" class="ml-2 source-checkbox" />
+                  <input type="checkbox" class="ml-2 source-checkbox rounded border-eu-blue/50 text-eu-blue focus:ring-eu-blue" />
                   <div
-                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-slate-800 rounded-md shadow-lg py-1 w-48 border border-slate-700 z-30"
+                    class="source-menu-dropdown hidden absolute right-3 top-10 bg-eu-white rounded-md shadow-lg py-1 w-48 border border-eu-blue/20 z-30"
                   >
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fa-solid fa-eye mr-2"></i> Show source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-pencil-alt mr-2"></i> Rename source
                     </a>
                     <a
                       href="#"
-                      class="flex items-center px-4 py-2 text-sm text-white hover:bg-slate-700 menu-option"
+                      class="flex items-center px-4 py-2 text-sm text-eu-blue hover:bg-eu-blue/10 menu-option"
                     >
                       <i class="fas fa-trash-alt mr-2"></i> Delete source
                     </a>
@@ -1683,32 +1684,32 @@
         <!-- Collapsed view -->
         <div class="collapsed-content hidden flex flex-col h-full w-[4rem]">
           <div
-            class="w-full flex items-center justify-center py-3 px-2 border-b border-slate-700 flex-shrink-0"
+            class="w-full flex items-center justify-center py-3 px-2 border-b border-eu-blue/20 flex-shrink-0"
           >
             <button
               id="expand-left"
-              class="text-white text-lg hover:text-sky-400"
+              class="text-eu-blue text-lg hover:text-eu-orange"
               title="Expand left column"
             >
               <i class="fas fa-chevron-right"></i>
             </button>
           </div>
 
-          <div class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent">
+          <div class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent bg-eu-white">
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Add a new source"
             >
               <i class="fas fa-plus text-xl" id="addSourceIcon"></i>
             </button>
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Discover new sources"
             >
               <i class="fas fa-search text-xl" id="discoverSourceIcon"></i>
             </button>
             <!-- <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Chat about these sources"
             >
               <i
@@ -1717,7 +1718,7 @@
               ></i>
             </button> -->
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Chat about these sources"
             >
               <i
@@ -1728,91 +1729,91 @@
             <div class="border-t border-slate-700 w-full my-2"></div>
 
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Add a PDF source"
             >
               <i class="fas fa-file-pdf text-xl text-red-400"></i>
             </button>
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Add a Word document source"
             >
               <i class="fas fa-file-word text-xl text-blue-400"></i>
             </button>
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Add a text document source"
             >
               <i class="fas fa-file-alt text-xl text-green-400"></i>
             </button>
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Add a PDF source"
             >
               <i class="fas fa-file-pdf text-xl text-red-400"></i>
             </button>
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Add a Word document source"
             >
               <i class="fas fa-file-word text-xl text-blue-400"></i>
             </button>
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Add a text document source"
             >
               <i class="fas fa-file-alt text-xl text-green-400"></i>
             </button>
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Add a PDF source"
             >
               <i class="fas fa-file-pdf text-xl text-red-400"></i>
             </button>
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Add a Word document source"
             >
               <i class="fas fa-file-word text-xl text-blue-400"></i>
             </button>
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Add a text document source"
             >
               <i class="fas fa-file-alt text-xl text-green-400"></i>
             </button>
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Add a PDF source"
             >
               <i class="fas fa-file-pdf text-xl text-red-400"></i>
             </button>
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Add a Word document source"
             >
               <i class="fas fa-file-word text-xl text-blue-400"></i>
             </button>
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Add a text document source"
             >
               <i class="fas fa-file-alt text-xl text-green-400"></i>
             </button>
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Add a PDF source"
             >
               <i class="fas fa-file-pdf text-xl text-red-400"></i>
             </button>
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Add a Word document source"
             >
               <i class="fas fa-file-word text-xl text-blue-400"></i>
             </button>
             <button
-              class="w-full flex items-center justify-center py-3 text-slate-300 hover:text-sky-400 transition-colors"
+              class="w-full flex items-center justify-center py-3 text-eu-blue hover:text-eu-orange transition-colors"
               title="Add a text document source"
             >
               <i class="fas fa-file-alt text-xl text-green-400"></i>
