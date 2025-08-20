@@ -958,6 +958,13 @@ class MindMap {
   }
 }
 
+// Helper to get EU color variables from CSS
+function getEUColor(varName) {
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue(varName)
+    .trim();
+}
+
 // Initialize the mind map when the DOM is fully loaded
 function initializeMindMap() {
   console.log("Initializing mind map...");
@@ -1002,3 +1009,39 @@ window.debugMindMap = () => {
     mindMap: window.mindMap,
   };
 };
+
+// Example: When initializing jsMind or setting node styles dynamically
+const euBlue = getEUColor("--eu-blue");
+const euOrange = getEUColor("--eu-orange");
+const euWhite = getEUColor("--eu-white");
+const euSlate700 = getEUColor("--eu-slate-700");
+const euSlate600 = getEUColor("--eu-slate-600");
+
+// Example: If you set theme or node styles in JS, use the variables
+const mindMapTheme = {
+  // ...existing code...
+  node: {
+    background: euSlate700,
+    border: `1px solid ${euSlate600}`,
+    color: euWhite,
+    // ...other style properties...
+  },
+  root: {
+    background: euBlue,
+    color: euWhite,
+    border: `1px solid ${euBlue}`,
+  },
+  selected: {
+    boxShadow: `0 0 0 2px ${euOrange}`,
+  },
+  // ...existing code...
+};
+
+// If you use jsMind's theme API or set node styles directly:
+if (window.jsMind) {
+  // ...existing code...
+  // Example: pass theme config or update node styles
+  // jm.set_theme(mindMapTheme);
+  // or
+  // jm.set_node_color(nodeId, euBlue, euWhite);
+}
