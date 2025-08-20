@@ -33,10 +33,12 @@
           },
           extend: {
             colors: {
-              "dark-blue": "#0f172a",
-              "blue-gray": "#1e293b",
-              "accent-blue": "#38bdf8",
-              "purple-500": "#8b5cf6",
+              "eu-blue": "#003087",
+              "eu-orange": "#FF6900",
+              "eu-white": "#F9F9F9",
+              "text-primary": "#003087",
+              "text-secondary": "#333333",
+              "border-eu": "#003087",
             },
             animation: {
               "bounce-slow": "bounce 2s infinite",
@@ -76,7 +78,9 @@
     <link href="./css/tour.css" rel="stylesheet" />
   </head>
 
-  <body class="h-screen flex flex-col bg-dark-blue overflow-hidden font-sans">
+  <body
+    class="h-screen flex flex-col bg-eu-white overflow-hidden font-sans text-text-primary"
+  >
     <!-- Preloader -->
     <div
       id="preloader"
@@ -88,19 +92,21 @@
     </div>
 
     <!-- Header Section -->
-    <header class="px-4 py-3 bg-dark-blue min-h-16 lg:h-20 shadow-md">
-      <div class="flex flex-col lg:flex-row h-full lg:items-center mx-auto">
-        <div
-          class="flex items-center justify-between w-full lg:w-auto lg:flex-1"
-        >
+    <header class="px-4 py-3 bg-eu-blue shadow-md z-10">
+      <div class="flex flex-col lg:flex-row h-full lg:items-center w-full">
+        <div class="flex items-center justify-between w-full lg:w-auto lg:flex-1">
           <!-- Logo -->
           <div class="flex items-center">
-            <a href="./index.html">
+            <a href="./index.html" class="flex items-center space-x-3 group">
               <img
                 src="./images/rgb-logo_white_onblue.svg"
                 alt="Logo"
-                class="h-10 w-10 lg:h-12 lg:w-12 rounded-full mr-3"
+                class="h-10 w-10 lg:h-12 lg:w-12 rounded-full"
               />
+              <span
+                class="text-eu-white hover:text-eu-orange p-2 rounded-full hover:bg-eu-white hover:bg-opacity-10 transition-colors text-xl font-semibold hidden lg:block"
+                >NotebookLM</span
+              >
             </a>
           </div>
 
@@ -108,41 +114,39 @@
           <div class="lg:hidden flex items-center space-x-3">
             <a
               href="./index.html"
-              class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
+              class="text-eu-white hover:text-eu-orange p-2 rounded-full hover:bg-eu-white hover:bg-opacity-10 transition-colors"
             >
               <i class="fa-solid fa-house fa-md"></i>
             </a>
             <button
               id="share-collection-btn"
-              class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
+              class="text-eu-white hover:text-eu-orange p-2 rounded-full hover:bg-eu-white hover:bg-opacity-10 transition-colors"
             >
               <i class="fas fa-share-alt fa-md"></i>
             </button>
             <button
-              class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
+              class="text-eu-white hover:text-eu-orange p-2 rounded-full hover:bg-eu-white hover:bg-opacity-10 transition-colors"
             >
               <i class="fas fa-cog fa-md"></i>
             </button>
-            <div class="relative">
-              <div class="h-8 w-8 cursor-pointer" id="avatar-dropdown-trigger">
-                <img
-                  src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=6366f1&color=fff&rounded=true&size=40"
-                  class="h-full w-full rounded-full object-cover hover:opacity-90 transition-opacity"
-                  alt="User Avatar"
-                />
-                <div
-                  class="absolute inset-0 rounded-full border-2 border-green-500 pointer-events-none"
-                ></div>
-              </div>
+            <div class="relative h-8 w-8">
+              <img
+                src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
+                class="h-full w-full rounded-full object-cover cursor-pointer transition-all"
+                id="avatar-dropdown-trigger"
+              />
+              <div
+                class="absolute inset-0 rounded-full border-2 border-eu-orange pointer-events-none"
+              ></div>
               <!-- Dropdown menu -->
               <div
                 id="avatar-dropdown"
-                class="hidden fixed lg:absolute right-4 lg:right-0 mt-2 w-56 lg:w-48 bg-slate-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                class="hidden fixed lg:absolute right-4 lg:right-0 mt-2 w-56 lg:w-48 bg-eu-white rounded-md shadow-lg ring-1 ring-eu-blue ring-opacity-20 focus:outline-none z-50 border border-eu-blue/20"
               >
                 <div class="py-1" role="menu" aria-orientation="vertical">
                   <a
                     href="#"
-                    class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white"
+                    class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
                     role="menuitem"
                   >
                     <i class="fas fa-user mr-3 w-5 text-center"></i>
@@ -150,7 +154,7 @@
                   </a>
                   <a
                     href="#"
-                    class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white"
+                    class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
                     role="menuitem"
                   >
                     <i class="fas fa-cog mr-3 w-5 text-center"></i>
@@ -158,16 +162,16 @@
                   </a>
                   <a
                     href="#"
-                    class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white"
+                    class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
                     role="menuitem"
                   >
                     <i class="fas fa-moon mr-3 w-5 text-center"></i>
                     <span>Theme</span>
                   </a>
-                  <div class="border-t border-slate-700 my-1"></div>
+                  <div class="border-t border-eu-blue/20 my-1"></div>
                   <a
                     href="#"
-                    class="flex items-center px-4 py-3 text-sm text-red-400 hover:bg-slate-700 hover:text-red-300"
+                    class="flex items-center px-4 py-3 text-sm text-red-500 hover:bg-eu-orange hover:text-eu-white transition-colors"
                     role="menuitem"
                   >
                     <i class="fas fa-sign-out-alt mr-3 w-5 text-center"></i>
@@ -244,61 +248,54 @@
 
         <!-- Title -->
         <h1
-          class="text-center lg:text-left text-lg lg:text-2xl font-bold text-white hover:text-accent-blue transition-colors mt-2 lg:mt-0 lg:mx-4 lg:flex-1"
+          class="text-center lg:text-left text-lg lg:text-2xl font-bold text-eu-white hover:text-eu-orange transition-colors mt-2 lg:mt-0 lg:mx-4 lg:flex-1"
         >
           Kiago Edwin Rwaro - Study Guide - Collection
         </h1>
 
         <!-- Desktop Icons -->
-        <div
-          class="hidden lg:flex items-center justify-end space-x-3 lg:flex-1"
-        >
+        <div class="hidden lg:flex items-center justify-end space-x-3 lg:flex-1">
           <a
             href="./index.html"
-            class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
+            class="text-eu-white hover:text-eu-orange p-2 rounded-full hover:bg-eu-white hover:bg-opacity-10 transition-colors"
           >
             <i class="fa-solid fa-house fa-md"></i>
           </a>
           <button
             id="tourHelpBtn"
-            class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
+            class="text-eu-white hover:text-eu-orange p-2 rounded-full hover:bg-eu-white hover:bg-opacity-10 transition-colors"
           >
             <i class="fa-solid fa-question fa-md"></i>
           </button>
           <button
             id="shareCollectionBtn"
-            class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
+            class="text-eu-white hover:text-eu-orange p-2 rounded-full hover:bg-eu-white hover:bg-opacity-10 transition-colors"
           >
             <i class="fas fa-share-alt fa-md"></i>
           </button>
           <button
-            class="text-gray-300 hover:text-accent-blue p-2 rounded-full hover:bg-blue-gray transition-colors"
+            class="text-eu-white hover:text-eu-orange p-2 rounded-full hover:bg-eu-white hover:bg-opacity-10 transition-colors"
           >
             <i class="fas fa-cog fa-md"></i>
           </button>
-          <div class="relative">
-            <div
-              class="h-10 w-10 cursor-pointer"
+          <div class="relative h-10 w-10">
+            <img
+              src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
+              class="h-full w-full rounded-full object-cover cursor-pointer transition-all"
               id="desktop-avatar-dropdown-trigger"
-            >
-              <img
-                src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=6366f1&color=fff&rounded=true&size=40"
-                class="h-full w-full rounded-full object-cover hover:opacity-90 transition-opacity"
-                alt="User Avatar"
-              />
-              <div
-                class="absolute inset-0 rounded-full border-2 border-green-500 pointer-events-none"
-              ></div>
-            </div>
+            />
+            <div
+              class="absolute inset-0 rounded-full border-2 border-eu-orange pointer-events-none"
+            ></div>
             <!-- Dropdown menu -->
             <div
               id="desktop-avatar-dropdown"
-              class="hidden absolute right-0 mt-2 w-48 bg-slate-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+              class="hidden absolute right-0 mt-2 w-48 bg-eu-white rounded-md shadow-lg ring-1 ring-eu-blue ring-opacity-20 focus:outline-none z-50 border border-eu-blue/20"
             >
               <div class="py-1" role="menu" aria-orientation="vertical">
                 <a
                   href="#"
-                  class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white"
+                  class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
                   role="menuitem"
                 >
                   <i class="fas fa-user mr-3 w-5 text-center"></i>
@@ -306,7 +303,7 @@
                 </a>
                 <a
                   href="#"
-                  class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white"
+                  class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
                   role="menuitem"
                 >
                   <i class="fas fa-cog mr-3 w-5 text-center"></i>
@@ -314,16 +311,16 @@
                 </a>
                 <a
                   href="#"
-                  class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-slate-700 hover:text-white"
+                  class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
                   role="menuitem"
                 >
                   <i class="fas fa-moon mr-3 w-5 text-center"></i>
                   <span>Theme</span>
                 </a>
-                <div class="border-t border-slate-700 my-1"></div>
+                <div class="border-t border-eu-blue/20 my-1"></div>
                 <a
                   href="#"
-                  class="flex items-center px-4 py-3 text-sm text-red-400 hover:bg-slate-700 hover:text-red-300"
+                  class="flex items-center px-4 py-3 text-sm text-red-500 hover:bg-eu-orange hover:text-eu-white transition-colors"
                   role="menuitem"
                 >
                   <i class="fas fa-sign-out-alt mr-3 w-5 text-center"></i>

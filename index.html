@@ -102,10 +102,52 @@
               <img
                 src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
                 class="h-full w-full rounded-full object-cover cursor-pointer transition-all"
+                id="mobile-avatar-dropdown-trigger"
               />
               <div
                 class="absolute inset-0 rounded-full border-2 border-eu-orange pointer-events-none"
               ></div>
+              <!-- Dropdown menu -->
+              <div
+                id="mobile-avatar-dropdown"
+                class="hidden fixed lg:absolute right-4 lg:right-0 mt-2 w-56 lg:w-48 bg-eu-white rounded-md shadow-lg ring-1 ring-eu-blue ring-opacity-20 focus:outline-none z-50 border border-eu-blue/20"
+              >
+                <div class="py-1" role="menu" aria-orientation="vertical">
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
+                    role="menuitem"
+                  >
+                    <i class="fas fa-user mr-3 w-5 text-center"></i>
+                    <span>Profile</span>
+                  </a>
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
+                    role="menuitem"
+                  >
+                    <i class="fas fa-cog mr-3 w-5 text-center"></i>
+                    <span>Settings</span>
+                  </a>
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
+                    role="menuitem"
+                  >
+                    <i class="fas fa-moon mr-3 w-5 text-center"></i>
+                    <span>Theme</span>
+                  </a>
+                  <div class="border-t border-eu-blue/20 my-1"></div>
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-3 text-sm text-red-500 hover:bg-eu-orange hover:text-eu-white transition-colors"
+                    role="menuitem"
+                  >
+                    <i class="fas fa-sign-out-alt mr-3 w-5 text-center"></i>
+                    <span>Sign out</span>
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -123,10 +165,52 @@
             <img
               src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
               class="h-full w-full rounded-full object-cover cursor-pointer transition-all"
+              id="desktop-avatar-dropdown-trigger"
             />
             <div
               class="absolute inset-0 rounded-full border-2 border-eu-orange pointer-events-none"
             ></div>
+            <!-- Dropdown menu -->
+            <div
+              id="desktop-avatar-dropdown"
+              class="hidden absolute right-0 mt-2 w-48 bg-eu-white rounded-md shadow-lg ring-1 ring-eu-blue ring-opacity-20 focus:outline-none z-50 border border-eu-blue/20"
+            >
+              <div class="py-1" role="menu" aria-orientation="vertical">
+                <a
+                  href="#"
+                  class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
+                  role="menuitem"
+                >
+                  <i class="fas fa-user mr-3 w-5 text-center"></i>
+                  <span>Profile</span>
+                </a>
+                <a
+                  href="#"
+                  class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
+                  role="menuitem"
+                >
+                  <i class="fas fa-cog mr-3 w-5 text-center"></i>
+                  <span>Settings</span>
+                </a>
+                <a
+                  href="#"
+                  class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
+                  role="menuitem"
+                >
+                  <i class="fas fa-moon mr-3 w-5 text-center"></i>
+                  <span>Theme</span>
+                </a>
+                <div class="border-t border-eu-blue/20 my-1"></div>
+                <a
+                  href="#"
+                  class="flex items-center px-4 py-3 text-sm text-red-500 hover:bg-eu-orange hover:text-eu-white transition-colors"
+                  role="menuitem"
+                >
+                  <i class="fas fa-sign-out-alt mr-3 w-5 text-center"></i>
+                  <span>Sign out</span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1032,6 +1116,85 @@
           document.querySelectorAll('.dropdown-menu').forEach(function(menu) {
             menu.classList.add('hidden');
           });
+        });
+
+        // Avatar dropdown functionality
+        // Mobile avatar dropdown
+        const mobileDropdownTrigger = document.getElementById('mobile-avatar-dropdown-trigger');
+        const mobileDropdownMenu = document.getElementById('mobile-avatar-dropdown');
+
+        if (mobileDropdownTrigger && mobileDropdownMenu) {
+          mobileDropdownTrigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const isHidden = mobileDropdownMenu.classList.toggle('hidden');
+
+            // Position the dropdown for mobile
+            if (!isHidden && window.innerWidth < 1024) {
+              const rect = mobileDropdownTrigger.getBoundingClientRect();
+              mobileDropdownMenu.style.top = `${rect.bottom + window.scrollY}px`;
+              mobileDropdownMenu.style.right = '1rem';
+            }
+          });
+        }
+
+        // Desktop avatar dropdown
+        const desktopDropdownTrigger = document.getElementById('desktop-avatar-dropdown-trigger');
+        const desktopDropdownMenu = document.getElementById('desktop-avatar-dropdown');
+
+        if (desktopDropdownTrigger && desktopDropdownMenu) {
+          desktopDropdownTrigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            desktopDropdownMenu.classList.toggle('hidden');
+          });
+        }
+
+        // Handle window resize for mobile dropdown
+        let resizeTimer;
+        window.addEventListener('resize', function () {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(function () {
+            if (mobileDropdownMenu && !mobileDropdownMenu.classList.contains('hidden')) {
+              mobileDropdownMenu.classList.add('hidden');
+            }
+            if (desktopDropdownMenu && !desktopDropdownMenu.classList.contains('hidden')) {
+              desktopDropdownMenu.classList.add('hidden');
+            }
+          }, 250);
+        });
+
+        // Close avatar dropdowns when clicking outside
+        document.addEventListener('click', function (e) {
+          if (mobileDropdownTrigger && mobileDropdownMenu && 
+              !mobileDropdownTrigger.contains(e.target) && !mobileDropdownMenu.contains(e.target)) {
+            mobileDropdownMenu.classList.add('hidden');
+          }
+          if (desktopDropdownTrigger && desktopDropdownMenu && 
+              !desktopDropdownTrigger.contains(e.target) && !desktopDropdownMenu.contains(e.target)) {
+            desktopDropdownMenu.classList.add('hidden');
+          }
+        });
+
+        // Close avatar dropdowns when clicking on menu items
+        [mobileDropdownMenu, desktopDropdownMenu].forEach(function(dropdown) {
+          if (dropdown) {
+            const menuItems = dropdown.querySelectorAll('a');
+            menuItems.forEach(function(item) {
+              item.addEventListener('click', function (e) {
+                e.preventDefault();
+                dropdown.classList.add('hidden');
+                // Here you can add navigation logic for each menu item
+                console.log('Clicked:', item.textContent.trim());
+              });
+            });
+          }
+        });
+
+        // Close avatar dropdowns when pressing Escape key
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') {
+            if (mobileDropdownMenu) mobileDropdownMenu.classList.add('hidden');
+            if (desktopDropdownMenu) desktopDropdownMenu.classList.add('hidden');
+          }
         });
       });
 
