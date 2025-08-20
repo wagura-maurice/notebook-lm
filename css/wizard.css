@@ -102,8 +102,10 @@
 }
 
 /* Source item tooltip styling */
+/* Source Items */
 #left-column .source-item {
   position: relative;
+  transition: background-color 0.2s ease;
 }
 
 #left-column .source-item .truncate {
@@ -203,6 +205,10 @@ body {
   width: 27.5%;
   min-width: 250px;
   display: flex;
+  background-color: var(--eu-white);
+  color: var(--eu-blue);
+  border-right: 1px solid rgba(0, 48, 135, 0.1);
+  transition: all 0.3s ease;
   flex-direction: column;
   overflow: hidden;
 }
@@ -219,6 +225,8 @@ body {
 #left-column.collapsed {
   width: 4rem !important;
   min-width: 4rem;
+  background-color: var(--eu-white);
+  box-shadow: 2px 0 8px rgba(0, 48, 135, 0.08);
 }
 
 /* Expanded Content */
@@ -279,8 +287,10 @@ header {
 /* === CONTENT SECTIONS === */
 /* ============================================ */
 /* Scroll Containers */
+/* Collapsed View */
 .collapsed-content {
   max-height: calc(100vh - 8rem);
+  background-color: var(--eu-white);
   overflow-y: auto;
   padding-right: 0.5rem;
   height: 100%;
