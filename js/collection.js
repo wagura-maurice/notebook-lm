@@ -1025,14 +1025,14 @@ const SourceActions = {
       $("#add-source-modal").addClass("hidden");
 
       // Show success message
-      const $successMessage = $(`
-        <div class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50 flex items-center">
-          <i class="fas fa-check-circle mr-2"></i>
-          Source added successfully
-        </div>
-      `);
+        const $successMessage = $(`
+          <div class="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-md shadow-lg z-50 flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            Source added successfully
+          </div>
+        `);
 
-      $("body").append($successMessage);
+        $("body").append($successMessage);
 
       // Remove the message after 3 seconds
       setTimeout(() => {
@@ -1057,12 +1057,12 @@ const SourceActions = {
           $("#discover-source-modal").addClass("hidden");
           SourceActions.selectedSources.clear(); // Changed from this.selectedSources
           $("#discover-source-modal .p-3.selected").removeClass(
-            "selected bg-blue-50 dark:bg-blue-900"
+            "selected bg-blue-100 dark:bg-blue-800"
           );
           $("#discover-source-modal .p-3 button")
             .removeClass("remove-btn bg-red-600 hover:bg-red-700 text-white")
             .addClass(
-              "add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              "add-btn text-blue-600 hover:text-blue-700 dark:text-blue-300 dark:hover:text-blue-200"
             )
             .text("Add");
           SourceActions.updateAddSelectedCount(); // Changed from this.updateAddSelectedCount
@@ -1081,12 +1081,12 @@ const SourceActions = {
             SourceActions.selectedSources.clear(); // Changed from this.selectedSources
             SourceActions.updateAddSelectedCount(); // Changed from this.updateAddSelectedCount
             $("#discover-source-modal .p-3.selected").removeClass(
-              "selected bg-blue-50 dark:bg-blue-900"
+              "selected bg-blue-100 dark:bg-blue-800"
             );
             $("#discover-source-modal .p-3 button")
               .removeClass("remove-btn bg-red-600 hover:bg-red-700 text-white")
               .addClass(
-                "add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                "add-btn text-blue-600 hover:text-blue-700 dark:text-blue-300 dark:hover:text-blue-200"
               )
               .text("Add");
           }
@@ -1101,19 +1101,19 @@ const SourceActions = {
           const sourceId = getSourceId($item);
 
           if ($item.hasClass("selected")) {
-            $item.removeClass("selected bg-blue-50 dark:bg-blue-900");
+            $item.removeClass("selected bg-blue-100 dark:bg-blue-800");
             $btn
               .removeClass("remove-btn bg-red-600 hover:bg-red-700 text-white")
               .addClass(
-                "add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                "add-btn text-blue-600 hover:text-blue-700 dark:text-blue-300 dark:hover:text-blue-200"
               )
               .text("Add");
             SourceActions.selectedSources.delete(sourceId); // Changed from this.selectedSources
           } else {
-            $item.addClass("selected bg-blue-50 dark:bg-blue-900");
+            $item.addClass("selected bg-blue-100 dark:bg-blue-800");
             $btn
               .removeClass(
-                "add-btn text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                "add-btn text-blue-600 hover:text-blue-700 dark:text-blue-300 dark:hover:text-blue-200"
               )
               .addClass("remove-btn bg-red-600 hover:bg-red-700 text-white")
               .text("Remove");
@@ -1180,12 +1180,12 @@ const SourceActions = {
       <div class="flex flex-col h-full expanded-content view-source-content">
         <div class="flex items-center justify-between px-5 py-3 border-b border-slate-700">
           <h3 class="text-lg font-semibold">View Source</h3>
-          <button id="back-to-sources" class="text-sky-400 text-lg hover:text-sky-400">
+          <button id="back-to-sources" class="text-blue-400 text-lg hover:text-blue-300">
             <i class="fas fa-arrow-left"></i>
           </button>
         </div>
         <div class="flex-1 w-full overflow-y-auto py-1 scrollbar-transparent">
-          <h3 class="font-medium text-sky-400 text-center py-3">${title}</h3>
+          <h3 class="font-medium text-blue-400 text-center py-3">${title}</h3>
           
           <div class="source-content-section p-4">
             <h4 class="text-sm font-semibold text-slate-300 mb-2">Summary</h4>
@@ -1195,11 +1195,11 @@ const SourceActions = {
           <div class="source-content-section p-4">
             <h4 class="text-sm font-semibold text-slate-300 mb-2">Key Topics</h4>
             <div class="source-topics-list">
-              <span class="source-topic-tag hover:bg-sky-600 cursor-pointer transition-colors" data-topic="Methodology">Methodology</span>
-              <span class="source-topic-tag hover:bg-sky-600 cursor-pointer transition-colors" data-topic="Analysis">Analysis</span>
-              <span class="source-topic-tag hover:bg-sky-600 cursor-pointer transition-colors" data-topic="Research">Research</span>
-              <span class="source-topic-tag hover:bg-sky-600 cursor-pointer transition-colors" data-topic="Data Collection">Data Collection</span>
-              <span class="source-topic-tag hover:bg-sky-600 cursor-pointer transition-colors" data-topic="Results">Results</span>
+              <span class="source-topic-tag hover:bg-blue-600 cursor-pointer transition-colors" data-topic="Methodology">Methodology</span>
+              <span class="source-topic-tag hover:bg-blue-600 cursor-pointer transition-colors" data-topic="Analysis">Analysis</span>
+              <span class="source-topic-tag hover:bg-blue-600 cursor-pointer transition-colors" data-topic="Research">Research</span>
+              <span class="source-topic-tag hover:bg-blue-600 cursor-pointer transition-colors" data-topic="Data Collection">Data Collection</span>
+              <span class="source-topic-tag hover:bg-blue-600 cursor-pointer transition-colors" data-topic="Results">Results</span>
             </div>
           </div>
           
@@ -1369,7 +1369,7 @@ const NoteActions = {
       <div class="flex flex-col h-full expanded-content edit-note-content">
         <div class="flex items-center justify-between px-5 py-3 border-b border-slate-700">
           <h3 class="text-lg font-semibold">Edit Note</h3>
-          <button id="back-to-notes" class="text-sky-400 text-lg hover:text-sky-400">
+          <button id="back-to-notes" class="text-blue-400 text-lg hover:text-blue-300">
             <i class="fas fa-arrow-left"></i>
           </button>
         </div>
@@ -1380,7 +1380,7 @@ const NoteActions = {
               type="text"
               id="edit-note-title"
               value="${title}"
-              class="w-full bg-slate-900 text-white border border-slate-600 rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              class="w-full bg-slate-900 text-white border border-slate-600 rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="Note Title"
             />
           </div>
@@ -1401,7 +1401,7 @@ const NoteActions = {
             </div>
             <div 
               id="edit-note-content" 
-              class="w-full flex-1 min-h-[200px] max-h-[calc(100vh-300px)] bg-slate-900 text-white border border-t-0 border-slate-600 rounded-b px-3 py-2 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-sky-400" 
+              class="w-full flex-1 min-h-[200px] max-h-[calc(100vh-300px)] bg-slate-900 text-white border border-t-0 border-slate-600 rounded-b px-3 py-2 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-blue-400"
               contenteditable="true"
               style="min-height: 200px; max-height: calc(100vh - 300px);"
             >${content}</div>
@@ -1439,14 +1439,14 @@ const NoteActions = {
       })
       .hover(
         function () {
-          $(this).css("background-color", "#334155");
+          $(this).css("background-color", "#1e40af");
         },
         function () {
           $(this).css("background-color", "transparent");
         }
       )
       .on("mousedown", function () {
-        $(this).css("background-color", "#1e293b");
+        $(this).css("background-color", "#1d4ed8");
       })
       .on("mouseup mouseleave", function () {
         $(this).css("background-color", "transparent");
@@ -1521,14 +1521,14 @@ const NoteActions = {
       })
       .hover(
         function () {
-          $(this).css("background-color", "#334155");
+          $(this).css("background-color", "#1e40af");
         },
         function () {
           $(this).css("background-color", "transparent");
         }
       )
       .on("mousedown", function () {
-        $(this).css("background-color", "#1e293b");
+        $(this).css("background-color", "#1d4ed8");
       })
       .on("mouseup mouseleave", function () {
         $(this).css("background-color", "transparent");
@@ -1626,7 +1626,7 @@ const NoteActions = {
           50
         )}${noteTitle.length > 50 ? "..." : ""}</div>
         <div class="text-xs text-slate-400 truncate">
-          <span class="key-topic hover:text-sky-400 cursor-pointer transition-colors">${truncatedContent}</span>
+          <span class="key-topic hover:text-blue-400 cursor-pointer transition-colors">${truncatedContent}</span>
         </div>
       </div>
 
@@ -1743,10 +1743,10 @@ const NoteActions = {
       }
     }, 100);
 
-    // Show a success message
-    const $successMsg = $(
-      '<div class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg">All notes have been deleted</div>'
-    );
+      // Show success message
+      const $successMsg = $(
+        '<div class="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded shadow-lg">All notes have been deleted</div>'
+      );
     $("body").append($successMsg);
 
     // Remove the success message after 3 seconds
@@ -1802,7 +1802,7 @@ const NoteActions = {
     // Show success message
     if (addedCount > 0) {
       const $successMsg = $(
-        `<div class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg">
+        `<div class="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded shadow-lg">
           Successfully added ${addedCount} ${
           addedCount === 1 ? "note" : "notes"
         } to sources
@@ -1854,7 +1854,7 @@ const NoteActions = {
         if ($newSource) {
           // Show success message
           const $successMsg = $(
-            '<div class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg">Note added to sources</div>'
+            '<div class="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded shadow-lg">Note added to sources</div>'
           );
           $("body").append($successMsg);
           setTimeout(() => {
@@ -1933,7 +1933,7 @@ const NoteActions = {
       const $existingSource = $(existingSource[0]);
 
       // Add a visual indicator
-      $existingSource.css("background-color", "rgba(59, 130, 246, 0.3)");
+      $existingSource.css("background-color", "rgba(37, 99, 235, 0.3)");
 
       // Remove the highlight after 1.5 seconds
       setTimeout(() => {
@@ -2109,7 +2109,7 @@ const NoteActions = {
 
   showSuccessMessage: function (message) {
     const $msg = $(`
-      <div class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg">
+      <div class="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded shadow-lg">
         ${message}
       </div>
     `);
@@ -2237,7 +2237,7 @@ const NoteActions = {
               <input
                 type="text"
                 id="edit-note-title"
-                class="w-full bg-slate-700 text-white border border-slate-600 rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-sky-400"
+                class="w-full bg-slate-700 text-white border border-slate-600 rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Note Title"
               />
             </div>
@@ -2258,7 +2258,7 @@ const NoteActions = {
               </div>
               <div 
                 id="edit-note-content" 
-                class="w-full flex-1 min-h-[200px] max-h-[calc(100vh-300px)] bg-slate-700 text-white border border-t-0 border-slate-600 rounded-b px-3 py-2 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-sky-400"
+                class="w-full flex-1 min-h-[200px] max-h-[calc(100vh-300px)] bg-slate-700 text-white border border-t-0 border-slate-600 rounded-b px-3 py-2 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-blue-400"
                 contenteditable="true"
                 style="min-height: 200px; max-height: calc(100vh - 300px);"
               >${content}</div>
@@ -2293,14 +2293,14 @@ const NoteActions = {
         })
         .hover(
           function () {
-            $(this).css("background-color", "#334155");
+            $(this).css("background-color", "#1e40af");
           },
           function () {
             $(this).css("background-color", "transparent");
           }
         )
         .on("mousedown", function () {
-          $(this).css("background-color", "#1e293b");
+          $(this).css("background-color", "#1d4ed8");
         })
         .on("mouseup mouseleave", function () {
           $(this).css("background-color", "transparent");
