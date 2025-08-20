@@ -29,7 +29,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(0, 48, 135, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -41,7 +41,9 @@
 }
 
 .policy-disabled-message {
-  background: #1e293b;
+  background: var(--eu-white);
+  border: 1px solid var(--eu-blue);
+  color: var(--text-primary);
   padding: 1rem 1.5rem;
   border-radius: 0.5rem;
   max-width: 80%;
@@ -73,7 +75,9 @@
   top: 50%;
   transform: translateY(-50%);
   margin-left: 10px;
-  background: #1e293b;
+  background: var(--eu-white);
+  border: 1px solid var(--eu-blue);
+  color: var(--text-primary);
   color: white;
   padding: 4px 8px;
   border-radius: 4px;
@@ -99,26 +103,37 @@
 }
 
 :root {
+  /* Legacy colors kept for compatibility */
   --slate-900: #0f172a;
   --slate-800: #1e293b;
   --slate-700: #334155;
   --slate-600: #64748b;
   --slate-400: #94a3b8;
   --slate-300: #cbd5e1;
-  --purple-500: #8b5cf6;
-  --blue-500: #3b82f6;
-  --sky-400: #38bdf8;
-  --sky-300: #7dd3fc;
-  --indigo-500: #6366f1;
-  --indigo-600: #4f46e5;
+  
+  /* EU Color Scheme */
+  --eu-blue: #003087;
+  --eu-orange: #FF6900;
+  --eu-white: #F9F9F9;
+  --text-primary: #003087;
+  --text-secondary: #333333;
+  --border-eu: #003087;
+  
+  /* Updated color mappings to use EU colors where appropriate */
+  --purple-500: var(--eu-blue);
+  --blue-500: var(--eu-blue);
+  --sky-400: var(--eu-orange);
+  --sky-300: var(--eu-orange);
+  --indigo-500: var(--eu-blue);
+  --indigo-600: var(--eu-blue);
 }
 
 body {
   font-family: "Rubik", sans-serif;
   margin: 0;
   padding: 0;
-  background-color: var(--slate-900);
-  color: white;
+  background-color: var(--eu-white);
+  color: var(--text-primary);
 }
 
 /* ============================================ */
@@ -259,14 +274,18 @@ header {
   left: 0;
   right: 0;
   bottom: 0;
-  background: #1e293b;
+  background: var(--eu-white);
+  border: 1px solid var(--eu-blue);
+  color: var(--text-primary);
   z-index: 20;
 }
 
 .left-column-chat > div {
   width: 100%;
   box-sizing: border-box;
-  background: #1e293b;
+  background: var(--eu-white);
+  border: 1px solid var(--eu-blue);
+  color: var(--text-primary);
 }
 
 .left-column-chat textarea {

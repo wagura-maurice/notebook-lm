@@ -1,3 +1,16 @@
+/* EU Color Variables */
+:root {
+  --eu-blue: #003087;
+  --eu-orange: #ff6900;
+  --eu-white: #f9f9f9;
+  --eu-slate-900: #0f172a;
+  --eu-slate-800: #1e293b;
+  --eu-slate-700: #334155;
+  --eu-slate-600: #64748b;
+  --eu-slate-400: #94a3b8;
+  --eu-slate-300: #cbd5e1;
+}
+
 /* jsMind container styles */
 #mind-map-content {
   width: 100%;
@@ -13,7 +26,7 @@
 #jsmind_container {
   min-width: 100%;
   min-height: 100%;
-  background: #1f2937;
+  background: var(--eu-slate-800);
   position: absolute;
   top: 0;
   left: 0;
@@ -35,27 +48,27 @@ jmnode {
   padding: 8px 12px !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
   transition: all 0.2s ease;
-  background: #374151 !important;
-  border: 1px solid #4b5563 !important;
-  color: #f3f4f6 !important;
+  background: var(--eu-slate-700) !important;
+  border: 1px solid var(--eu-slate-600) !important;
+  color: var(--eu-white) !important;
 }
 
 jmnode:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
-    0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 48, 135, 0.15),
+    0 2px 4px -1px rgba(0, 48, 135, 0.1) !important;
   transform: translateY(-1px);
 }
 
 /* Selected node */
 jmnode.selected {
-  box-shadow: 0 0 0 2px #3b82f6 !important;
+  box-shadow: 0 0 0 2px var(--eu-orange) !important;
 }
 
 /* Root node */
 jmnode.root {
-  background: #3b82f6 !important;
-  color: white !important;
-  border-color: #2563eb !important;
+  background: var(--eu-blue) !important;
+  color: var(--eu-white) !important;
+  border-color: var(--eu-blue) !important;
 }
 
 /* Toolbar styles */
@@ -70,10 +83,10 @@ jmnode.root {
 
 .mind-map-toolbar button {
   padding: 6px 12px;
-  background: #374151;
-  border: 1px solid #4b5563;
+  background: var(--eu-slate-700);
+  border: 1px solid var(--eu-slate-600);
   border-radius: 4px;
-  color: #f3f4f6;
+  color: var(--eu-white);
   cursor: pointer;
   font-size: 13px;
   transition: all 0.2s;
@@ -83,8 +96,8 @@ jmnode.root {
 }
 
 .mind-map-toolbar button:hover {
-  background: #4b5563;
-  border-color: #6b7280;
+  background: var(--eu-slate-600);
+  border-color: var(--eu-slate-400);
 }
 
 .mind-map-toolbar button i {
@@ -112,7 +125,7 @@ jmnode.root {
 
 .progress-ring-circle {
   fill: none;
-  stroke: #374151; /* Background ring color */
+  stroke: var(--eu-slate-700); /* Background ring color */
   stroke-width: 3;
   transition: stroke-dashoffset 0.35s;
   transform-origin: 50% 50%;
@@ -122,6 +135,7 @@ jmnode.root {
   fill: none;
   stroke-linecap: round;
   stroke-width: 3;
+  stroke: var(--eu-orange);
   transition: stroke-dashoffset 0.35s;
   transform-origin: 50% 50%;
 }
@@ -132,18 +146,7 @@ jmnode.root {
   text-align: center;
   font-size: 10px;
   font-weight: bold;
-  color: #f3f4f6;
-  pointer-events: none;
-  user-select: none;
-}
-
-.progress-text {
-  position: absolute;
-  width: 100%;
-  text-align: center;
-  font-size: 10px;
-  font-weight: bold;
-  color: #f3f4f6;
+  color: var(--eu-white);
   pointer-events: none;
   user-select: none;
   z-index: 1;
@@ -154,8 +157,8 @@ jmnode.root {
   position: absolute;
   bottom: 10px;
   left: 10px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
+  background: rgba(0, 48, 135, 0.85);
+  color: var(--eu-white);
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 12px;

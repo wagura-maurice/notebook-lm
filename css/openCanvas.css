@@ -1,10 +1,23 @@
 /* css/openCanvas.css - Polished Dark Theme for Quill Editor */
 
+/* === COLOR VARIABLES === */
+:root {
+  --eu-blue: #003087;
+  --eu-orange: #ff6900;
+  --eu-white: #f9f9f9;
+  --eu-slate-900: #0f172a;
+  --eu-slate-800: #1e293b;
+  --eu-slate-700: #334155;
+  --eu-slate-600: #64748b;
+  --eu-slate-400: #94a3b8;
+  --eu-slate-300: #cbd5e1;
+}
+
 /* === QUILL TOOLBAR DARK THEME === */
 .ql-toolbar.ql-snow {
-  background-color: #374151 !important;
-  border: 1px solid #374151 !important;
-  border-bottom: 1px solid #4b5563 !important;
+  background-color: var(--eu-slate-800) !important;
+  border: 1px solid var(--eu-slate-800) !important;
+  border-bottom: 1px solid var(--eu-slate-600) !important;
   border-radius: 0.5rem 0.5rem 0 0 !important;
   position: sticky !important;
   top: 0;
@@ -14,9 +27,9 @@
 /* All toolbar buttons and icons */
 .ql-toolbar.ql-snow button,
 .ql-toolbar.ql-snow .ql-picker-label {
-  color: #e5e7eb !important;
-  fill: #e5e7eb !important;
-  stroke: #e5e7eb !important;
+  color: var(--eu-white) !important;
+  fill: var(--eu-white) !important;
+  stroke: var(--eu-white) !important;
   border: none !important;
   background: transparent !important;
   padding: 6px !important;
@@ -32,7 +45,7 @@
   color: #60a5fa !important;
   fill: #60a5fa !important;
   stroke: #60a5fa !important;
-  background: #374151 !important;
+  background: var(--eu-slate-700) !important;
 }
 
 /* Active/selected button states */
@@ -47,14 +60,14 @@
 /* Dropdown pickers */
 .ql-toolbar.ql-snow .ql-picker {
   background: transparent !important;
-  color: #e5e7eb !important;
+  color: var(--eu-white) !important;
 }
 
 /* Dropdown options */
 .ql-toolbar.ql-snow .ql-picker-options {
-  background: #1f2937 !important;
-  color: #e5e7eb !important;
-  border: 1px solid #4b5563 !important;
+  background: var(--eu-slate-800) !important;
+  color: var(--eu-white) !important;
+  border: 1px solid var(--eu-slate-600) !important;
   border-radius: 0.375rem !important;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5),
     0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
@@ -70,9 +83,9 @@
 .ql-toolbar.ql-snow .ql-picker,
 .ql-toolbar.ql-snow .ql-picker-label,
 .ql-toolbar.ql-snow .ql-picker-item {
-  color: #e5e7eb !important;
-  fill: #e5e7eb !important;
-  stroke: #e5e7eb !important;
+  color: var(--eu-white) !important;
+  fill: var(--eu-white) !important;
+  stroke: var(--eu-white) !important;
 }
 
 .ql-toolbar.ql-snow button:disabled,
@@ -86,14 +99,14 @@
 
 /* Ensure SVG icons are visible */
 .ql-toolbar.ql-snow svg {
-  color: #e5e7eb !important;
-  fill: #e5e7eb !important;
-  stroke: #e5e7eb !important;
+  color: var(--eu-white) !important;
+  fill: var(--eu-white) !important;
+  stroke: var(--eu-white) !important;
 }
 
 /* Dropdown items */
 .ql-toolbar.ql-snow .ql-picker-item {
-  color: #e5e7eb !important;
+  color: var(--eu-white) !important;
   padding: 6px 12px !important;
   transition: all 0.15s ease !important;
 }
@@ -101,15 +114,15 @@
 .ql-toolbar.ql-snow .ql-picker-item:hover,
 .ql-toolbar.ql-snow .ql-picker-item.ql-selected {
   color: #60a5fa !important;
-  background: #374151 !important;
+  background: var(--eu-slate-700) !important;
 }
 
 /* Input fields in toolbar */
 .ql-toolbar.ql-snow input,
 .ql-toolbar.ql-snow select {
-  background: #374151 !important;
-  color: #e5e7eb !important;
-  border: 1px solid #4b5563 !important;
+  background: var(--eu-slate-700) !important;
+  color: var(--eu-white) !important;
+  border: 1px solid var(--eu-slate-600) !important;
   border-radius: 0.25rem !important;
   padding: 4px 8px !important;
 }
@@ -135,7 +148,7 @@
 
 /* === QUILL EDITOR CONTENT AREA === */
 .ql-editor {
-  background: #0f172a !important;
+  background: var(--eu-slate-900) !important;
   color: #f1f5f9 !important;
   border: none !important;
   padding: 20px !important;
@@ -222,9 +235,9 @@
   flex-direction: column;
   height: 100%;
   min-height: 0;
-  background: #1f2937;
+  background: var(--eu-slate-800);
   border-radius: 0.5rem;
-  border: 1px solid #374151;
+  border: 1px solid var(--eu-slate-600);
 }
 
 .ai-panel > .flex-1 {
@@ -251,7 +264,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  background: #1f2937;
+  background: var(--eu-slate-800);
   z-index: 1;
   align-self: stretch;
   justify-content: flex-end;
@@ -262,7 +275,7 @@
 }
 
 .selection-info {
-  background: #374151 !important;
+  background: var(--eu-slate-700) !important;
   border-radius: 0.5rem;
   border-left: 4px solid #3b82f6;
 }
@@ -274,11 +287,11 @@
 }
 
 .selected-text {
-  background: #1f2937 !important;
-  color: #e5e7eb !important;
+  background: var(--eu-slate-800) !important;
+  color: var(--eu-white) !important;
   padding: 12px;
   border-radius: 0.375rem;
-  border: 1px solid #4b5563;
+  border: 1px solid var(--eu-slate-600);
   font-style: italic;
   min-height: 24px;
 }
@@ -427,41 +440,136 @@
 
 .ql-editor::-webkit-scrollbar-track,
 .ai-panel::-webkit-scrollbar-track {
-  background: #1f2937;
+  background: var(--eu-slate-800);
   border-radius: 4px;
 }
 
 .ql-editor::-webkit-scrollbar-thumb,
 .ai-panel::-webkit-scrollbar-thumb {
-  background: #4b5563;
+  background: var(--eu-slate-600);
   border-radius: 4px;
 }
 
 .ql-editor::-webkit-scrollbar-thumb:hover,
 .ai-panel::-webkit-scrollbar-thumb:hover {
-  background: #6b7280;
+  background: var(--eu-slate-400);
 }
 
 /* === ENHANCED ICON VISIBILITY === */
 .ql-snow .ql-stroke {
-  stroke: #e5e7eb !important;
+  stroke: var(--eu-white) !important;
 }
 
 .ql-snow .ql-fill {
-  fill: #e5e7eb !important;
+  fill: var(--eu-white) !important;
 }
 
 .ql-snow .ql-color-picker .ql-picker-item {
-  border: 1px solid #4b5563 !important;
+  border: 1px solid var(--eu-slate-600) !important;
 }
 
 /* Table better icon color */
 .ql-table-better svg path {
-  fill: #e5e7eb !important;
+  fill: var(--eu-white) !important;
 }
 
 /* Color picker label visibility */
 .ql-color .ql-picker-label svg .ql-color-label,
 .ql-background .ql-picker-label svg .ql-color-label {
-  fill: #e5e7eb !important;
+  fill: var(--eu-white) !important;
+}
+
+/* Canvas container */
+#open-canvas-content {
+  background: var(--eu-slate-800);
+  color: var(--eu-white);
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Canvas toolbar */
+.open-canvas-toolbar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  gap: 5px;
+}
+
+.open-canvas-toolbar button {
+  padding: 6px 12px;
+  background: var(--eu-slate-700);
+  border: 1px solid var(--eu-slate-600);
+  border-radius: 4px;
+  color: var(--eu-white);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.open-canvas-toolbar button:hover {
+  background: var(--eu-slate-600);
+  border-color: var(--eu-slate-400);
+}
+
+.open-canvas-toolbar button i {
+  font-size: 14px;
+}
+
+/* Canvas node styles */
+.canvas-node {
+  border-radius: 6px;
+  padding: 8px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  background: var(--eu-slate-700);
+  border: 1px solid var(--eu-slate-600);
+  color: var(--eu-white);
+}
+
+.canvas-node.selected {
+  box-shadow: 0 0 0 2px var(--eu-orange);
+}
+
+.canvas-node.root {
+  background: var(--eu-blue);
+  color: var(--eu-white);
+  border-color: var(--eu-blue);
+}
+
+/* Canvas status message */
+.open-canvas-status {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0, 48, 135, 0.85);
+  color: var(--eu-white);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  z-index: 1000;
+}
+
+/* Scrollbar styling */
+#open-canvas-content::-webkit-scrollbar {
+  width: 8px;
+}
+#open-canvas-content::-webkit-scrollbar-track {
+  background: var(--eu-slate-800);
+}
+#open-canvas-content::-webkit-scrollbar-thumb {
+  background: var(--eu-slate-600);
+  border-radius: 4px;
+}
+#open-canvas-content::-webkit-scrollbar-thumb:hover {
+  background: var(--eu-slate-400);
 }
