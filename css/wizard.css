@@ -1,8 +1,21 @@
+:root {
+  /* EU Color Scheme */
+  --eu-blue: #003087;
+  --eu-orange: #FF6900;
+  --eu-white: #FFFFFF;
+  --eu-blue-light: rgba(0, 48, 135, 0.1);
+  --eu-blue-hover: rgba(0, 48, 135, 0.05);
+}
+
 /* ============================================ */
 /* === GLOBAL & BASE STYLES === */
 /* ============================================ */
 
 /* Policy wizard disabled states */
+#policy-input {
+  color: var(--eu-blue) !important;
+}
+
 #policy-input:disabled {
   background-color: rgba(30, 41, 59, 0.5) !important;
   cursor: not-allowed;
@@ -329,56 +342,114 @@ header {
   bottom: 0;
   background: var(--eu-white);
   border: 1px solid var(--eu-blue);
-  color: var(--text-primary);
+  color: var(--eu-blue);
   z-index: 20;
+  border-radius: 0.5rem 0.5rem 0 0;
+  padding: 1rem;
+  box-shadow: 0 -2px 10px rgba(0, 48, 135, 0.05);
 }
 
+/* Left column chat container */
 .left-column-chat > div {
   width: 100%;
   box-sizing: border-box;
   background: var(--eu-white);
   border: 1px solid var(--eu-blue);
-  color: var(--text-primary);
+  color: var(--eu-blue);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 48, 135, 0.1);
+  transition: all 0.2s ease;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
 }
 
+/* Left column source items */
+.source-item {
+  transition: all 0.2s ease;
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  color: var(--eu-blue);
+}
+
+.source-item:hover {
+  background-color: var(--eu-blue-hover);
+}
+
+/* Source icons */
+.source-icon {
+  transition: all 0.2s ease;
+  margin-right: 0.5rem;
+}
+
+.source-item:hover .source-icon {
+  color: var(--eu-orange);
+}
+
+/* Left column scrollbar */
+.scrollbar-transparent::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-transparent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-transparent::-webkit-scrollbar-thumb {
+  background-color: var(--eu-blue);
+  border-radius: 3px;
+}
+
+.scrollbar-transparent::-webkit-scrollbar-thumb:hover {
+  background-color: var(--eu-orange);
+}
+
+/* Left column chat input */
 .left-column-chat textarea {
   min-height: 44px;
   max-height: 200px;
-  transition: height 0.2s;
+  color: var(--eu-blue);
+  background-color: var(--eu-white);
+  border: 1px solid var(--eu-blue);
+  transition: all 0.2s ease, height 0.2s;
   line-height: 1.5;
   padding: 0.75rem 3rem 0.75rem 1rem;
   box-sizing: border-box;
   width: 100%;
   resize: none;
-  background: #0f172a;
-  color: white;
   font-size: 0.875rem;
-  border: 1px solid #334155;
   border-radius: 0.5rem;
 }
 
 .left-column-chat textarea:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+  border-color: var(--eu-orange);
+  box-shadow: 0 0 0 2px rgba(255, 105, 0, 0.2);
 }
 
+/* Send button in chat */
 .left-column-chat button {
   position: absolute;
   right: 1rem;
   bottom: 0.75rem;
   background: none;
   border: none;
-  color: #60a5fa;
+  color: var(--eu-blue);
   cursor: pointer;
   padding: 0.25rem;
   border-radius: 50%;
   transition: all 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .left-column-chat button:hover {
-  color: white;
+  color: var(--eu-orange);
   transform: translateY(-1px);
+  background-color: rgba(0, 48, 135, 0.05);
 }
 
 /* Scrollable content area */
@@ -446,7 +517,7 @@ header {
 
 /* Source Content */
 .source-content-section {
-  background: rgba(30, 41, 59, 0.5);
+  /* background: rgba(255, 105, 0, 0.5); */
   /* border: 1px solid rgba(148, 163, 184, 0.1); */
   /* border-radius: 0.5rem; */
   /* padding: 1rem; */
@@ -557,18 +628,18 @@ header {
 /* Chat Input */
 #chat-input {
   width: 100%;
-  background-color: var(--slate-900);
+  background-color: var(--eu-gray-800);
   border-radius: 0.5rem;
   padding: 0.75rem;
-  color: white;
+  color: var(--eu-blue) !important;
   resize: none;
   border: none;
   outline: none;
 }
 
-#chat-input:focus {
-  box-shadow: 0 0 0 2px var(--sky-400);
-}
+/* #chat-input:focus {
+  box-shadow: 0 0 0 2px var(--eu-blue);
+} */
 
 /* Chat Suggestions */
 #chat-suggestions {
@@ -584,8 +655,8 @@ header {
 #chat-suggestions button {
   padding: 0.25rem 0.75rem;
   font-size: 0.75rem;
-  background-color: var(--slate-700);
-  color: var(--slate-300);
+  background-color: var(--eu-gray-700);
+  color: var(--eu-blue);
   border-radius: 0.25rem;
   border: none;
   cursor: pointer;
@@ -594,7 +665,7 @@ header {
 }
 
 #chat-suggestions button:hover {
-  background-color: var(--slate-600);
+  background-color: var(--eu-gray-600);
 }
 
 /* Chevron Buttons for Suggestions */
@@ -603,8 +674,8 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--slate-700);
-  color: var(--slate-300);
+  background-color: var(--eu-gray-700);
+  color: var(--eu-blue);
   border: none;
   border-radius: 50%;
   width: 2rem;
@@ -615,7 +686,7 @@ header {
 
 .chevron-left:hover,
 .chevron-right:hover {
-  background-color: var(--slate-600);
+  background-color: var(--eu-gray-600);
 }
 
 /* ============================================ */
@@ -662,11 +733,11 @@ header {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.2s ease, visibility 0.2s ease;
-  background-color: var(--slate-800);
+  background-color: var(--eu-slate-800);
   border-radius: 0.25rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border: 1px solid var(--slate-700);
+  border: 1px solid var(--eu-slate-600);
 }
 
 .source-menu-dropdown.show {
@@ -679,11 +750,11 @@ header {
   align-items: center;
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
-  color: white;
+  color: var(--text-primary);
 }
 
 .source-menu-dropdown a:hover {
-  background-color: var(--slate-800);
+  background-color: var(--eu-orange);
 }
 
 /* Custom Checkbox */
