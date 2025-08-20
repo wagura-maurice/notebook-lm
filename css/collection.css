@@ -98,26 +98,37 @@
 }
 
 :root {
+  /* Legacy colors kept for compatibility */
   --slate-900: #0f172a;
   --slate-800: #1e293b;
   --slate-700: #334155;
   --slate-600: #64748b;
   --slate-400: #94a3b8;
   --slate-300: #cbd5e1;
-  --purple-500: #8b5cf6;
-  --blue-500: #3b82f6;
-  --sky-400: #38bdf8;
-  --sky-300: #7dd3fc;
-  --indigo-500: #6366f1;
-  --indigo-600: #4f46e5;
+  
+  /* EU Color Scheme */
+  --eu-blue: #003087;
+  --eu-orange: #FF6900;
+  --eu-white: #F9F9F9;
+  --text-primary: #003087;
+  --text-secondary: #333333;
+  --border-eu: #003087;
+  
+  /* Updated color mappings to use EU colors where appropriate */
+  --purple-500: var(--eu-blue);
+  --blue-500: var(--eu-blue);
+  --sky-400: var(--eu-orange);
+  --sky-300: var(--eu-orange);
+  --indigo-500: var(--eu-blue);
+  --indigo-600: var(--eu-blue);
 }
 
 body {
   font-family: "Rubik", sans-serif;
   margin: 0;
   padding: 0;
-  background-color: var(--slate-900);
-  color: white;
+  background-color: var(--eu-white);
+  color: var(--text-primary);
 }
 
 /* ============================================ */
@@ -187,7 +198,7 @@ body {
 /* === HEADER & NAVIGATION === */
 /* ============================================ */
 header {
-  background-color: var(--slate-900);
+  background-color: var(--eu-blue);
   min-height: 4rem;
   padding: 0.75rem 1rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -215,7 +226,7 @@ header {
 }
 
 .tab-button.active {
-  color: var(--sky-400);
+  color: var(--eu-orange);
 }
 
 .tab-button.active::after {
@@ -225,7 +236,7 @@ header {
   left: 0;
   right: 0;
   height: 2px;
-  background-color: var(--sky-400);
+  background-color: var(--eu-orange);
 }
 
 /* ============================================ */
@@ -287,9 +298,9 @@ header {
 }
 
 .source-topic-tag {
-  background: rgba(56, 189, 248, 0.1);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  color: var(--sky-400);
+  background: rgba(255, 105, 0, 0.1);
+  border: 1px solid rgba(255, 105, 0, 0.2);
+  color: var(--eu-orange);
   border-radius: 1rem;
   padding: 0.25rem 0.75rem;
   font-size: 0.875rem;
@@ -334,7 +345,7 @@ header {
 }
 
 .message-bubble.ai {
-  background-color: var(--blue-500);
+  background-color: var(--eu-blue);
   border-bottom-left-radius: 0;
   align-self: flex-start;
 }
@@ -348,14 +359,14 @@ header {
   height: 28px;
   background: none;
   border-bottom-right-radius: 16px 14px;
-  box-shadow: -2px 2px 2px 0 rgba(59, 130, 246, 0.1);
+  box-shadow: -2px 2px 2px 0 rgba(0, 48, 135, 0.1);
   clip-path: polygon(0 0, 100% 40%, 100% 60%, 0 100%);
-  background-color: var(--blue-500);
+  background-color: var(--eu-blue);
   z-index: 0;
 }
 
 .message-bubble.user {
-  background-color: var(--purple-500);
+  background-color: var(--eu-orange);
   border-bottom-right-radius: 0;
   align-self: flex-end;
 }
@@ -369,9 +380,9 @@ header {
   height: 28px;
   background: none;
   border-bottom-left-radius: 16px 14px;
-  box-shadow: 2px 2px 2px 0 rgba(139, 92, 246, 0.1);
+  box-shadow: 2px 2px 2px 0 rgba(255, 105, 0, 0.1);
   clip-path: polygon(100% 0, 0 40%, 0 60%, 100% 100%);
-  background-color: var(--purple-500);
+  background-color: var(--eu-orange);
   z-index: 0;
 }
 
@@ -394,7 +405,7 @@ header {
 }
 
 #chat-input:focus {
-  box-shadow: 0 0 0 2px var(--sky-400);
+  box-shadow: 0 0 0 2px var(--eu-orange);
 }
 
 /* Chat Suggestions */
@@ -572,8 +583,8 @@ header {
 }
 
 .source-checkbox:checked {
-  background-color: var(--sky-400);
-  border-color: var(--sky-400);
+  background-color: var(--eu-orange);
+  border-color: var(--eu-orange);
 }
 
 .source-checkbox:checked::after {
@@ -631,7 +642,7 @@ header {
 #preloader {
   position: fixed;
   inset: 0;
-  background-color: var(--purple-500);
+  background-color: var(--eu-blue);
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -645,8 +656,8 @@ header {
   transform: translateX(-50%);
   bottom: 100px;
   z-index: 40;
-  background: var(--indigo-500);
-  color: white;
+  background: var(--eu-blue);
+  color: var(--eu-white);
   border: none;
   border-radius: 9999px;
   padding: 10px 24px;
@@ -663,7 +674,7 @@ header {
 }
 
 #jump-to-bottom-btn:hover {
-  background: var(--indigo-600);
+  background: var(--eu-orange);
 }
 
 /* Scrollbar Utility */
@@ -773,12 +784,12 @@ header {
 .processing-btn {
   background: none;
   border: none;
-  color: var(--sky-400);
+  color: var(--eu-orange);
   cursor: pointer;
 }
 
 .processing-btn:hover {
-  color: var(--sky-300);
+  color: var(--eu-blue);
 }
 
 .processing-btn.active i {
