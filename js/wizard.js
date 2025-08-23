@@ -1164,7 +1164,7 @@ const SourceActions = {
             <div class="relative">
               <textarea
                 id="left-column-message-input"
-                class="w-full bg-eu-gray-800 rounded-lg p-3 pr-12 text-eu-blue-400 opacity-80 resize-none focus:ring-2 focus:ring-eu-blue-400 focus:outline-none"
+                class="w-full bg-eu-white rounded-lg p-3 pr-12 text-text-primary opacity-80 resize-none focus:ring-2 focus:ring-eu-blue focus:outline-none border border-eu-blue/20 placeholder:text-eu-blue/50"
                 placeholder="Chat about these sources..."
                 rows="2"
               ></textarea>
@@ -1349,13 +1349,13 @@ const ChatFunctionality = {
   addUserMessage: function (messageText) {
     const userMessage = $(`
       <div class="flex justify-end">
-          <div
-            class="max-w-[80%] bg-white hover:bg-gray-200 px-4 py-2 rounded-xl rounded-br-none shadow relative group"
-          >
-            <div class="text-black text-sm">${messageText}</div>
-            <div class="text-blue-500 text-xs text-right">${Utils.formatTime()}</div>
+        <div class="max-w-[80%] bg-eu-white hover:bg-eu-white-500 px-4 py-2 rounded-xl rounded-br-none shadow relative group">
+          <div class="text-eu-blue text-sm">
+            ${messageText}
           </div>
+          <div class="text-xs text-eu-blue text-right mt-2">${Utils.formatTime()}</div>
         </div>
+      </div>
     `);
 
     $(SELECTORS.chatMessages).append(userMessage);
@@ -1399,21 +1399,21 @@ const ChatFunctionality = {
 
       // Create AI response
       const aiResponse = $(`
-        <div class="w-full px-4 py-2 group bg-eu-white-500 text-eu-black">
-            <div class="text-eu-black text-sm">
+        <div class="w-full px-4 py-2 group bg-eu-white-500 text-eu-blue">
+            <div class="text-eu-blue text-sm">
             ${this.getAIResponse(userMessage)}
             </div>
             <div class="flex justify-between items-center mt-2">
               <div class="text-xs text-eu-blue-500">${Utils.formatTime()}</div>
               <div class="flex gap-3">
                 <button
-                  class="text-xs text-eu-black hover:text-white text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-eu-blue-500"
+                  class="text-xs text-eu-black hover:text-eu-orange text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-eu-white-100"
                 >
                   <i class="fas fa-plus-circle mr-1.5 text-base text-eu-black"></i> Add to
                   note
                 </button>
                 <button
-                  class="text-xs text-eu-black hover:text-white text-sm flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-eu-blue-500"
+                  class="text-xs text-eu-black hover:text-eu-orange text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-eu-white-100"
                 >
                   <i class="fas fa-copy mr-1.5 text-base text-eu-black"></i> Copy
                 </button>
@@ -1464,7 +1464,7 @@ const MessageActions = {
 
     // Show a compact success message
     const $successMsg = $(
-      `<div class="bg-eu-green text-eu-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200 z-50 whitespace-nowrap">Added to notes</div>`
+      `<div class="bg-green text-eu-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200 z-50 whitespace-nowrap">Added to notes</div>`
     );
 
     // Position the message relative to the button
@@ -1527,7 +1527,7 @@ const MessageActions = {
         $copyButton.html('<i class="fas fa-check mr-1.5"></i> Copied!');
         $copyButton
           .removeClass("text-gray-400 hover:text-white")
-          .addClass("text-eu-green");
+          .addClass("text-green");
 
         // Revert back to original state after 2 seconds
         setTimeout(() => {
@@ -1688,7 +1688,7 @@ const LeftColumnChatModule = {
           <div class="text-eu-black text-sm">
             ${message}
           </div>
-          <div class="text-xs text-eu-blue-500 text-right">${Utils.formatTime()}</div>
+          <div class="text-xs text-eu-blue-500 text-right mt-2">${Utils.formatTime()}</div>
         </div>
       </div>
     `);
@@ -2278,7 +2278,7 @@ const CanvasChat = {
 
         // Show success feedback
         const $successMsg = $(`
-        <div class="bg-green-500 text-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200 z-50 whitespace-nowrap">
+        <div class="bg-green text-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200 z-50 whitespace-nowrap">
           Added to notes
         </div>
       `);
@@ -2361,10 +2361,14 @@ const CanvasChat = {
     if (isUser) {
       // User message styling (bubble on the right)
       const message = $(`
-        <div class="flex justify-end mb-4 px-2 bg-eu-white rounded-lg shadow-xl">
-          <div class="max-w-[80%] bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl rounded-br-none shadow relative group bg-eu-white">
-            <div class="text-eu-black text-sm">${content}</div>
-            <div class="text-xs text-eu-blue-500 text-right">${Utils.formatTime()}</div>
+        <div class="flex justify-end">
+          <div
+            class="max-w-[80%] bg-eu-white hover:bg-eu-white-500 px-4 py-2 rounded-xl rounded-br-none shadow relative group"
+          >
+            <div class="text-eu-black text-sm">
+              ${content}
+            </div>
+            <div class="text-xs text-eu-blue-500 text-right mt-2">${Utils.formatTime()}</div>
           </div>
         </div>
       `);
@@ -2372,20 +2376,20 @@ const CanvasChat = {
     } else {
       // AI message styling (full width with copy and add to sources buttons)
       const message = $(`
-        <div class="w-full px-4 py-2 group">
-          <div class="text-eu-white text-sm">${content}</div>
+        <div class="w-full px-4 py-2 group bg-eu-white-500 text-eu-blue">
+          <div class="text-eu-blue text-sm">${content}</div>
           <div class="flex justify-between items-center mt-2">
-            <div class="text-xs text-eu-blue-500">${Utils.formatTime()}</div>
+            <div class="text-xs text-eu-blue">${Utils.formatTime()}</div>
             <div class="flex items-center space-x-2">
               <button
-                class="text-xs text-eu-blue-500 hover:text-eu-orange flex items-center add-to-notes-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-eu-blue-500"
+                class="text-xs text-eu-black hover:text-eu-orange text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-eu-white-100"
                 data-message="${content.replace(/"/g, "&quot;")}">
-                <i class="fas fa-plus-circle mr-1"></i> Add to Notes
+                <i class="fas fa-plus-circle mr-1.5 text-base text-eu-black"></i> Add to Notes
               </button>
               <button
-                class="text-xs text-eu-blue-500 hover:text-eu-orange flex items-center copy-message-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-eu-blue-500"
+                class="text-xs text-eu-black hover:text-eu-orange text-sm flex items-center add-to-note-btn opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity px-2 py-1 rounded hover:bg-eu-white-100"
                 data-message="${content.replace(/"/g, "&quot;")}">
-                <i class="fas fa-copy mr-1"></i> Copy
+                <i class="fas fa-copy mr-1.5 text-base text-eu-black"></i> Copy
               </button>
             </div>
           </div>

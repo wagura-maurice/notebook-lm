@@ -230,6 +230,7 @@ body {
 #right-column {
   flex: 1; /* Fixed flex value to prevent dynamic shifts */
   display: flex;
+  background-color: var(--eu-white);
   flex-direction: column;
   overflow: hidden;
 }
@@ -655,8 +656,8 @@ header {
 #chat-suggestions button {
   padding: 0.25rem 0.75rem;
   font-size: 0.75rem;
-  background-color: var(--eu-gray-700);
-  color: var(--eu-blue);
+  background-color: var(--eu-blue-600);
+  color: var(--eu-orange);
   border-radius: 0.25rem;
   border: none;
   cursor: pointer;
@@ -665,7 +666,8 @@ header {
 }
 
 #chat-suggestions button:hover {
-  background-color: var(--eu-gray-600);
+  background-color: var(--eu-orange-600) !important;
+  border-color: var(--eu-orange-600) !important;
 }
 
 /* Chevron Buttons for Suggestions */
@@ -674,8 +676,8 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--eu-gray-700);
-  color: var(--eu-blue);
+  background-color: var(--eu-blue-600);
+  color: var(--eu-orange);
   border: none;
   border-radius: 50%;
   width: 2rem;
@@ -686,7 +688,7 @@ header {
 
 .chevron-left:hover,
 .chevron-right:hover {
-  background-color: var(--eu-gray-600);
+  background-color: var(--eu-orange-600) !important;
 }
 
 /* ============================================ */
