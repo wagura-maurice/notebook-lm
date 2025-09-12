@@ -1,0 +1,44 @@
+/* css/doccano.css */
+
+/* Taxonomy Highlighting */
+.taxonomy-highlight {
+  position: relative;
+  padding: 0 2px;
+  border-radius: 3px;
+  cursor: help;
+  transition: all 0.2s ease;
+}
+
+.taxonomy-highlight:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Tooltip styling */
+.taxonomy-tooltip {
+  visibility: hidden;
+  width: max-content;
+  max-width: 200px;
+  text-align: center;
+  border-radius: 4px;
+  padding: 4px 8px;
+  position: absolute;
+  z-index: 50;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  opacity: 0;
+  transition: all 0.2s ease;
+  font-size: 0.75rem;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.taxonomy-highlight:hover .taxonomy-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-8px);
+}
+
+/* Add your custom styles here */
