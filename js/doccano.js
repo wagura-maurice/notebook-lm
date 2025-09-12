@@ -6,6 +6,12 @@ class DoccanoApp {
     this.currentIndex = 0;
     this.documentContainer = null;
     this.documentTitle = null;
+    // this.taxonomyCounts = {
+    //   almp_instruments: 144444,
+    //   target_groups: 0,
+    //   delivery_modes: 0,
+    //   evaluation_design: 0
+    // };
     
     // Initialize structure handlers with bound context
     this.structureHandlers = {
@@ -80,9 +86,66 @@ class DoccanoApp {
     }
   }
   
+  // Format number with thousand separators
+  formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  // Count taxonomy items in all loaded documents
+  countTaxonomyItems() {
+    // Reset counts
+    this.taxonomyCounts = {
+      almp_instruments: 0,
+      target_groups: 0,
+      delivery_modes: 0,
+      evaluation_design: 0
+    };
+
+    // Count taxonomy items in all documents
+    this.documentData.forEach(doc => {
+      if (doc.enrichment?.taxonomy) {
+        const { taxonomy } = doc.enrichment;
+        if (taxonomy.almp_instruments?.length) this.taxonomyCounts.almp_instruments += taxonomy.almp_instruments.length;
+        if (taxonomy.target_groups?.length) this.taxonomyCounts.target_groups += taxonomy.target_groups.length;
+        if (taxonomy.delivery_modes?.length) this.taxonomyCounts.delivery_modes += taxonomy.delivery_modes.length;
+        if (taxonomy.evaluation_design?.length) this.taxonomyCounts.evaluation_design += taxonomy.evaluation_design.length;
+      }
+    });
+
+    // Update the UI with counts
+    this.updateTaxonomyUI();
+  }
+
+  // Update the UI with taxonomy counts
+  updateTaxonomyUI() {
+    const taxonomyMap = {
+      'almp_instruments': 'Almp Instruments',
+      'target_groups': 'Target Groups',
+      'delivery_modes': 'Delivery Modes',
+      'evaluation_design': 'Evaluation Design'
+    };
+
+    // Update each taxonomy button with its count
+    Object.entries(this.taxonomyCounts).forEach(([key, count]) => {
+      const button = Array.from(document.querySelectorAll('button'))
+        .find(btn => btn.textContent.trim().includes(taxonomyMap[key]));
+      
+      if (button) {
+        // Remove existing count if any
+        let countSpan = button.querySelector('.taxonomy-count');
+        if (!countSpan) {
+          countSpan = document.createElement('span');
+          countSpan.className = 'taxonomy-count ml-2 bg-eu-blue/10 text-eu-blue text-xs font-medium px-2 py-0.5 rounded-full';
+          button.appendChild(countSpan);
+        }
+        countSpan.textContent = this.formatNumber(count);
+      }
+    });
+  }
+
   async loadDocuments() {
     try {
-      const response = await fetch('/assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson');
+      const response = await fetch('assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -102,6 +165,9 @@ class DoccanoApp {
         );
         
       console.log(`Loaded ${this.documentData.length} documents`);
+      
+      // Count taxonomy items
+      this.countTaxonomyItems();
       
       // Display all documents at once
       this.displayAllDocuments();
