@@ -18,7 +18,7 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/css/shepherd.css"
     />
-    <script src="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/js/shepherd.min.js"></script>
+    <script type="application/JavaScript" src="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/js/shepherd.min.js"></script>
 
     <!-- Tailwind CSS -->
     <script
@@ -2010,19 +2010,21 @@
         class="policy-wizard w-full h-full flex flex-col bg-eu-white"
         style="display: none"
       >
-        <!-- Header -->
+        <!-- Policy Wizard Header -->
         <div
           class="flex items-center justify-between px-5 py-3 border-b border-eu-blue/20"
         >
-          <h2 class="text-lg font-semibold text-eu-blue">Policy</h2>
-          <div class="flex items-center">
+          <h2 class="text-lg font-semibold text-eu-blue">Policy Assistant</h2>
+          <div class="flex items-center space-x-2">
             <button
-              class="text-eu-blue text-lg hover:text-eu-orange mr-2 hidden lg:block expand-right"
+              class="text-eu-blue text-lg hover:text-eu-orange hidden lg:block expand-right"
+              aria-label="Expand Policy Wizard"
             >
               <i class="fas fa-expand-alt"></i>
             </button>
             <button
               class="text-eu-blue text-lg hover:text-eu-orange toggle-left-column lg:hidden"
+              aria-label="Toggle Sources Column"
             >
               <i class="fas fa-bars"></i>
             </button>
@@ -2033,17 +2035,18 @@
         <div
           class="overflow-y-auto flex-1 px-5 py-3 space-y-4 scrollbar-transparent bg-eu-white"
           id="policy-messages"
+          aria-label="Policy Assistant messages"
         >
           <div class="text-center text-eu-blue/80">
             <div
               class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-eu-blue/10 mb-4"
             >
-              <i class="fas fa-robot text-3xl text-eu-blue"></i>
+              <i class="fas fa-scroll text-3xl text-eu-blue"></i>
             </div>
             <h3 class="text-xl font-semibold text-eu-blue mb-2">
               How can I assist with your policy today?
             </h3>
-            <p class="text-eu-blue/80 text-sm px-4">
+            <p class="text-eu-blue/80 text-sm px-4 max-w-md mx-auto">
               Feel free to ask me anything about your policy or request help
               with writing, editing, or organizing your thoughts.
             </p>
@@ -2056,7 +2059,10 @@
           >
             <!-- Welcome Message -->
             <div
-              class="bg-eu-blue/5 rounded-lg p-4 border border-eu-blue/20 hover:bg-eu-blue/10 transition-colors"
+              class="bg-eu-blue/5 rounded-lg p-4 border border-eu-blue/20 hover:bg-eu-blue/10 transition-colors cursor-pointer"
+              role="button"
+              tabindex="0"
+              aria-label="Welcome to Policy Assistant"
             >
               <h3 class="text-eu-blue font-medium mb-2">
                 Welcome to Policy Assistant
@@ -3151,6 +3157,6 @@
     </script>
 
     <!-- Tour Script -->
-    <script src="./js/tour/wizard.js"></script>
+    <script type="application/JavaScript" src="./js/tour/wizard.js"></script>
   </body>
 </html>
