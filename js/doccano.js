@@ -14,6 +14,14 @@ class DoccanoApp {
       "evaluation_design",
     ];
     
+    // Initialize taxonomy counts
+    this.taxonomyCounts = {
+      almp_instruments: 0,
+      target_groups: 0,
+      delivery_modes: 0,
+      evaluation_design: 0,
+    };
+    
     // Track highlight history for undo/redo functionality
     this.highlightHistory = [];
     this.redoHistory = [];
@@ -136,62 +144,187 @@ class DoccanoApp {
 
   // Count taxonomy items in all loaded documents
   countTaxonomyItems() {
+    console.group('=== START: countTaxonomyItems ===');
+    console.log('Starting taxonomy item count...');
+    
     // Reset counts
-    this.taxonomyCounts = {
+    const initialCounts = {
       almp_instruments: 0,
       target_groups: 0,
       delivery_modes: 0,
       evaluation_design: 0,
     };
+    this.taxonomyCounts = { ...initialCounts };
+    console.log('Initialized taxonomy counts:', this.taxonomyCounts);
 
-    // Count taxonomy items in all documents
-    this.documentData.forEach((doc) => {
-      if (doc.enrichment?.taxonomy) {
-        const { taxonomy } = doc.enrichment;
-        if (taxonomy.almp_instruments?.length)
-          this.taxonomyCounts.almp_instruments +=
-            taxonomy.almp_instruments.length;
-        if (taxonomy.target_groups?.length)
-          this.taxonomyCounts.target_groups += taxonomy.target_groups.length;
-        if (taxonomy.delivery_modes?.length)
-          this.taxonomyCounts.delivery_modes += taxonomy.delivery_modes.length;
-        if (taxonomy.evaluation_design?.length)
-          this.taxonomyCounts.evaluation_design +=
-            taxonomy.evaluation_design.length;
+    if (!this.documentData) {
+      console.error('documentData is undefined');
+      console.groupEnd();
+      return;
+    }
+
+    if (!Array.isArray(this.documentData)) {
+      console.error('documentData is not an array:', typeof this.documentData);
+      console.groupEnd();
+      return;
+    }
+
+    console.log(`Processing ${this.documentData.length} documents`);
+
+    if (this.documentData.length === 0) {
+      console.warn('documentData array is empty');
+      this.updateTaxonomyUI();
+      console.groupEnd();
+      return;
+    }
+
+    // Count items in each document
+    this.documentData.forEach((doc, index) => {
+      console.group(`Processing document ${index}`);
+      
+      if (!doc) {
+        console.warn(`Document at index ${index} is null or undefined`);
+        console.groupEnd();
+        return;
       }
+      
+      console.log('Document structure:', Object.keys(doc));
+      
+      if (!doc.enrichment) {
+        console.log('Document has no enrichment data');
+        console.groupEnd();
+        return;
+      }
+      
+      if (!doc.enrichment.taxonomy) {
+        console.log('Document has no taxonomy data in enrichment');
+        console.groupEnd();
+        return;
+      }
+      
+      const { taxonomy } = doc.enrichment;
+      console.log(`Document ${index} taxonomy structure:`, Object.keys(taxonomy));
+      
+      // Count each taxonomy type
+      Object.keys(initialCounts).forEach(type => {
+        console.group(`Processing taxonomy type: ${type}`);
+        
+        if (taxonomy[type] === undefined) {
+          console.log(`No data for ${type}, skipping`);
+          console.groupEnd();
+          return;
+        }
+        
+        if (Array.isArray(taxonomy[type])) {
+          const count = taxonomy[type].length;
+          const prevCount = this.taxonomyCounts[type];
+          this.taxonomyCounts[type] += count;
+          console.log(`Found ${count} items (total: ${this.taxonomyCounts[type]})`);
+          if (count > 0) {
+            console.log('Sample items:', taxonomy[type].slice(0, 2));
+          }
+        } else if (taxonomy[type] && typeof taxonomy[type] === 'object') {
+          const count = Object.keys(taxonomy[type]).length;
+          const prevCount = this.taxonomyCounts[type];
+          this.taxonomyCounts[type] += count;
+          console.log(`Found ${count} items in object format (total: ${this.taxonomyCounts[type]})`);
+          if (count > 0) {
+            console.log('Sample keys:', Object.keys(taxonomy[type]).slice(0, 2));
+          }
+        } else {
+          console.warn(`Unexpected data type for ${type}:`, typeof taxonomy[type]);
+        }
+        
+        console.groupEnd();
+      });
+      
+      console.groupEnd(); // End document group
     });
 
-    // Update the UI with counts
+    console.log('=== FINAL COUNTS ===');
+    console.table(this.taxonomyCounts);
+    
+    // Log UI update attempt
+    console.log('Updating UI with counts...');
     this.updateTaxonomyUI();
+    
+    console.log('=== END: countTaxonomyItems ===');
+    console.groupEnd();
   }
 
   // Update the UI with taxonomy counts
   updateTaxonomyUI() {
-    const taxonomyMap = {
-      almp_instruments: "Almp Instruments",
-      target_groups: "Target Groups",
-      delivery_modes: "Delivery Modes",
-      evaluation_design: "Evaluation Design",
-    };
-
+    console.group('=== START: updateTaxonomyUI ===');
+    console.log('Current taxonomy counts:', this.taxonomyCounts);
+    
     // Update each taxonomy button with its count
-    Object.entries(this.taxonomyCounts).forEach(([key, count]) => {
-      const button = Array.from(document.querySelectorAll("button")).find(
-        (btn) => btn.textContent.trim().includes(taxonomyMap[key])
-      );
-
-      if (button) {
-        // Remove existing count if any
-        let countSpan = button.querySelector(".taxonomy-count");
-        if (!countSpan) {
-          countSpan = document.createElement("span");
-          countSpan.className =
-            "taxonomy-count ml-2 bg-eu-blue/10 text-eu-blue text-xs font-medium px-2 py-0.5 rounded-full";
-          button.appendChild(countSpan);
-        }
-        countSpan.textContent = this.formatNumber(count);
+    Object.entries(this.taxonomyCounts).forEach(([taxonomyType, count]) => {
+      console.group(`Updating UI for ${taxonomyType}`);
+      
+      // Try to find button by data attribute
+      const selector = `button[data-taxonomy-type="${taxonomyType}"]`;
+      console.log(`Looking for button with selector: ${selector}`);
+      
+      const button = document.querySelector(selector);
+      
+      if (!button) {
+        console.error(`❌ Could not find button with selector: ${selector}`);
+        console.groupEnd();
+        return;
       }
+      
+      console.log('Found button:', button);
+      
+      // Find or create the count span
+      let countSpan = button.querySelector('.taxonomy-count');
+      console.log('Existing count span:', countSpan);
+      
+      if (!countSpan) {
+        console.log('No existing count span found, looking deeper...');
+        // Look for the count span in the button's children
+        const spans = button.getElementsByClassName('taxonomy-count');
+        console.log(`Found ${spans.length} spans with class 'taxonomy-count'`);
+        
+        countSpan = spans.length > 0 ? spans[0] : null;
+        
+        // If still not found, create a new one
+        if (!countSpan) {
+          console.log('Creating new count span...');
+          countSpan = document.createElement('span');
+          countSpan.className = 'taxonomy-count bg-eu-blue/10 text-eu-blue text-xs font-medium px-2 py-0.5 rounded-full ml-2';
+          
+          // Find the text node to insert the count after
+          const buttonText = Array.from(button.childNodes).find(node => 
+            node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== ''
+          );
+          
+          if (buttonText) {
+            console.log('Found text node, inserting after:', buttonText);
+            buttonText.after(countSpan);
+          } else {
+            // If no text node found, just append to the end
+            console.log('No text node found, appending to button');
+            button.appendChild(countSpan);
+          }
+        }
+      }
+      
+      // Update the count text and visibility
+      if (countSpan) {
+        console.log(`Setting count to: ${count}`);
+        countSpan.textContent = count > 0 ? this.formatNumber(count) : '';
+        countSpan.style.display = count > 0 ? 'inline-flex' : 'none';
+        console.log('Updated count span:', countSpan);
+      } else {
+        console.error(`❌ Failed to find or create count span for: ${taxonomyType}`);
+        console.log('Button HTML:', button.outerHTML);
+      }
+      
+      console.groupEnd(); // End taxonomy type group
     });
+    
+    console.log('=== END: updateTaxonomyUI ===');
+    console.groupEnd();
   }
 
   // Format number with thousand separators
@@ -240,13 +373,16 @@ class DoccanoApp {
       );
       const text = await response.text();
       
-      // Parse the NDJSON file
+      // Parse the NDJSON file and store line numbers
       this.documentData = text
         .split("\n")
         .filter((line) => line.trim() !== "")
         .map((line, index) => {
           try {
-            return JSON.parse(line);
+            const doc = JSON.parse(line);
+            // Store the original line number (1-based)
+            doc.originalLineNumber = index + 1;
+            return doc;
           } catch (e) {
             console.error(`Error parsing line ${index + 1}:`, e);
             return null;
@@ -256,10 +392,9 @@ class DoccanoApp {
 
       console.log(`Loaded ${this.documentData.length} documents`);
 
-      // Count taxonomy items
+      // Count taxonomy items in all loaded documents and update the UI
       this.countTaxonomyItems();
-      
-      // Process data for visualizations
+
       console.log('Processing data for visualization...');
       if (this.visualizer) {
         console.log('Visualizer found, processing data...');
@@ -689,89 +824,126 @@ class DoccanoApp {
     };
   }
 
-  assignTaxonomy(selectedText, taxonomyType) {
-    // Console log as requested
-    console.log("Highlighted:", selectedText, "Taxonomy:", taxonomyType);
-    
+  // Helper method to find the document element containing a node
+  getDocumentElement(node) {
+    while (node && !node.classList?.contains('document-element')) {
+      node = node.parentNode;
+    }
+    return node;
+  }
+
+  assignTaxonomy(_, taxonomyType) {
     // Get the current selection
     const selection = window.getSelection();
     if (!selection.rangeCount) return;
-    
+
     const range = selection.getRangeAt(0);
+    const selectedText = range.toString().trim();
+    if (!selectedText) return;
     
-    // Find the document element that contains the selection
-    let docElement = range.startContainer;
-    while (docElement && !docElement.classList?.contains('document-element')) {
-      docElement = docElement.parentNode;
-    }
+    // Get document and line information
+    const docElement = this.getDocumentElement(range.commonAncestorContainer);
+    if (!docElement) return;
     
-    if (!docElement) {
-      console.warn('Could not find document element containing selection');
-      return;
-    }
-    
-    // Find the corresponding document data
     const docId = docElement.dataset.docId;
     const doc = this.documentData[docId];
     if (!doc) return;
     
-    // Get the original line number from the document
-    const lineNumber = doc.originalLineNumber;
+    const originalLineNumber = doc.originalLineNumber || 'unknown';
     
-    // Ensure enrichment and taxonomy exist
+    // Enhanced logging with line information
+    console.log(
+      `[Line ${originalLineNumber}] Highlighted: "${selectedText}"`,
+      `Taxonomy: ${taxonomyType}`,
+      `(Source: AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson:${originalLineNumber})`
+    );
+    
+    // Create a unique ID for this highlight
+    const selectionId = `sel-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Get the line number by finding the closest paragraph or heading
+    let lineElement = range.startContainer;
+    while (lineElement && lineElement !== docElement && 
+          !['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'DIV', 'LI'].includes(lineElement.nodeName)) {
+      lineElement = lineElement.parentNode;
+    }
+    
+    // Get the visual line number in the document
+    let visualLineNumber = 0;
+    if (lineElement?.parentNode) {
+      const siblings = Array.from(lineElement.parentNode.children);
+      visualLineNumber = siblings.indexOf(lineElement) + 1; // 1-based index
+    }
+    
+    // Use the original line number if available, otherwise use the visual line number
+    const displayLineNumber = originalLineNumber || visualLineNumber;
+    
+    // Initialize taxonomy data if it doesn't exist
     if (!doc.enrichment) doc.enrichment = {};
     if (!doc.enrichment.taxonomy) doc.enrichment.taxonomy = {};
     if (!doc.enrichment.taxonomy[taxonomyType]) {
       doc.enrichment.taxonomy[taxonomyType] = [];
     }
     
-    // Create a unique identifier for this specific selection
-    const selectionId = `sel-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // Create selection data with line information
     const selectionData = {
       id: selectionId,
       text: selectedText,
-      lineNumber: lineNumber, // Include line number in selection data
-      created: new Date().toISOString()
+      type: taxonomyType,
+      lineNumber: displayLineNumber,
+      originalLineNumber: doc.originalLineNumber || null,
+      visualLineNumber: visualLineNumber,
+      timestamp: new Date().toISOString(),
+      context: {
+        elementType: lineElement ? lineElement.nodeName.toLowerCase() : 'unknown',
+        elementText: lineElement ? lineElement.textContent.substring(0, 100) + (lineElement.textContent.length > 100 ? '...' : '') : '',
+        fullPath: this.getNodePath(range.startContainer)
+      }
     };
     
     // Add the selection data to the taxonomy
     doc.enrichment.taxonomy[taxonomyType].push(selectionData);
     
-    // Log the highlight with line number
-    console.log(`Added highlight from line ${lineNumber}:`, JSON.stringify({
-      id: selectionId,
-      text: selectedText,
-      lineNumber: lineNumber,
-      taxonomyType: taxonomyType,
-      timestamp: new Date().toISOString()
-    }, null, 2));
-    
-    // Create a highlight span for the exact selection
-    const span = document.createElement('span');
-    span.className = `taxonomy-highlight ${taxonomyType}`;
-    span.dataset.taxonomyType = taxonomyType;
-    span.dataset.selectionId = selectionId;
-    span.title = this.getTaxonomyDisplayName(taxonomyType);
+    // Create the highlight span
+    const highlightSpan = document.createElement('span');
+    highlightSpan.className = `taxonomy-highlight ${taxonomyType}`;
+    highlightSpan.dataset.taxonomyType = taxonomyType;
+    highlightSpan.dataset.selectionId = selectionId;
+    highlightSpan.title = `${this.getTaxonomyDisplayName(taxonomyType)} (Line ${displayLineNumber})`;
     
     try {
       // Surround the exact selection with our highlight span
-      range.surroundContents(span);
+      range.surroundContents(highlightSpan);
       
       // Clear the selection
-      window.getSelection().removeAllRanges();
+      selection.removeAllRanges();
       
-      // Update NDJSON raw data in memory
-      this.updateNDJSONRaw();
+      // Store the highlight in the document data
+      if (!doc.enrichment) doc.enrichment = {};
+      if (!doc.enrichment.taxonomy) doc.enrichment.taxonomy = {};
+      if (!Array.isArray(doc.enrichment.taxonomy[taxonomyType])) {
+        doc.enrichment.taxonomy[taxonomyType] = [];
+      }
       
-      // Update the document data to preserve the highlight
-      this.documentData[docId] = doc;
+      // Add to highlight history for undo/redo
+      const highlightData = {
+        id: selectionId,
+        text: selectedText,
+        type: taxonomyType,
+        lineNumber: displayLineNumber,
+        originalLineNumber: doc.originalLineNumber || null,
+        visualLineNumber: visualLineNumber,
+        elementType: lineElement ? lineElement.nodeName.toLowerCase() : 'unknown',
+        context: lineElement ? lineElement.textContent.substring(0, 100) + '...' : '',
+        timestamp: new Date().toISOString()
+      };
       
-      // Add to history before applying the highlight
       this.highlightHistory.push({
+        type: 'add',
         docId: docId,
         selectionId: selectionId,
         taxonomyType: taxonomyType,
-        element: span,
+        element: highlightSpan,
         exactText: selectedText,
         startOffset: range.startOffset,
         endOffset: range.endOffset,
@@ -779,8 +951,11 @@ class DoccanoApp {
         path: this.getNodePath(range.startContainer)  // Store the path for precise restoration
       });
       
-      // Update the UI to show the highlight
-      this.applySingleHighlight(span, selectionData, taxonomyType);
+      // Clear redo history since we've made a new change
+      this.redoHistory = [];
+      
+      // Update the raw NDJSON data
+      this.updateNDJSONRaw();
       
       // Update taxonomy counts in the UI
       this.countTaxonomyItems();

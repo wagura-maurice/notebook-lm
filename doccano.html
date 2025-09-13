@@ -466,6 +466,7 @@
           <div class="space-y-2">
             <button
               class="w-full flex items-center justify-between px-3 py-2 text-sm rounded border border-eu-blue text-eu-blue hover:bg-eu-blue hover:text-white transition-colors"
+              data-taxonomy-type="almp_instruments"
             >
               <div class="flex items-center">
                 <span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
@@ -478,6 +479,7 @@
             </button>
             <button
               class="w-full flex items-center justify-between px-3 py-2 text-sm rounded border border-eu-blue text-eu-blue hover:bg-eu-blue hover:text-white transition-colors"
+              data-taxonomy-type="target_groups"
             >
               <div class="flex items-center">
                 <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
@@ -490,6 +492,7 @@
             </button>
             <button
               class="w-full flex items-center justify-between px-3 py-2 text-sm rounded border border-eu-blue text-eu-blue hover:bg-eu-blue hover:text-white transition-colors"
+              data-taxonomy-type="delivery_modes"
             >
               <div class="flex items-center">
                 <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
@@ -502,6 +505,7 @@
             </button>
             <button
               class="w-full flex items-center justify-between px-3 py-2 text-sm rounded border border-eu-blue text-eu-blue hover:bg-eu-blue hover:text-white transition-colors"
+              data-taxonomy-type="evaluation_design"
             >
               <div class="flex items-center">
                 <span class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>
@@ -650,5 +654,34 @@
     ></script>
     <script type="application/JavaScript" src="./js/doccano.js"></script>
     <script type="application/JavaScript" src="./js/visualization.js"></script>
+    <script>
+      // Initialize the DoccanoApp when the page loads
+      document.addEventListener('DOMContentLoaded', () => {
+        // The DoccanoApp is already initialized in doccano.js
+        // Force an initial count of taxonomy items after a short delay to ensure DOM is ready
+        setTimeout(() => {
+          if (window.doccanoApp) {
+            console.log('Initializing taxonomy counts...');
+            window.doccanoApp.countTaxonomyItems();
+            
+            // Also update counts when the annotations tab is shown
+            const annotationsTab = document.getElementById('annotations-tab');
+            if (annotationsTab) {
+              const observer = new MutationObserver((mutations) => {
+                if (!annotationsTab.classList.contains('hidden')) {
+                  console.log('Annotations tab shown, updating counts...');
+                  window.doccanoApp.countTaxonomyItems();
+                }
+              });
+              
+              observer.observe(annotationsTab, {
+                attributes: true,
+                attributeFilter: ['class']
+              });
+            }
+          }
+        }, 1000);
+      });
+    </script>
   </body>
 </html>

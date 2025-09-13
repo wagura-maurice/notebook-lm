@@ -156,6 +156,7 @@
   background: none;
   width: 100%;
   text-align: left;
+  text-transform: capitalize !important;
   font-family: inherit;
   font-size: 0.9rem;
   color: #2d3748;

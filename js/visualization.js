@@ -73,7 +73,7 @@ class DoccanoVisualizer {
       plotOptions: {
         pie: {
           donut: {
-            size: '65%',
+            size: '80%',
             labels: {
               show: true,
               total: {
