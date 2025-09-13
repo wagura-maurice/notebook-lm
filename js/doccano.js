@@ -611,6 +611,30 @@ class DoccanoApp {
     }, 100);
   }
 
+  // Store the exact position of the current selection
+  storeSelectionPosition(selection) {
+    if (!selection.rangeCount) return null;
+    
+    const range = selection.getRangeAt(0);
+    // Get the exact position of the selection within its text node
+    const startOffset = range.startOffset;
+    const endOffset = range.endOffset;
+    const textNode = range.startContainer;
+    const fullText = textNode.textContent || '';
+    const exactText = fullText.substring(startOffset, endOffset);
+    
+    // Store the exact path to this text node for precise restoration
+    const path = this.getNodePath(textNode);
+    
+    return {
+      path: path,
+      startOffset: startOffset,
+      endOffset: endOffset,
+      text: range.toString(),
+      exactText: exactText
+    };
+  }
+
   assignTaxonomy(selectedText, taxonomyType) {
     // Console log as requested
     console.log("Highlighted:", selectedText, "Taxonomy:", taxonomyType);
@@ -694,7 +718,11 @@ class DoccanoApp {
         selectionId: selectionId,
         taxonomyType: taxonomyType,
         element: span,
-        timestamp: new Date().toISOString()
+        exactText: selectedText,
+        startOffset: range.startOffset,
+        endOffset: range.endOffset,
+        lineNumber: docElement.dataset.lineNumber,
+        path: this.getNodePath(range.startContainer)  // Store the path for precise restoration
       });
       
       // Update the UI to show the highlight
@@ -812,6 +840,44 @@ class DoccanoApp {
     this.countTaxonomyItems();
   }
 
+  // Find text node by path and offset
+  findTextNodeByPath(path, offset) {
+    try {
+      let node = document.body;
+      for (const index of path) {
+        node = node.childNodes[index];
+        if (!node) return null;
+      }
+      return node.nodeType === Node.TEXT_NODE ? node : null;
+    } catch (e) {
+      console.error('Error finding text node:', e);
+      return null;
+    }
+  }
+
+  // Get the path to a node from the document body
+  getNodePath(node) {
+    const path = [];
+    while (node && node !== document.body) {
+      const parent = node.parentNode;
+      if (!parent) break;
+      
+      let index = 0;
+      let sibling = parent.firstChild;
+      while (sibling && sibling !== node) {
+        if (sibling.nodeType === Node.ELEMENT_NODE || 
+            sibling.nodeType === Node.TEXT_NODE) {
+          index++;
+        }
+        sibling = sibling.nextSibling;
+      }
+      
+      path.unshift(index);
+      node = parent;
+    }
+    return path;
+  }
+
   // Undo the last highlight action
   async undoLastHighlight() {
     if (this.highlightHistory.length === 0) return;
@@ -820,22 +886,29 @@ class DoccanoApp {
     const lastHighlight = this.highlightHistory.pop();
     if (!lastHighlight) return;
     
-    // Store the text content before removing the highlight
-    lastHighlight.text = lastHighlight.element?.textContent || '';
-    lastHighlight.lineNumber = lastHighlight.element?.dataset?.lineNumber;
-    
-    // Add to redo history
-    this.redoHistory.push(lastHighlight);
-    
-    // Find the highlight element in the DOM
+    // Find the highlight element using the exact selection ID
     const highlightElement = document.querySelector(`[data-selection-id="${lastHighlight.selectionId}"]`);
     
     if (highlightElement) {
+      // Store the exact text and position for redo
+      lastHighlight.exactText = highlightElement.textContent || '';
+      lastHighlight.startOffset = highlightElement.dataset.startOffset;
+      lastHighlight.endOffset = highlightElement.dataset.endOffset;
+      lastHighlight.lineNumber = highlightElement.dataset.lineNumber;
+      lastHighlight.path = lastHighlight.path || this.getNodePath(highlightElement);
+      
+      // Store the parent node and next sibling for precise reinsertion
+      lastHighlight.parentNode = highlightElement.parentNode;
+      lastHighlight.nextSibling = highlightElement.nextSibling;
+      
       // Remove the highlight
       this.removeHighlight(highlightElement, lastHighlight.selectionId);
+      
+      // Add to redo history
+      this.redoHistory.push(lastHighlight);
     }
   }
-  
+
   // Redo the last undone highlight action
   async redoLastUndo() {
     if (this.redoHistory.length === 0) return;
@@ -848,11 +921,13 @@ class DoccanoApp {
     const doc = this.documentData[lastUndone.docId];
     if (!doc) return;
     
-    // Recreate the highlight data
+    // Recreate the highlight data with all necessary position info
     const selectionData = {
       id: lastUndone.selectionId,
-      text: lastUndone.text || lastUndone.element?.textContent || '',
-      lineNumber: lastUndone.lineNumber || lastUndone.element?.dataset?.lineNumber,
+      text: lastUndone.exactText || lastUndone.text || '',
+      startOffset: lastUndone.startOffset,
+      endOffset: lastUndone.endOffset,
+      lineNumber: lastUndone.lineNumber,
       created: new Date().toISOString()
     };
     
@@ -869,6 +944,7 @@ class DoccanoApp {
     );
     
     if (!exists) {
+      // Add to document data first
       doc.enrichment.taxonomy[lastUndone.taxonomyType].push(selectionData);
       
       // Create a new span for the highlight
@@ -876,61 +952,125 @@ class DoccanoApp {
       span.className = `taxonomy-highlight ${lastUndone.taxonomyType}`;
       span.dataset.selectionId = lastUndone.selectionId;
       span.dataset.taxonomyType = lastUndone.taxonomyType;
+      span.dataset.startOffset = lastUndone.startOffset;
+      span.dataset.endOffset = lastUndone.endOffset;
+      span.dataset.lineNumber = lastUndone.lineNumber;
+      span.title = this.getTaxonomyDisplayName(lastUndone.taxonomyType);
       
-      // Find the text node to highlight
-      const textNodes = [];
-      const walker = document.createTreeWalker(
-        document.body,
-        NodeFilter.SHOW_TEXT,
-        null,
-        false
-      );
-      
-      let node;
-      while (node = walker.nextNode()) {
-        if (node.nodeValue && node.nodeValue.includes(selectionData.text)) {
-          textNodes.push({
-            node: node,
-            text: node.nodeValue
-          });
-        }
+      // Try to find the exact text node using the stored path
+      let targetNode = null;
+      if (lastUndone.path) {
+        targetNode = this.findTextNodeByPath(lastUndone.path, 0);
       }
+
+      let highlightApplied = false;
       
-      // Apply the highlight to the first matching text node
-      if (textNodes.length > 0) {
-        const { node: textNode, text } = textNodes[0];
-        const parent = textNode.parentNode;
-        const index = text.indexOf(selectionData.text);
+      // First try: Use the exact path and offsets if possible
+      if (targetNode && targetNode.nodeType === Node.TEXT_NODE) {
+        const text = targetNode.textContent || '';
+        const start = parseInt(lastUndone.startOffset, 10);
+        const end = parseInt(lastUndone.endOffset, 10);
         
-        if (index !== -1) {
-          // Split the text node
-          const before = text.substring(0, index);
-          const after = text.substring(index + selectionData.text.length);
+        // Only proceed if the text at the position matches what we expect
+        const expectedText = lastUndone.exactText || lastUndone.text || '';
+        const actualText = text.substring(start, end);
+        
+        if (start >= 0 && end <= text.length && actualText === expectedText) {
+          const before = text.substring(0, start);
+          const after = text.substring(end);
           
           // Create new nodes
           const beforeNode = document.createTextNode(before);
-          const highlightNode = document.createTextNode(selectionData.text);
           const afterNode = document.createTextNode(after);
           
-          // Create the highlight span
-          const newSpan = span.cloneNode();
-          newSpan.appendChild(highlightNode);
+          // Set the text content of our highlight span
+          span.textContent = expectedText;
           
-          // Apply the highlight
-          this.applySingleHighlight(newSpan, selectionData, lastUndone.taxonomyType);
-          
-          // Replace the original text node with the new nodes
-          parent.replaceChild(beforeNode, textNode);
-          parent.insertBefore(newSpan, beforeNode.nextSibling);
-          if (after) {
-            parent.insertBefore(afterNode, newSpan.nextSibling);
+          // Replace the text node with our new structure
+          const parent = targetNode.parentNode;
+          if (parent) {
+            parent.replaceChild(beforeNode, targetNode);
+            parent.insertBefore(span, beforeNode.nextSibling);
+            
+            // Only add after node if there's content after the highlight
+            if (after) {
+              parent.insertBefore(afterNode, span.nextSibling);
+            }
+            
+            // Apply the highlight styling and events
+            this.applySingleHighlight(span, selectionData, lastUndone.taxonomyType);
+            highlightApplied = true;
           }
         }
       }
+      
+      // Second try: If exact position didn't work, try to find the text in the document
+      if (!highlightApplied) {
+        console.warn('Could not find exact position, falling back to text search');
+        const range = document.createRange();
+        const walker = document.createTreeWalker(
+          document.body,
+          NodeFilter.SHOW_TEXT,
+          null,
+          false
+        );
+        
+        const searchText = lastUndone.exactText || lastUndone.text || '';
+        let node;
+        
+        while ((node = walker.nextNode())) {
+          const text = node.nodeValue || '';
+          const index = text.indexOf(searchText);
+          
+          if (index !== -1) {
+            const before = text.substring(0, index);
+            const after = text.substring(index + searchText.length);
+            
+            // Create new nodes
+            const beforeNode = document.createTextNode(before);
+            const afterNode = document.createTextNode(after);
+            
+            // Set the text content of our highlight span
+            span.textContent = searchText;
+            
+            // Replace the text node with our new structure
+            const parent = node.parentNode;
+            if (parent) {
+              parent.replaceChild(beforeNode, node);
+              parent.insertBefore(span, beforeNode.nextSibling);
+              
+              // Only add after node if there's content after the highlight
+              if (after) {
+                parent.insertBefore(afterNode, span.nextSibling);
+              }
+              
+              // Apply the highlight styling and events
+              this.applySingleHighlight(span, selectionData, lastUndone.taxonomyType);
+              highlightApplied = true;
+              break;
+            }
+          }
+        }
+      }
+      
+      if (!highlightApplied) {
+        console.error('Could not find text to redo highlight:', lastUndone);
+        // Remove from document data since we couldn't apply the highlight
+        const index = doc.enrichment.taxonomy[lastUndone.taxonomyType].findIndex(
+          item => item.id === lastUndone.selectionId
+        );
+        if (index !== -1) {
+          doc.enrichment.taxonomy[lastUndone.taxonomyType].splice(index, 1);
+        }
+        return;
+      }
+      
+      // Update the document data
+      this.documentData[lastUndone.docId] = doc;
+      
+      // Update the lastUndone object with the new element reference
+      lastUndone.element = span;
     }
-    
-    // Update the document data
-    this.documentData[lastUndone.docId] = doc;
     
     // Add back to history
     this.highlightHistory.push(lastUndone);
