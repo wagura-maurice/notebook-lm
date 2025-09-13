@@ -17,6 +17,24 @@ class DoccanoApp {
     // Track highlight history for undo/redo functionality
     this.highlightHistory = [];
     this.redoHistory = [];
+    
+    // Initialize visualizer
+    console.log('Initializing DoccanoVisualizer...');
+    try {
+      this.visualizer = new DoccanoVisualizer(this);
+      console.log('DoccanoVisualizer initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize DoccanoVisualizer:', error);
+    }
+    
+    // Initialize visualization data
+    this.usageStats = {
+      prompt_tokens: 0,
+      completion_tokens: 0,
+      total_tokens: 0
+    };
+    this.confidenceScores = [];
+    this.tokenUsageChart = null;
 
     // Initialize structure handlers with bound context
     this.structureHandlers = {
@@ -176,45 +194,81 @@ class DoccanoApp {
     });
   }
 
+  // Format number with thousand separators
+  formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  // Count taxonomy items in all loaded documents
+  countTaxonomyItems() {
+    // Reset counts
+    this.taxonomyCounts = {
+      almp_instruments: 0,
+      target_groups: 0,
+      delivery_modes: 0,
+      evaluation_design: 0,
+    };
+
+    // Count taxonomy items in all documents
+    this.documentData.forEach((doc) => {
+      if (doc.enrichment?.taxonomy) {
+        const { taxonomy } = doc.enrichment;
+        if (taxonomy.almp_instruments?.length)
+          this.taxonomyCounts.almp_instruments +=
+            taxonomy.almp_instruments.length;
+        if (taxonomy.target_groups?.length)
+          this.taxonomyCounts.target_groups += taxonomy.target_groups.length;
+        if (taxonomy.delivery_modes?.length)
+          this.taxonomyCounts.delivery_modes += taxonomy.delivery_modes.length;
+        if (taxonomy.evaluation_design?.length)
+          this.taxonomyCounts.evaluation_design +=
+            taxonomy.evaluation_design.length;
+      }
+    });
+  }
+
   async loadDocuments() {
     try {
-      const response = await fetch(
-        "assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson"
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      // Show loading state
+      if (this.documentContainer) {
+        this.documentContainer.innerHTML = "<p>Loading document data...</p>";
       }
-      this.ndjsonRaw = await response.text();
-      // Store both the document and its original line number
-      const lines = this.ndjsonRaw.trim().split("\n");
-      this.documentData = [];
+
+      // Load the NDJSON file
+      const response = await fetch(
+        "./assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson"
+      );
+      const text = await response.text();
       
-      lines.forEach((line, index) => {
-        if (line.trim() === "") return;
-        
-        try {
-          const item = JSON.parse(line);
-          // Only include prose items with sufficient content
-          if (item.structure_type === "prose" &&
-              item.text &&
-              item.text.trim().length > 0 &&
-              !item.text.startsWith("![]") &&
-              item.text.length > 50) {
-            // Store the original line number (1-based) with the document
-            item.originalLineNumber = index + 1;
-            this.documentData.push(item);
+      // Parse the NDJSON file
+      this.documentData = text
+        .split("\n")
+        .filter((line) => line.trim() !== "")
+        .map((line, index) => {
+          try {
+            return JSON.parse(line);
+          } catch (e) {
+            console.error(`Error parsing line ${index + 1}:`, e);
+            return null;
           }
-        } catch (e) {
-          console.error(`Error parsing line ${index + 1}:`, e);
-        }
-      });
+        })
+        .filter((doc) => doc !== null);
 
       console.log(`Loaded ${this.documentData.length} documents`);
 
       // Count taxonomy items
       this.countTaxonomyItems();
+      
+      // Process data for visualizations
+      console.log('Processing data for visualization...');
+      if (this.visualizer) {
+        console.log('Visualizer found, processing data...');
+        this.visualizer.processData(this.documentData);
+      } else {
+        console.error('Visualizer not initialized');
+      }
 
-      // Display all documents at once
+      // Display all documents
       this.displayAllDocuments();
 
       return this.documentData;
@@ -224,8 +278,8 @@ class DoccanoApp {
       throw error;
     }
   }
-
-  // Get the appropriate structure handler for a document
+    
+  // Get the appropriate structure handler for the document
   getStructureHandler(doc) {
     const type = doc.structure_type || "prose";
     return this.structureHandlers[type] || this.structureHandlers.default;
