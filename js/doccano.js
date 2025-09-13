@@ -670,6 +670,9 @@ class DoccanoApp {
       // Update the UI to show the highlight
       this.applySingleHighlight(span, selectionData, taxonomyType);
       
+      // Update taxonomy counts in the UI
+      this.countTaxonomyItems();
+      
     } catch (e) {
       console.error('Error highlighting selection:', e);
     }
@@ -774,6 +777,9 @@ class DoccanoApp {
     
     // Update the document data
     this.updateNDJSONRaw();
+    
+    // Update taxonomy counts in the UI
+    this.countTaxonomyItems();
   }
 
   updateNDJSONRaw() {
