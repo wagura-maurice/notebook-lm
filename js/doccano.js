@@ -81,9 +81,10 @@ class DoccanoApp {
       pagination.remove();
     }
     
-    // Set up undo/redo buttons
+    // Set up action buttons
     const undoButton = document.querySelector("button[title='Undo']");
     const redoButton = document.querySelector("button[title='Redo']");
+    const saveButton = document.querySelector("button[title='Save']");
     
     if (undoButton) {
       undoButton.addEventListener("click", () => this.undoLastHighlight());
@@ -91,6 +92,10 @@ class DoccanoApp {
     
     if (redoButton) {
       redoButton.addEventListener("click", () => this.redoLastUndo());
+    }
+    
+    if (saveButton) {
+      saveButton.addEventListener("click", () => this.saveHighlights());
     }
 
     try {
@@ -935,6 +940,57 @@ class DoccanoApp {
     this.countTaxonomyItems();
   }
 
+  // Save highlights - for now just logs the data to console
+  saveHighlights() {
+    console.log('Saving highlights...');
+    console.log('Current document data:', this.documentData);
+    
+    // Get all highlights from the document
+    const highlights = [];
+    this.documentData.forEach((doc, docIndex) => {
+      if (doc.enrichment?.taxonomy) {
+        Object.entries(doc.enrichment.taxonomy).forEach(([taxonomyType, items]) => {
+          items.forEach(item => {
+            highlights.push({
+              documentIndex: docIndex,
+              taxonomyType,
+              text: item.text,
+              id: item.id,
+              lineNumber: item.lineNumber
+            });
+          });
+        });
+      }
+    });
+    
+    console.log('All highlights:', highlights);
+    console.log('Total highlights:', highlights.length);
+    
+    // Show a success toast
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+      }
+    });
+    
+    Toast.fire({
+      icon: 'success',
+      title: `Saved ${highlights.length} highlight${highlights.length !== 1 ? 's' : ''}`,
+      background: '#fff',
+      iconColor: '#003087',
+      color: '#1a1a1a',
+      customClass: {
+        popup: 'border border-gray-200 rounded-lg shadow-lg'
+      }
+    });
+  }
+  
   updateNDJSONRaw() {
     // Update ndjsonRaw from documentData
     this.ndjsonRaw = this.documentData
