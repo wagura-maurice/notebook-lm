@@ -14,8 +14,9 @@ class DoccanoApp {
       "evaluation_design",
     ];
     
-    // Track highlight history for undo functionality
+    // Track highlight history for undo/redo functionality
     this.highlightHistory = [];
+    this.redoHistory = [];
 
     // Initialize structure handlers with bound context
     this.structureHandlers = {
@@ -80,10 +81,16 @@ class DoccanoApp {
       pagination.remove();
     }
     
-    // Set up undo button
+    // Set up undo/redo buttons
     const undoButton = document.querySelector("button[title='Undo']");
+    const redoButton = document.querySelector("button[title='Redo']");
+    
     if (undoButton) {
       undoButton.addEventListener("click", () => this.undoLastHighlight());
+    }
+    
+    if (redoButton) {
+      redoButton.addEventListener("click", () => this.redoLastUndo());
     }
 
     try {
@@ -808,6 +815,13 @@ class DoccanoApp {
     const lastHighlight = this.highlightHistory.pop();
     if (!lastHighlight) return;
     
+    // Store the text content before removing the highlight
+    lastHighlight.text = lastHighlight.element?.textContent || '';
+    lastHighlight.lineNumber = lastHighlight.element?.dataset?.lineNumber;
+    
+    // Add to redo history
+    this.redoHistory.push(lastHighlight);
+    
     // Find the highlight element in the DOM
     const highlightElement = document.querySelector(`[data-selection-id="${lastHighlight.selectionId}"]`);
     
@@ -815,6 +829,110 @@ class DoccanoApp {
       // Remove the highlight
       this.removeHighlight(highlightElement, lastHighlight.selectionId);
     }
+  }
+  
+  // Redo the last undone highlight action
+  async redoLastUndo() {
+    if (this.redoHistory.length === 0) return;
+    
+    // Get the last undone highlight
+    const lastUndone = this.redoHistory.pop();
+    if (!lastUndone) return;
+    
+    // Find the document element
+    const doc = this.documentData[lastUndone.docId];
+    if (!doc) return;
+    
+    // Recreate the highlight data
+    const selectionData = {
+      id: lastUndone.selectionId,
+      text: lastUndone.text || lastUndone.element?.textContent || '',
+      lineNumber: lastUndone.lineNumber || lastUndone.element?.dataset?.lineNumber,
+      created: new Date().toISOString()
+    };
+    
+    // Add back to the document data
+    if (!doc.enrichment) doc.enrichment = {};
+    if (!doc.enrichment.taxonomy) doc.enrichment.taxonomy = {};
+    if (!doc.enrichment.taxonomy[lastUndone.taxonomyType]) {
+      doc.enrichment.taxonomy[lastUndone.taxonomyType] = [];
+    }
+    
+    // Check if this highlight already exists
+    const exists = doc.enrichment.taxonomy[lastUndone.taxonomyType].some(
+      item => item.id === lastUndone.selectionId
+    );
+    
+    if (!exists) {
+      doc.enrichment.taxonomy[lastUndone.taxonomyType].push(selectionData);
+      
+      // Create a new span for the highlight
+      const span = document.createElement('span');
+      span.className = `taxonomy-highlight ${lastUndone.taxonomyType}`;
+      span.dataset.selectionId = lastUndone.selectionId;
+      span.dataset.taxonomyType = lastUndone.taxonomyType;
+      
+      // Find the text node to highlight
+      const textNodes = [];
+      const walker = document.createTreeWalker(
+        document.body,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
+      );
+      
+      let node;
+      while (node = walker.nextNode()) {
+        if (node.nodeValue && node.nodeValue.includes(selectionData.text)) {
+          textNodes.push({
+            node: node,
+            text: node.nodeValue
+          });
+        }
+      }
+      
+      // Apply the highlight to the first matching text node
+      if (textNodes.length > 0) {
+        const { node: textNode, text } = textNodes[0];
+        const parent = textNode.parentNode;
+        const index = text.indexOf(selectionData.text);
+        
+        if (index !== -1) {
+          // Split the text node
+          const before = text.substring(0, index);
+          const after = text.substring(index + selectionData.text.length);
+          
+          // Create new nodes
+          const beforeNode = document.createTextNode(before);
+          const highlightNode = document.createTextNode(selectionData.text);
+          const afterNode = document.createTextNode(after);
+          
+          // Create the highlight span
+          const newSpan = span.cloneNode();
+          newSpan.appendChild(highlightNode);
+          
+          // Apply the highlight
+          this.applySingleHighlight(newSpan, selectionData, lastUndone.taxonomyType);
+          
+          // Replace the original text node with the new nodes
+          parent.replaceChild(beforeNode, textNode);
+          parent.insertBefore(newSpan, beforeNode.nextSibling);
+          if (after) {
+            parent.insertBefore(afterNode, newSpan.nextSibling);
+          }
+        }
+      }
+    }
+    
+    // Update the document data
+    this.documentData[lastUndone.docId] = doc;
+    
+    // Add back to history
+    this.highlightHistory.push(lastUndone);
+    
+    // Update the UI
+    this.updateNDJSONRaw();
+    this.countTaxonomyItems();
   }
 
   updateNDJSONRaw() {
