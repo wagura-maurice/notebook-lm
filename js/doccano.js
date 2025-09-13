@@ -494,58 +494,79 @@ class DoccanoApp {
   }
 
   showTaxonomyPopup(x, y, selectedText) {
-    // Remove any existing popup
     let oldPopup = document.getElementById("taxonomy-popup");
     if (oldPopup) oldPopup.remove();
-    
-    // Create popup
+    // Enhanced popup structure
     const popup = document.createElement("div");
     popup.id = "taxonomy-popup";
-    
-    // Position the popup near the selection
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const popupWidth = 200; // Approximate width
-    const popupHeight = 200; // Approximate height
-    
-    // Adjust position to ensure it stays within viewport
-    let left = x;
-    let top = y + 20; // Position below the cursor
-    
-    // Ensure popup doesn't go off the right edge
-    if (left + popupWidth > viewportWidth) {
-      left = viewportWidth - popupWidth - 10;
-    }
-    
-    // Ensure popup doesn't go off the bottom edge
-    if (top + popupHeight > viewportHeight) {
-      top = y - popupHeight - 10; // Position above the cursor if not enough space below
-    }
-    
-    // Apply styles
-    popup.style.left = `${left}px`;
-    popup.style.top = `${top}px`;
-    popup.innerHTML =
-      `<div style='font-weight:600;margin-bottom:8px;'>Assign taxonomy:</div>` +
-      this.taxonomyTypes
-        .map(
-          (type) =>
-            `<button style='display:block;width:100%;margin-bottom:6px;padding:6px 0;background:var(--eu-blue);color:var(--eu-white);border:none;border-radius:4px;cursor:pointer;' data-taxonomy='${type}'>${type.replace(
-              /_/g,
-              " "
-            )}</button>`
-        )
-        .join("");
-    document.body.appendChild(popup);
-    // Add event listeners
-    popup.querySelectorAll("button").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const taxonomyType = btn.getAttribute("data-taxonomy");
-        this.assignTaxonomy(selectedText, taxonomyType);
-        // Remove popup
+    popup.style.left = x + "px";
+    popup.style.top = y + "px";
+    // Header
+    const header = document.createElement("div");
+    header.className = "popup-header";
+    header.innerHTML = `Assign taxonomy:`;
+    // Close button
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "close-btn";
+    closeBtn.innerHTML = "&times;";
+    closeBtn.onclick = () => popup.remove();
+    header.appendChild(closeBtn);
+    popup.appendChild(header);
+    // Selected text preview
+    const preview = document.createElement("div");
+    preview.className = "selected-text-preview";
+    preview.textContent = selectedText;
+    popup.appendChild(preview);
+    // Taxonomy options
+    const options = document.createElement("div");
+    options.className = "taxonomy-options";
+    this.taxonomyTypes.forEach((type) => {
+      const option = document.createElement("button");
+      option.className = "taxonomy-option";
+      option.setAttribute("data-taxonomy", type);
+      // Color indicator
+      const colorIndicator = document.createElement("span");
+      colorIndicator.className = "taxonomy-color-indicator";
+      option.appendChild(colorIndicator);
+      // Name
+      const name = document.createElement("span");
+      name.className = "taxonomy-name";
+      name.textContent = type.replace(/_/g, " ");
+      option.appendChild(name);
+      // Count
+      const doc = this.documentData.find(
+        (d) => d.text && d.text.includes(selectedText)
+      );
+      let count = 0;
+      if (
+        doc &&
+        doc.enrichment &&
+        doc.enrichment.taxonomy &&
+        doc.enrichment.taxonomy[type]
+      ) {
+        count = doc.enrichment.taxonomy[type].length;
+      }
+      const countSpan = document.createElement("span");
+      countSpan.className = "taxonomy-count";
+      countSpan.textContent = count;
+      option.appendChild(countSpan);
+      option.onclick = () => {
+        this.assignTaxonomy(selectedText, type);
         popup.remove();
-      });
+      };
+      options.appendChild(option);
     });
+    popup.appendChild(options);
+    // Footer
+    const footer = document.createElement("div");
+    footer.className = "popup-footer";
+    const cancelBtn = document.createElement("button");
+    cancelBtn.className = "cancel-btn";
+    cancelBtn.textContent = "Cancel";
+    cancelBtn.onclick = () => popup.remove();
+    footer.appendChild(cancelBtn);
+    popup.appendChild(footer);
+    document.body.appendChild(popup);
     // Remove popup if clicking outside
     setTimeout(() => {
       document.addEventListener("mousedown", function handler(ev) {
