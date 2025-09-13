@@ -705,9 +705,25 @@ class DoccanoApp {
       }
     });
     
-    // Add click handler to remove the highlight if needed
-    span.addEventListener('dblclick', (e) => {
-      if (confirm('Remove this highlight?')) {
+    // Add double-click handler to remove the highlight with confirmation
+    span.addEventListener('dblclick', async (e) => {
+      const result = await Swal.fire({
+        title: 'Remove Highlight',
+        text: 'Are you sure you want to remove this highlight?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#003087', // EU Blue
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, remove it!',
+        cancelButtonText: 'Cancel',
+        customClass: {
+          confirmButton: 'bg-eu-blue hover:bg-eu-blue-dark text-white font-medium py-2 px-4 rounded-md',
+          cancelButton: 'bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md',
+          popup: 'rounded-lg shadow-lg'
+        }
+      });
+      
+      if (result.isConfirmed) {
         this.removeHighlight(span, selectionData.id);
       }
     });
