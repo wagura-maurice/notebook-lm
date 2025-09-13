@@ -28,7 +28,7 @@
       type="application/JavaScript"
       src="https://cdn.tailwindcss.com"
     ></script>
-    
+
     <!-- ApexCharts -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script type="application/JavaScript">
@@ -399,9 +399,9 @@
       <!-- Document Column -->
       <div
         id="document-tab"
-        class="mobile-tab-content w-full lg:w-4/5 h-full flex flex-col transition-all duration-300 lg:block"
+        class="mobile-tab-content w-full lg:w-4/5 h-full flex flex-row transition-all duration-300 lg:block"
       >
-        <!-- Canvas Header -->
+        <!-- Canvas Header (spans full width, above sub-columns) -->
         <div
           class="border-b border-eu-gray-200 bg-white h-16 flex items-center justify-between px-4"
         >
@@ -430,16 +430,33 @@
             </button>
           </div>
         </div>
-
-        <!-- Canvas Area -->
-        <div class="h-full flex flex-col">
-          <div class="flex-1 overflow-y-auto">
-            <div class="lg:p-6 p-3 bg-eu-gray-100 min-h-full">
-              <!-- Document content will be loaded here -->
-              <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow">
-                <!-- <h1 class="text-2xl font-bold text-eu-blue mb-6">Loading Document...</h1> -->
-                <div class="prose max-w-none text-eu-gray-800">
-                  <p>Please wait while we load the document...</p>
+        <!-- Left Column Split: Table of Contents + Document Content -->
+        <div class="flex flex-row w-full h-full">
+          <!-- Left sub-column: Table of Contents -->
+          <div class="toc-column w-[15%] bg-eu-slate-800 text-eu-white p-4">
+            <!-- Minimal placeholder for table of contents -->
+            <div class="font-semibold mb-2">Table of Contents</div>
+            <ul class="space-y-2 text-sm">
+              <li>Section 1</li>
+              <li>Section 2</li>
+              <li>Section 3</li>
+            </ul>
+          </div>
+          <!-- Right sub-column: Document Content -->
+          <div class="doc-content-column w-[85%] h-full flex flex-col">
+            <!-- Canvas Area -->
+            <div class="h-full flex flex-col">
+              <div class="flex-1 overflow-y-auto">
+                <!-- <div class="lg:p-6 p-3 bg-eu-gray-100 min-h-full"> -->
+                <div class="lg:p-0 p-3 bg-eu-gray-100 min-h-full">
+                  <!-- <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow"> -->
+                  <div
+                    class="max-w-4xl mx-auto bg-white lg:p-2 p-8 rounded-lg shadow-lg"
+                  >
+                    <div class="prose max-w-none text-eu-gray-800">
+                      <p>Please wait while we load the document...</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -462,7 +479,9 @@
 
         <!-- Annotation Tools -->
         <div class="p-4 border-b border-eu-gray-200">
-          <h4 class="text-sm font-medium text-eu-blue mb-2">Taxonomy Analytics</h4>
+          <h4 class="text-sm font-medium text-eu-blue mb-2">
+            Taxonomy Analytics
+          </h4>
           <div class="space-y-2">
             <button
               class="w-full flex items-center justify-between px-3 py-2 text-sm rounded border border-eu-blue text-eu-blue hover:bg-eu-blue hover:text-white transition-colors"
@@ -525,17 +544,31 @@
           <div class="space-y-3">
             <!-- Token Usage Doughnut Chart -->
             <div class="mb-4">
-              <p class="text-sm text-eu-gray-600 mb-4">Visual representation of token distribution across your annotated data.</p>
+              <p class="text-sm text-eu-gray-600 mb-4">
+                Visual representation of token distribution across your
+                annotated data.
+              </p>
               <div id="tokenUsageChart" class="w-full"></div>
             </div>
-            
+
             <!-- Confidence Progress Bar -->
             <div class="mb-4">
-              <p class="text-sm text-eu-gray-600 mb-4">Average confidence level of your annotations.</p>
+              <p class="text-sm text-eu-gray-600 mb-4">
+                Average confidence level of your annotations.
+              </p>
               <div class="w-full bg-eu-gray-100 rounded-full h-2.5">
-                <div id="confidenceProgress" class="h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                <div
+                  id="confidenceProgress"
+                  class="h-2.5 rounded-full transition-all duration-500"
+                  style="width: 0%"
+                ></div>
               </div>
-              <div id="confidenceValue" class="text-xs text-eu-gray-500 text-right mt-1">0%</div>
+              <div
+                id="confidenceValue"
+                class="text-xs text-eu-gray-500 text-right mt-1"
+              >
+                0%
+              </div>
             </div>
           </div>
         </div>
@@ -656,27 +689,27 @@
     <script type="application/JavaScript" src="./js/visualization.js"></script>
     <script>
       // Initialize the DoccanoApp when the page loads
-      document.addEventListener('DOMContentLoaded', () => {
+      document.addEventListener("DOMContentLoaded", () => {
         // The DoccanoApp is already initialized in doccano.js
         // Force an initial count of taxonomy items after a short delay to ensure DOM is ready
         setTimeout(() => {
           if (window.doccanoApp) {
-            console.log('Initializing taxonomy counts...');
+            console.log("Initializing taxonomy counts...");
             window.doccanoApp.countTaxonomyItems();
-            
+
             // Also update counts when the annotations tab is shown
-            const annotationsTab = document.getElementById('annotations-tab');
+            const annotationsTab = document.getElementById("annotations-tab");
             if (annotationsTab) {
               const observer = new MutationObserver((mutations) => {
-                if (!annotationsTab.classList.contains('hidden')) {
-                  console.log('Annotations tab shown, updating counts...');
+                if (!annotationsTab.classList.contains("hidden")) {
+                  console.log("Annotations tab shown, updating counts...");
                   window.doccanoApp.countTaxonomyItems();
                 }
               });
-              
+
               observer.observe(annotationsTab, {
                 attributes: true,
-                attributeFilter: ['class']
+                attributeFilter: ["class"],
               });
             }
           }
