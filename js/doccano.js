@@ -533,23 +533,7 @@ class DoccanoApp {
       name.className = "taxonomy-name";
       name.textContent = type.replace(/_/g, " ");
       option.appendChild(name);
-      // Count
-      const doc = this.documentData.find(
-        (d) => d.text && d.text.includes(selectedText)
-      );
-      let count = 0;
-      if (
-        doc &&
-        doc.enrichment &&
-        doc.enrichment.taxonomy &&
-        doc.enrichment.taxonomy[type]
-      ) {
-        count = doc.enrichment.taxonomy[type].length;
-      }
-      const countSpan = document.createElement("span");
-      countSpan.className = "taxonomy-count";
-      countSpan.textContent = count;
-      option.appendChild(countSpan);
+      // Remove counter logic
       option.onclick = () => {
         this.assignTaxonomy(selectedText, type);
         popup.remove();
