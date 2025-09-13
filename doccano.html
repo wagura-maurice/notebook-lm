@@ -28,6 +28,9 @@
       type="application/JavaScript"
       src="https://cdn.tailwindcss.com"
     ></script>
+    
+    <!-- ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script type="application/JavaScript">
       tailwind.config = {
         theme: {
@@ -64,7 +67,9 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
 
-    <!-- Custom CSS -->
+    <!-- Custom JS -->
+    <!-- <script src="./js/visualization.js"></script> -->
+    <!-- <script src="./js/doccano.js"></script> -->
     <link href="./css/doccano.css" rel="stylesheet" />
     <link href="./css/tour.css" rel="stylesheet" />
   </head>
@@ -445,7 +450,7 @@
       <!-- Annotations Column -->
       <div
         id="annotations-tab"
-        class="mobile-tab-content w-full lg:w-1/5 h-full border-l border-eu-gray-200 bg-white flex flex-col transition-all duration-300 lg:block hidden"
+        class="mobile-tab-content w-full lg:w-1/5 h-full border-l border-eu-gray-200 bg-white flex flex-col transition-all duration-300 lg:flex hidden overflow-hidden"
       >
         <!-- Sidebar Header -->
         <div
@@ -457,7 +462,7 @@
 
         <!-- Annotation Tools -->
         <div class="p-4 border-b border-eu-gray-200">
-          <h4 class="text-sm font-medium text-eu-blue mb-2">Taxonomies</h4>
+          <h4 class="text-sm font-medium text-eu-blue mb-2">Taxonomy Analytics</h4>
           <div class="space-y-2">
             <button
               class="w-full flex items-center justify-between px-3 py-2 text-sm rounded border border-eu-blue text-eu-blue hover:bg-eu-blue hover:text-white transition-colors"
@@ -510,24 +515,23 @@
           </div>
         </div>
 
-        <!-- Annotations List -->
+        <!-- AI Usage Analytics -->
         <div class="flex-1 overflow-y-auto p-4">
-          <h4 class="text-sm font-medium text-eu-blue mb-3">Annotations</h4>
+          <h4 class="text-sm font-medium text-eu-blue mb-3">Token Analytics</h4>
           <div class="space-y-3">
-            <!-- Sample annotation item -->
-            <div
-              class="p-3 bg-eu-gray-100 rounded-lg border-l-4 border-red-500"
-            >
-              <div class="flex justify-between items-start">
-                <span class="text-xs font-medium text-eu-blue"
-                  >Organization</span
-                >
-                <button class="text-eu-gray-400 hover:text-red-500">
-                  <i class="fas fa-times text-xs"></i>
-                </button>
+            <!-- Token Usage Doughnut Chart -->
+            <div class="mb-4">
+              <p class="text-sm text-eu-gray-600 mb-4">Visual representation of token distribution across your annotated data.</p>
+              <div id="tokenUsageChart" class="w-full"></div>
+            </div>
+            
+            <!-- Confidence Progress Bar -->
+            <div class="mb-4">
+              <p class="text-sm text-eu-gray-600 mb-4">Average confidence level of your annotations.</p>
+              <div class="w-full bg-eu-gray-100 rounded-full h-2.5">
+                <div id="confidenceProgress" class="h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
               </div>
-              <p class="text-sm mt-1 text-eu-gray-800">European Union</p>
-              <p class="text-xs text-eu-gray-500 mt-1">Paragraph 2</p>
+              <div id="confidenceValue" class="text-xs text-eu-gray-500 text-right mt-1">0%</div>
             </div>
           </div>
         </div>
@@ -645,9 +649,6 @@
       src="https://cdn.jsdelivr.net/npm/sweetalert2@11"
     ></script>
     <script type="application/JavaScript" src="./js/doccano.js"></script>
-    <script type="application/JavaScript">
-      // Ensure NDJSON is loaded from assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson
-      // The logic is handled in js/doccano.js, no markup changes needed for popup
-    </script>
+    <script type="application/JavaScript" src="./js/visualization.js"></script>
   </body>
 </html>
