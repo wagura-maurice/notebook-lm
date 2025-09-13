@@ -13,6 +13,9 @@ class DoccanoApp {
       "delivery_modes",
       "evaluation_design",
     ];
+    
+    // Track highlight history for undo functionality
+    this.highlightHistory = [];
 
     // Initialize structure handlers with bound context
     this.structureHandlers = {
@@ -75,6 +78,12 @@ class DoccanoApp {
     const pagination = document.querySelector(".pagination");
     if (pagination) {
       pagination.remove();
+    }
+    
+    // Set up undo button
+    const undoButton = document.querySelector("button[title='Undo']");
+    if (undoButton) {
+      undoButton.addEventListener("click", () => this.undoLastHighlight());
     }
 
     try {
@@ -667,6 +676,15 @@ class DoccanoApp {
       // Update the document data to preserve the highlight
       this.documentData[docId] = doc;
       
+      // Add to history before applying the highlight
+      this.highlightHistory.push({
+        docId: docId,
+        selectionId: selectionId,
+        taxonomyType: taxonomyType,
+        element: span,
+        timestamp: new Date().toISOString()
+      });
+      
       // Update the UI to show the highlight
       this.applySingleHighlight(span, selectionData, taxonomyType);
       
@@ -780,6 +798,23 @@ class DoccanoApp {
     
     // Update taxonomy counts in the UI
     this.countTaxonomyItems();
+  }
+
+  // Undo the last highlight action
+  async undoLastHighlight() {
+    if (this.highlightHistory.length === 0) return;
+    
+    // Get the last highlight from history
+    const lastHighlight = this.highlightHistory.pop();
+    if (!lastHighlight) return;
+    
+    // Find the highlight element in the DOM
+    const highlightElement = document.querySelector(`[data-selection-id="${lastHighlight.selectionId}"]`);
+    
+    if (highlightElement) {
+      // Remove the highlight
+      this.removeHighlight(highlightElement, lastHighlight.selectionId);
+    }
   }
 
   updateNDJSONRaw() {
