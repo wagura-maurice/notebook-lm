@@ -15,30 +15,53 @@
 }
 
 /* Tooltip styling */
-.taxonomy-tooltip {
-  visibility: hidden;
-  width: max-content;
-  max-width: 200px;
-  text-align: center;
-  border-radius: 4px;
-  padding: 4px 8px;
+.tooltip {
   position: absolute;
-  z-index: 50;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-4px);
-  opacity: 0;
-  transition: all 0.2s ease;
+  background: #2d3748;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
   font-size: 0.75rem;
-  pointer-events: none;
   white-space: nowrap;
+  z-index: 1000;
+  pointer-events: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: none;
+}
+
+/* Highlight styles for each taxonomy type */
+.taxonomy-highlight {
+  position: relative;
+  padding: 0 2px;
+  border-radius: 3px;
+  cursor: help;
+  transition: all 0.2s ease;
+}
+
+.taxonomy-highlight:hover {
+  transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.taxonomy-highlight:hover .taxonomy-tooltip {
-  visibility: visible;
-  opacity: 1;
-  transform: translateX(-50%) translateY(-8px);
+/* Color coding for taxonomy highlights */
+.taxonomy-highlight.almp_instruments {
+  background-color: rgba(239, 68, 68, 0.15);
+  border-left: 2px solid #ef4444;
+}
+
+.taxonomy-highlight.target_groups {
+  background-color: rgba(59, 130, 246, 0.15);
+  border-left: 2px solid #3b82f6;
+}
+
+.taxonomy-highlight.delivery_modes {
+  background-color: rgba(16, 185, 129, 0.15);
+  border-left: 2px solid #10b981;
+}
+
+.taxonomy-highlight.evaluation_design {
+  background-color: rgba(245, 158, 11, 0.15);
+  border-left: 2px solid #f59e0b;
 }
 
 /* Enhanced Taxonomy Popup Styling */

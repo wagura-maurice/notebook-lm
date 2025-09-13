@@ -201,12 +201,15 @@ class DoccanoApp {
   }
 
   // Process a single document element with the appropriate handler
-  processDocumentElement(doc) {
+  processDocumentElement(doc, index) {
     const handler = this.getStructureHandler(doc);
-    // Ensure we have the taxonomy data from the document
     const content = doc.text || "";
-    // Pass the entire doc object to maintain all properties including enrichment.taxonomy
-    return handler.call(this, content, doc);
+    // Create a wrapper div with document ID for reference
+    const wrapper = document.createElement('div');
+    wrapper.className = 'document-element';
+    wrapper.dataset.docId = index;
+    wrapper.innerHTML = handler.call(this, content, doc, this.lastSelectedText || null);
+    return wrapper.outerHTML;
   }
 
   displayAllDocuments() {
@@ -243,7 +246,7 @@ class DoccanoApp {
         inTable = true;
         currentTableContent = "";
       } else if (doc.structure_type === "table_row" && inTable) {
-        currentTableContent += this.processDocumentElement(doc);
+        currentTableContent += this.processDocumentElement(doc, index);
         // Skip further processing until we hit the end of the table
         return;
       } else if (inTable && doc.structure_type !== "table_row") {
@@ -281,9 +284,9 @@ class DoccanoApp {
       if (doc.text) {
         if (inTable) {
           // Table content is accumulated in currentTableContent
-          currentTableContent += this.processDocumentElement(doc);
+          currentTableContent += this.processDocumentElement(doc, index);
         } else {
-          content += this.processDocumentElement(doc);
+          content += this.processDocumentElement(doc, index);
         }
       }
     });
@@ -308,7 +311,7 @@ class DoccanoApp {
   }
 
   // Apply taxonomy highlights to text
-  applyTaxonomyHighlights(text, taxonomy) {
+  applyTaxonomyHighlights(text, taxonomy, selectedText = null) {
     if (!text || !taxonomy) return text;
 
     // Define taxonomy categories and their corresponding CSS classes and colors
@@ -337,34 +340,35 @@ class DoccanoApp {
 
     let highlighted = text;
 
-    // Process each taxonomy category
+    // If a selection is being assigned, only highlight that instance
+    if (selectedText) {
+      Object.entries(taxonomy).forEach(([category, terms]) => {
+        const config = taxonomyMap[category];
+        if (!config || !terms || !Array.isArray(terms)) return;
+        terms.forEach((term) => {
+          if (!term) return;
+          if (term === selectedText) {
+            // Only replace the first occurrence
+            const pattern = new RegExp(this.escapeRegExp(term), "");
+            const highlightedTerm = `<span class=\"taxonomy-highlight bg-${config.color}/10 border-l-4 border-${config.color} px-1 py-0.5 relative group cursor-help\">${term}<span class=\"tooltip hidden group-hover:block absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded whitespace-nowrap z-10\">${config.displayName}: ${term}<span class=\"absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 transform rotate-45\"></span></span></span>`;
+            highlighted = highlighted.replace(pattern, highlightedTerm);
+          }
+        });
+      });
+      return highlighted;
+    }
+
+    // Default: highlight all taxonomy terms as before
     Object.entries(taxonomy).forEach(([category, terms]) => {
       const config = taxonomyMap[category];
       if (!config || !terms || !Array.isArray(terms)) return;
-
-      // Process each term in the category
       terms.forEach((term) => {
         if (!term) return;
-
-        // Create a regex pattern that matches the whole word, case insensitive
         const pattern = new RegExp(`\\b${this.escapeRegExp(term)}\\b`, "gi");
-
-        // Create the highlighted version with tooltip
-        const highlightedTerm = `
-          <span class="taxonomy-highlight bg-${config.color}/10 border-l-4 border-${config.color} px-1 py-0.5 relative group cursor-help">
-            $&
-            <span class="tooltip hidden group-hover:block absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded whitespace-nowrap z-10">
-              ${config.displayName}: ${term}
-              <span class="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 transform rotate-45"></span>
-            </span>
-          </span>
-        `;
-
-        // Replace all occurrences
+        const highlightedTerm = `\n          <span class=\"taxonomy-highlight bg-${config.color}/10 border-l-4 border-${config.color} px-1 py-0.5 relative group cursor-help\">$&\n            <span class=\"tooltip hidden group-hover:block absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded whitespace-nowrap z-10\">\n              ${config.displayName}: ${term}\n              <span class=\"absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 transform rotate-45\"></span>\n            </span>\n          </span>\n        `;
         highlighted = highlighted.replace(pattern, highlightedTerm);
       });
     });
-
     return highlighted;
   }
 
@@ -494,46 +498,43 @@ class DoccanoApp {
   }
 
   showTaxonomyPopup(x, y, selectedText) {
+    this.lastSelectedText = selectedText;
     let oldPopup = document.getElementById("taxonomy-popup");
     if (oldPopup) oldPopup.remove();
     // Enhanced popup structure
     const popup = document.createElement("div");
     popup.id = "taxonomy-popup";
+    // Temporarily set visibility hidden to measure height
+    popup.style.visibility = "hidden";
     popup.style.left = x + "px";
     popup.style.top = y + "px";
     // Header
     const header = document.createElement("div");
     header.className = "popup-header";
     header.innerHTML = `Assign taxonomy:`;
-    // Close button
     const closeBtn = document.createElement("button");
     closeBtn.className = "close-btn";
     closeBtn.innerHTML = "&times;";
     closeBtn.onclick = () => popup.remove();
     header.appendChild(closeBtn);
     popup.appendChild(header);
-    // Selected text preview
     const preview = document.createElement("div");
     preview.className = "selected-text-preview";
     preview.textContent = selectedText;
     popup.appendChild(preview);
-    // Taxonomy options
     const options = document.createElement("div");
     options.className = "taxonomy-options";
     this.taxonomyTypes.forEach((type) => {
       const option = document.createElement("button");
       option.className = "taxonomy-option";
       option.setAttribute("data-taxonomy", type);
-      // Color indicator
       const colorIndicator = document.createElement("span");
       colorIndicator.className = "taxonomy-color-indicator";
       option.appendChild(colorIndicator);
-      // Name
       const name = document.createElement("span");
       name.className = "taxonomy-name";
       name.textContent = type.replace(/_/g, " ");
       option.appendChild(name);
-      // Remove counter logic
       option.onclick = () => {
         this.assignTaxonomy(selectedText, type);
         popup.remove();
@@ -541,7 +542,6 @@ class DoccanoApp {
       options.appendChild(option);
     });
     popup.appendChild(options);
-    // Footer
     const footer = document.createElement("div");
     footer.className = "popup-footer";
     const cancelBtn = document.createElement("button");
@@ -551,6 +551,18 @@ class DoccanoApp {
     footer.appendChild(cancelBtn);
     popup.appendChild(footer);
     document.body.appendChild(popup);
+    // Now measure popup height and adjust position
+    setTimeout(() => {
+      popup.style.visibility = "visible";
+      const popupRect = popup.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      // If not enough space below, show above
+      if (y + popupRect.height > windowHeight - 10) {
+        let newTop = y - popupRect.height;
+        if (newTop < 10) newTop = 10; // Prevent offscreen top
+        popup.style.top = newTop + "px";
+      }
+    }, 0);
     // Remove popup if clicking outside
     setTimeout(() => {
       document.addEventListener("mousedown", function handler(ev) {
@@ -565,24 +577,158 @@ class DoccanoApp {
   assignTaxonomy(selectedText, taxonomyType) {
     // Console log as requested
     console.log("Highlighted:", selectedText, "Taxonomy:", taxonomyType);
-    // Find the first doc that contains the selected text
-    const doc = this.documentData.find(
-      (d) => d.text && d.text.includes(selectedText)
-    );
+    
+    // Get the current selection
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+    
+    const range = selection.getRangeAt(0);
+    
+    // Find the document element that contains the selection
+    let docElement = range.startContainer;
+    while (docElement && !docElement.classList?.contains('document-element')) {
+      docElement = docElement.parentNode;
+    }
+    
+    if (!docElement) {
+      console.warn('Could not find document element containing selection');
+      return;
+    }
+    
+    // Find the corresponding document data
+    const docId = docElement.dataset.docId;
+    const doc = this.documentData[docId];
     if (!doc) return;
+    
     // Ensure enrichment and taxonomy exist
     if (!doc.enrichment) doc.enrichment = {};
     if (!doc.enrichment.taxonomy) doc.enrichment.taxonomy = {};
-    if (!doc.enrichment.taxonomy[taxonomyType])
+    if (!doc.enrichment.taxonomy[taxonomyType]) {
       doc.enrichment.taxonomy[taxonomyType] = [];
-    // Add the highlighted text if not already present
-    if (!doc.enrichment.taxonomy[taxonomyType].includes(selectedText)) {
-      doc.enrichment.taxonomy[taxonomyType].push(selectedText);
     }
-    // Update NDJSON raw data in memory
+    
+    // Create a unique identifier for this specific selection
+    const selectionId = `sel-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const selectionData = {
+      id: selectionId,
+      text: selectedText,
+      created: new Date().toISOString()
+    };
+    
+    // Add the selection data to the taxonomy
+    doc.enrichment.taxonomy[taxonomyType].push(selectionData);
+    
+    // Create a highlight span for the exact selection
+    const span = document.createElement('span');
+    span.className = `taxonomy-highlight ${taxonomyType}`;
+    span.dataset.taxonomyType = taxonomyType;
+    span.dataset.selectionId = selectionId;
+    span.title = this.getTaxonomyDisplayName(taxonomyType);
+    
+    try {
+      // Surround the exact selection with our highlight span
+      range.surroundContents(span);
+      
+      // Clear the selection
+      window.getSelection().removeAllRanges();
+      
+      // Update NDJSON raw data in memory
+      this.updateNDJSONRaw();
+      
+      // Update the document data to preserve the highlight
+      this.documentData[docId] = doc;
+      
+      // Update the UI to show the highlight
+      this.applySingleHighlight(span, selectionData, taxonomyType);
+      
+    } catch (e) {
+      console.error('Error highlighting selection:', e);
+    }
+    
+    this.lastSelectedText = null;
+  }
+
+  // Get the display name for a taxonomy type
+  getTaxonomyDisplayName(taxonomyType) {
+    const displayNames = {
+      'almp_instruments': 'ALMP Instruments',
+      'target_groups': 'Target Groups',
+      'delivery_modes': 'Delivery Modes',
+      'evaluation_design': 'Evaluation Design'
+    };
+    return displayNames[taxonomyType] || taxonomyType;
+  }
+
+  // Apply highlighting to a single selection
+  applySingleHighlight(span, selectionData, taxonomyType) {
+    // Add tooltip with taxonomy info
+    const tooltip = document.createElement('span');
+    tooltip.className = 'tooltip';
+    tooltip.textContent = this.getTaxonomyDisplayName(taxonomyType);
+    
+    // Add hover effect
+    span.addEventListener('mouseenter', () => {
+      const rect = span.getBoundingClientRect();
+      tooltip.style.left = `${rect.left + window.scrollX}px`;
+      tooltip.style.top = `${rect.top + window.scrollY - 30}px`;
+      tooltip.style.display = 'block';
+      document.body.appendChild(tooltip);
+    });
+    
+    span.addEventListener('mouseleave', () => {
+      tooltip.style.display = 'none';
+      if (tooltip.parentNode) {
+        tooltip.parentNode.removeChild(tooltip);
+      }
+    });
+    
+    // Add click handler to remove the highlight if needed
+    span.addEventListener('dblclick', (e) => {
+      if (confirm('Remove this highlight?')) {
+        this.removeHighlight(span, selectionData.id);
+      }
+    });
+  }
+  
+  // Remove a highlight by its ID
+  removeHighlight(highlightElement, selectionId) {
+    if (!highlightElement || !selectionId) return;
+    
+    // Find the document element containing this highlight
+    let docElement = highlightElement;
+    while (docElement && !docElement.classList?.contains('document-element')) {
+      docElement = docElement.parentNode;
+    }
+    
+    if (!docElement) return;
+    
+    // Find the document data
+    const docId = docElement.dataset.docId;
+    const doc = this.documentData[docId];
+    if (!doc || !doc.enrichment?.taxonomy) return;
+    
+    // Remove the highlight from the document data
+    Object.keys(doc.enrichment.taxonomy).forEach(taxonomyType => {
+      const items = doc.enrichment.taxonomy[taxonomyType];
+      if (Array.isArray(items)) {
+        doc.enrichment.taxonomy[taxonomyType] = items.filter(
+          item => item.id !== selectionId
+        );
+      }
+    });
+    
+    // Remove the highlight element from the DOM
+    if (highlightElement.parentNode) {
+      const parent = highlightElement.parentNode;
+      parent.replaceChild(
+        document.createTextNode(highlightElement.textContent), 
+        highlightElement
+      );
+      parent.normalize(); // Merge adjacent text nodes
+    }
+    
+    // Update the document data
     this.updateNDJSONRaw();
-    // Optionally, re-render document to show highlight
-    this.displayAllDocuments();
   }
 
   updateNDJSONRaw() {
