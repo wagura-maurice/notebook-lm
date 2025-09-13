@@ -498,6 +498,12 @@ class DoccanoApp {
 
     // Add selection and taxonomy assignment logic
     this.documentContainer.addEventListener("mouseup", (e) => {
+      // Check if the click was inside a highlight element
+      if (e.target.closest('.taxonomy-highlight')) {
+        // Don't show taxonomy popup for clicks on existing highlights
+        return;
+      }
+      
       const selection = window.getSelection();
       const selectedText = selection.toString().trim();
       if (selectedText.length > 0) {
