@@ -164,19 +164,29 @@ class DoccanoApp {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       this.ndjsonRaw = await response.text();
-      this.documentData = this.ndjsonRaw
-        .trim()
-        .split("\n")
-        .filter((line) => line.trim() !== "")
-        .map((line) => JSON.parse(line))
-        .filter(
-          (item) =>
-            item.structure_type === "prose" &&
-            item.text &&
-            item.text.trim().length > 0 &&
-            !item.text.startsWith("![]") &&
-            item.text.length > 50
-        );
+      // Store both the document and its original line number
+      const lines = this.ndjsonRaw.trim().split("\n");
+      this.documentData = [];
+      
+      lines.forEach((line, index) => {
+        if (line.trim() === "") return;
+        
+        try {
+          const item = JSON.parse(line);
+          // Only include prose items with sufficient content
+          if (item.structure_type === "prose" &&
+              item.text &&
+              item.text.trim().length > 0 &&
+              !item.text.startsWith("![]") &&
+              item.text.length > 50) {
+            // Store the original line number (1-based) with the document
+            item.originalLineNumber = index + 1;
+            this.documentData.push(item);
+          }
+        } catch (e) {
+          console.error(`Error parsing line ${index + 1}:`, e);
+        }
+      });
 
       console.log(`Loaded ${this.documentData.length} documents`);
 
@@ -600,6 +610,9 @@ class DoccanoApp {
     const doc = this.documentData[docId];
     if (!doc) return;
     
+    // Get the original line number from the document
+    const lineNumber = doc.originalLineNumber;
+    
     // Ensure enrichment and taxonomy exist
     if (!doc.enrichment) doc.enrichment = {};
     if (!doc.enrichment.taxonomy) doc.enrichment.taxonomy = {};
@@ -612,11 +625,21 @@ class DoccanoApp {
     const selectionData = {
       id: selectionId,
       text: selectedText,
+      lineNumber: lineNumber, // Include line number in selection data
       created: new Date().toISOString()
     };
     
     // Add the selection data to the taxonomy
     doc.enrichment.taxonomy[taxonomyType].push(selectionData);
+    
+    // Log the highlight with line number
+    console.log(`Added highlight from line ${lineNumber}:`, JSON.stringify({
+      id: selectionId,
+      text: selectedText,
+      lineNumber: lineNumber,
+      taxonomyType: taxonomyType,
+      timestamp: new Date().toISOString()
+    }, null, 2));
     
     // Create a highlight span for the exact selection
     const span = document.createElement('span');
