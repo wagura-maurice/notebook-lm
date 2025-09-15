@@ -199,21 +199,21 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Tab switching functionality
-  const tabButtons = document.querySelectorAll('.tab-button');
-  const mobileTabContents = document.querySelectorAll('.mobile-tab-content');
+  const tabButtons = document.querySelectorAll(".tab-button");
+  const mobileTabContents = document.querySelectorAll(".mobile-tab-content");
 
-  tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const tab = button.getAttribute('data-tab');
-      
-      tabButtons.forEach(btn => btn.classList.remove('active'));
-      button.classList.add('active');
+  tabButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const tab = button.getAttribute("data-tab");
 
-      mobileTabContents.forEach(content => {
+      tabButtons.forEach((btn) => btn.classList.remove("active"));
+      button.classList.add("active");
+
+      mobileTabContents.forEach((content) => {
         if (content.id === tab) {
-          content.classList.add('active');
+          content.classList.add("active");
         } else {
-          content.classList.remove('active');
+          content.classList.remove("active");
         }
       });
     });

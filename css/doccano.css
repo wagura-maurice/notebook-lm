@@ -154,27 +154,37 @@ body {
 
 /* Force white background on collapsed columns */
 #left-column.collapsed,
-#right-column.collapsed,
+#right-column.collapsed {
+  background-color: var(--eu-white) !important;
+}
+
 #left-column.collapsed *,
-#right-column.collapsed *,
-#left-column.collapsed::before,
-#right-column.collapsed::before,
-#left-column.collapsed::after,
-#right-column.collapsed::after {
-  background: var(--eu-white) !important;
+#right-column.collapsed * {
   background-color: var(--eu-white) !important;
   color: var(--eu-blue) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Ensure pseudo-elements also respect the white background */
+#left-column.collapsed::before,
+#right-column.collapsed::before,
+#left-column.collapsed::after,
+#right-column.collapsed::after {
+  background-color: var(--eu-white) !important;
+}
+
 /* Smooth hover effects for interactive elements */
-button, .btn, [role="button"], [tabindex="0"] {
+button,
+.btn,
+[role="button"],
+[tabindex="0"] {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 }
 
-button:active, .btn:active {
+button:active,
+.btn:active {
   transform: translateY(1px);
 }
 
@@ -202,8 +212,14 @@ html {
 
 /* Fade-in animation for content */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Mobile Responsive */
