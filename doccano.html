@@ -149,14 +149,6 @@
                     <i class="fas fa-cog mr-3 w-5 text-center"></i>
                     <span>Settings</span>
                   </a>
-                  <a
-                    href="#"
-                    class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
-                    role="menuitem"
-                  >
-                    <i class="fas fa-moon mr-3 w-5 text-center"></i>
-                    <span>Theme</span>
-                  </a>
                   <div class="border-t border-eu-blue/20 my-1"></div>
                   <a
                     href="#"
@@ -257,16 +249,6 @@
                     class="fas fa-cog w-5 text-center text-eu-blue group-hover:text-eu-orange"
                   ></i>
                   <span class="ml-3">Settings</span>
-                </a>
-                <a
-                  href="#"
-                  class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-eu-orange/10 hover:text-eu-orange transition-colors group"
-                  role="menuitem"
-                >
-                  <i
-                    class="fas fa-moon w-5 text-center text-eu-blue group-hover:text-eu-orange"
-                  ></i>
-                  <span class="ml-3">Theme</span>
                 </a>
                 <div class="border-t border-eu-blue/10 my-1"></div>
                 <a
@@ -428,19 +410,28 @@
           </div>
 
           <!-- Collapsed view (hidden when expanded) -->
-          <div class="collapsed-content hidden">
-            <div class="relative h-[60px] w-12">
-              <div
-                class="absolute bottom-0 left-0 right-0 border-b border-eu-blue"
-              ></div>
-              <div class="flex items-center justify-center h-full w-full">
-                <button
-                  id="expand-left"
-                  class="text-eu-blue text-lg hover:text-eu-orange"
-                  title="Expand guide"
-                >
-                  <i class="fas fa-chevron-right"></i>
-                </button>
+          <div class="collapsed-content hidden flex flex-col h-full w-16 bg-eu-white border-r border-eu-blue/20">
+            <!-- Collapsed header -->
+            <div class="flex items-center justify-center py-3 border-b border-eu-blue/20">
+              <button
+                id="expand-left"
+                class="text-eu-blue hover:text-eu-orange transition-colors"
+                title="Expand guide"
+              >
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+            
+            <!-- Section icons -->
+            <div id="collapsed-sections" class="flex-1 overflow-y-auto py-2">
+              <!-- Section icons will be dynamically added here -->
+            </div>
+            
+            <!-- Document info icon -->
+            <div class="border-t border-eu-blue/20 py-2">
+              <div class="relative group w-full flex justify-center py-2">
+                <i class="fas fa-info-circle text-eu-blue text-lg cursor-pointer" 
+                   title="Document Info"></i>
               </div>
             </div>
           </div>

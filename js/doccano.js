@@ -19,6 +19,28 @@ async function loadNDJSONData() {
   }
 }
 
+// Function to get an appropriate icon based on section title
+function getSectionIcon(title) {
+  const titleLower = title.toLowerCase();
+  
+  if (titleLower.includes('intro') || titleLower.includes('overview')) {
+    return 'fas fa-home';
+  } else if (titleLower.includes('method') || titleLower.includes('approach')) {
+    return 'fas fa-flask';
+  } else if (titleLower.includes('result') || titleLower.includes('finding')) {
+    return 'fas fa-chart-bar';
+  } else if (titleLower.includes('conclusion') || titleLower.includes('summary')) {
+    return 'fas fa-check-circle';
+  } else if (titleLower.includes('recommend') || titleLower.includes('suggestion')) {
+    return 'fas fa-lightbulb';
+  } else if (titleLower.includes('reference') || titleLower.includes('citation')) {
+    return 'fas fa-book';
+  }
+  
+  // Default icon
+  return 'fas fa-file-alt';
+}
+
 // Function to process documents and group by section
 function processDocuments(docs) {
   const sections = new Map();
@@ -35,6 +57,7 @@ function processDocuments(docs) {
       annotations: doc.annotations,
       model: doc.enrichment._model,
       _ts: doc._ts,
+      icon: getSectionIcon(doc.enrichment.title || 'section')
     };
 
     sections.set(doc.id, sectionData);
@@ -43,8 +66,37 @@ function processDocuments(docs) {
   return Array.from(sections.values());
 }
 
+// Toggle between expanded and collapsed views
+function setupSidebarToggle() {
+  const collapseBtn = document.getElementById('collapse-left');
+  const expandBtn = document.getElementById('expand-left');
+  const leftColumn = document.getElementById('left-column');
+  
+  if (collapseBtn) {
+    collapseBtn.addEventListener('click', () => {
+      leftColumn.classList.add('collapsed');
+      leftColumn.querySelector('.expanded-content').classList.add('hidden');
+      leftColumn.querySelector('.collapsed-content').classList.remove('hidden');
+      leftColumn.classList.remove('lg:w-72');
+      leftColumn.classList.add('lg:w-16');
+    });
+  }
+  
+  if (expandBtn) {
+    expandBtn.addEventListener('click', () => {
+      leftColumn.classList.remove('collapsed');
+      leftColumn.querySelector('.expanded-content').classList.remove('hidden');
+      leftColumn.querySelector('.collapsed-content').classList.add('hidden');
+      leftColumn.classList.add('lg:w-72');
+      leftColumn.classList.remove('lg:w-16');
+    });
+  }
+}
+
 // Update the DOMContentLoaded event listener
 document.addEventListener("DOMContentLoaded", async function () {
+  // Set up sidebar toggle functionality
+  setupSidebarToggle();
   try {
     // Show loading state
     const loadingElement = document.getElementById("sections-loading");
@@ -94,6 +146,40 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 });
 
+// Function to create a collapsed section icon
+function createCollapsedSectionIcon(sectionData) {
+  const icon = document.createElement('div');
+  icon.className = 'relative group w-full flex justify-center py-2 hover:bg-eu-blue/10 transition-colors cursor-pointer';
+  icon.setAttribute('data-section-id', sectionData.id);
+  icon.title = sectionData.enrichment.title || 'Section';
+  
+  const iconElement = document.createElement('i');
+  iconElement.className = `${sectionData.icon || 'fas fa-file-alt'} text-eu-blue text-lg`;
+  
+  // Add tooltip
+  const tooltip = document.createElement('div');
+  tooltip.className = 'absolute left-full ml-2 px-2 py-1 bg-eu-blue text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50';
+  tooltip.textContent = sectionData.enrichment.title || 'Section';
+  
+  icon.appendChild(iconElement);
+  icon.appendChild(tooltip);
+  
+  // Add click handler to scroll to section
+  icon.addEventListener('click', () => {
+    const section = document.querySelector(`[data-section-id="${sectionData.id}"]`);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+      // Highlight the section briefly
+      section.style.backgroundColor = 'rgba(0, 48, 135, 0.1)';
+      setTimeout(() => {
+        section.style.backgroundColor = '';
+      }, 1500);
+    }
+  });
+  
+  return icon;
+}
+
 // Update the populateSection function to handle the new data structure
 function populateSection(data) {
   if (!data.enrichment) return;
@@ -125,6 +211,13 @@ function populateSection(data) {
 
   // Add to container
   document.getElementById("document-sections").appendChild(clone);
+  
+  // Add to collapsed view
+  const collapsedSections = document.getElementById("collapsed-sections");
+  if (collapsedSections) {
+    const icon = createCollapsedSectionIcon(data);
+    collapsedSections.appendChild(icon);
+  }
 
   // Set up click handler
   const trigger = clone.querySelector(".section-trigger");
