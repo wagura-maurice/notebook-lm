@@ -1,4 +1,22 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // Function to handle mobile/desktop view
+  function updateView() {
+    const isMobile = window.innerWidth < 1024; // Match Tailwind's lg breakpoint
+    const leftColumn = document.getElementById("left-column");
+    const middleColumn = document.getElementById("middle-column");
+    const rightColumn = document.getElementById("right-column");
+    
+    if (isMobile) {
+      // On mobile, show only the active tab
+      const activeTab = document.querySelector(".tab-button.active")?.getAttribute("data-tab");
+      [leftColumn, middleColumn, rightColumn].forEach(col => {
+        if (col) {
+          col.style.display = col.id === activeTab ? 'flex' : 'none';
+        }
+      });
+    }
+  }
+  
   // Preloader logic
   function showPreloader() {
     var preloader = document.getElementById("preloader");
@@ -19,26 +37,28 @@ document.addEventListener("DOMContentLoaded", function () {
     var preloader = document.getElementById("preloader");
     var mainContent = document.getElementById("main-content");
     if (preloader) {
-      preloader.classList.add("hidden");
+      preloader.style.display = 'none';
       preloader.style.opacity = "0";
+      preloader.style.visibility = 'hidden';
       preloader.style.pointerEvents = "none";
     }
     if (mainContent) {
+      mainContent.style.display = 'flex';
       mainContent.style.opacity = "1";
+      mainContent.style.visibility = 'visible';
       mainContent.style.pointerEvents = "auto";
-      mainContent.classList.remove("hidden");
     }
   }
 
-  // Initialize preloader - only show if it's the first visit
-  const hasVisited = sessionStorage.getItem("hasVisited");
-  if (!hasVisited) {
-    showPreloader();
-    setTimeout(hidePreloader, 1000); // Reduced from 3000ms to 1000ms for better UX
-    sessionStorage.setItem("hasVisited", "true");
-  } else {
-    // If already visited, ensure content is visible
-    hidePreloader();
+  // Always show content immediately
+  hidePreloader();
+  
+  // Ensure main content is visible
+  const mainContent = document.getElementById("main-content");
+  if (mainContent) {
+    mainContent.style.display = 'block';
+    mainContent.style.opacity = '1';
+    mainContent.style.visibility = 'visible';
   }
 
   // Handle profile dropdown
@@ -99,6 +119,9 @@ document.addEventListener("DOMContentLoaded", function () {
       menu.classList.add("opacity-0", "translate-y-2");
       setTimeout(() => {
         menu.classList.add("hidden");
+        menu.style.display = 'none';
+        menu.style.opacity = '0';
+        menu.style.visibility = 'hidden';
       }, 200);
       trigger.setAttribute("aria-expanded", "false");
     }
@@ -136,6 +159,9 @@ document.addEventListener("DOMContentLoaded", function () {
       // Open the dropdown
       this.setAttribute("aria-expanded", "true");
       menu.classList.remove("hidden");
+      menu.style.display = 'block';
+      menu.style.opacity = '1';
+      menu.style.visibility = 'visible';
       // Force reflow to enable the transition
       void menu.offsetWidth;
       menu.classList.remove("opacity-0", "translate-y-2");
@@ -145,10 +171,6 @@ document.addEventListener("DOMContentLoaded", function () {
         dropdownIgnoreOutsideUntil = Date.now() + 500;
       }
 
-      // Don't auto-focus any element in the dropdown
-      // This prevents the first item from being automatically selected
-      // and allows the dropdown to open in a neutral state
-
       // Set a small delay before allowing the next click
       ignoreNextClick = true;
       setTimeout(() => (ignoreNextClick = false), 150);
@@ -156,12 +178,16 @@ document.addEventListener("DOMContentLoaded", function () {
       // Position the dropdown for mobile
       if (window.innerWidth < 1024) {
         const rect = trigger.getBoundingClientRect();
+        menu.style.position = 'fixed';
         menu.style.top = `${rect.bottom + window.scrollY}px`;
         menu.style.right = "1rem";
+        menu.style.left = 'auto';
       } else {
         // Reset positioning for desktop
-        menu.style.top = "";
-        menu.style.right = "";
+        menu.style.position = 'absolute';
+        menu.style.top = '';
+        menu.style.right = '';
+        menu.style.left = '';
       }
     });
 
@@ -174,16 +200,22 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Close dropdown when clicking on a menu item
-    const menuItems = menu.querySelectorAll("a");
+    const menuItems = menu.querySelectorAll("a, button");
     menuItems.forEach((item) => {
       item.addEventListener("click", function (e) {
         e.preventDefault();
-        menu.classList.add("hidden");
-        if (menu === profileDropdownMenu) {
-          menu.classList.add("opacity-0", "translate-y-2");
-        }
+        menu.classList.add("hidden", "opacity-0", "translate-y-2");
+        menu.style.display = 'none';
+        menu.style.opacity = '0';
+        menu.style.visibility = 'hidden';
         trigger.setAttribute("aria-expanded", "false");
-        console.log("Clicked:", item.textContent.trim());
+        
+        // If it's a link, navigate after a short delay
+        if (item.tagName === 'A' && item.href) {
+          setTimeout(() => {
+            window.location.href = item.href;
+          }, 150);
+        }
       });
     });
   }
@@ -335,6 +367,42 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // Handle mobile tab switching - only for mobile view
+  const tabButtons = document.querySelectorAll('.tab-button');
+  if (window.innerWidth < 1024) { // Only for mobile
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Update active tab
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        
+        // Update view based on the selected tab
+        updateView();
+      });
+    });
+    
+    // Initial view update for mobile
+    updateView();
+    
+    // Update view on window resize
+    window.addEventListener('resize', function() {
+      if (window.innerWidth < 1024) {
+        updateView();
+      } else {
+        // On desktop, make sure all columns are visible
+        const columns = ['left-column', 'middle-column', 'right-column'];
+        columns.forEach(id => {
+          const col = document.getElementById(id);
+          if (col) {
+            col.style.display = 'flex';
+            col.style.visibility = 'visible';
+            col.style.opacity = '1';
+          }
+        });
+      }
+    });
+  }
+  
   // (Consolidated Escape handler above)
 }); // Close the main DOMContentLoaded event listener
 
@@ -342,6 +410,22 @@ document.addEventListener("DOMContentLoaded", function () {
   const leftColumn = document.getElementById("left-column");
   const rightColumn = document.getElementById("right-column");
   const middleColumn = document.getElementById("middle-column");
+
+  // Make sure all columns are visible by default
+  [leftColumn, rightColumn, middleColumn].forEach(column => {
+    if (column) {
+      column.style.display = 'flex';
+      column.style.visibility = 'visible';
+      column.style.opacity = '1';
+      column.classList.remove('hidden');
+      
+      const expanded = column.querySelector('.expanded-content');
+      if (expanded) {
+        expanded.style.display = 'flex';
+        expanded.classList.remove('hidden');
+      }
+    }
+  });
 
   const collapseLeftBtn = document.getElementById("collapse-left");
   const expandLeftBtn = document.getElementById("expand-left");
