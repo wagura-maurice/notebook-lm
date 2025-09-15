@@ -1,0 +1,21 @@
+/* Collapsed Columns Override */
+#left-column.collapsed,
+#right-column.collapsed {
+  background-color: #F9F9F9 !important;
+  background: #F9F9F9 !important;
+}
+
+#left-column.collapsed *,
+#right-column.collapsed * {
+  background-color: #F9F9F9 !important;
+  background: #F9F9F9 !important;
+  color: #003087 !important;
+}
+
+/* Reset any potential background images */
+#left-column.collapsed,
+#right-column.collapsed,
+#left-column.collapsed *,
+#right-column.collapsed * {
+  background-image: none !important;
+}

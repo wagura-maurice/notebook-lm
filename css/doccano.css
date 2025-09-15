@@ -95,9 +95,72 @@ body {
 }
 
 /* Collapsed Content */
-.collapsed-content {
-  background-color: var(--eu-white);
-  color: var(--text-primary);
+#left-column.collapsed,
+#right-column.collapsed,
+#left-column.collapsed *,
+#right-column.collapsed * {
+  background-color: var(--eu-white) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Ensure all nested elements in collapsed state are white */
+#left-column.collapsed .collapsed-content,
+#right-column.collapsed .collapsed-content,
+#left-column.collapsed .relative,
+#right-column.collapsed .relative,
+#left-column.collapsed .flex,
+#right-column.collapsed .flex {
+  background-color: var(--eu-white) !important;
+}
+
+/* Specific styles for collapsed content */
+.collapsed-content,
+#left-column.collapsed > div,
+#right-column.collapsed > div {
+  background-color: var(--eu-white) !important;
+}
+
+.collapsed-content .relative,
+.collapsed-content .flex,
+#left-column.collapsed .relative,
+#right-column.collapsed .relative,
+#left-column.collapsed .flex,
+#right-column.collapsed .flex {
+  background-color: var(--eu-white) !important;
+}
+
+/* Force white background on all elements inside collapsed columns */
+#left-column.collapsed,
+#right-column.collapsed,
+#left-column.collapsed *,
+#right-column.collapsed *,
+#left-column.collapsed::before,
+#right-column.collapsed::before,
+#left-column.collapsed::after,
+#right-column.collapsed::after {
+  background-color: var(--eu-white) !important;
+  background: var(--eu-white) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Reset any potential background images or gradients */
+#left-column.collapsed,
+#right-column.collapsed {
+  background-image: none !important;
+}
+
+/* Force white background on collapsed columns */
+#left-column.collapsed,
+#right-column.collapsed,
+#left-column.collapsed *,
+#right-column.collapsed *,
+#left-column.collapsed::before,
+#right-column.collapsed::before,
+#left-column.collapsed::after,
+#right-column.collapsed::after {
+  background: #F9F9F9 !important;
+  background-color: #F9F9F9 !important;
+  color: #003087 !important;
 }
 
 /* Mobile Responsive */
