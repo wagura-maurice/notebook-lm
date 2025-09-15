@@ -158,8 +158,8 @@ body {
 #right-column.collapsed::before,
 #left-column.collapsed::after,
 #right-column.collapsed::after {
-  background: #F9F9F9 !important;
-  background-color: #F9F9F9 !important;
+  background: #f9f9f9 !important;
+  background-color: #f9f9f9 !important;
   color: #003087 !important;
 }
 
