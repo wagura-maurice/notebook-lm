@@ -37,8 +37,6 @@ function processDocuments(docs) {
       _ts: doc._ts,
     };
 
-    // console.log(sectionData);
-
     sections.set(doc.id, sectionData);
   });
 
@@ -61,7 +59,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     if (processedDocuments.length === 0) {
       sectionsContainer.innerHTML = `
-        <div class="text-center py-4 text-gray-500">
+        <div class="text-center py-4 text-eu-blue/70">
           No document sections found.
         </div>
       `;
@@ -89,7 +87,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   } catch (error) {
     console.error("Error initializing document:", error);
     document.getElementById("sections-loading").innerHTML = `
-      <div class="text-center py-4 text-red-600">
+      <div class="text-center py-4 text-eu-orange">
         Error loading document. Please try again later.
       </div>
     `;
@@ -121,7 +119,7 @@ function populateSection(data) {
   keywordsContainer.innerHTML = keywords
     .map(
       (keyword) =>
-        `<span class="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-full">#${keyword}</span>`
+        `<span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">${keyword}</span>`
     )
     .join("");
 
@@ -173,7 +171,7 @@ function populateDocumentInfo(data) {
     idElement.textContent = data.id ? data.id.substring(0, 32) : "-";
 
   if (modelElement && data.model) {
-    modelElement.textContent = `Model: ${data.model}`;
+    modelElement.textContent = data.model;
   }
 
   if (updatedElement && data._ts) {
@@ -187,9 +185,16 @@ function populateDocumentInfo(data) {
   }
 
   if (confidenceElement && data.enrichment?.confidence) {
-    confidenceElement.textContent = Math.round(
-      data.enrichment.confidence * 100
-    );
+    const confidence = Math.round(data.enrichment.confidence * 100);
+    confidenceElement.textContent = confidence;
+    // Add color coding based on confidence level
+    if (confidence < 50) {
+      confidenceElement.className = 'text-eu-orange';
+    } else if (confidence < 80) {
+      confidenceElement.className = 'text-yellow-500';
+    } else {
+      confidenceElement.className = 'text-green-600';
+    }
   }
 }
 
