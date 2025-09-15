@@ -71,7 +71,7 @@
   </head>
 
   <body
-    class="h-screen flex flex-col bg-eu-white overflow-hidden font-sans text-text-primary"
+    class="h-screen flex flex-col bg-eu-white font-sans text-text-primary overflow-hidden"
   >
     <!-- Preloader -->
     <div
@@ -84,7 +84,11 @@
         aria-label="Loading"
       ></div>
     </div>
-    <div id="main-content" style="opacity: 0; pointer-events: none">
+    <div
+      id="main-content"
+      class="flex flex-col h-full"
+      style="opacity: 0; pointer-events: none"
+    >
       <!-- Header Section -->
       <header class="px-4 py-3 bg-eu-blue shadow-md z-10">
         <div class="flex flex-col lg:flex-row h-full lg:items-center w-full">
@@ -255,156 +259,161 @@
         </div>
       </header>
 
-      <!-- Mobile Tabs -->
-      <div
-        class="lg:hidden flex border-b border-eu-blue bg-eu-white sticky top-16 z-10"
-      >
-        <button
-          class="tab-button flex-1 py-3 text-center font-medium"
-          data-tab="left-column"
-        >
-          <i class="fas fa-book mr-2"></i><span>Sources</span>
-        </button>
-        <button
-          class="tab-button active flex-1 py-3 text-center font-medium"
-          data-tab="middle-column"
-        >
-          <i class="fas fa-comments mr-2"></i><span>Chat</span>
-        </button>
-        <button
-          class="tab-button flex-1 py-3 text-center font-medium"
-          data-tab="right-column"
-        >
-          <i class="fas fa-sliders-h mr-2"></i><span>Studio</span>
-        </button>
-      </div>
-
-      <!-- Main Content -->
-      <div
-        class="flex flex-1 overflow-hidden gap-2 lg:p-2"
-        id="columns-container"
-      >
-        <!-- Left Column - Sources -->
+      <!-- Main Content Container -->
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Mobile Tabs -->
         <div
-          id="left-column"
-          class="mobile-tab-content w-full lg:w-72 bg-eu-white text-text-primary transition-all duration-300 flex flex-col rounded-lg lg:block hidden"
+          class="lg:hidden flex border-b border-eu-blue bg-eu-white sticky top-16 z-10"
         >
-          <!-- Expanded view -->
-          <div class="flex flex-col h-full expanded-content">
-            <!-- Header -->
-            <div
-              class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
-            >
-              <h2 class="text-lg font-semibold lg:block hidden">Sources</h2>
-              <button
-                id="collapse-left"
-                class="text-eu-blue text-lg hover:text-eu-orange"
-              >
-                <i class="fas fa-chevron-left"></i>
-              </button>
-            </div>
-            <div
-              class="flex-1 w-full overflow-y-auto bg-eu-white scrollbar-transparent p-4"
-            >
-              <!-- Content will go here -->
-            </div>
-          </div>
-
-          <!-- Collapsed view -->
-          <div class="collapsed-content hidden">
-            <div class="relative h-[60px] w-12">
-              <div
-                class="absolute bottom-0 left-0 right-0 border-b border-eu-blue"
-              ></div>
-              <div class="flex items-center justify-center h-full w-full">
-                <button
-                  id="expand-left"
-                  class="text-eu-blue text-lg hover:text-eu-orange"
-                  title="Expand left column"
-                >
-                  <i class="fas fa-chevron-right"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Middle Column - Chat -->
-        <div
-          id="middle-column"
-          class="mobile-tab-content flex-1 bg-eu-white text-text-primary flex flex-col lg:block transition-all duration-300 rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)]"
-        >
-          <!-- Header (visible only on desktop) -->
-          <div class="expanded-content">
-            <div
-              class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
-            >
-              <h2 class="text-lg font-semibold text-eu-blue">Chat</h2>
-              <button
-                class="text-eu-blue text-lg hover:text-eu-orange"
-                id="expand-middle"
-              >
-                <i class="fas fa-expand-alt"></i>
-              </button>
-            </div>
-          </div>
-
-          <!-- Chat messages -->
-          <div
-            class="overflow-y-auto flex-1 bg-eu-white scrollbar-transparent p-4"
-            id="chat-messages"
-            style="position: relative"
+          <button
+            class="tab-button flex-1 py-3 text-center font-medium"
+            data-tab="left-column"
           >
-            <!-- Chat messages will appear here -->
-          </div>
+            <i class="fas fa-book mr-2"></i><span>Sources</span>
+          </button>
+          <button
+            class="tab-button active flex-1 py-3 text-center font-medium"
+            data-tab="middle-column"
+          >
+            <i class="fas fa-comments mr-2"></i><span>Chat</span>
+          </button>
+          <button
+            class="tab-button flex-1 py-3 text-center font-medium"
+            data-tab="right-column"
+          >
+            <i class="fas fa-sliders-h mr-2"></i><span>Studio</span>
+          </button>
         </div>
 
-        <!-- Right Column - Studio -->
-        <div
-          id="right-column"
-          class="mobile-tab-content w-full lg:w-16 lg:hover:w-80 bg-eu-white text-text-primary border-l border-eu-blue transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)] lg:block hidden"
-        >
-          <!-- Expanded view -->
-          <div class="flex flex-col h-full expanded-content">
-            <!-- Header -->
-            <div
-              class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
-            >
-              <h2 class="text-lg font-semibold lg:block hidden">Studio</h2>
-              <button
-                id="collapse-right"
-                class="text-eu-blue text-lg hover:text-eu-orange"
-              >
-                <i class="fas fa-chevron-right"></i>
-              </button>
-            </div>
-
-            <div
-              class="flex-1 w-full overflow-y-auto bg-eu-white scrollbar-transparent p-4"
-            >
-              <!-- Content will go here -->
-            </div>
-          </div>
-
-          <!-- Collapsed view -->
-          <div class="collapsed-content hidden">
-            <div class="relative h-[60px] w-12">
+        <!-- Main Content -->
+        <div class="flex flex-1 overflow-hidden gap-2" id="columns-container">
+          <!-- Left Column - Sources -->
+          <div
+            id="left-column"
+            class="mobile-tab-content w-full lg:w-72 bg-eu-white text-text-primary transition-all duration-300 flex flex-col rounded-lg lg:block hidden"
+          >
+            <!-- Expanded view -->
+            <div class="flex flex-col h-full expanded-content">
+              <!-- Header -->
               <div
-                class="absolute bottom-0 left-0 right-0 border-b border-eu-blue"
-              ></div>
-              <div class="flex items-center justify-center h-full w-full">
+                class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
+              >
+                <h2 class="text-lg font-semibold lg:block hidden">Sources</h2>
                 <button
-                  id="expand-right"
+                  id="collapse-left"
                   class="text-eu-blue text-lg hover:text-eu-orange"
-                  title="Expand right column"
                 >
                   <i class="fas fa-chevron-left"></i>
                 </button>
               </div>
+              <div
+                class="flex-1 w-full overflow-y-auto bg-eu-white scrollbar-transparent p-4"
+              >
+                <!-- Content will go here -->
+              </div>
+            </div>
+
+            <!-- Collapsed view -->
+            <div class="collapsed-content hidden">
+              <div class="relative h-[60px] w-12">
+                <div
+                  class="absolute bottom-0 left-0 right-0 border-b border-eu-blue"
+                ></div>
+                <div class="flex items-center justify-center h-full w-full">
+                  <button
+                    id="expand-left"
+                    class="text-eu-blue text-lg hover:text-eu-orange"
+                    title="Expand left column"
+                  >
+                    <i class="fas fa-chevron-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Middle Column - Chat -->
+          <div
+            id="middle-column"
+            class="mobile-tab-content flex-1 bg-eu-white text-text-primary flex flex-col lg:block transition-all duration-300 rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)]"
+          >
+            <!-- Header (visible only on desktop) -->
+            <div class="expanded-content">
+              <div
+                class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
+              >
+                <h2 class="text-lg font-semibold text-eu-blue">Chat</h2>
+                <button
+                  class="text-eu-blue text-lg hover:text-eu-orange"
+                  id="expand-middle"
+                >
+                  <i class="fas fa-expand-alt"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Chat messages -->
+            <div
+              class="overflow-y-auto flex-1 bg-eu-white scrollbar-transparent p-4"
+              id="chat-messages"
+              style="position: relative"
+            >
+              <!-- Chat messages will appear here -->
+            </div>
+          </div>
+
+          <!-- Right Column - Studio -->
+          <div
+            id="right-column"
+            class="mobile-tab-content w-full lg:w-16 lg:hover:w-80 bg-eu-white text-text-primary border-l border-eu-blue transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)] lg:block hidden"
+          >
+            <!-- Expanded view -->
+            <div class="flex flex-col h-full expanded-content">
+              <!-- Header -->
+              <div
+                class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
+              >
+                <h2 class="text-lg font-semibold lg:block hidden">Studio</h2>
+                <button
+                  id="collapse-right"
+                  class="text-eu-blue text-lg hover:text-eu-orange"
+                >
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+
+              <div
+                class="flex-1 w-full overflow-y-auto bg-eu-white scrollbar-transparent p-4"
+              >
+                <!-- Content will go here -->
+              </div>
+            </div>
+
+            <!-- Collapsed view -->
+            <div class="collapsed-content hidden">
+              <div class="relative h-[60px] w-12">
+                <div
+                  class="absolute bottom-0 left-0 right-0 border-b border-eu-blue"
+                ></div>
+                <div class="flex items-center justify-center h-full w-full">
+                  <button
+                    id="expand-right"
+                    class="text-eu-blue text-lg hover:text-eu-orange"
+                    title="Expand right column"
+                  >
+                    <i class="fas fa-chevron-left"></i>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Footer with Disclaimer -->
+      <p class="text-center text-xs text-gray-500 mb-1">
+        NotebookLM can be inaccurate; please double-check its responses.
+      </p>
 
       <!-- Scripts -->
       <script
@@ -417,7 +426,7 @@
       ></script>
       <!-- Tour Script -->
       <script src="./js/tour/doccano.js"></script>
-      
+
       <script
         type="application/JavaScript"
         src="https://cdn.jsdelivr.net/npm/apexcharts"
