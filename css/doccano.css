@@ -419,29 +419,51 @@ header {
 
 .tab-button {
   flex: 1;
-  padding: 0.75rem 0;
+  padding: 0.5rem 0;
   text-align: center;
   position: relative;
   color: var(--eu-blue);
   font-weight: 500;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-button i {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 1.1rem;
+  color: var(--eu-blue);
+  transition: color 0.2s ease;
+}
+
+.tab-button span {
+  font-size: 0.8rem;
+  display: block;
 }
 
 .tab-button.active {
-  color: var(--eu-blue);
+  color: var(--eu-orange);
   font-weight: 600;
+}
+
+.tab-button.active i {
+  color: var(--eu-orange);
 }
 
 .tab-button.active::after {
   content: "";
   position: absolute;
   bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: var(--eu-blue);
-  border-radius: 1px;
+  left: 25%;
+  right: 25%;
+  height: 3px;
+  background-color: var(--eu-orange);
+  border-radius: 3px 3px 0 0;
+  opacity: 0.8;
 }
 
 /* ============================================ */
