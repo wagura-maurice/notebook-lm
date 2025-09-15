@@ -4,6 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NotebookLM - Document Annotation Page</title>
+    
+    <style>
+      /* Force white background on collapsed columns */
+      #left-column.collapsed,
+      #right-column.collapsed {
+        background-color: #F9F9F9 !important;
+      }
+      #left-column.collapsed *,
+      #right-column.collapsed * {
+        background-color: #F9F9F9 !important;
+        background: #F9F9F9 !important;
+      }
+    </style>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -65,7 +78,8 @@
     />
 
     <!-- Custom CSS -->
-    <link href="./css/doccano.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/doccano.css" />
+    <link rel="stylesheet" href="css/collapsed-columns.css" />
     <link href="./css/tour.css" rel="stylesheet" />
   </head>
 
