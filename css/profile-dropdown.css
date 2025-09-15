@@ -4,27 +4,55 @@
   display: inline-block;
 }
 
-/* Dropdown Animation */
-#profile-dropdown {
-  transform-origin: top right;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
+/* Dropdown Menu Base Styles */
 #profile-dropdown {
   position: absolute;
   right: 0;
   margin-top: 0.5rem;
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
-  pointer-events: none;
   min-width: 14rem;
   z-index: 50;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transform-origin: top right;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  pointer-events: none;
+  display: none;
 }
 
 #profile-dropdown:not(.hidden) {
   opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+  display: block;
+}
+
+/* Dropdown Animation */
+#profile-dropdown.animate-in {
+  animation: dropdownFadeIn 0.2s ease-out forwards;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ensure dropdown is visible when active */
+#profile-dropdown[aria-hidden="false"] {
+  display: block;
+  opacity: 1;
+  visibility: visible;
   transform: translateY(0);
   pointer-events: auto;
 }
@@ -41,6 +69,9 @@
     margin: 0.5rem 0;
     z-index: 60;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: none;
+    top: auto;
+    bottom: auto;
   }
   
   /* Adjust header for mobile */
