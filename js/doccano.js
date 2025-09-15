@@ -36,7 +36,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Check if elements exist before adding event listeners
   if (!dropdownTrigger || !dropdownMenu) {
-    console.warn("Dropdown elements not found, skipping dropdown initialization");
+    console.warn(
+      "Dropdown elements not found, skipping dropdown initialization"
+    );
     return;
   }
 
@@ -102,7 +104,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Check if elements exist before adding event listeners
   if (!dropdownTrigger || !dropdownMenu) {
-    console.warn("Desktop dropdown elements not found, skipping dropdown initialization");
+    console.warn(
+      "Desktop dropdown elements not found, skipping dropdown initialization"
+    );
     return;
   }
 
