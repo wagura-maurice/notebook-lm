@@ -1,3 +1,31 @@
+/* Navigation Title Animation */
+.nav-title {
+  position: relative;
+  display: inline-block;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: left center;
+}
+
+.nav-title::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: var(--eu-orange);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-title:hover {
+  color: var(--eu-orange);
+  transform: translateX(4px);
+}
+
+.nav-title:hover::after {
+  width: 100%;
+}
+
 /* Navigation Item Styles */
 .nav-item {
   position: relative;

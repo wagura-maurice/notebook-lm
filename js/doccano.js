@@ -19,20 +19,27 @@ document.addEventListener("DOMContentLoaded", function () {
     var preloader = document.getElementById("preloader");
     var mainContent = document.getElementById("main-content");
     if (preloader) {
-      preloader.classList.add("hide");
+      preloader.classList.add("hidden");
       preloader.style.opacity = "0";
       preloader.style.pointerEvents = "none";
     }
     if (mainContent) {
-      mainContent.classList.add("show");
       mainContent.style.opacity = "1";
       mainContent.style.pointerEvents = "auto";
+      mainContent.classList.remove("hidden");
     }
   }
 
-  // Initialize preloader
-  showPreloader();
-  setTimeout(hidePreloader, 3000);
+  // Initialize preloader - only show if it's the first visit
+  const hasVisited = sessionStorage.getItem('hasVisited');
+  if (!hasVisited) {
+    showPreloader();
+    setTimeout(hidePreloader, 1000); // Reduced from 3000ms to 1000ms for better UX
+    sessionStorage.setItem('hasVisited', 'true');
+  } else {
+    // If already visited, ensure content is visible
+    hidePreloader();
+  }
 
   // Handle profile dropdown
   const profileDropdownTrigger = document.getElementById("profile-dropdown-trigger");
@@ -49,10 +56,20 @@ document.addEventListener("DOMContentLoaded", function () {
       const isExpanded = this.getAttribute("aria-expanded") === "true";
       this.setAttribute("aria-expanded", !isExpanded);
       
-      menu.classList.toggle("hidden");
-      if (menu === profileDropdownMenu) {
-        menu.classList.toggle("opacity-0");
-        menu.classList.toggle("translate-y-2");
+      // Toggle the dropdown
+      if (menu.classList.contains('hidden')) {
+        menu.classList.remove('hidden');
+        // Force reflow to enable the transition
+        void menu.offsetWidth;
+        menu.classList.remove('opacity-0', 'translate-y-2');
+      } else {
+        menu.classList.add('opacity-0', 'translate-y-2');
+        // Wait for the transition to complete before hiding
+        setTimeout(() => {
+          if (menu.classList.contains('opacity-0')) {
+            menu.classList.add('hidden');
+          }
+        }, 200);
       }
 
       // Position the dropdown for mobile
@@ -60,6 +77,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const rect = trigger.getBoundingClientRect();
         menu.style.top = `${rect.bottom + window.scrollY}px`;
         menu.style.right = "1rem";
+      } else {
+        // Reset positioning for desktop
+        menu.style.top = '';
+        menu.style.right = '';
       }
     });
 
@@ -105,10 +126,13 @@ document.addEventListener("DOMContentLoaded", function () {
           !trigger.contains(e.target) && 
           !menu.contains(e.target)) {
         trigger.setAttribute("aria-expanded", "false");
-        menu.classList.add("hidden");
-        if (menu === profileDropdownMenu) {
-          menu.classList.add("opacity-0", "translate-y-2");
-        }
+        menu.classList.add("opacity-0", "translate-y-2");
+        // Wait for the transition to complete before hiding
+        setTimeout(() => {
+          if (menu.classList.contains('opacity-0')) {
+            menu.classList.add('hidden');
+          }
+        }, 200);
       }
     });
   });
