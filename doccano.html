@@ -86,467 +86,472 @@
         aria-label="Loading"
       ></div>
     </div>
-    <div
-      id="main-content"
-      style="opacity: 0; pointer-events: none"
-    >
-      <!-- Header Section -->
-      <header class="px-4 py-3 bg-eu-blue shadow-md z-10">
-        <div class="flex flex-col lg:flex-row h-full lg:items-center w-full">
-          <div
-            class="flex items-center justify-between w-full lg:w-auto lg:flex-1"
-          >
-            <!-- Logo -->
-            <div class="flex items-center">
-              <a href="./index.html" class="flex items-center space-x-3 group logo-link">
-                <img
-                  src="./images/rgb-logo_white_onblue.svg"
-                  alt="Logo"
-                  class="h-10 w-10 lg:h-12 lg:w-12 rounded-full"
-                />
-                <span
-                  class="text-eu-white p-2 text-xl font-semibold hidden lg:block logo-text"
-                  >NotebookLM</span
-                >
-              </a>
-            </div>
+    <!-- Header Section -->
+    <header class="px-4 py-3 bg-eu-blue shadow-md z-10">
+      <div class="flex flex-col lg:flex-row h-full lg:items-center w-full">
+        <div
+          class="flex items-center justify-between w-full lg:w-auto lg:flex-1"
+        >
+          <!-- Logo -->
+          <div class="flex items-center">
+            <a
+              href="./index.html"
+              class="flex items-center space-x-3 group logo-link"
+            >
+              <img
+                src="./images/rgb-logo_white_onblue.svg"
+                alt="Logo"
+                class="h-10 w-10 lg:h-12 lg:w-12 rounded-full"
+              />
+              <span
+                class="text-eu-white p-2 text-xl font-semibold hidden lg:block logo-text"
+                >NotebookLM</span
+              >
+            </a>
+          </div>
 
-            <!-- Mobile Icons (Visible only on Mobile) -->
-            <div class="lg:hidden flex items-center space-x-3 mobile-only">
-              <a
-                href="./index.html"
-                class="nav-button"
-                title="Home"
+          <!-- Mobile Icons (Visible only on Mobile) -->
+          <div class="lg:hidden flex items-center space-x-3 mobile-only">
+            <a href="./index.html" class="nav-button" title="Home">
+              <i class="fa-solid fa-house fa-md"></i>
+            </a>
+            <button class="nav-button" title="Settings">
+              <i class="fas fa-cog fa-md"></i>
+            </button>
+            <div class="relative h-8 w-8">
+              <img
+                src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
+                class="h-full w-full rounded-full object-cover cursor-pointer transition-all"
+                id="avatar-dropdown-trigger"
+              />
+              <div
+                class="absolute inset-0 rounded-full border-2 border-eu-orange pointer-events-none"
+              ></div>
+              <!-- Dropdown menu -->
+              <div
+                id="avatar-dropdown"
+                class="hidden fixed lg:absolute right-4 lg:right-0 mt-2 w-56 lg:w-48 bg-eu-white rounded-md shadow-lg ring-1 ring-eu-blue ring-opacity-20 focus:outline-none z-50 border border-eu-blue/20"
               >
-                <i class="fa-solid fa-house fa-md"></i>
-              </a>
-              <button
-                class="nav-button"
-                title="Settings"
-              >
-                <i class="fas fa-cog fa-md"></i>
-              </button>
-              <div class="relative h-8 w-8">
+                <div class="py-1" role="menu" aria-orientation="vertical">
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
+                    role="menuitem"
+                  >
+                    <i class="fas fa-user mr-3 w-5 text-center"></i>
+                    <span>Profile</span>
+                  </a>
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
+                    role="menuitem"
+                  >
+                    <i class="fas fa-cog mr-3 w-5 text-center"></i>
+                    <span>Settings</span>
+                  </a>
+                  <a
+                    href="#"
+                    class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
+                    role="menuitem"
+                  >
+                    <i class="fas fa-moon mr-3 w-5 text-center"></i>
+                    <span>Theme</span>
+                  </a>
+                  <div class="border-t border-eu-blue/20 my-1"></div>
+                  <a
+                    href="#"
+                    class="flex items-center justify-start px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors group w-full"
+                    role="menuitem"
+                  >
+                    <i
+                      class="fas fa-sign-out-alt w-5 text-center text-red-500 group-hover:text-red-600"
+                    ></i>
+                    <span
+                      class="ml-3 text-red-500 group-hover:text-red-600 whitespace-nowrap"
+                      >Sign out</span
+                    >
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Title - Centered in the middle of the header -->
+        <div class="flex-1 flex justify-center">
+          <h1
+            class="text-lg lg:text-2xl font-bold text-eu-white header-title whitespace-nowrap"
+          >
+            Document Annotation Page
+          </h1>
+        </div>
+
+        <!-- Desktop Icons (Hidden on Mobile) -->
+        <div
+          class="hidden lg:flex items-center justify-end space-x-3 flex-1 desktop-only"
+        >
+          <a href="./index.html" class="nav-button" title="Home">
+            <i class="fa-solid fa-house fa-md"></i>
+          </a>
+          <button class="help-button nav-button" title="Help">
+            <i class="fa-solid fa-question fa-md"></i>
+          </button>
+          <button class="nav-button" title="Settings">
+            <i class="fas fa-cog fa-md"></i>
+          </button>
+          <!-- Profile Dropdown Container -->
+          <div class="relative group" id="profile-dropdown-container">
+            <!-- Trigger Button -->
+            <button
+              type="button"
+              class="flex items-center focus:outline-none"
+              id="profile-dropdown-trigger"
+              aria-expanded="false"
+              aria-haspopup="true"
+            >
+              <div class="relative">
                 <img
                   src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
-                  class="h-full w-full rounded-full object-cover cursor-pointer transition-all"
-                  id="avatar-dropdown-trigger"
+                  class="h-10 w-10 rounded-full object-cover cursor-pointer transition-all"
+                  alt="User profile"
                 />
                 <div
                   class="absolute inset-0 rounded-full border-2 border-eu-orange pointer-events-none"
                 ></div>
-                <!-- Dropdown menu -->
-                <div
-                  id="avatar-dropdown"
-                  class="hidden fixed lg:absolute right-4 lg:right-0 mt-2 w-56 lg:w-48 bg-eu-white rounded-md shadow-lg ring-1 ring-eu-blue ring-opacity-20 focus:outline-none z-50 border border-eu-blue/20"
+              </div>
+              <span class="sr-only">Open user menu</span>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div
+              id="profile-dropdown"
+              class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 border border-eu-blue/20 transform transition-all duration-200 ease-in-out opacity-0 translate-y-2"
+              role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="profile-dropdown-trigger"
+            >
+              <!-- User Info -->
+              <div class="px-4 py-3 border-b border-eu-blue/10">
+                <p class="text-sm font-medium text-eu-blue">Peter Thirikwa</p>
+                <p class="text-xs text-gray-500 truncate">peter@example.com</p>
+              </div>
+
+              <!-- Menu Items -->
+              <div class="py-1">
+                <a
+                  href="#"
+                  class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-eu-orange/10 hover:text-eu-orange transition-colors group"
+                  role="menuitem"
                 >
-                  <div class="py-1" role="menu" aria-orientation="vertical">
-                    <a
-                      href="#"
-                      class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
-                      role="menuitem"
-                    >
-                      <i class="fas fa-user mr-3 w-5 text-center"></i>
-                      <span>Profile</span>
-                    </a>
-                    <a
-                      href="#"
-                      class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
-                      role="menuitem"
-                    >
-                      <i class="fas fa-cog mr-3 w-5 text-center"></i>
-                      <span>Settings</span>
-                    </a>
-                    <a
-                      href="#"
-                      class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
-                      role="menuitem"
-                    >
-                      <i class="fas fa-moon mr-3 w-5 text-center"></i>
-                      <span>Theme</span>
-                    </a>
-                    <div class="border-t border-eu-blue/20 my-1"></div>
-                    <a
-                      href="#"
-                      class="flex items-center justify-start px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors group w-full"
-                      role="menuitem"
-                    >
-                      <i class="fas fa-sign-out-alt w-5 text-center text-red-500 group-hover:text-red-600"></i>
-                      <span class="ml-3 text-red-500 group-hover:text-red-600 whitespace-nowrap">Sign out</span>
-                    </a>
+                  <i
+                    class="fas fa-user w-5 text-center text-eu-blue group-hover:text-eu-orange"
+                  ></i>
+                  <span class="ml-3">Your Profile</span>
+                </a>
+                <a
+                  href="#"
+                  class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-eu-orange/10 hover:text-eu-orange transition-colors group"
+                  role="menuitem"
+                >
+                  <i
+                    class="fas fa-cog w-5 text-center text-eu-blue group-hover:text-eu-orange"
+                  ></i>
+                  <span class="ml-3">Settings</span>
+                </a>
+                <a
+                  href="#"
+                  class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-eu-orange/10 hover:text-eu-orange transition-colors group"
+                  role="menuitem"
+                >
+                  <i
+                    class="fas fa-moon w-5 text-center text-eu-blue group-hover:text-eu-orange"
+                  ></i>
+                  <span class="ml-3">Theme</span>
+                </a>
+                <div class="border-t border-eu-blue/10 my-1"></div>
+                <a
+                  href="#"
+                  class="flex items-center px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors group"
+                  role="menuitem"
+                >
+                  <i
+                    class="fas fa-sign-out-alt w-5 text-center text-red-500 group-hover:text-red-600"
+                  ></i>
+                  <span class="ml-3 text-red-500 group-hover:text-red-600"
+                    >Sign out</span
+                  >
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mobile Menu Button (hidden on desktop) -->
+          <button
+            type="button"
+            class="lg:hidden text-eu-white hover:text-eu-orange p-2 rounded-full hover:bg-eu-white hover:bg-opacity-10 transition-colors"
+            id="mobile-menu-button"
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-label="Open mobile menu"
+          >
+            <i class="fas fa-bars fa-md"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <div id="main-content" class="flex-1 flex flex-col overflow-hidden">
+      <!-- Mobile Tabs -->
+      <div
+        class="mobile-tabs lg:hidden flex border-b border-eu-blue bg-eu-white sticky top-0 z-10"
+      >
+        <button
+          class="tab-button flex-1 py-3 text-center font-medium"
+          data-tab="left-column"
+        >
+          <i class="fas fa-book mr-2"></i><span>Guide</span>
+        </button>
+        <button
+          class="tab-button active flex-1 py-3 text-center font-medium"
+          data-tab="middle-column"
+        >
+          <i class="fas fa-comments mr-2"></i><span>Document</span>
+        </button>
+        <button
+          class="tab-button flex-1 py-3 text-center font-medium"
+          data-tab="right-column"
+        >
+          <i class="fas fa-sliders-h mr-2"></i><span>Annotation</span>
+        </button>
+      </div>
+
+      <!-- Main Content -->
+      <div class="flex flex-1 overflow-hidden gap-2" id="columns-container">
+        <!-- Left Column - Guide -->
+        <div
+          id="left-column"
+          class="mobile-tab-content w-full lg:w-72 bg-eu-white text-text-primary transition-all duration-300 flex flex-col rounded-lg lg:block hidden"
+        >
+          <!-- Expanded view -->
+          <div class="flex flex-col h-full expanded-content">
+            <!-- Header -->
+            <div
+              class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
+            >
+              <h2 class="text-lg font-semibold">Guide</h2>
+              <button
+                id="collapse-left"
+                class="text-eu-blue text-lg hover:text-eu-orange"
+                title="Collapse guide"
+              >
+                <i class="fas fa-chevron-left"></i>
+              </button>
+            </div>
+
+            <!-- Guide Content -->
+            <div class="flex-1 overflow-y-auto p-4" id="guide-content">
+              <!-- Document Info (will be populated dynamically) -->
+              <div class="document-info mb-6">
+                <h3 class="font-medium text-eu-blue mb-2 document-title">
+                  Loading document...
+                </h3>
+                <div class="document-meta text-xs text-gray-500">
+                  <div class="document-id mb-1">
+                    ID: <span class="document-id">-</span>
+                  </div>
+                  <div class="document-model mb-1">
+                    Model: <span class="document-model">-</span>
+                  </div>
+                  <div class="flex items-center">
+                    <i class="far fa-clock mr-1"></i>
+                    <span class="document-updated">Last updated: -</span>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <!-- Title - Centered in the middle of the header -->
-          <div class="flex-1 flex justify-center">
-            <h1 class="text-lg lg:text-2xl font-bold text-eu-white header-title whitespace-nowrap">
-              Document Annotation Page
-            </h1>
-          </div>
-
-          <!-- Desktop Icons (Hidden on Mobile) -->
-          <div
-            class="hidden lg:flex items-center justify-end space-x-3 flex-1 desktop-only"
-          >
-            <a
-              href="./index.html"
-              class="nav-button"
-              title="Home"
-            >
-              <i class="fa-solid fa-house fa-md"></i>
-            </a>
-            <button
-              class="help-button nav-button"
-              title="Help"
-            >
-              <i class="fa-solid fa-question fa-md"></i>
-            </button>
-            <button
-              class="nav-button"
-              title="Settings"
-            >
-              <i class="fas fa-cog fa-md"></i>
-            </button>
-            <!-- Profile Dropdown Container -->
-            <div class="relative group" id="profile-dropdown-container">
-              <!-- Trigger Button -->
-              <button
-                type="button"
-                class="flex items-center focus:outline-none"
-                id="profile-dropdown-trigger"
-                aria-expanded="false"
-                aria-haspopup="true"
-              >
-                <div class="relative">
-                  <img
-                    src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
-                    class="h-10 w-10 rounded-full object-cover cursor-pointer transition-all"
-                    alt="User profile"
-                  />
-                  <div class="absolute inset-0 rounded-full border-2 border-eu-orange pointer-events-none"></div>
-                </div>
-                <span class="sr-only">Open user menu</span>
-              </button>
-
-              <!-- Dropdown Menu -->
-              <div
-                id="profile-dropdown"
-                class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 border border-eu-blue/20 transform transition-all duration-200 ease-in-out opacity-0 translate-y-2"
-                role="menu"
-                aria-orientation="vertical"
-                aria-labelledby="profile-dropdown-trigger"
-              >
-                <!-- User Info -->
-                <div class="px-4 py-3 border-b border-eu-blue/10">
-                  <p class="text-sm font-medium text-eu-blue">Peter Thirikwa</p>
-                  <p class="text-xs text-gray-500 truncate">peter@example.com</p>
-                </div>
-                
-                <!-- Menu Items -->
-                <div class="py-1">
-                  <a
-                    href="#"
-                    class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-eu-orange/10 hover:text-eu-orange transition-colors group"
-                    role="menuitem"
-                  >
-                    <i class="fas fa-user w-5 text-center text-eu-blue group-hover:text-eu-orange"></i>
-                    <span class="ml-3">Your Profile</span>
-                  </a>
-                  <a
-                    href="#"
-                    class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-eu-orange/10 hover:text-eu-orange transition-colors group"
-                    role="menuitem"
-                  >
-                    <i class="fas fa-cog w-5 text-center text-eu-blue group-hover:text-eu-orange"></i>
-                    <span class="ml-3">Settings</span>
-                  </a>
-                  <a
-                    href="#"
-                    class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-eu-orange/10 hover:text-eu-orange transition-colors group"
-                    role="menuitem"
-                  >
-                    <i class="fas fa-moon w-5 text-center text-eu-blue group-hover:text-eu-orange"></i>
-                    <span class="ml-3">Theme</span>
-                  </a>
-                  <div class="border-t border-eu-blue/10 my-1"></div>
-                  <a
-                    href="#"
-                    class="flex items-center px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors group"
-                    role="menuitem"
-                  >
-                    <i class="fas fa-sign-out-alt w-5 text-center text-red-500 group-hover:text-red-600"></i>
-                    <span class="ml-3 text-red-500 group-hover:text-red-600">Sign out</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Mobile Menu Button (hidden on desktop) -->
-            <button
-              type="button"
-              class="lg:hidden text-eu-white hover:text-eu-orange p-2 rounded-full hover:bg-eu-white hover:bg-opacity-10 transition-colors"
-              id="mobile-menu-button"
-              aria-expanded="false"
-              aria-haspopup="true"
-              aria-label="Open mobile menu"
-            >
-              <i class="fas fa-bars fa-md"></i>
-            </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <!-- Main Content Container -->
-      <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- Mobile Tabs -->
-        <div
-          class="mobile-tabs lg:hidden flex border-b border-eu-blue bg-eu-white sticky top-0 z-10"
-        >
-          <button
-            class="tab-button flex-1 py-3 text-center font-medium"
-            data-tab="left-column"
-          >
-            <i class="fas fa-book mr-2"></i><span>Guide</span>
-          </button>
-          <button
-            class="tab-button active flex-1 py-3 text-center font-medium"
-            data-tab="middle-column"
-          >
-            <i class="fas fa-comments mr-2"></i><span>Document</span>
-          </button>
-          <button
-            class="tab-button flex-1 py-3 text-center font-medium"
-            data-tab="right-column"
-          >
-            <i class="fas fa-sliders-h mr-2"></i><span>Annotation</span>
-          </button>
-        </div>
-
-        <!-- Main Content -->
-        <div class="flex flex-1 overflow-hidden gap-2" id="columns-container">
-          <!-- Left Column - Guide -->
-          <div
-            id="left-column"
-            class="mobile-tab-content w-full lg:w-72 bg-eu-white text-text-primary transition-all duration-300 flex flex-col rounded-lg lg:block hidden"
-          >
-            <!-- Expanded view -->
-            <div class="flex flex-col h-full expanded-content">
-              <!-- Header -->
-              <div
-                class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
-              >
-                <h2 class="text-lg font-semibold lg:block hidden">Guide</h2>
-                <button
-                  id="collapse-left"
-                  class="text-eu-blue text-lg hover:text-eu-orange"
-                >
-                  <i class="fas fa-chevron-left"></i>
-                </button>
-              </div>
-              <div
-                class="flex-1 w-full overflow-y-auto bg-eu-white scrollbar-transparent p-4"
-              >
-                <!-- Content will go here -->
-              </div>
-            </div>
-
-            <!-- Collapsed view -->
-            <div class="collapsed-content hidden">
-              <div class="relative h-[60px] w-12">
+              <!-- Document Sections (will be populated dynamically) -->
+              <div id="document-sections" class="space-y-3">
+                <!-- Example section template (will be cloned and populated) -->
                 <div
-                  class="absolute bottom-0 left-0 right-0 border-b border-eu-blue"
-                ></div>
-                <div class="flex items-center justify-center h-full w-full">
+                  class="document-section border border-gray-200 rounded-lg overflow-hidden"
+                  data-section-id="template"
+                  style="display: none"
+                >
                   <button
-                    id="expand-left"
-                    class="text-eu-blue text-lg hover:text-eu-orange"
-                    title="Expand left column"
+                    class="section-trigger w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 font-medium flex items-center justify-between"
                   >
-                    <i class="fas fa-chevron-right"></i>
+                    <span class="section-title">Section Title</span>
+                    <i
+                      class="fas fa-chevron-down text-xs text-gray-500 transition-transform section-icon"
+                    ></i>
                   </button>
+                  <div class="section-content px-4 pb-3 hidden">
+                    <p class="text-sm text-gray-700 mb-3 section-summary">
+                      Section summary will appear here.
+                    </p>
+                    <div class="section-keywords flex flex-wrap gap-1.5 mt-2">
+                      <!-- Keywords will be inserted here -->
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Loading state -->
+                <div id="sections-loading" class="text-center py-4">
+                  <div class="animate-pulse space-y-2">
+                    <div class="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
+                    <div class="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Document Metadata (will be populated dynamically) -->
+              <div
+                class="document-metadata text-xs text-gray-500 mt-6 pt-4 border-t border-gray-200"
+              >
+                <div class="flex items-center mb-1">
+                  <i class="fas fa-info-circle mr-2 w-4 text-center"></i>
+                  <span>Document Analysis</span>
+                </div>
+                <div
+                  class="document-stats flex items-center text-xs text-gray-500 mb-1"
+                >
+                  <i class="far fa-file-alt mr-2 w-4 text-center"></i>
+                  <span class="document-length">- characters • - words</span>
+                </div>
+                <div
+                  class="document-confidence flex items-center text-xs text-gray-500"
+                >
+                  <i class="fas fa-chart-line mr-2 w-4 text-center"></i>
+                  <span
+                    >Confidence: <span class="confidence-value">-</span>%</span
+                  >
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Middle Column - Document -->
-          <div
-            id="middle-column"
-            class="mobile-tab-content flex-1 bg-eu-white text-text-primary flex flex-col lg:block transition-all duration-300 rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)]"
-          >
-            <!-- Header (visible only on desktop) -->
-            <div class="expanded-content">
+          <!-- Collapsed view (hidden when expanded) -->
+          <div class="collapsed-content hidden">
+            <div class="relative h-[60px] w-12">
               <div
-                class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
-              >
-                <h2 class="text-lg font-semibold text-eu-blue">Document</h2>
+                class="absolute bottom-0 left-0 right-0 border-b border-eu-blue"
+              ></div>
+              <div class="flex items-center justify-center h-full w-full">
                 <button
+                  id="expand-left"
                   class="text-eu-blue text-lg hover:text-eu-orange"
-                  id="expand-middle"
-                >
-                  <i class="fas fa-expand-alt"></i>
-                </button>
-              </div>
-            </div>
-
-            <!-- Document Content -->
-            <div
-              class="overflow-y-auto flex-1 bg-eu-white scrollbar-transparent p-4"
-              id="document-content"
-              style="position: relative"
-            >
-              <!-- Document content will appear here -->
-            </div>
-          </div>
-
-          <!-- Right Column - Annotation -->
-          <div
-            id="right-column"
-            class="mobile-tab-content w-full lg:w-16 lg:hover:w-80 bg-eu-white text-text-primary border-l border-eu-blue transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)] lg:block hidden"
-          >
-            <!-- Expanded view -->
-            <div class="flex flex-col h-full expanded-content">
-              <!-- Header -->
-              <div
-                class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
-              >
-                <h2 class="text-lg font-semibold lg:block hidden">Annotation</h2>
-                <button
-                  id="collapse-right"
-                  class="text-eu-blue text-lg hover:text-eu-orange"
+                  title="Expand guide"
                 >
                   <i class="fas fa-chevron-right"></i>
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
 
-              <div
-                class="flex-1 w-full overflow-y-auto bg-eu-white scrollbar-transparent p-4"
+        <!-- Middle Column - Document -->
+        <div
+          id="middle-column"
+          class="mobile-tab-content flex-1 bg-eu-white text-text-primary flex flex-col lg:block transition-all duration-300 rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)]"
+        >
+          <!-- Header (visible only on desktop) -->
+          <div class="expanded-content">
+            <div
+              class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
+            >
+              <h2 class="text-lg font-semibold text-eu-blue">Document</h2>
+              <button
+                class="text-eu-blue text-lg hover:text-eu-orange"
+                id="expand-middle"
               >
-                <!-- Content will go here -->
-              </div>
+                <i class="fas fa-expand-alt"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Document Content -->
+          <div
+            class="overflow-y-auto flex-1 bg-eu-white scrollbar-transparent p-4"
+            id="document-content"
+            style="position: relative"
+          >
+            <!-- Document content will appear here -->
+          </div>
+        </div>
+
+        <!-- Right Column - Annotation -->
+        <div
+          id="right-column"
+          class="mobile-tab-content w-full lg:w-16 lg:hover:w-80 bg-eu-white text-text-primary border-l border-eu-blue transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)] lg:block hidden"
+        >
+          <!-- Expanded view -->
+          <div class="flex flex-col h-full expanded-content">
+            <!-- Header -->
+            <div
+              class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
+            >
+              <h2 class="text-lg font-semibold lg:block hidden">Annotation</h2>
+              <button
+                id="collapse-right"
+                class="text-eu-blue text-lg hover:text-eu-orange"
+              >
+                <i class="fas fa-chevron-right"></i>
+              </button>
             </div>
 
-            <!-- Collapsed view -->
-            <div class="collapsed-content hidden">
-              <div class="relative h-[60px] w-12">
-                <div
-                  class="absolute bottom-0 left-0 right-0 border-b border-eu-blue"
-                ></div>
-                <div class="flex items-center justify-center h-full w-full">
-                  <button
-                    id="expand-right"
-                    class="text-eu-blue text-lg hover:text-eu-orange"
-                    title="Expand right column"
-                  >
-                    <i class="fas fa-chevron-left"></i>
-                  </button>
-                </div>
+            <div
+              class="flex-1 w-full overflow-y-auto bg-eu-white scrollbar-transparent p-4"
+            >
+              <!-- Content will go here -->
+            </div>
+          </div>
+
+          <!-- Collapsed view -->
+          <div class="collapsed-content hidden">
+            <div class="relative h-[60px] w-12">
+              <div
+                class="absolute bottom-0 left-0 right-0 border-b border-eu-blue"
+              ></div>
+              <div class="flex items-center justify-center h-full w-full">
+                <button
+                  id="expand-right"
+                  class="text-eu-blue text-lg hover:text-eu-orange"
+                  title="Expand right column"
+                >
+                  <i class="fas fa-chevron-left"></i>
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- Footer with Disclaimer -->
-      <p class="text-center text-xs text-gray-500 mb-1">
-        NotebookLM can be inaccurate; please double-check its responses.
-      </p>
-
-      <!-- Profile Dropdown Script -->
-      <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          const dropdownTrigger = document.getElementById('profile-dropdown-trigger');
-          const dropdownMenu = document.getElementById('profile-dropdown');
-          const mobileMenuButton = document.getElementById('mobile-menu-button');
-          
-          // Toggle dropdown on desktop
-          if (dropdownTrigger && dropdownMenu) {
-            dropdownTrigger.addEventListener('click', function(e) {
-              e.stopPropagation();
-              const isExpanded = this.getAttribute('aria-expanded') === 'true';
-              this.setAttribute('aria-expanded', !isExpanded);
-              dropdownMenu.classList.toggle('hidden');
-              dropdownMenu.classList.toggle('opacity-0');
-              dropdownMenu.classList.toggle('translate-y-2');
-            });
-          }
-          
-          // Close dropdown when clicking outside
-          document.addEventListener('click', function(e) {
-            if (dropdownMenu && !dropdownMenu.contains(e.target) && 
-                dropdownTrigger && !dropdownTrigger.contains(e.target)) {
-              dropdownMenu.classList.add('hidden', 'opacity-0', 'translate-y-2');
-              if (dropdownTrigger) {
-                dropdownTrigger.setAttribute('aria-expanded', 'false');
-              }
-            }
-          });
-          
-          // Handle mobile menu button
-          if (mobileMenuButton) {
-            mobileMenuButton.addEventListener('click', function() {
-              const isExpanded = this.getAttribute('aria-expanded') === 'true';
-              this.setAttribute('aria-expanded', !isExpanded);
-              // Toggle mobile menu visibility (you can add your mobile menu logic here)
-              console.log('Mobile menu toggled');
-            });
-          }
-          
-          // Handle keyboard navigation
-          if (dropdownMenu) {
-            const menuItems = dropdownMenu.querySelectorAll('a[role="menuitem"]');
-            const firstItem = menuItems[0];
-            const lastItem = menuItems[menuItems.length - 1];
-            
-            dropdownMenu.addEventListener('keydown', function(e) {
-              if (e.key === 'Escape') {
-                dropdownTrigger.focus();
-                dropdownMenu.classList.add('hidden', 'opacity-0', 'translate-y-2');
-                dropdownTrigger.setAttribute('aria-expanded', 'false');
-              }
-              
-              if (!e.shiftKey && e.key === 'Tab' && e.target === lastItem) {
-                e.preventDefault();
-                firstItem.focus();
-              }
-              
-              if (e.shiftKey && e.key === 'Tab' && e.target === firstItem) {
-                e.preventDefault();
-                lastItem.focus();
-              }
-            });
-          }
-        });
-      </script>
-      
-      <!-- Scripts -->
-      <script
-        type="application/JavaScript"
-        src="https://code.jquery.com/jquery-3.7.1.min.js"
-      ></script>
-      <script
-        type="application/JavaScript"
-        src="https://cdn.jsdelivr.net/npm/sweetalert2@11"
-      ></script>
-      <!-- Tour Script -->
-      <script src="./js/tour/doccano.js"></script>
-
-      <script
-        type="application/JavaScript"
-        src="https://cdn.jsdelivr.net/npm/apexcharts"
-      ></script>
-
-      <!-- Application Scripts -->
-      <script type="application/JavaScript" src="./js/doccano.js"></script>
-      <script
-        type="application/JavaScript"
-        src="./js/visualization.js"
-      ></script>
-      <script type="application/JavaScript" src="./js/tour/doccano.js"></script>
     </div>
+
+    <!-- Footer with Disclaimer -->
+    <p class="text-center text-xs text-gray-500 mb-1">
+      NotebookLM can be inaccurate; please double-check its responses.
+    </p>
+
+    <!-- Scripts -->
+    <script
+      type="application/JavaScript"
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+    ></script>
+    <script
+      type="application/JavaScript"
+      src="https://cdn.jsdelivr.net/npm/sweetalert2@11"
+    ></script>
+
+    <script
+      type="application/JavaScript"
+      src="https://cdn.jsdelivr.net/npm/apexcharts"
+    ></script>
+
+    <!-- Application Scripts -->
+    <script type="application/JavaScript" src="./js/app.js"></script>
+    <script type="application/JavaScript" src="./js/doccano.js"></script>
+    <script type="application/JavaScript" src="./js/visualization.js"></script>
+    <script type="application/JavaScript" src="./js/tour/doccano.js"></script>
   </body>
 </html>

@@ -1,237 +1,206 @@
-document.addEventListener("DOMContentLoaded", function () {
-  // Preloader logic
-  function showPreloader() {
-    var preloader = document.getElementById("preloader");
-    var mainContent = document.getElementById("main-content");
-    if (preloader) {
-      preloader.classList.remove("hide");
-      preloader.style.opacity = "1";
-      preloader.style.pointerEvents = "auto";
-    }
-    if (mainContent) {
-      mainContent.classList.remove("show");
-      mainContent.style.opacity = "0";
-      mainContent.style.pointerEvents = "none";
-    }
-  }
-  function hidePreloader() {
-    var preloader = document.getElementById("preloader");
-    var mainContent = document.getElementById("main-content");
-    if (preloader) {
-      preloader.classList.add("hide");
-      preloader.style.opacity = "0";
-      preloader.style.pointerEvents = "none";
-    }
-    if (mainContent) {
-      mainContent.classList.add("show");
-      mainContent.style.opacity = "1";
-      mainContent.style.pointerEvents = "auto";
-    }
-  }
-  showPreloader();
-  setTimeout(hidePreloader, 3000);
-
-  const dropdownTrigger = document.getElementById("avatar-dropdown-trigger");
-  const dropdownMenu = document.getElementById("avatar-dropdown");
-
-  // Check if elements exist before adding event listeners
-  if (!dropdownTrigger || !dropdownMenu) {
-    console.warn(
-      "Dropdown elements not found, skipping dropdown initialization"
+// Function to load and process NDJSON data
+async function loadNDJSONData() {
+  try {
+    const response = await fetch(
+      "/assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson"
     );
-    return;
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const text = await response.text();
+    const lines = text.split("\n").filter((line) => line.trim() !== "");
+    const documents = lines.map((line) => JSON.parse(line));
+
+    return documents;
+  } catch (error) {
+    console.error("Error loading NDJSON data:", error);
+    throw error;
   }
+}
 
-  // Toggle dropdown on click
-  dropdownTrigger.addEventListener("click", function (e) {
-    e.stopPropagation();
-    const isHidden = dropdownMenu.classList.toggle("hidden");
+// Function to process documents and group by section
+function processDocuments(docs) {
+  const sections = new Map();
 
-    // Position the dropdown for mobile
-    if (!isHidden && window.innerWidth < 1024) {
-      // lg breakpoint
-      const rect = dropdownTrigger.getBoundingClientRect();
-      dropdownMenu.style.top = `${rect.bottom + window.scrollY}px`;
-      dropdownMenu.style.right = "1rem";
+  docs.forEach((doc) => {
+    if (!doc.enrichment) return;
+
+    const sectionData = {
+      id: doc.id,
+      doc: doc.doc,
+      header: doc.header,
+      text: doc.text,
+      enrichment: doc.enrichment,
+      annotations: doc.annotations,
+      model: doc.enrichment._model,
+      _ts: doc._ts,
+    };
+
+    // console.log(sectionData);
+
+    sections.set(doc.id, sectionData);
+  });
+
+  return Array.from(sections.values());
+}
+
+// Update the DOMContentLoaded event listener
+document.addEventListener("DOMContentLoaded", async function () {
+  try {
+    // Show loading state
+    const loadingElement = document.getElementById("sections-loading");
+    const sectionsContainer = document.getElementById("document-sections");
+
+    // Load and process the NDJSON data
+    const rawDocuments = await loadNDJSONData();
+    const processedDocuments = processDocuments(rawDocuments);
+
+    // Hide loading state
+    loadingElement.style.display = "none";
+
+    if (processedDocuments.length === 0) {
+      sectionsContainer.innerHTML = `
+        <div class="text-center py-4 text-gray-500">
+          No document sections found.
+        </div>
+      `;
+      return;
     }
-  });
 
-  // Handle window resize
-  let resizeTimer;
-  window.addEventListener("resize", function () {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function () {
-      if (!dropdownMenu.classList.contains("hidden")) {
-        dropdownMenu.classList.add("hidden");
-      }
-    }, 250);
-  });
-
-  // Close dropdown when clicking outside
-  document.addEventListener("click", function (e) {
-    if (
-      !dropdownTrigger.contains(e.target) &&
-      !dropdownMenu.contains(e.target)
-    ) {
-      dropdownMenu.classList.add("hidden");
+    // Populate document info with the first document
+    if (processedDocuments[0]) {
+      populateDocumentInfo(processedDocuments[0]);
     }
-  });
 
-  // Close dropdown when clicking on a menu item
-  const menuItems = dropdownMenu.querySelectorAll("a");
-  menuItems.forEach((item) => {
-    item.addEventListener("click", function (e) {
-      e.preventDefault();
-      dropdownMenu.classList.add("hidden");
-      // Here you can add navigation logic for each menu item
-      console.log("Clicked:", item.textContent.trim());
+    // Populate sections
+    processedDocuments.forEach((doc) => {
+      populateSection(doc);
     });
-  });
 
-  // Close dropdown when pressing Escape key
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") {
-      dropdownMenu.classList.add("hidden");
+    // Open the first section by default
+    const firstSection = document.querySelector(
+      '.document-section:not([data-section-id="template"])'
+    );
+    if (firstSection) {
+      const firstTrigger = firstSection.querySelector(".section-trigger");
+      firstTrigger.click();
     }
-  });
+  } catch (error) {
+    console.error("Error initializing document:", error);
+    document.getElementById("sections-loading").innerHTML = `
+      <div class="text-center py-4 text-red-600">
+        Error loading document. Please try again later.
+      </div>
+    `;
+  }
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-  const dropdownTrigger = document.getElementById(
-    "desktop-avatar-dropdown-trigger"
+// Update the populateSection function to handle the new data structure
+function populateSection(data) {
+  if (!data.enrichment) return;
+
+  const template = document.querySelector(
+    '.document-section[data-section-id="template"]'
   );
-  const dropdownMenu = document.getElementById("desktop-avatar-dropdown");
+  const clone = template.cloneNode(true);
 
-  // Check if elements exist before adding event listeners
-  if (!dropdownTrigger || !dropdownMenu) {
-    console.warn(
-      "Desktop dropdown elements not found, skipping dropdown initialization"
-    );
-    return;
-  }
+  clone.style.display = "";
+  clone.setAttribute("data-section-id", data.id);
 
-  // Toggle dropdown on click
-  dropdownTrigger.addEventListener("click", function (e) {
-    e.stopPropagation();
-    dropdownMenu.classList.toggle("hidden");
-  });
+  // Update content
+  const title = data.enrichment.title || "Untitled Section";
+  const summary = data.enrichment.summary || "No summary available.";
+  const keywords = data.enrichment.keywords || [];
 
-  // Close dropdown when clicking outside
-  document.addEventListener("click", function (e) {
-    if (
-      !dropdownTrigger.contains(e.target) &&
-      !dropdownMenu.contains(e.target)
-    ) {
-      dropdownMenu.classList.add("hidden");
-    }
-  });
+  clone.querySelector(".section-title").textContent = title;
+  clone.querySelector(".section-summary").textContent = summary;
 
-  // Close dropdown when clicking on a menu item
-  const menuItems = dropdownMenu.querySelectorAll("a");
-  menuItems.forEach((item) => {
-    item.addEventListener("click", function (e) {
-      e.preventDefault();
-      dropdownMenu.classList.add("hidden");
-      // Here you can add navigation logic for each menu item
-      console.log("Clicked:", item.textContent.trim());
-    });
-  });
+  // Add keywords
+  const keywordsContainer = clone.querySelector(".section-keywords");
+  keywordsContainer.innerHTML = keywords
+    .map(
+      (keyword) =>
+        `<span class="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-full">#${keyword}</span>`
+    )
+    .join("");
 
-  // Close dropdown when pressing Escape key
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") {
-      dropdownMenu.classList.add("hidden");
-    }
-  });
-});
+  // Add to container
+  document.getElementById("document-sections").appendChild(clone);
 
-document.addEventListener("DOMContentLoaded", function () {
-  const leftColumn = document.getElementById("left-column");
-  const rightColumn = document.getElementById("right-column");
-  const middleColumn = document.getElementById("middle-column");
+  // Set up click handler
+  const trigger = clone.querySelector(".section-trigger");
+  trigger.addEventListener("click", function () {
+    const content = this.nextElementSibling;
+    const icon = this.querySelector("i");
 
-  const collapseLeftBtn = document.getElementById("collapse-left");
-  const expandLeftBtn = document.getElementById("expand-left");
-  const collapseRightBtn = document.getElementById("collapse-right");
-  const expandRightBtn = document.getElementById("expand-right");
-  const expandMiddleBtn = document.getElementById("expand-middle");
-
-  function updateColumnState(columnElement, shouldCollapse) {
-    if (!columnElement) return;
-    const expandedContent = columnElement.querySelector(".expanded-content");
-    const collapsedContent = columnElement.querySelector(".collapsed-content");
-
-    if (shouldCollapse) {
-      columnElement.classList.add("collapsed");
-      if (expandedContent) expandedContent.classList.add("hidden");
-      if (collapsedContent) collapsedContent.classList.remove("hidden");
-    } else {
-      columnElement.classList.remove("collapsed");
-      if (expandedContent) expandedContent.classList.remove("hidden");
-      if (collapsedContent) collapsedContent.classList.add("hidden");
-    }
-  }
-
-  // Function to handle left column collapse/expand
-  if (collapseLeftBtn && expandLeftBtn) {
-    collapseLeftBtn.addEventListener("click", () => {
-      updateColumnState(leftColumn, true);
-    });
-
-    expandLeftBtn.addEventListener("click", () => {
-      updateColumnState(leftColumn, false);
-    });
-  }
-
-  // Function to handle right column collapse/expand
-  if (collapseRightBtn && expandRightBtn) {
-    collapseRightBtn.addEventListener("click", () => {
-      updateColumnState(rightColumn, true);
-    });
-
-    expandRightBtn.addEventListener("click", () => {
-      updateColumnState(rightColumn, false);
-    });
-  }
-
-  // Function to handle middle column expand
-  if (expandMiddleBtn) {
-    expandMiddleBtn.addEventListener("click", () => {
-      const leftIsCollapsed = leftColumn?.classList.contains("collapsed");
-      const rightIsCollapsed = rightColumn?.classList.contains("collapsed");
-
-      const bothCollapsed = leftIsCollapsed && rightIsCollapsed;
-
-      if (bothCollapsed) {
-        // Currently focused on middle; expand side columns
-        updateColumnState(leftColumn, false);
-        updateColumnState(rightColumn, false);
-      } else {
-        // Collapse both sides to focus middle
-        updateColumnState(leftColumn, true);
-        updateColumnState(rightColumn, true);
+    // Close all other sections
+    document.querySelectorAll(".section-content").forEach((section) => {
+      if (section !== content) {
+        section.classList.add("hidden");
+        const sectionIcon = section.previousElementSibling.querySelector("i");
+        if (sectionIcon) {
+          sectionIcon.classList.remove("fa-chevron-up");
+          sectionIcon.classList.add("fa-chevron-down");
+        }
       }
     });
+
+    // Toggle current section
+    content.classList.toggle("hidden");
+    icon.classList.toggle("fa-chevron-up");
+    icon.classList.toggle("fa-chevron-down");
+  });
+}
+
+// Update the populateDocumentInfo function
+function populateDocumentInfo(data) {
+  if (!data) return;
+
+  const titleElement = document.querySelector(".document-title");
+  const idElement = document.querySelector(".document-id");
+  const modelElement = document.querySelector(".document-model");
+  const updatedElement = document.querySelector(".document-updated");
+  const lengthElement = document.querySelector(".document-length");
+  const confidenceElement = document.querySelector(".confidence-value");
+
+  if (titleElement)
+    titleElement.textContent = data.doc
+      ? data.doc.split("_").join(" ")
+      : "Document";
+  // if (idElement) idElement.textContent = data.id ? `${data.id.substring(0, 8)}...` : '-';
+  if (idElement)
+    idElement.textContent = data.id ? data.id.substring(0, 32) : "-";
+
+  if (modelElement && data.model) {
+    modelElement.textContent = `Model: ${data.model}`;
   }
 
-  // Tab switching functionality
-  const tabButtons = document.querySelectorAll(".tab-button");
-  const mobileTabContents = document.querySelectorAll(".mobile-tab-content");
+  if (updatedElement && data._ts) {
+    updatedElement.textContent = `Last updated: ${formatDate(data._ts)}`;
+  }
 
-  tabButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const tab = button.getAttribute("data-tab");
+  if (lengthElement && data.annotations) {
+    const length = data.annotations.length || 0;
+    const words = data.annotations.words || 0;
+    lengthElement.textContent = `${length} characters • ${words} words`;
+  }
 
-      tabButtons.forEach((btn) => btn.classList.remove("active"));
-      button.classList.add("active");
+  if (confidenceElement && data.enrichment?.confidence) {
+    confidenceElement.textContent = Math.round(
+      data.enrichment.confidence * 100
+    );
+  }
+}
 
-      mobileTabContents.forEach((content) => {
-        if (content.id === tab) {
-          content.classList.add("active");
-        } else {
-          content.classList.remove("active");
-        }
-      });
-    });
-  });
-});
+// Keep the formatDate function
+function formatDate(dateString) {
+  if (!dateString) return "Unknown date";
+  try {
+    const options = { year: "numeric", month: "short", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  } catch (e) {
+    console.error("Error formatting date:", e);
+    return "Invalid date";
+  }
+}
