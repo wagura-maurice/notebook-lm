@@ -64,16 +64,22 @@ document.addEventListener("DOMContentLoaded", function () {
     // Close other dropdowns when opening a new one
     function closeOtherDropdowns(currentMenu) {
       document.querySelectorAll(".dropdown-menu").forEach((dropdown) => {
-        if (dropdown !== currentMenu && !dropdown.classList.contains("hidden")) {
+        if (
+          dropdown !== currentMenu &&
+          !dropdown.classList.contains("hidden")
+        ) {
           // Add a small delay to prevent flickering when switching between dropdowns
           const closeTimer = setTimeout(() => {
             dropdown.classList.add("opacity-0", "translate-y-2");
             setTimeout(() => {
-              if (dropdown.classList.contains("opacity-0") && dropdown !== currentMenu) {
+              if (
+                dropdown.classList.contains("opacity-0") &&
+                dropdown !== currentMenu
+              ) {
                 dropdown.classList.add("hidden");
               }
             }, 150);
-            
+
             const dropdownTrigger = document.querySelector(
               `[aria-controls="${dropdown.id}"]`
             );
@@ -81,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
               dropdownTrigger.setAttribute("aria-expanded", "false");
             }
           }, 50);
-          
+
           // Store the timer ID so we can cancel it if needed
           dropdown._closeTimer = closeTimer;
         }
@@ -103,50 +109,49 @@ document.addEventListener("DOMContentLoaded", function () {
       e.preventDefault();
       e.stopPropagation();
       
+      // Get current state before any changes
+      const isExpanded = this.getAttribute("aria-expanded") === "true";
+
       // Set a flag to ignore the next click if needed
       if (ignoreNextClick) {
         ignoreNextClick = false;
         return;
       }
+
+      // If clicking the same trigger that's already open, just close it
+      if (isExpanded) {
+        closeDropdown();
+        return;
+      }
       
-      // Set a small delay before toggling to ensure we catch the click
-      setTimeout(() => {
-        const isExpanded = this.getAttribute("aria-expanded") === "true";
-        
-        // Close other dropdowns first
-        closeOtherDropdowns(menu);
-        
-        // Clear any pending close timers for this menu
-        if (menu._closeTimer) {
-          clearTimeout(menu._closeTimer);
-          menu._closeTimer = null;
-        }
-        
-        // Toggle this dropdown
-        if (isExpanded) {
-          closeDropdown();
-        } else {
-          this.setAttribute("aria-expanded", "true");
-          menu.classList.remove("hidden");
-          // Force reflow to enable the transition
-          void menu.offsetWidth;
-          menu.classList.remove("opacity-0", "translate-y-2");
-          
-          // Set a longer grace period for desktop
-          if (window.innerWidth >= 1024) {
-            dropdownIgnoreOutsideUntil = Date.now() + 500; // Increased grace period
-          }
-          
-          // Focus the first focusable element in the dropdown
-          const firstFocusable = menu.querySelector('a, button, [tabindex="0"]');
-          if (firstFocusable) firstFocusable.focus();
-        }
-        
-        // Set a small delay before allowing the next click
-        ignoreNextClick = true;
-        setTimeout(() => ignoreNextClick = false, 150);
-      }, 10);
+      // Close other dropdowns first
+      closeOtherDropdowns(menu);
       
+      // Clear any pending close timers for this menu
+      if (menu._closeTimer) {
+        clearTimeout(menu._closeTimer);
+        menu._closeTimer = null;
+      }
+      
+      // Open the dropdown
+      this.setAttribute("aria-expanded", "true");
+      menu.classList.remove("hidden");
+      // Force reflow to enable the transition
+      void menu.offsetWidth;
+      menu.classList.remove("opacity-0", "translate-y-2");
+      
+      // Set a longer grace period for desktop
+      if (window.innerWidth >= 1024) {
+        dropdownIgnoreOutsideUntil = Date.now() + 500;
+      }
+
+      // Don't auto-focus any element in the dropdown
+      // This prevents the first item from being automatically selected
+      // and allows the dropdown to open in a neutral state
+
+      // Set a small delay before allowing the next click
+      ignoreNextClick = true;
+      setTimeout(() => (ignoreNextClick = false), 150);
 
       // Position the dropdown for mobile
       if (window.innerWidth < 1024) {
@@ -215,36 +220,45 @@ document.addEventListener("DOMContentLoaded", function () {
     // Check if click is inside any dropdown trigger or menu
     const clickedTrigger = e.target.closest("[aria-expanded]");
     const clickedMenu = e.target.closest(".dropdown-menu");
-    
+
     // If click is outside both menu and its trigger, close all dropdowns
     if (!clickedTrigger && !clickedMenu) {
       // Skip if we're in the grace period for desktop
-      if (window.innerWidth >= 1024 && Date.now() < dropdownIgnoreUntil) {
+      if (
+        window.innerWidth >= 1024 &&
+        Date.now() < dropdownIgnoreOutsideUntil
+      ) {
         return;
       }
-      
+
       // Close all visible dropdowns with animation
-      document.querySelectorAll(".dropdown-menu:not(.hidden)").forEach((menu) => {
-        menu.classList.add("opacity-0", "translate-y-2");
-        setTimeout(() => {
-          if (menu.classList.contains("opacity-0")) {
-            menu.classList.add("hidden");
-          }
-        }, 200);
-        
-        const trigger = document.querySelector(
-          `[aria-controls="${menu.id}"][aria-expanded="true"]`
-        );
-        if (trigger) trigger.setAttribute("aria-expanded", "false");
-      });
+      document
+        .querySelectorAll(".dropdown-menu:not(.hidden)")
+        .forEach((menu) => {
+          menu.classList.add("opacity-0", "translate-y-2");
+          setTimeout(() => {
+            if (menu.classList.contains("opacity-0")) {
+              menu.classList.add("hidden");
+            }
+          }, 200);
+
+          const trigger = document.querySelector(
+            `[aria-controls="${menu.id}"][aria-expanded="true"]`
+          );
+          if (trigger) trigger.setAttribute("aria-expanded", "false");
+        });
     } else if (clickedMenu) {
       // If clicking inside a menu, prevent it from closing
       e.stopPropagation();
     }
     // If clicking a trigger, let the click handler handle it
   }
+
+  // Remove any existing handlers to prevent duplicates
+  document.removeEventListener("mousedown", handleOutsideClick, true);
+  document.removeEventListener("click", handleOutsideClick);
   
-  // Use capture phase to ensure we catch the event early
+  // Add new handler with capture phase
   document.addEventListener("mousedown", handleOutsideClick, true);
 
   // Desktop hover persistence to prevent accidental close while hovering
@@ -255,19 +269,19 @@ document.addEventListener("DOMContentLoaded", function () {
     avatarDropdownMenu,
   ].forEach((el) => {
     if (!el) return;
-    
+
     el.addEventListener("mouseenter", (e) => {
       if (window.innerWidth >= 1024) {
         // Extend the ignore period when hovering over the menu or trigger
-        dropdownIgnoreUntil = Date.now() + 500;
+        dropdownIgnoreOutsideUntil = Date.now() + 500;
         e.stopPropagation();
       }
     });
-    
+
     el.addEventListener("mouseleave", (e) => {
       if (window.innerWidth >= 1024) {
         // Set a shorter ignore period when leaving the menu
-        dropdownIgnoreUntil = Date.now() + 200;
+        dropdownIgnoreOutsideUntil = Date.now() + 200;
       }
     });
   });
