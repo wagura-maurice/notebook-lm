@@ -67,6 +67,8 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/doccano.css" />
     <link rel="stylesheet" href="css/collapsed-columns.css" />
+    <link rel="stylesheet" href="css/profile-dropdown.css" />
+    <link rel="stylesheet" href="css/navigation.css" />
     <link href="./css/tour.css" rel="stylesheet" />
   </head>
 
@@ -97,14 +99,14 @@
           >
             <!-- Logo -->
             <div class="flex items-center">
-              <a href="./index.html" class="flex items-center space-x-3 group">
+              <a href="./index.html" class="flex items-center space-x-3 group" aria-label="Home">
                 <img
                   src="./images/rgb-logo_white_onblue.svg"
                   alt="Logo"
-                  class="h-10 w-10 lg:h-12 lg:w-12 rounded-full"
+                  class="h-10 w-10 lg:h-12 lg:w-12 rounded-full transition-transform duration-200 hover:scale-105"
                 />
                 <span
-                  class="text-eu-white hover:text-eu-orange p-2 rounded-full hover:bg-eu-white hover:bg-opacity-10 transition-colors text-xl font-semibold hidden lg:block"
+                  class="nav-item text-xl font-semibold hidden lg:block"
                   >NotebookLM</span
                 >
               </a>
@@ -114,15 +116,18 @@
             <div class="lg:hidden flex items-center space-x-3">
               <a
                 href="./index.html"
-                class="text-eu-white hover:text-eu-orange p-2 rounded-full hover:bg-eu-white hover:bg-opacity-10 transition-colors"
+                class="nav-item"
+                aria-label="Home"
               >
-                <i class="fa-solid fa-house fa-md"></i>
+                <i class="fa-solid fa-house fa-md nav-icon"></i>
               </a>
-              <button
-                class="text-eu-white hover:text-eu-orange p-2 rounded-full hover:bg-eu-white hover:bg-opacity-10 transition-colors"
+              <a
+                href="#"
+                class="nav-item lg:hidden"
+                aria-label="Settings"
               >
-                <i class="fas fa-cog fa-md"></i>
-              </button>
+                <i class="fas fa-cog fa-md nav-icon"></i>
+              </a>
               <div class="relative h-8 w-8">
                 <img
                   src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
@@ -190,70 +195,109 @@
           >
             <a
               href="./index.html"
-              class="text-eu-white hover:text-eu-orange p-2 rounded-full hover:bg-eu-white hover:bg-opacity-10 transition-colors"
+              class="nav-item"
+              aria-label="Home"
             >
-              <i class="fa-solid fa-house fa-md"></i>
+              <i class="fa-solid fa-house fa-md nav-icon"></i>
             </a>
             <button
-              class="help-button text-eu-white hover:text-eu-orange p-2 rounded-full hover:bg-eu-white hover:bg-opacity-10 transition-colors"
+              class="help-button nav-item"
+              aria-label="Help"
             >
-              <i class="fa-solid fa-question fa-md"></i>
+              <i class="fa-solid fa-question fa-md nav-icon"></i>
             </button>
-            <button
-              class="text-eu-white hover:text-eu-orange p-2 rounded-full hover:bg-eu-white hover:bg-opacity-10 transition-colors"
+            <a
+              href="#"
+              class="nav-item"
+              aria-label="Settings"
             >
-              <i class="fas fa-cog fa-md"></i>
-            </button>
-            <div class="relative h-10 w-10">
-              <img
-                src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
-                class="h-full w-full rounded-full object-cover cursor-pointer transition-all"
-                id="desktop-avatar-dropdown-trigger"
-              />
-              <div
-                class="absolute inset-0 rounded-full border-2 border-eu-orange pointer-events-none"
-              ></div>
-              <!-- Dropdown menu -->
-              <div
-                id="desktop-avatar-dropdown"
-                class="hidden absolute right-0 mt-2 w-48 bg-eu-white rounded-md shadow-lg ring-1 ring-eu-blue ring-opacity-20 focus:outline-none z-50 border border-eu-blue/20"
+              <i class="fas fa-cog fa-md nav-icon"></i>
+            </a>
+            <!-- Profile Dropdown Container -->
+            <div class="relative group" id="profile-dropdown-container">
+              <!-- Trigger Button -->
+              <button
+                type="button"
+                class="flex items-center focus:outline-none"
+                id="profile-dropdown-trigger"
+                aria-expanded="false"
+                aria-haspopup="true"
               >
-                <div class="py-1" role="menu" aria-orientation="vertical">
+                <div class="relative">
+                  <img
+                    src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
+                    class="h-10 w-10 rounded-full object-cover cursor-pointer transition-all"
+                    alt="User profile"
+                  />
+                  <div class="absolute inset-0 rounded-full border-2 border-eu-orange pointer-events-none"></div>
+                </div>
+                <span class="sr-only">Open user menu</span>
+              </button>
+
+              <!-- Dropdown Menu -->
+              <div
+                id="profile-dropdown"
+                class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 border border-eu-blue/20 transform transition-all duration-200 ease-in-out opacity-0 translate-y-2"
+                role="menu"
+                aria-orientation="vertical"
+                aria-labelledby="profile-dropdown-trigger"
+              >
+                <!-- User Info -->
+                <div class="px-4 py-3 border-b border-eu-blue/10">
+                  <p class="text-sm font-medium text-eu-blue">Peter Thirikwa</p>
+                  <p class="text-xs text-gray-500 truncate">peter@example.com</p>
+                </div>
+                
+                <!-- Menu Items -->
+                <div class="py-1">
                   <a
                     href="#"
-                    class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
+                    class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-eu-orange/10 hover:text-eu-orange transition-colors group"
                     role="menuitem"
                   >
-                    <i class="fas fa-user mr-3 w-5 text-center"></i>
-                    <span>Profile</span>
+                    <i class="fas fa-user w-5 text-center text-eu-blue group-hover:text-eu-orange"></i>
+                    <span class="ml-3">Your Profile</span>
                   </a>
                   <a
                     href="#"
-                    class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
+                    class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-eu-orange/10 hover:text-eu-orange transition-colors group"
                     role="menuitem"
                   >
-                    <i class="fas fa-cog mr-3 w-5 text-center"></i>
-                    <span>Settings</span>
+                    <i class="fas fa-cog w-5 text-center text-eu-blue group-hover:text-eu-orange"></i>
+                    <span class="ml-3">Settings</span>
                   </a>
                   <a
                     href="#"
-                    class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
+                    class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-eu-orange/10 hover:text-eu-orange transition-colors group"
                     role="menuitem"
                   >
-                    <i class="fas fa-moon mr-3 w-5 text-center"></i>
-                    <span>Theme</span>
+                    <i class="fas fa-moon w-5 text-center text-eu-blue group-hover:text-eu-orange"></i>
+                    <span class="ml-3">Theme</span>
                   </a>
-                  <div class="border-t border-eu-blue/20 my-1"></div>
+                  <div class="border-t border-eu-blue/10 my-1"></div>
                   <a
                     href="#"
-                    class="flex items-center justify-center w-1/3 py-3 text-sm font-medium text-eu-blue hover:text-eu-orange border-b-2 border-transparent hover:border-eu-blue transition-colors"
+                    class="flex items-center px-4 py-2.5 text-sm font-medium text-eu-blue hover:bg-red-50 hover:text-red-600 transition-colors group"
                     role="menuitem"
                   >
-                    <i class="fas fa-sign-out-alt mr-3 w-5 text-center"></i>
-                    <span>Sign out</span>
+                    <i class="fas fa-sign-out-alt w-5 text-center text-red-500 group-hover:text-red-600"></i>
+                    <span class="ml-3">Sign out</span>
                   </a>
                 </div>
               </div>
+            </div>
+            
+            <!-- Mobile Menu Button (hidden on desktop) -->
+            <button
+              type="button"
+              class="nav-item lg:hidden"
+              id="mobile-menu-button"
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-label="Open mobile menu"
+            >
+              <i class="fas fa-bars fa-md nav-icon"></i>
+            </button>
             </div>
           </div>
         </div>
@@ -415,6 +459,73 @@
         NotebookLM can be inaccurate; please double-check its responses.
       </p>
 
+      <!-- Profile Dropdown Script -->
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const dropdownTrigger = document.getElementById('profile-dropdown-trigger');
+          const dropdownMenu = document.getElementById('profile-dropdown');
+          const mobileMenuButton = document.getElementById('mobile-menu-button');
+          
+          // Toggle dropdown on desktop
+          if (dropdownTrigger && dropdownMenu) {
+            dropdownTrigger.addEventListener('click', function(e) {
+              e.stopPropagation();
+              const isExpanded = this.getAttribute('aria-expanded') === 'true';
+              this.setAttribute('aria-expanded', !isExpanded);
+              dropdownMenu.classList.toggle('hidden');
+              dropdownMenu.classList.toggle('opacity-0');
+              dropdownMenu.classList.toggle('translate-y-2');
+            });
+          }
+          
+          // Close dropdown when clicking outside
+          document.addEventListener('click', function(e) {
+            if (dropdownMenu && !dropdownMenu.contains(e.target) && 
+                dropdownTrigger && !dropdownTrigger.contains(e.target)) {
+              dropdownMenu.classList.add('hidden', 'opacity-0', 'translate-y-2');
+              if (dropdownTrigger) {
+                dropdownTrigger.setAttribute('aria-expanded', 'false');
+              }
+            }
+          });
+          
+          // Handle mobile menu button
+          if (mobileMenuButton) {
+            mobileMenuButton.addEventListener('click', function() {
+              const isExpanded = this.getAttribute('aria-expanded') === 'true';
+              this.setAttribute('aria-expanded', !isExpanded);
+              // Toggle mobile menu visibility (you can add your mobile menu logic here)
+              console.log('Mobile menu toggled');
+            });
+          }
+          
+          // Handle keyboard navigation
+          if (dropdownMenu) {
+            const menuItems = dropdownMenu.querySelectorAll('a[role="menuitem"]');
+            const firstItem = menuItems[0];
+            const lastItem = menuItems[menuItems.length - 1];
+            
+            dropdownMenu.addEventListener('keydown', function(e) {
+              if (e.key === 'Escape') {
+                dropdownTrigger.focus();
+                dropdownMenu.classList.add('hidden', 'opacity-0', 'translate-y-2');
+                dropdownTrigger.setAttribute('aria-expanded', 'false');
+              }
+              
+              if (!e.shiftKey && e.key === 'Tab' && e.target === lastItem) {
+                e.preventDefault();
+                firstItem.focus();
+              }
+              
+              if (e.shiftKey && e.key === 'Tab' && e.target === firstItem) {
+                e.preventDefault();
+                lastItem.focus();
+              }
+            });
+          }
+        });
+      </script>
+      
       <!-- Scripts -->
       <script
         type="application/JavaScript"
@@ -438,7 +549,6 @@
         type="application/JavaScript"
         src="./js/visualization.js"
       ></script>
-      <script type="application/JavaScript" src="./js/tour/doccano.js"></script>
     </div>
   </body>
 </html>

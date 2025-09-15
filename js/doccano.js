@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
       mainContent.style.pointerEvents = "none";
     }
   }
+
   function hidePreloader() {
     var preloader = document.getElementById("preloader");
     var mainContent = document.getElementById("main-content");
@@ -28,106 +29,110 @@ document.addEventListener("DOMContentLoaded", function () {
       mainContent.style.pointerEvents = "auto";
     }
   }
+
+  // Initialize preloader
   showPreloader();
   setTimeout(hidePreloader, 3000);
 
-  const dropdownTrigger = document.getElementById("avatar-dropdown-trigger");
-  const dropdownMenu = document.getElementById("avatar-dropdown");
+  // Handle profile dropdown
+  const profileDropdownTrigger = document.getElementById("profile-dropdown-trigger");
+  const profileDropdownMenu = document.getElementById("profile-dropdown");
+  const avatarDropdownTrigger = document.getElementById("avatar-dropdown-trigger");
+  const avatarDropdownMenu = document.getElementById("avatar-dropdown");
 
-  // Toggle dropdown on click
-  dropdownTrigger.addEventListener("click", function (e) {
-    e.stopPropagation();
-    const isHidden = dropdownMenu.classList.toggle("hidden");
+  function setupDropdown(trigger, menu) {
+    if (!trigger || !menu) return;
 
-    // Position the dropdown for mobile
-    if (!isHidden && window.innerWidth < 1024) {
-      // lg breakpoint
-      const rect = dropdownTrigger.getBoundingClientRect();
-      dropdownMenu.style.top = `${rect.bottom + window.scrollY}px`;
-      dropdownMenu.style.right = "1rem";
-    }
-  });
+    // Toggle dropdown on click
+    trigger.addEventListener("click", function (e) {
+      e.stopPropagation();
+      const isExpanded = this.getAttribute("aria-expanded") === "true";
+      this.setAttribute("aria-expanded", !isExpanded);
+      
+      menu.classList.toggle("hidden");
+      if (menu === profileDropdownMenu) {
+        menu.classList.toggle("opacity-0");
+        menu.classList.toggle("translate-y-2");
+      }
+
+      // Position the dropdown for mobile
+      if (window.innerWidth < 1024) {
+        const rect = trigger.getBoundingClientRect();
+        menu.style.top = `${rect.bottom + window.scrollY}px`;
+        menu.style.right = "1rem";
+      }
+    });
+
+    // Close dropdown when clicking on a menu item
+    const menuItems = menu.querySelectorAll("a");
+    menuItems.forEach((item) => {
+      item.addEventListener("click", function (e) {
+        e.preventDefault();
+        menu.classList.add("hidden");
+        if (menu === profileDropdownMenu) {
+          menu.classList.add("opacity-0", "translate-y-2");
+        }
+        trigger.setAttribute("aria-expanded", "false");
+        console.log("Clicked:", item.textContent.trim());
+      });
+    });
+  }
+
+  // Initialize dropdowns
+  setupDropdown(profileDropdownTrigger, profileDropdownMenu);
+  setupDropdown(avatarDropdownTrigger, avatarDropdownMenu);
 
   // Handle window resize
   let resizeTimer;
   window.addEventListener("resize", function () {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function () {
-      if (!dropdownMenu.classList.contains("hidden")) {
-        dropdownMenu.classList.add("hidden");
-      }
+      [profileDropdownMenu, avatarDropdownMenu].forEach(menu => {
+        if (menu && !menu.classList.contains("hidden")) {
+          menu.classList.add("hidden");
+        }
+      });
     }, 250);
   });
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   document.addEventListener("click", function (e) {
-    if (
-      !dropdownTrigger.contains(e.target) &&
-      !dropdownMenu.contains(e.target)
-    ) {
-      dropdownMenu.classList.add("hidden");
-    }
-  });
-
-  // Close dropdown when clicking on a menu item
-  const menuItems = dropdownMenu.querySelectorAll("a");
-  menuItems.forEach((item) => {
-    item.addEventListener("click", function (e) {
-      e.preventDefault();
-      dropdownMenu.classList.add("hidden");
-      // Here you can add navigation logic for each menu item
-      console.log("Clicked:", item.textContent.trim());
+    [
+      { trigger: profileDropdownTrigger, menu: profileDropdownMenu },
+      { trigger: avatarDropdownTrigger, menu: avatarDropdownMenu }
+    ].forEach(({ trigger, menu }) => {
+      if (trigger && menu && 
+          !trigger.contains(e.target) && 
+          !menu.contains(e.target)) {
+        trigger.setAttribute("aria-expanded", "false");
+        menu.classList.add("hidden");
+        if (menu === profileDropdownMenu) {
+          menu.classList.add("opacity-0", "translate-y-2");
+        }
+      }
     });
   });
 
-  // Close dropdown when pressing Escape key
+  // Close dropdowns when pressing Escape key
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") {
-      dropdownMenu.classList.add("hidden");
+      [profileDropdownMenu, avatarDropdownMenu].forEach(menu => {
+        if (menu) {
+          menu.classList.add("hidden");
+          if (menu === profileDropdownMenu) {
+            menu.classList.add("opacity-0", "translate-y-2");
+          }
+        }
+      });
+      
+      [profileDropdownTrigger, avatarDropdownTrigger].forEach(trigger => {
+        if (trigger) {
+          trigger.setAttribute("aria-expanded", "false");
+        }
+      });
     }
   });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  const dropdownTrigger = document.getElementById(
-    "desktop-avatar-dropdown-trigger"
-  );
-  const dropdownMenu = document.getElementById("desktop-avatar-dropdown");
-
-  // Toggle dropdown on click
-  dropdownTrigger.addEventListener("click", function (e) {
-    e.stopPropagation();
-    dropdownMenu.classList.toggle("hidden");
-  });
-
-  // Close dropdown when clicking outside
-  document.addEventListener("click", function (e) {
-    if (
-      !dropdownTrigger.contains(e.target) &&
-      !dropdownMenu.contains(e.target)
-    ) {
-      dropdownMenu.classList.add("hidden");
-    }
-  });
-
-  // Close dropdown when clicking on a menu item
-  const menuItems = dropdownMenu.querySelectorAll("a");
-  menuItems.forEach((item) => {
-    item.addEventListener("click", function (e) {
-      e.preventDefault();
-      dropdownMenu.classList.add("hidden");
-      // Here you can add navigation logic for each menu item
-      console.log("Clicked:", item.textContent.trim());
-    });
-  });
-
-  // Close dropdown when pressing Escape key
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") {
-      dropdownMenu.classList.add("hidden");
-    }
-  });
-});
+}); // Close the main DOMContentLoaded event listener
 
 document.addEventListener("DOMContentLoaded", function () {
   const leftColumn = document.getElementById("left-column");
