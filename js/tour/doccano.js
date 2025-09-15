@@ -1,5 +1,5 @@
 /**
- * NotebookLM Document Annotation Tour
+ * EU ALMPO Document Annotation Tour
  * This module provides an interactive tour of the Document Annotation interface
  */
 

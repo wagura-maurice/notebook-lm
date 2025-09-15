@@ -5,7 +5,7 @@ body {
   color: #003087;
 }
 
-.notebook-icon {
+.eu_almpo-icon {
   color: #38bdf8;
   font-size: 1.25rem;
 }
@@ -244,17 +244,17 @@ header .hover\:text-eu-orange:hover {
   background: #f9f9f9 !important;
   border: 1px solid #003087 !important;
 }
-.notebook-list-item:hover,
+.eu_almpo-list-item:hover,
 .card:hover {
   background: #FF6900 !important;
   color: #f9f9f9 !important;
 }
-.notebook-list-item .dropdown-menu,
+.eu_almpo-list-item .dropdown-menu,
 .card .dropdown-menu {
   background: #f9f9f9 !important;
   border: 1px solid #003087 !important;
 }
-.notebook-list-item .dropdown-menu a:hover,
+.eu_almpo-list-item .dropdown-menu a:hover,
 .card .dropdown-menu a:hover {
   background: #FF6900 !important;
   color: #f9f9f9 !important;

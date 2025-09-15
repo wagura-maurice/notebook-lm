@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NotebookLM - Document Annotation Page</title>
+    <title>EU Almpo - Document Annotation Page</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -106,7 +106,7 @@
                 />
                 <span
                   class="nav-item text-xl font-semibold hidden lg:block"
-                  >NotebookLM</span
+                  >EU Almpo</span
                 >
               </a>
             </div>
@@ -127,19 +127,31 @@
               >
                 <i class="fas fa-cog fa-md nav-icon"></i>
               </a>
-              <div class="relative h-8 w-8">
-                <img
-                  src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
-                  class="h-full w-full rounded-full object-cover cursor-pointer transition-all"
+              <div class="relative">
+                <button
                   id="avatar-dropdown-trigger"
-                />
+                  class="flex items-center justify-center h-8 w-8 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-eu-orange"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  aria-controls="avatar-dropdown"
+                >
+                  <img
+                    src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
+                    class="h-full w-full rounded-full object-cover"
+                    alt="User profile"
+                  />
+                  <span class="sr-only">Open user menu</span>
+                </button>
                 <div
                   class="absolute inset-0 rounded-full border-2 border-eu-orange pointer-events-none"
                 ></div>
                 <!-- Dropdown menu -->
                 <div
                   id="avatar-dropdown"
-                  class="hidden fixed lg:absolute right-4 lg:right-0 mt-2 w-56 lg:w-48 bg-eu-white rounded-md shadow-lg ring-1 ring-eu-blue ring-opacity-20 focus:outline-none z-50 border border-eu-blue/20"
+                  class="dropdown-menu hidden fixed lg:absolute right-4 lg:right-0 mt-2 w-56 lg:w-48 bg-eu-white rounded-md shadow-lg ring-1 ring-eu-blue ring-opacity-20 focus:outline-none z-50 border border-eu-blue/20"
+                  role="menu"
+                  aria-orientation="vertical"
+                  aria-labelledby="avatar-dropdown-trigger"
                 >
                   <div class="py-1" role="menu" aria-orientation="vertical">
                     <a
@@ -169,7 +181,7 @@
                     <div class="border-t border-eu-blue/20 my-1"></div>
                     <a
                       href="#"
-                      class="flex items-center justify-center w-1/3 py-3 text-sm font-medium text-eu-blue hover:text-eu-orange border-b-2 border-transparent hover:border-eu-blue transition-colors"
+                      class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
                       role="menuitem"
                     >
                       <i class="fas fa-sign-out-alt mr-3 w-5 text-center"></i>
@@ -202,6 +214,7 @@
               <i class="fa-solid fa-house fa-md nav-icon"></i>
             </a>
             <button
+              id="tourHelpBtn"
               class="help-button nav-item"
               aria-label="Help"
             >
@@ -223,6 +236,7 @@
                 id="profile-dropdown-trigger"
                 aria-expanded="false"
                 aria-haspopup="true"
+                aria-controls="profile-dropdown"
               >
                 <div class="relative">
                   <img
@@ -238,7 +252,7 @@
               <!-- Dropdown Menu -->
               <div
                 id="profile-dropdown"
-                class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 border border-eu-blue/20 transform transition-all duration-200 ease-in-out opacity-0 translate-y-2"
+                class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 border border-eu-blue/20 transform transition-all duration-200 ease-in-out hidden opacity-0 translate-y-2"
                 role="menu"
                 aria-orientation="vertical"
                 aria-labelledby="profile-dropdown-trigger"
@@ -457,7 +471,7 @@
 
       <!-- Footer with Disclaimer -->
       <p class="text-center text-xs text-gray-500 mb-1">
-        NotebookLM can be inaccurate; please double-check its responses.
+        EU Almpo can be inaccurate; please double-check its responses.
       </p>
 
       <!-- Profile Dropdown Script -->

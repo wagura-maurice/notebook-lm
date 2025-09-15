@@ -1,8 +1,8 @@
-# Notebook LM+ - Enhanced AI Research Assistant
+# EU ALMPO+ - Enhanced AI Research Assistant
 
 ## 🚀 Project Overview
 
-Notebook LM+ is an advanced AI-powered research and knowledge management platform that goes beyond traditional note-taking. Built as an enhanced alternative to Google's Notebook LM, this platform combines powerful document processing with intelligent AI capabilities to transform how you interact with your research materials.
+EU ALMPO+ is an advanced AI-powered research and knowledge management platform that goes beyond traditional note-taking. Built as an enhanced alternative to Google's EU ALMPO, this platform combines powerful document processing with intelligent AI capabilities to transform how you interact with your research materials.
 
 ### ✨ Enhanced Features
 
@@ -34,7 +34,7 @@ Notebook LM+ is an advanced AI-powered research and knowledge management platfor
 ## 🏗️ Project Structure
 
 ```
-notebook-lm/
+eu_almpo-lm/
 ├── assets/          # Static assets and resources
 │   ├── css/         # Stylesheets
 │   │   ├── auth.css
@@ -83,7 +83,7 @@ notebook-lm/
 1. Clone the repository:
    ```bash
    git clone <repo-url>
-   cd notebook-lm
+   cd eu_almpo-lm
    ```
 2. Open `index.html` in your browser to explore the main interface.
 
@@ -105,7 +105,7 @@ notebook-lm/
 ## Development Notes
 
 - The project currently uses vanilla HTML, CSS, and JS. No frameworks are required for basic usage.
-- See `notebook-lm-logic.md` for future plans:
+- See `eu_almpo-lm-logic.md` for future plans:
   - Rebuild using TailwindCSS, Vanilla JS (no jQuery), and modern build tools (Vite, Gulp).
   - UI/UX improvements (e.g., modal positioning, responsive design).
 

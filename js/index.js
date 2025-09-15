@@ -14,12 +14,12 @@ function closeAllModals() {
 document.addEventListener("DOMContentLoaded", function () {
   // --- Create New Notebook Modal ---
   const createButton = document.querySelector(".create-button");
-  const notebookModal = document.querySelector(".modal");
+  const euAlmpoModal = document.querySelector(".modal");
 
-  if (createButton && notebookModal) {
+  if (createButton && euAlmpoModal) {
     createButton.addEventListener("click", function (e) {
       closeAllModals();
-      notebookModal.classList.remove("hidden");
+      euAlmpoModal.classList.remove("hidden");
     });
   }
 

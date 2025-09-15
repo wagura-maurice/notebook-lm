@@ -1,6 +1,6 @@
 /**
- * NotebookLM Guided Tour
- * This module provides an interactive tour of the NotebookLM interface
+ * EU ALMPO Guided Tour
+ * This module provides an interactive tour of the EU ALMPO interface
  */
 
 // Global tour instance
@@ -276,7 +276,7 @@ function initTour() {
       },
       exitOnEsc: true,
       keyboardNavigation: true,
-      tourName: "notebook-lm-tour",
+      tourName: "eu_almpo-lm-tour",
     });
 
     // Store the tour instance globally
@@ -922,7 +922,7 @@ function startTour() {
     // Add completion handler
     tour.on("complete", () => {
       showNotification(
-        "Tour completed! 🎉 You're all set to explore NotebookLM."
+        "Tour completed! 🎉 You're all set to explore EU ALMPO."
       );
       chatSimulation.stop();
     });
@@ -1063,16 +1063,16 @@ function showNotification(message, type = "success") {
 }
 
 // Make the startTour function globally available
-window.startNotebookLMTour = startTour;
+window.startEU_ALMPOTour = startTour;
 
 // Show welcome notification when the module loads
 setTimeout(() => {
   showNotification(
-    "Welcome to NotebookLM! Click the help button (?) for a guided tour.",
+    "Welcome to EU ALMPO! Click the help button (?) for a guided tour.",
     "info"
   );
 }, 1500);
 
 console.log(
-  "NotebookLM Tour module loaded. Call startNotebookLMTour() to begin."
+  "EU ALMPO Tour module loaded. Call startEU_ALMPOTour() to begin."
 );

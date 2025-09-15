@@ -1,6 +1,6 @@
 /**
- * NotebookLM Guided Tour
- * This module provides an interactive tour of the NotebookLM interface
+ * EU ALMPO Guided Tour
+ * This module provides an interactive tour of the EU ALMPO interface
  */
 
 // Global tour instance
@@ -119,8 +119,8 @@ function addTourSteps(tour) {
   // Welcome step with better styling and engagement
   tour.addStep({
     id: "welcome",
-    title: "👋 Welcome to NotebookLM",
-    text: "Let's take a quick tour to help you get the most out of NotebookLM. You'll learn how to manage sources, chat with your documents, and create notes efficiently.",
+    title: "👋 Welcome to EU ALMPO",
+    text: "Let's take a quick tour to help you get the most out of EU ALMPO. You'll learn how to manage sources, chat with your documents, and create notes efficiently.",
     buttons: [
       {
         text: "Start Tour",
@@ -210,7 +210,7 @@ function addTourSteps(tour) {
   tour.addStep({
     id: "add-source-button",
     title: "➕ Add Content",
-    text: "Click here to upload documents, import from cloud storage, or paste text. NotebookLM supports PDFs, Word docs, and more!",
+    text: "Click here to upload documents, import from cloud storage, or paste text. EU ALMPO supports PDFs, Word docs, and more!",
     attachTo: {
       element: "#addSourceBtn",
       on: "bottom",
@@ -370,7 +370,7 @@ function addTourSteps(tour) {
   if (chatInput) {
     tour.addStep({
       id: "chat-input",
-      title: "💬 Chat with NotebookLM",
+      title: "💬 Chat with EU ALMPO",
       text: "Type your questions here. The AI will analyze your documents and provide helpful responses. <br><br>💡 <em>Try asking about the content of your documents or request summaries!</em>",
       attachTo: {
         element: chatInput,
@@ -583,7 +583,7 @@ function addTourSteps(tour) {
     id: "tour-complete",
     title: "🎉 Tour Complete!",
     text:
-      "You've completed the NotebookLM tour! Here are some next steps to get started:<br><br>" +
+      "You've completed the EU ALMPO tour! Here are some next steps to get started:<br><br>" +
       "1. Upload or connect your documents<br>" +
       "2. Ask questions about your content<br>" +
       "3. Create notes to organize your insights<br><br>" +
@@ -659,7 +659,7 @@ function startTour() {
     // Add completion handler
     tour.on("complete", () => {
       showNotification(
-        "Tour completed! 🎉 You're all set to explore NotebookLM."
+        "Tour completed! 🎉 You're all set to explore EU ALMPO."
       );
     });
 
@@ -801,16 +801,16 @@ function showNotification(message, type = "success") {
 }
 
 // Make the startTour function globally available
-window.startNotebookLMTour = startTour;
+window.startEU_ALMPOTour = startTour;
 
 // Show welcome notification when the module loads
 setTimeout(() => {
   showNotification(
-    "Welcome to NotebookLM! Click the help button (?) for a guided tour.",
+    "Welcome to EU ALMPO! Click the help button (?) for a guided tour.",
     "info"
   );
 }, 1500);
 
 console.log(
-  "NotebookLM Tour module loaded. Call startNotebookLMTour() to begin."
+  "EU ALMPO Tour module loaded. Call startEU_ALMPOTour() to begin."
 );
