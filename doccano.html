@@ -310,25 +310,25 @@
             class="tab-button flex-1 py-3 text-center font-medium"
             data-tab="left-column"
           >
-            <i class="fas fa-book mr-2"></i><span>Sources</span>
+            <i class="fas fa-book mr-2"></i><span>Guide</span>
           </button>
           <button
             class="tab-button active flex-1 py-3 text-center font-medium"
             data-tab="middle-column"
           >
-            <i class="fas fa-comments mr-2"></i><span>Chat</span>
+            <i class="fas fa-comments mr-2"></i><span>Document</span>
           </button>
           <button
             class="tab-button flex-1 py-3 text-center font-medium"
             data-tab="right-column"
           >
-            <i class="fas fa-sliders-h mr-2"></i><span>Studio</span>
+            <i class="fas fa-sliders-h mr-2"></i><span>Annotation</span>
           </button>
         </div>
 
         <!-- Main Content -->
         <div class="flex flex-1 overflow-hidden gap-2" id="columns-container">
-          <!-- Left Column - Sources -->
+          <!-- Left Column - Guide -->
           <div
             id="left-column"
             class="mobile-tab-content w-full lg:w-72 bg-eu-white text-text-primary transition-all duration-300 flex flex-col rounded-lg lg:block hidden"
@@ -339,7 +339,7 @@
               <div
                 class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
               >
-                <h2 class="text-lg font-semibold lg:block hidden">Sources</h2>
+                <h2 class="text-lg font-semibold lg:block hidden">Guide</h2>
                 <button
                   id="collapse-left"
                   class="text-eu-blue text-lg hover:text-eu-orange"
@@ -373,7 +373,7 @@
             </div>
           </div>
 
-          <!-- Middle Column - Chat -->
+          <!-- Middle Column - Document -->
           <div
             id="middle-column"
             class="mobile-tab-content flex-1 bg-eu-white text-text-primary flex flex-col lg:block transition-all duration-300 rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)]"
@@ -383,7 +383,7 @@
               <div
                 class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
               >
-                <h2 class="text-lg font-semibold text-eu-blue">Chat</h2>
+                <h2 class="text-lg font-semibold text-eu-blue">Document</h2>
                 <button
                   class="text-eu-blue text-lg hover:text-eu-orange"
                   id="expand-middle"
@@ -393,17 +393,17 @@
               </div>
             </div>
 
-            <!-- Chat messages -->
+            <!-- Document Content -->
             <div
               class="overflow-y-auto flex-1 bg-eu-white scrollbar-transparent p-4"
-              id="chat-messages"
+              id="document-content"
               style="position: relative"
             >
-              <!-- Chat messages will appear here -->
+              <!-- Document content will appear here -->
             </div>
           </div>
 
-          <!-- Right Column - Studio -->
+          <!-- Right Column - Annotation -->
           <div
             id="right-column"
             class="mobile-tab-content w-full lg:w-16 lg:hover:w-80 bg-eu-white text-text-primary border-l border-eu-blue transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)] lg:block hidden"
@@ -414,7 +414,7 @@
               <div
                 class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
               >
-                <h2 class="text-lg font-semibold lg:block hidden">Studio</h2>
+                <h2 class="text-lg font-semibold lg:block hidden">Annotation</h2>
                 <button
                   id="collapse-right"
                   class="text-eu-blue text-lg hover:text-eu-orange"
