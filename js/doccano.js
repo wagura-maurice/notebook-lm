@@ -198,26 +198,22 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Ensure initial view states are correct
-  updateColumnState(leftColumn, leftColumn?.classList.contains("collapsed"));
-  updateColumnState(rightColumn, rightColumn?.classList.contains("collapsed"));
+  // Tab switching functionality
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const mobileTabContents = document.querySelectorAll('.mobile-tab-content');
 
-  // Mobile tabs functionality
-  const tabButtons = document.querySelectorAll(".tab-button");
-  const mobileTabContents = document.querySelectorAll(".mobile-tab-content");
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const tab = button.getAttribute('data-tab');
+      
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
 
-  tabButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const tab = button.dataset.tab;
-
-      tabButtons.forEach((btn) => btn.classList.remove("active"));
-      button.classList.add("active");
-
-      mobileTabContents.forEach((content) => {
+      mobileTabContents.forEach(content => {
         if (content.id === tab) {
-          content.classList.add("active");
+          content.classList.add('active');
         } else {
-          content.classList.remove("active");
+          content.classList.remove('active');
         }
       });
     });
