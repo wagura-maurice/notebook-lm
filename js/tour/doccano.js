@@ -4,7 +4,9 @@
  */
 
 // Global tour instance
-let currentTour = null;
+if (typeof currentTour === 'undefined') {
+  var currentTour = null;
+}
 
 /**
  * Clean up any existing tour instance
@@ -211,7 +213,7 @@ function startTour() {
 // Initialize the tour when the help button is clicked
 document.addEventListener("DOMContentLoaded", function () {
   const helpButton = document.querySelector('.help-button');
-  if (helpButton) {
+  if (helpButton && typeof Shepherd !== 'undefined') {
     helpButton.addEventListener('click', function(e) {
       e.preventDefault();
       startTour();

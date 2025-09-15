@@ -1,22 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Function to handle mobile/desktop view
-  function updateView() {
-    const isMobile = window.innerWidth < 1024; // Match Tailwind's lg breakpoint
-    const leftColumn = document.getElementById("left-column");
-    const middleColumn = document.getElementById("middle-column");
-    const rightColumn = document.getElementById("right-column");
-    
-    if (isMobile) {
-      // On mobile, show only the active tab
-      const activeTab = document.querySelector(".tab-button.active")?.getAttribute("data-tab");
-      [leftColumn, middleColumn, rightColumn].forEach(col => {
-        if (col) {
-          col.style.display = col.id === activeTab ? 'flex' : 'none';
-        }
-      });
-    }
-  }
-  
   // Preloader logic
   function showPreloader() {
     var preloader = document.getElementById("preloader");
@@ -32,400 +14,137 @@ document.addEventListener("DOMContentLoaded", function () {
       mainContent.style.pointerEvents = "none";
     }
   }
-
   function hidePreloader() {
     var preloader = document.getElementById("preloader");
     var mainContent = document.getElementById("main-content");
     if (preloader) {
-      preloader.style.display = 'none';
+      preloader.classList.add("hide");
       preloader.style.opacity = "0";
-      preloader.style.visibility = 'hidden';
       preloader.style.pointerEvents = "none";
     }
     if (mainContent) {
-      mainContent.style.display = 'flex';
+      mainContent.classList.add("show");
       mainContent.style.opacity = "1";
-      mainContent.style.visibility = 'visible';
       mainContent.style.pointerEvents = "auto";
     }
   }
+  showPreloader();
+  setTimeout(hidePreloader, 3000);
 
-  // Always show content immediately
-  hidePreloader();
-  
-  // Ensure main content is visible
-  const mainContent = document.getElementById("main-content");
-  if (mainContent) {
-    mainContent.style.display = 'block';
-    mainContent.style.opacity = '1';
-    mainContent.style.visibility = 'visible';
+  const dropdownTrigger = document.getElementById("avatar-dropdown-trigger");
+  const dropdownMenu = document.getElementById("avatar-dropdown");
+
+  // Check if elements exist before adding event listeners
+  if (!dropdownTrigger || !dropdownMenu) {
+    console.warn("Dropdown elements not found, skipping dropdown initialization");
+    return;
   }
 
-  // Handle profile dropdown
-  const profileDropdownTrigger = document.getElementById(
-    "profile-dropdown-trigger"
-  );
-  const profileDropdownMenu = document.getElementById("profile-dropdown");
-  const avatarDropdownTrigger = document.getElementById(
-    "avatar-dropdown-trigger"
-  );
-  const avatarDropdownMenu = document.getElementById("avatar-dropdown");
-  // Shared desktop-only grace period after opening a dropdown
-  let dropdownIgnoreOutsideUntil = 0;
+  // Toggle dropdown on click
+  dropdownTrigger.addEventListener("click", function (e) {
+    e.stopPropagation();
+    const isHidden = dropdownMenu.classList.toggle("hidden");
 
-  function setupDropdown(trigger, menu) {
-    if (!trigger || !menu) return;
-
-    // Track if we should ignore the next click (to prevent immediate close)
-    let ignoreNextClick = false;
-    // Desktop-only grace period to ignore outside clicks right after opening
-    let ignoreOutsideUntil = 0;
-
-    // Close other dropdowns when opening a new one
-    function closeOtherDropdowns(currentMenu) {
-      document.querySelectorAll(".dropdown-menu").forEach((dropdown) => {
-        if (
-          dropdown !== currentMenu &&
-          !dropdown.classList.contains("hidden")
-        ) {
-          // Add a small delay to prevent flickering when switching between dropdowns
-          const closeTimer = setTimeout(() => {
-            dropdown.classList.add("opacity-0", "translate-y-2");
-            setTimeout(() => {
-              if (
-                dropdown.classList.contains("opacity-0") &&
-                dropdown !== currentMenu
-              ) {
-                dropdown.classList.add("hidden");
-              }
-            }, 150);
-
-            const dropdownTrigger = document.querySelector(
-              `[aria-controls="${dropdown.id}"]`
-            );
-            if (dropdownTrigger) {
-              dropdownTrigger.setAttribute("aria-expanded", "false");
-            }
-          }, 50);
-
-          // Store the timer ID so we can cancel it if needed
-          dropdown._closeTimer = closeTimer;
-        }
-      });
+    // Position the dropdown for mobile
+    if (!isHidden && window.innerWidth < 1024) {
+      // lg breakpoint
+      const rect = dropdownTrigger.getBoundingClientRect();
+      dropdownMenu.style.top = `${rect.bottom + window.scrollY}px`;
+      dropdownMenu.style.right = "1rem";
     }
+  });
 
-    // Close this dropdown
-    function closeDropdown() {
-      menu.classList.add("opacity-0", "translate-y-2");
-      setTimeout(() => {
-        menu.classList.add("hidden");
-        menu.style.display = 'none';
-        menu.style.opacity = '0';
-        menu.style.visibility = 'hidden';
-      }, 200);
-      trigger.setAttribute("aria-expanded", "false");
-    }
-
-    // Toggle dropdown on click
-    trigger.addEventListener("mousedown", function (e) {
-      // Prevent default to avoid focus changes that might interfere
-      e.preventDefault();
-      e.stopPropagation();
-      
-      // Get current state before any changes
-      const isExpanded = this.getAttribute("aria-expanded") === "true";
-
-      // Set a flag to ignore the next click if needed
-      if (ignoreNextClick) {
-        ignoreNextClick = false;
-        return;
-      }
-
-      // If clicking the same trigger that's already open, just close it
-      if (isExpanded) {
-        closeDropdown();
-        return;
-      }
-      
-      // Close other dropdowns first
-      closeOtherDropdowns(menu);
-      
-      // Clear any pending close timers for this menu
-      if (menu._closeTimer) {
-        clearTimeout(menu._closeTimer);
-        menu._closeTimer = null;
-      }
-      
-      // Open the dropdown
-      this.setAttribute("aria-expanded", "true");
-      menu.classList.remove("hidden");
-      menu.style.display = 'block';
-      menu.style.opacity = '1';
-      menu.style.visibility = 'visible';
-      // Force reflow to enable the transition
-      void menu.offsetWidth;
-      menu.classList.remove("opacity-0", "translate-y-2");
-      
-      // Set a longer grace period for desktop
-      if (window.innerWidth >= 1024) {
-        dropdownIgnoreOutsideUntil = Date.now() + 500;
-      }
-
-      // Set a small delay before allowing the next click
-      ignoreNextClick = true;
-      setTimeout(() => (ignoreNextClick = false), 150);
-
-      // Position the dropdown for mobile
-      if (window.innerWidth < 1024) {
-        const rect = trigger.getBoundingClientRect();
-        menu.style.position = 'fixed';
-        menu.style.top = `${rect.bottom + window.scrollY}px`;
-        menu.style.right = "1rem";
-        menu.style.left = 'auto';
-      } else {
-        // Reset positioning for desktop
-        menu.style.position = 'absolute';
-        menu.style.top = '';
-        menu.style.right = '';
-        menu.style.left = '';
-      }
-    });
-
-    // Pre-arm grace period on pointerdown to avoid race with outside handler
-    trigger.addEventListener("pointerdown", function (e) {
-      if (window.innerWidth >= 1024) {
-        dropdownIgnoreOutsideUntil = Date.now() + 400;
-      }
-      e.stopPropagation();
-    });
-
-    // Close dropdown when clicking on a menu item
-    const menuItems = menu.querySelectorAll("a, button");
-    menuItems.forEach((item) => {
-      item.addEventListener("click", function (e) {
-        e.preventDefault();
-        menu.classList.add("hidden", "opacity-0", "translate-y-2");
-        menu.style.display = 'none';
-        menu.style.opacity = '0';
-        menu.style.visibility = 'hidden';
-        trigger.setAttribute("aria-expanded", "false");
-        
-        // If it's a link, navigate after a short delay
-        if (item.tagName === 'A' && item.href) {
-          setTimeout(() => {
-            window.location.href = item.href;
-          }, 150);
-        }
-      });
-    });
-  }
-
-  // Initialize dropdowns
-  setupDropdown(profileDropdownTrigger, profileDropdownMenu);
-  setupDropdown(avatarDropdownTrigger, avatarDropdownMenu);
-
-  // Handle window resize: keep dropdowns open but reposition across breakpoints
+  // Handle window resize
   let resizeTimer;
   window.addEventListener("resize", function () {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function () {
-      const pairs = [
-        [profileDropdownTrigger, profileDropdownMenu],
-        [avatarDropdownTrigger, avatarDropdownMenu],
-      ];
-      pairs.forEach(([trigger, menu]) => {
-        if (!trigger || !menu || menu.classList.contains("hidden")) return;
-        if (window.innerWidth < 1024) {
-          const rect = trigger.getBoundingClientRect();
-          menu.style.top = `${rect.bottom + window.scrollY}px`;
-          menu.style.right = "1rem";
-        } else {
-          menu.style.top = "";
-          menu.style.right = "";
-        }
-      });
-    }, 150);
+      if (!dropdownMenu.classList.contains("hidden")) {
+        dropdownMenu.classList.add("hidden");
+      }
+    }, 250);
   });
 
-  // Handle outside clicks for dropdowns
-  function handleOutsideClick(e) {
-    // Check if click is inside any dropdown trigger or menu
-    const clickedTrigger = e.target.closest("[aria-expanded]");
-    const clickedMenu = e.target.closest(".dropdown-menu");
-
-    // If click is outside both menu and its trigger, close all dropdowns
-    if (!clickedTrigger && !clickedMenu) {
-      // Skip if we're in the grace period for desktop
-      if (
-        window.innerWidth >= 1024 &&
-        Date.now() < dropdownIgnoreOutsideUntil
-      ) {
-        return;
-      }
-
-      // Close all visible dropdowns with animation
-      document
-        .querySelectorAll(".dropdown-menu:not(.hidden)")
-        .forEach((menu) => {
-          menu.classList.add("opacity-0", "translate-y-2");
-          setTimeout(() => {
-            if (menu.classList.contains("opacity-0")) {
-              menu.classList.add("hidden");
-            }
-          }, 200);
-
-          const trigger = document.querySelector(
-            `[aria-controls="${menu.id}"][aria-expanded="true"]`
-          );
-          if (trigger) trigger.setAttribute("aria-expanded", "false");
-        });
-    } else if (clickedMenu) {
-      // If clicking inside a menu, prevent it from closing
-      e.stopPropagation();
-    }
-    // If clicking a trigger, let the click handler handle it
-  }
-
-  // Remove any existing handlers to prevent duplicates
-  document.removeEventListener("mousedown", handleOutsideClick, true);
-  document.removeEventListener("click", handleOutsideClick);
-  
-  // Add new handler with capture phase
-  document.addEventListener("mousedown", handleOutsideClick, true);
-
-  // Desktop hover persistence to prevent accidental close while hovering
-  [
-    profileDropdownTrigger,
-    profileDropdownMenu,
-    avatarDropdownTrigger,
-    avatarDropdownMenu,
-  ].forEach((el) => {
-    if (!el) return;
-
-    el.addEventListener("mouseenter", (e) => {
-      if (window.innerWidth >= 1024) {
-        // Extend the ignore period when hovering over the menu or trigger
-        dropdownIgnoreOutsideUntil = Date.now() + 500;
-        e.stopPropagation();
-      }
-    });
-
-    el.addEventListener("mouseleave", (e) => {
-      if (window.innerWidth >= 1024) {
-        // Set a shorter ignore period when leaving the menu
-        dropdownIgnoreOutsideUntil = Date.now() + 200;
-      }
-    });
-  });
-
-  // Keyboard navigation for open dropdown
-  document.addEventListener("keydown", (e) => {
-    const openMenu = document.querySelector(".dropdown-menu:not(.hidden)");
-    if (!openMenu) return;
-    const items = Array.from(
-      openMenu.querySelectorAll('a, button, [tabindex="0"], [role="menuitem"]')
-    );
-    if (!items.length) return;
-    const index = items.indexOf(document.activeElement);
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      const next = items[(index + 1 + items.length) % items.length];
-      next.focus();
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      const prev = items[(index - 1 + items.length) % items.length];
-      prev.focus();
-    } else if (e.key === "Home") {
-      e.preventDefault();
-      items[0].focus();
-    } else if (e.key === "End") {
-      e.preventDefault();
-      items[items.length - 1].focus();
-    } else if (e.key === "Enter" || e.key === " ") {
-      const el = document.activeElement;
-      if (openMenu.contains(el)) {
-        el.click();
-      }
+  // Close dropdown when clicking outside
+  document.addEventListener("click", function (e) {
+    if (
+      !dropdownTrigger.contains(e.target) &&
+      !dropdownMenu.contains(e.target)
+    ) {
+      dropdownMenu.classList.add("hidden");
     }
   });
 
-  // Close dropdowns when pressing Escape key
+  // Close dropdown when clicking on a menu item
+  const menuItems = dropdownMenu.querySelectorAll("a");
+  menuItems.forEach((item) => {
+    item.addEventListener("click", function (e) {
+      e.preventDefault();
+      dropdownMenu.classList.add("hidden");
+      // Here you can add navigation logic for each menu item
+      console.log("Clicked:", item.textContent.trim());
+    });
+  });
+
+  // Close dropdown when pressing Escape key
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") {
-      document.querySelectorAll(".dropdown-menu").forEach((menu) => {
-        if (!menu.classList.contains("hidden")) {
-          menu.classList.add("opacity-0", "translate-y-2");
-          setTimeout(() => {
-            menu.classList.add("hidden");
-          }, 200);
-          const trigger = document.querySelector(
-            `[aria-controls="${menu.id}"][aria-expanded="true"]`
-          );
-          if (trigger) trigger.setAttribute("aria-expanded", "false");
-        }
-      });
+      dropdownMenu.classList.add("hidden");
+    }
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const dropdownTrigger = document.getElementById(
+    "desktop-avatar-dropdown-trigger"
+  );
+  const dropdownMenu = document.getElementById("desktop-avatar-dropdown");
+
+  // Check if elements exist before adding event listeners
+  if (!dropdownTrigger || !dropdownMenu) {
+    console.warn("Desktop dropdown elements not found, skipping dropdown initialization");
+    return;
+  }
+
+  // Toggle dropdown on click
+  dropdownTrigger.addEventListener("click", function (e) {
+    e.stopPropagation();
+    dropdownMenu.classList.toggle("hidden");
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener("click", function (e) {
+    if (
+      !dropdownTrigger.contains(e.target) &&
+      !dropdownMenu.contains(e.target)
+    ) {
+      dropdownMenu.classList.add("hidden");
     }
   });
 
-  // Handle mobile tab switching - only for mobile view
-  const tabButtons = document.querySelectorAll('.tab-button');
-  if (window.innerWidth < 1024) { // Only for mobile
-    tabButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        // Update active tab
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        
-        // Update view based on the selected tab
-        updateView();
-      });
+  // Close dropdown when clicking on a menu item
+  const menuItems = dropdownMenu.querySelectorAll("a");
+  menuItems.forEach((item) => {
+    item.addEventListener("click", function (e) {
+      e.preventDefault();
+      dropdownMenu.classList.add("hidden");
+      // Here you can add navigation logic for each menu item
+      console.log("Clicked:", item.textContent.trim());
     });
-    
-    // Initial view update for mobile
-    updateView();
-    
-    // Update view on window resize
-    window.addEventListener('resize', function() {
-      if (window.innerWidth < 1024) {
-        updateView();
-      } else {
-        // On desktop, make sure all columns are visible
-        const columns = ['left-column', 'middle-column', 'right-column'];
-        columns.forEach(id => {
-          const col = document.getElementById(id);
-          if (col) {
-            col.style.display = 'flex';
-            col.style.visibility = 'visible';
-            col.style.opacity = '1';
-          }
-        });
-      }
-    });
-  }
-  
-  // (Consolidated Escape handler above)
-}); // Close the main DOMContentLoaded event listener
+  });
+
+  // Close dropdown when pressing Escape key
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      dropdownMenu.classList.add("hidden");
+    }
+  });
+});
 
 document.addEventListener("DOMContentLoaded", function () {
   const leftColumn = document.getElementById("left-column");
   const rightColumn = document.getElementById("right-column");
   const middleColumn = document.getElementById("middle-column");
-
-  // Make sure all columns are visible by default
-  [leftColumn, rightColumn, middleColumn].forEach(column => {
-    if (column) {
-      column.style.display = 'flex';
-      column.style.visibility = 'visible';
-      column.style.opacity = '1';
-      column.classList.remove('hidden');
-      
-      const expanded = column.querySelector('.expanded-content');
-      if (expanded) {
-        expanded.style.display = 'flex';
-        expanded.classList.remove('hidden');
-      }
-    }
-  });
 
   const collapseLeftBtn = document.getElementById("collapse-left");
   const expandLeftBtn = document.getElementById("expand-left");
