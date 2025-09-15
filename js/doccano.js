@@ -1,4 +1,36 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // Preloader logic
+  function showPreloader() {
+    var preloader = document.getElementById("preloader");
+    var mainContent = document.getElementById("main-content");
+    if (preloader) {
+      preloader.classList.remove("hide");
+      preloader.style.opacity = "1";
+      preloader.style.pointerEvents = "auto";
+    }
+    if (mainContent) {
+      mainContent.classList.remove("show");
+      mainContent.style.opacity = "0";
+      mainContent.style.pointerEvents = "none";
+    }
+  }
+  function hidePreloader() {
+    var preloader = document.getElementById("preloader");
+    var mainContent = document.getElementById("main-content");
+    if (preloader) {
+      preloader.classList.add("hide");
+      preloader.style.opacity = "0";
+      preloader.style.pointerEvents = "none";
+    }
+    if (mainContent) {
+      mainContent.classList.add("show");
+      mainContent.style.opacity = "1";
+      mainContent.style.pointerEvents = "auto";
+    }
+  }
+  showPreloader();
+  setTimeout(hidePreloader, 3000);
+
   const dropdownTrigger = document.getElementById("avatar-dropdown-trigger");
   const dropdownMenu = document.getElementById("avatar-dropdown");
 

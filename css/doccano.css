@@ -648,6 +648,26 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.5s ease;
+}
+
+#preloader.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Main Content */
+#main-content {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+#main-content.show {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* Scrollbar Utility */
