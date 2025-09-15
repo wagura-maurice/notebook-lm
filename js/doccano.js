@@ -140,35 +140,67 @@ document.addEventListener("DOMContentLoaded", function () {
   const expandRightBtn = document.getElementById("expand-right");
   const expandMiddleBtn = document.getElementById("expand-middle");
 
+  function updateColumnState(columnElement, shouldCollapse) {
+    if (!columnElement) return;
+    const expandedContent = columnElement.querySelector(".expanded-content");
+    const collapsedContent = columnElement.querySelector(".collapsed-content");
+
+    if (shouldCollapse) {
+      columnElement.classList.add("collapsed");
+      if (expandedContent) expandedContent.classList.add("hidden");
+      if (collapsedContent) collapsedContent.classList.remove("hidden");
+    } else {
+      columnElement.classList.remove("collapsed");
+      if (expandedContent) expandedContent.classList.remove("hidden");
+      if (collapsedContent) collapsedContent.classList.add("hidden");
+    }
+  }
+
   // Function to handle left column collapse/expand
   if (collapseLeftBtn && expandLeftBtn) {
     collapseLeftBtn.addEventListener("click", () => {
-      leftColumn.classList.add("collapsed");
+      updateColumnState(leftColumn, true);
     });
 
     expandLeftBtn.addEventListener("click", () => {
-      leftColumn.classList.remove("collapsed");
+      updateColumnState(leftColumn, false);
     });
   }
 
   // Function to handle right column collapse/expand
   if (collapseRightBtn && expandRightBtn) {
     collapseRightBtn.addEventListener("click", () => {
-      rightColumn.classList.add("collapsed");
+      updateColumnState(rightColumn, true);
     });
 
     expandRightBtn.addEventListener("click", () => {
-      rightColumn.classList.remove("collapsed");
+      updateColumnState(rightColumn, false);
     });
   }
 
   // Function to handle middle column expand
   if (expandMiddleBtn) {
     expandMiddleBtn.addEventListener("click", () => {
-      leftColumn.classList.add("collapsed");
-      rightColumn.classList.add("collapsed");
+      const leftIsCollapsed = leftColumn?.classList.contains("collapsed");
+      const rightIsCollapsed = rightColumn?.classList.contains("collapsed");
+
+      const bothCollapsed = leftIsCollapsed && rightIsCollapsed;
+
+      if (bothCollapsed) {
+        // Currently focused on middle; expand side columns
+        updateColumnState(leftColumn, false);
+        updateColumnState(rightColumn, false);
+      } else {
+        // Collapse both sides to focus middle
+        updateColumnState(leftColumn, true);
+        updateColumnState(rightColumn, true);
+      }
     });
   }
+
+  // Ensure initial view states are correct
+  updateColumnState(leftColumn, leftColumn?.classList.contains("collapsed"));
+  updateColumnState(rightColumn, rightColumn?.classList.contains("collapsed"));
 
   // Mobile tabs functionality
   const tabButtons = document.querySelectorAll(".tab-button");
