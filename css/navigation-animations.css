@@ -56,8 +56,18 @@
   color: var(--eu-orange);
 }
 
-/* Mobile Navigation */
+/* Hide expanded content headers on mobile */
 @media (max-width: 1023px) {
+  .expanded-content > div:first-child {
+    display: none !important;
+  }
+
+  /* Adjust the content area to account for hidden header */
+  .expanded-content {
+    padding-top: 0.5rem;
+  }
+
+/* Mobile Navigation */
   /* Hide desktop header elements on mobile */
   .desktop-only {
     display: none !important;
