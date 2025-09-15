@@ -128,3 +128,66 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  const leftColumn = document.getElementById("left-column");
+  const rightColumn = document.getElementById("right-column");
+  const middleColumn = document.getElementById("middle-column");
+
+  const collapseLeftBtn = document.getElementById("collapse-left");
+  const expandLeftBtn = document.getElementById("expand-left");
+  const collapseRightBtn = document.getElementById("collapse-right");
+  const expandRightBtn = document.getElementById("expand-right");
+  const expandMiddleBtn = document.getElementById("expand-middle");
+
+  // Function to handle left column collapse/expand
+  if (collapseLeftBtn && expandLeftBtn) {
+    collapseLeftBtn.addEventListener("click", () => {
+      leftColumn.classList.add("collapsed");
+    });
+
+    expandLeftBtn.addEventListener("click", () => {
+      leftColumn.classList.remove("collapsed");
+    });
+  }
+
+  // Function to handle right column collapse/expand
+  if (collapseRightBtn && expandRightBtn) {
+    collapseRightBtn.addEventListener("click", () => {
+      rightColumn.classList.add("collapsed");
+    });
+
+    expandRightBtn.addEventListener("click", () => {
+      rightColumn.classList.remove("collapsed");
+    });
+  }
+
+  // Function to handle middle column expand
+  if (expandMiddleBtn) {
+    expandMiddleBtn.addEventListener("click", () => {
+      leftColumn.classList.add("collapsed");
+      rightColumn.classList.add("collapsed");
+    });
+  }
+
+  // Mobile tabs functionality
+  const tabButtons = document.querySelectorAll(".tab-button");
+  const mobileTabContents = document.querySelectorAll(".mobile-tab-content");
+
+  tabButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const tab = button.dataset.tab;
+
+      tabButtons.forEach((btn) => btn.classList.remove("active"));
+      button.classList.add("active");
+
+      mobileTabContents.forEach((content) => {
+        if (content.id === tab) {
+          content.classList.add("active");
+        } else {
+          content.classList.remove("active");
+        }
+      });
+    });
+  });
+});
