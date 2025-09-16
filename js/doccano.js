@@ -41,6 +41,86 @@ function getSectionIcon(title) {
   return 'fas fa-file-alt';
 }
 
+// Function to process taxonomy data from all documents
+function processTaxonomyData(docs) {
+  const taxonomyCounts = {};
+
+  // Count occurrences of each taxonomy key
+  docs.forEach(doc => {
+    if (doc.enrichment?.taxonomy) {
+      Object.entries(doc.enrichment.taxonomy).forEach(([category, items]) => {
+        if (Array.isArray(items) && items.length > 0) {
+          if (!taxonomyCounts[category]) {
+            taxonomyCounts[category] = 0;
+          }
+          // Count this taxonomy key once per document
+          taxonomyCounts[category]++;
+        }
+      });
+    }
+  });
+
+  // Convert to array of objects with counts
+  return Object.entries(taxonomyCounts).map(([key, count]) => ({
+    key,
+    count
+  }));
+}
+
+// Function to render taxonomy keys in the right column
+function renderTaxonomy(taxonomyData) {
+  const container = document.getElementById('taxonomy-container');
+  if (!container) return;
+
+  if (taxonomyData.length === 0) {
+    container.innerHTML = '<p class="text-sm text-gray-500 italic">No taxonomy data available</p>';
+    return;
+  }
+
+  // Color schemes for taxonomy items - deeper colors for better visibility
+  const colorSchemes = [
+    { bg: 'bg-blue-500', text: 'text-white', border: 'border-blue-600' },
+    { bg: 'bg-green-500', text: 'text-white', border: 'border-green-600' },
+    { bg: 'bg-yellow-500', text: 'text-white', border: 'border-yellow-600' },
+    { bg: 'bg-red-500', text: 'text-white', border: 'border-red-600' },
+    { bg: 'bg-purple-600', text: 'text-white', border: 'border-purple-700' },
+    { bg: 'bg-pink-500', text: 'text-white', border: 'border-pink-600' },
+    { bg: 'bg-indigo-600', text: 'text-white', border: 'border-indigo-700' },
+    { bg: 'bg-gray-600', text: 'text-white', border: 'border-gray-700' },
+    { bg: 'bg-cyan-500', text: 'text-white', border: 'border-cyan-600' },
+    { bg: 'bg-teal-500', text: 'text-white', border: 'border-teal-600' },
+    { bg: 'bg-amber-500', text: 'text-white', border: 'border-amber-600' },
+    { bg: 'bg-rose-600', text: 'text-white', border: 'border-rose-700' }
+  ];
+
+  // Sort by count (descending)
+  taxonomyData.sort((a, b) => b.count - a.count);
+  
+  let html = '';
+  
+  taxonomyData.forEach((item, index) => {
+    const colorScheme = colorSchemes[index % colorSchemes.length];
+    const formattedKey = item.key
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+    
+    html += `
+      <div class="flex items-center justify-between py-1.5 px-3 hover:bg-gray-50 transition-colors">
+        <div class="flex items-center">
+          <span class="inline-flex items-center justify-center w-5 h-5 mr-2 rounded-sm ${colorScheme.bg} ${colorScheme.border} border"></span>
+          <span class="text-sm text-gray-800 font-medium">${formattedKey}</span>
+        </div>
+        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-eu-blue/10 text-eu-blue text-xs font-semibold">
+          ${item.count}
+        </span>
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+}
+
 // Function to process documents and group by section
 function processDocuments(docs) {
   const sections = new Map();
@@ -123,10 +203,24 @@ document.addEventListener("DOMContentLoaded", async function () {
       populateDocumentInfo(processedDocuments[0]);
     }
 
-    // Populate sections
+    // Process and display documents
     processedDocuments.forEach((doc) => {
       populateSection(doc);
     });
+
+    // Process and display taxonomy data
+    const taxonomyData = processTaxonomyData(processedDocuments);
+    renderTaxonomy(taxonomyData);
+    
+    // Update document info
+    const latestDoc = processedDocuments.sort((a, b) => new Date(b._ts) - new Date(a._ts))[0];
+    if (latestDoc) {
+      document.getElementById('document-updated').textContent = new Date(latestDoc._ts).toLocaleDateString();
+      document.getElementById('document-id').textContent = latestDoc.id.substring(0, 6);
+    }
+
+    // Set up event listeners for the first time
+    setupEventListeners();
 
     // Open the first section by default
     const firstSection = document.querySelector(
