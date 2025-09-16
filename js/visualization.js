@@ -256,44 +256,101 @@ class DoccanoVisualizer {
     this.tokenUsageChart.render();
   }
 
-  // Update confidence progress bar
-  updateConfidenceProgress(confidenceScores) {
-    console.log('Updating confidence progress with scores:', confidenceScores);
-    if (!confidenceScores.length) {
-      console.log('No confidence scores available');
-      return;
-    }
+  /**
+   * Updates the confidence progress bar with the provided confidence scores
+   * @param {number[]} confidenceScores - Array of confidence scores between 0 and 1
+   */
+  updateConfidenceProgress(confidenceScores = []) {
+    try {
+      if (!Array.isArray(confidenceScores) || confidenceScores.length === 0) {
+        console.debug('No valid confidence scores provided');
+        return;
+      }
 
-    const avgConfidence = confidenceScores.reduce((sum, score) => sum + score, 0) / confidenceScores.length;
-    const percentage = Math.round(avgConfidence * 100);
-    
-    const progressBar = document.getElementById('confidenceProgress');
-    const progressText = document.getElementById('confidenceValue');
-    
-    if (progressBar && progressText) {
+      // Calculate average confidence, ensuring all values are valid numbers between 0 and 1
+      const validScores = confidenceScores.filter(score => 
+        typeof score === 'number' && score >= 0 && score <= 1
+      );
+
+      if (validScores.length === 0) {
+        console.warn('No valid confidence scores found');
+        return;
+      }
+
+      const avgConfidence = validScores.reduce((sum, score) => sum + score, 0) / validScores.length;
+      const percentage = Math.min(100, Math.max(0, Math.round(avgConfidence * 100)));
+      
+      const progressBar = document.getElementById('confidenceProgress');
+      const progressText = document.getElementById('confidenceValue');
+      
+      if (!progressBar || !progressText) {
+        console.warn('Required DOM elements not found for confidence progress');
+        return;
+      }
+
+      // Animate the progress bar smoothly
+      progressBar.style.transition = 'width 300ms ease-out, background-color 300ms ease';
       progressBar.style.width = `${percentage}%`;
       progressText.textContent = `${percentage}%`;
       
-      // Update color based on confidence level
-      progressBar.className = 'h-2.5 rounded-full transition-all duration-500 ' +
-        (avgConfidence < 0.5 ? 'bg-red-500' : 
-         avgConfidence < 0.8 ? 'bg-yellow-500' : 'bg-eu-orange');
+      // Update color based on confidence level with smooth transitions
+      let colorClass = '';
+      if (avgConfidence < 0.5) {
+        colorClass = 'bg-red-500';
+      } else if (avgConfidence < 0.8) {
+        colorClass = 'bg-yellow-500';
+      } else {
+        colorClass = 'bg-eu-orange';
+      }
+      
+      // Only update class if it has changed to prevent unnecessary DOM updates
+      if (!progressBar.className.includes(colorClass)) {
+        progressBar.className = `h-2.5 rounded-full transition-all duration-300 ${colorClass}`;
+      }
+    } catch (error) {
+      console.error('Error updating confidence progress:', error);
     }
   }
 }
 
-// Initialize visualizer when the DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  // Initialize the visualizer
-  window.doccanoVisualizer = new DoccanoVisualizer();
-  
-  // Listen for document updates to refresh visualizations
-  document.addEventListener('documentsUpdated', (event) => {
-    if (event.detail && event.detail.documents) {
-      window.doccanoVisualizer.processData(event.detail.documents);
-    }
-  });
-});
+/**
+ * Initializes the visualizer when the DOM is fully loaded
+ */
+function initializeVisualizer() {
+  try {
+    // Initialize the visualizer
+    window.doccanoVisualizer = new DoccanoVisualizer();
+    
+    // Listen for document updates to refresh visualizations
+    const handleDocumentUpdate = (event) => {
+      try {
+        if (event?.detail?.documents) {
+          window.doccanoVisualizer.processData(event.detail.documents);
+        }
+      } catch (error) {
+        console.error('Error processing document update:', error);
+      }
+    };
+    
+    // Add event listener for document updates
+    document.addEventListener('documentsUpdated', handleDocumentUpdate);
+    
+    // Cleanup function for potential future use
+    return () => {
+      document.removeEventListener('documentsUpdated', handleDocumentUpdate);
+    };
+  } catch (error) {
+    console.error('Failed to initialize visualizer:', error);
+  }
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeVisualizer);
+} else {
+  // DOM already loaded, initialize immediately
+  initializeVisualizer();
+}
 
 // Export for use in other files
 window.DoccanoVisualizer = DoccanoVisualizer;
