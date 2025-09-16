@@ -32,24 +32,39 @@ class DoccanoVisualizer {
       container.id = 'tokenUsageChart';
       container.className = 'w-full';
       
-      // Add confidence progress bar HTML with improved chart container
+      // Create a clean, professional report layout for visualizations
       container.innerHTML = `
-        <div class="mb-6">
-          <h3 class="text-sm font-semibold text-gray-700 mb-1">Confidence Level</h3>
-          <p class="text-xs text-gray-500 mb-2">Average confidence level of your annotations.</p>
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-xs font-medium">Score</span>
-            <span id="confidenceValue" class="text-xs font-medium">0%</span>
+        <div class="space-y-8">
+          <!-- Confidence Level Section -->
+          <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+            <div class="mb-3">
+              <h3 class="text-sm font-medium text-gray-700 mb-1">Annotation Confidence</h3>
+              <p class="text-xs text-gray-500">Average confidence level of your annotations based on the model's predictions.</p>
+            </div>
+            <div class="space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-medium text-gray-600">Confidence Score</span>
+                <span id="confidenceValue" class="text-xs font-semibold text-gray-800">0%</span>
+              </div>
+              <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                <div id="confidenceProgress" 
+                     class="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-blue-400 to-eu-orange" 
+                     style="width: 0%">
+                </div>
+              </div>
+              <p class="text-2xs text-gray-400 text-right">Higher is better</p>
+            </div>
           </div>
-          <div class="w-full bg-gray-200 rounded-full h-2.5">
-            <div id="confidenceProgress" class="h-2.5 rounded-full transition-all duration-500 bg-eu-orange" style="width: 0%"></div>
-          </div>
-        </div>
-        <div class="mt-6">
-          <h3 class="text-sm font-semibold text-gray-700 mb-1">Token Usage</h3>
-          <p class="text-xs text-gray-500 mb-2">Visual representation of token distribution across your annotated data.</p>
-          <div class="relative w-full" style="min-height: 200px;">
-            <div id="tokenChart" class="w-full h-full absolute"></div>
+
+          <!-- Token Distribution Section -->
+          <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+            <div class="mb-3">
+              <h3 class="text-sm font-medium text-gray-700 mb-1">Token Distribution</h3>
+              <p class="text-xs text-gray-500">Breakdown of token usage across your annotated documents.</p>
+            </div>
+            <div class="relative w-full" style="min-height: 240px;">
+              <div id="tokenChart" class="w-full h-full"></div>
+            </div>
           </div>
         </div>
       `;
@@ -206,7 +221,7 @@ class DoccanoVisualizer {
               },
               total: {
                 show: true,
-                label: 'Total',
+                label: 'Tokens',
                 color: '#111827',
                 fontSize: '14px',
                 fontFamily: 'Rubik, sans-serif',
