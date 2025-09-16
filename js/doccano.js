@@ -112,7 +112,7 @@ function renderTaxonomy(taxonomyData) {
           <span class="text-sm text-gray-800 font-medium">${formattedKey}</span>
         </div>
         <span class="flex items-center justify-center w-6 h-6 rounded-full bg-eu-blue/10 text-eu-blue text-xs font-semibold">
-          ${item.count}
+          ${new Intl.NumberFormat().format(item.count)}
         </span>
       </div>
     `;

@@ -198,8 +198,8 @@ class DoccanoVisualizer {
                 fontFamily: 'Rubik, sans-serif',
                 color: '#111827',
                 offsetY: 0,
-                formatter: (val) => {
-                  return val ? Math.round(val) + '%' : '0%';
+                formatter: (val, { seriesIndex, w }) => {
+                  return w.config.series[seriesIndex].toLocaleString();
                 }
               },
               total: {
