@@ -6,16 +6,18 @@ class TextHighlighter {
     this.historyIndex = -1;
     this.taxonomies = [];
     this.taxonomyColors = {}; // Store color mapping for taxonomies
-    
-    // Default color palette for taxonomies
-    this.colorPalette = [
-      'bg-blue-100 text-blue-800 border-blue-300',
-      'bg-green-100 text-green-800 border-green-300',
-      'bg-yellow-100 text-yellow-800 border-yellow-300',
-      'bg-red-100 text-red-800 border-red-300',
-      'bg-purple-100 text-purple-800 border-purple-300',
-      'bg-pink-100 text-pink-800 border-pink-300',
-      'bg-indigo-100 text-indigo-800 border-indigo-300'
+    this.colorSchemes = [
+      { bg: 'bg-blue-500', text: 'text-white', border: 'border-blue-600' },
+      { bg: 'bg-green-500', text: 'text-white', border: 'border-green-600' },
+      { bg: 'bg-yellow-500', text: 'text-white', border: 'border-yellow-600' },
+      { bg: 'bg-red-500', text: 'text-white', border: 'border-red-600' },
+      { bg: 'bg-purple-600', text: 'text-white', border: 'border-purple-700' },
+      { bg: 'bg-pink-500', text: 'text-white', border: 'border-pink-600' },
+      { bg: 'bg-indigo-600', text: 'text-white', border: 'border-indigo-700' },
+      { bg: 'bg-cyan-500', text: 'text-white', border: 'border-cyan-600' },
+      { bg: 'bg-teal-500', text: 'text-white', border: 'border-teal-600' },
+      { bg: 'bg-amber-500', text: 'text-white', border: 'border-amber-600' },
+      { bg: 'bg-rose-600', text: 'text-white', border: 'border-rose-700' }
     ];
     
     this.initializeEventListeners();
@@ -195,27 +197,6 @@ class TextHighlighter {
           console.log('Selection is in editable area, ignoring');
           return;
         }
-        
-        // Store the current selection range and its position
-        this.currentSelection = {
-          range: range,
-          text: selectedText,
-          rect: range.getBoundingClientRect()
-        };
-        
-        console.log('Stored selection:', {
-          text: selectedText,
-          rect: this.currentSelection.rect
-        });
-        
-        // Preserve the selection
-        const preservedRange = range.cloneRange();
-        
-        // Show the context menu
-        this.showContextMenu(e);
-      } else {
-        this.hideContextMenu();
-        this.currentSelection = null;
       }
     } catch (error) {
       console.error('Error handling text selection:', error);
@@ -328,119 +309,51 @@ class TextHighlighter {
       if (e) {
         e.preventDefault();
         e.stopPropagation();
-      }
-      
-      // Update debug info
-      this.updateDebugInfo(left, top);
-    } catch (error) {
-      console.error('Error showing context menu:', error);
-    }
+
+showContextMenu(e) {
+try {
+  if (!this.contextMenu) {
+    console.error('Context menu element not found');
+    return;
   }
-
-  hideContextMenu() {
-    if (this.contextMenu) {
-      this.contextMenu.classList.remove('visible');
-      // Use a small delay before hiding to allow for animations
-      setTimeout(() => {
-        if (this.contextMenu && !this.contextMenu.classList.contains('visible')) {
-          this.contextMenu.style.display = 'none';
-        }
-      }, 150);
-      
-      const statusEl = document.getElementById('context-menu-status');
-      if (statusEl) statusEl.textContent = 'Hidden';
-    }
+        
+  if (!this.currentSelection) {
+    console.log('No current selection to show context menu for');
+    return;
   }
-
-  /**
-   * Renders taxonomy items for a specific category
-   * @param {string} category - The category key
-   * @param {HTMLElement} container - The container to render items in
-   */
-  renderTaxonomyItems(category, container) {
-    if (!this.taxonomyItems[category] || this.taxonomyItems[category].length === 0) {
-      const emptyMsg = document.createElement('div');
-      emptyMsg.className = 'text-sm text-gray-500 italic pl-8 py-1';
-      emptyMsg.textContent = 'No items available';
-      container.appendChild(emptyMsg);
-      return;
-    }
-
-    this.taxonomyItems[category].forEach(item => {
-      const itemEl = document.createElement('div');
-      itemEl.className = 'flex items-center py-1.5 px-4 pl-8 hover:bg-gray-50 cursor-pointer text-sm';
-      itemEl.textContent = item;
-      itemEl.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.highlightSelection({
-          category,
-          item
-        });
-        this.hideContextMenu();
-      });
-      container.appendChild(itemEl);
-    });
+        
+  // Make sure the context menu is in the document flow but hidden
+  this.contextMenu.style.display = 'block';
+  this.contextMenu.style.visibility = 'hidden';
+  this.contextMenu.classList.add('visible');
+        
+  // Get the selection and its position
+  const selection = window.getSelection();
+  if (selection.rangeCount === 0) {
+    console.log('No selection range found');
+    return;
   }
-
-  /**
-   * Updates the context menu with available taxonomy options
-   */
-  updateContextMenu() {
-    console.log('updateContextMenu called');
-    
-    if (!this.contextMenu) {
-      console.error('Context menu element not found');
-      return;
-    }
-    
-    const highlightOptions = this.contextMenu.querySelector('.highlight-options');
-    if (!highlightOptions) {
-      console.error('Highlight options container not found in context menu');
-      return;
-    }
-    
-    // Clear existing options
-    highlightOptions.innerHTML = '';
-    
-    console.log('Current taxonomies:', this.taxonomies);
-    
-    // Show loading state if no taxonomies are available
-    if (!this.taxonomies || this.taxonomies.length === 0) {
-      console.log('No taxonomies available, showing loading state');
-      const loadingEl = document.createElement('div');
-      loadingEl.className = 'context-menu__loading';
-      loadingEl.innerHTML = `
-        <i class="fas fa-spinner fa-spin mr-2"></i>
-        <span>Loading items...</span>
-      `;
-      highlightOptions.appendChild(loadingEl);
-      return;
-    }
-    
-    // Create a container for the flat list of taxonomy items
-    const itemsContainer = document.createElement('div');
-    itemsContainer.className = 'space-y-1';
-    
-    // Add each taxonomy item as a clickable option
-    this.taxonomies.forEach(taxonomy => {
-      const itemEl = document.createElement('button');
-      itemEl.className = 'w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center';
-      itemEl.style.transition = 'background-color 0.2s';
-      
-      // Add color indicator
-      const colorIndicator = document.createElement('span');
-      colorIndicator.className = 'w-3 h-3 rounded-full mr-2 flex-shrink-0';
-      
-      // Set the color for this item
-      if (taxonomy.colorClass) {
-        const colorClass = taxonomy.colorClass.split(' ')[0]; // Get just the base color class
-        colorIndicator.style.backgroundColor = this.getColorFromClass(colorClass);
-      }
-      
-      // Item name
-      const nameEl = document.createElement('span');
-      nameEl.className = 'text-sm text-gray-800';
-      nameEl.textContent = taxonomy.displayName || taxonomy.key;
+  
+  const range = selection.getRangeAt(0);
+  const selectedText = range.toString().trim();
+  
+  if (!selectedText) {
+    console.log('No text selected');
+    return;
+  }
+  
+  // Store the current selection
+  this.currentSelection = {
+    range: range,
+    text: selectedText,
+    rect: range.getBoundingClientRect()
+  };
+  
+  // Update the context menu position
+  this.updateContextMenuPosition(e);
+  
+  // Show the context menu
+  this.showContextMenu();
       
       // Assemble the item
       itemEl.appendChild(colorIndicator);
@@ -511,43 +424,59 @@ class TextHighlighter {
     return colorMap[className] || '#e0e7ff'; // Default to indigo-100 if not found
   }
 
-  // Process taxonomy data from documents
+  // Process taxonomy data from documents or sync from sidebar
   processTaxonomyData(documents) {
     console.log('Processing taxonomy data from documents:', documents);
+    
+    // First try to get taxonomies from the sidebar
+    const sidebarTaxonomies = this.getTaxonomiesFromSidebar();
+    
+    if (sidebarTaxonomies && sidebarTaxonomies.length > 0) {
+      console.log('Using taxonomies from sidebar:', sidebarTaxonomies);
+      return this.syncWithSidebarTaxonomies(sidebarTaxonomies);
+    }
+    
+    console.log('No taxonomies found in sidebar, processing from documents');
     
     // Reset taxonomies and colors
     this.taxonomies = [];
     this.taxonomyColors = {};
-    this.uniqueTaxonomyItems = new Set(); // Store all unique taxonomy items
+    this.uniqueTaxonomyItems = new Set();
     
     // Collect all unique taxonomy items from all documents
-    documents.forEach(doc => {
-      if (doc.enrichment?.taxonomy) {
-        Object.values(doc.enrichment.taxonomy).forEach(items => {
-          if (Array.isArray(items) && items.length > 0) {
-            items.forEach(item => {
-              if (item && typeof item === 'string') {
-                this.uniqueTaxonomyItems.add(item.trim());
-              }
-            });
-          }
-        });
-      }
-    });
+    if (documents && Array.isArray(documents)) {
+      documents.forEach(doc => {
+        if (doc.enrichment?.taxonomy) {
+          Object.values(doc.enrichment.taxonomy).forEach(items => {
+            if (Array.isArray(items) && items.length > 0) {
+              items.forEach(item => {
+                if (item && typeof item === 'string') {
+                  this.uniqueTaxonomyItems.add(item.trim());
+                }
+              });
+            }
+          });
+        }
+      });
+    }
     
     // Convert Set to Array and sort alphabetically
     const sortedItems = Array.from(this.uniqueTaxonomyItems).sort();
     
-    // Assign colors to items based on their position in the color palette
-    sortedItems.forEach((item, index) => {
-      const colorClass = this.colorPalette[index % this.colorPalette.length];
+    // Assign colors to items based on their position in the color schemes
+    this.taxonomies = sortedItems.map((item, index) => {
+      const colorScheme = this.colorSchemes[index % this.colorSchemes.length];
+      const colorClass = `bg-${colorScheme.bg.replace('bg-', '')}-100 text-${colorScheme.bg.replace('bg-', '')}-800 border-${colorScheme.border.replace('border-', '')}`;
+      
       this.taxonomyColors[item] = colorClass;
       
-      this.taxonomies.push({
-        key: item,
+      return {
+        key: item.toLowerCase().replace(/\s+/g, '_'),
         displayName: item,
-        colorClass: colorClass
-      });
+        colorClass: colorClass,
+        colorScheme: colorScheme,
+        count: 0 // Initialize count
+      };
     });
     
     // If no taxonomies were found, use a default set
@@ -563,26 +492,72 @@ class TextHighlighter {
       ];
       
       this.taxonomies = defaultItems.map((item, index) => {
-        const colorClass = this.colorPalette[index % this.colorPalette.length];
+        const colorScheme = this.colorSchemes[index % this.colorSchemes.length];
+        const colorClass = `bg-${colorScheme.bg.replace('bg-', '')}-100 text-${colorScheme.bg.replace('bg-', '')}-800 border-${colorScheme.border.replace('border-', '')}`;
+        
         this.taxonomyColors[item] = colorClass;
-        return { 
+        
+        return {
           key: item.toLowerCase().replace(/\s+/g, '_'),
           displayName: item,
-          colorClass: colorClass
+          colorClass: colorClass,
+          colorScheme: colorScheme,
+          count: 0
         };
       });
     }
     
     console.log('Processed taxonomies:', this.taxonomies);
-    console.log('Taxonomy items:', this.taxonomyItems);
+    this.updateContextMenu();
+    return this.taxonomies;
+  }
+  
+  // Get taxonomies from the sidebar
+  getTaxonomiesFromSidebar() {
+    const taxonomyContainer = document.getElementById('taxonomy-container');
+    if (!taxonomyContainer) return null;
     
-    // Update the context menu if the method exists
-    if (typeof this.updateContextMenu === 'function') {
-      this.updateContextMenu();
-    } else {
-      console.error('updateContextMenu method is not defined');
-    }
+    const taxonomyElements = Array.from(taxonomyContainer.querySelectorAll('div[class*="group"]'));
+    if (taxonomyElements.length === 0) return null;
     
+    return taxonomyElements.map((element, index) => {
+      const labelElement = element.querySelector('span[class*="text-gray-800"]');
+      const countElement = element.querySelector('span[class*="text-gray-700"]');
+      
+      const label = labelElement ? labelElement.textContent.trim() : `Category ${index + 1}`;
+      const key = label.toLowerCase().replace(/\s+/g, '_');
+      const count = countElement ? parseInt(countElement.textContent.trim().replace(/[\(\)]/g, '')) || 0 : 0;
+      const colorScheme = this.colorSchemes[index % this.colorSchemes.length];
+      
+      return {
+        key: key,
+        label: label,
+        displayName: label,
+        count: count,
+        colorScheme: colorScheme,
+        colorClass: `bg-${colorScheme.bg.replace('bg-', '')}-100 text-${colorScheme.bg.replace('bg-', '')}-800 border-${colorScheme.border.replace('border-', '')}`
+      };
+    });
+  }
+  
+  // Sync with taxonomies from sidebar
+  syncWithSidebarTaxonomies(sidebarTaxonomies) {
+    this.taxonomies = sidebarTaxonomies.map(taxonomy => ({
+      key: taxonomy.key,
+      displayName: taxonomy.label,
+      colorClass: taxonomy.colorClass,
+      colorScheme: taxonomy.colorScheme,
+      count: taxonomy.count || 0
+    }));
+    
+    // Update taxonomy colors mapping
+    this.taxonomyColors = {};
+    this.taxonomies.forEach(taxonomy => {
+      this.taxonomyColors[taxonomy.key] = taxonomy.colorClass;
+    });
+    
+    console.log('Synced taxonomies from sidebar:', this.taxonomies);
+    this.updateContextMenu();
     return this.taxonomies;
   }
 
