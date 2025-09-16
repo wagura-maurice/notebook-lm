@@ -19,6 +19,79 @@ async function loadNDJSONData() {
   }
 }
 
+// Function to highlight taxonomy terms in text
+function highlightTaxonomyTerms(text, taxonomy) {
+  if (!taxonomy) return document.createTextNode(text);
+  
+  // Create a document fragment to hold the result
+  const fragment = document.createDocumentFragment();
+  let lastIndex = 0;
+  const matches = [];
+  
+  // Find all taxonomy terms and their positions
+  Object.entries(taxonomy).forEach(([category, terms]) => {
+    if (!Array.isArray(terms)) return;
+    
+    terms.forEach(term => {
+      if (!term) return;
+      const regex = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+      let match;
+      while ((match = regex.exec(text)) !== null) {
+        matches.push({
+          start: match.index,
+          end: match.index + match[0].length,
+          text: match[0],
+          category: category
+        });
+      }
+    });
+  });
+  
+  // Sort matches by start position (longest first to handle nested matches)
+  matches.sort((a, b) => b.start - a.start || (b.end - b.start) - (a.end - a.start));
+  
+  // Process non-overlapping matches
+  const processedRanges = [];
+  
+  for (const match of matches) {
+    // Skip if this range is already covered by a previous match
+    if (processedRanges.some(range => 
+        match.start >= range.start && match.end <= range.end)) {
+      continue;
+    }
+    
+    // Add text before the match
+    if (match.start > lastIndex) {
+      fragment.appendChild(document.createTextNode(
+        text.substring(lastIndex, match.start)
+      ));
+    }
+    
+    // Create the highlighted span
+    const span = document.createElement('span');
+    span.className = `taxonomy-highlight taxonomy-${match.category}`;
+    span.textContent = text.substring(match.start, match.end);
+    
+    // Add tooltip
+    const tooltip = document.createElement('span');
+    tooltip.className = 'taxonomy-tooltip';
+    tooltip.textContent = match.category.replace(/_/g, ' ');
+    span.appendChild(tooltip);
+    
+    fragment.appendChild(span);
+    
+    lastIndex = match.end;
+    processedRanges.push({ start: match.start, end: match.end });
+  }
+  
+  // Add remaining text after last match
+  if (lastIndex < text.length) {
+    fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
+  }
+  
+  return fragment;
+}
+
 // Function to get an appropriate icon based on section title
 function getSectionIcon(title) {
   const titleLower = title.toLowerCase();
@@ -226,7 +299,17 @@ function displayDocumentContent(docs) {
           cells.forEach(cell => {
             const cellEl = document.createElement('div');
             cellEl.className = 'px-2 flex-1 text-sm';
-            cellEl.textContent = cell.trim();
+            
+            // Apply taxonomy highlighting to table cells if available
+            if (entry.enrichment?.taxonomy) {
+              cellEl.appendChild(highlightTaxonomyTerms(
+                cell.trim(),
+                entry.enrichment.taxonomy
+              ));
+            } else {
+              cellEl.textContent = cell.trim();
+            }
+            
             tableRow.appendChild(cellEl);
           });
           
@@ -236,7 +319,17 @@ function displayDocumentContent(docs) {
         case 'heading':
           const heading = document.createElement('h6');
           heading.className = 'font-semibold text-eu-blue mt-2 mb-1';
-          heading.textContent = entry.text;
+          
+          // Apply taxonomy highlighting to headings if available
+          if (entry.enrichment?.taxonomy) {
+            heading.appendChild(highlightTaxonomyTerms(
+              entry.text,
+              entry.enrichment.taxonomy
+            ));
+          } else {
+            heading.textContent = entry.text;
+          }
+          
           contentWrapper.appendChild(heading);
           break;
           
@@ -248,12 +341,21 @@ function displayDocumentContent(docs) {
           bullet.className = 'mr-2';
           bullet.textContent = '•';
           
-          const itemText = document.createElement('span');
-          itemText.className = 'text-sm';
-          itemText.textContent = entry.text;
+          const textElement = document.createElement('p');
+          textElement.className = 'text-sm text-gray-700';
+          
+          // Check if we have taxonomy data to highlight
+          if (entry.enrichment?.taxonomy) {
+            textElement.appendChild(highlightTaxonomyTerms(
+              entry.text, 
+              entry.enrichment.taxonomy
+            ));
+          } else {
+            textElement.textContent = entry.text;
+          }
           
           listItem.appendChild(bullet);
-          listItem.appendChild(itemText);
+          listItem.appendChild(textElement);
           contentWrapper.appendChild(listItem);
           break;
           
@@ -261,7 +363,17 @@ function displayDocumentContent(docs) {
         default:
           const paragraph = document.createElement('p');
           paragraph.className = 'text-sm text-gray-800 mb-2';
-          paragraph.textContent = entry.text;
+          
+          // Apply taxonomy highlighting to prose text if available
+          if (entry.enrichment?.taxonomy) {
+            paragraph.appendChild(highlightTaxonomyTerms(
+              entry.text,
+              entry.enrichment.taxonomy
+            ));
+          } else {
+            paragraph.textContent = entry.text;
+          }
+          
           contentWrapper.appendChild(paragraph);
       }
       

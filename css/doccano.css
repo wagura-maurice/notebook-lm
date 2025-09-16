@@ -215,6 +215,66 @@ body {
   background-color: var(--eu-white) !important;
 }
 
+/* Taxonomy Highlighting */
+.taxonomy-highlight {
+  position: relative;
+  display: inline-block;
+  font-weight: 500;
+  border-radius: 3px;
+  padding: 0 2px;
+  margin: 0 1px;
+  cursor: help;
+  transition: all 0.2s ease;
+}
+
+/* Tooltip */
+.taxonomy-tooltip {
+  visibility: hidden;
+  width: max-content;
+  max-width: 200px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 4px;
+  padding: 5px 8px;
+  position: absolute;
+  z-index: 1000;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 12px;
+  font-weight: normal;
+  pointer-events: none;
+}
+
+.taxonomy-highlight:hover .taxonomy-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Taxonomy category colors */
+.taxonomy-almp_instruments {
+  background-color: rgba(0, 123, 255, 0.2);
+  border-bottom: 2px solid rgba(0, 123, 255, 0.5);
+}
+
+.taxonomy-target_groups {
+  background-color: rgba(40, 167, 69, 0.2);
+  border-bottom: 2px solid rgba(40, 167, 69, 0.5);
+}
+
+.taxonomy-delivery_modes {
+  background-color: rgba(255, 193, 7, 0.2);
+  border-bottom: 2px solid rgba(255, 193, 7, 0.5);
+}
+
+.taxonomy-evaluation_design {
+  background-color: rgba(220, 53, 69, 0.2);
+  border-bottom: 2px solid rgba(220, 53, 69, 0.5);
+}
+
 #left-column.collapsed *,
 #right-column.collapsed * {
   background-color: var(--eu-white) !important;
