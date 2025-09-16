@@ -121,29 +121,235 @@ function renderTaxonomy(taxonomyData) {
   container.innerHTML = html;
 }
 
+// Function to display document content in the middle column
+function displayDocumentContent(docs) {
+  const viewer = document.getElementById('document-viewer');
+  if (!viewer) return;
+  
+  // Clear loading state
+  viewer.innerHTML = '';
+  
+  // Group documents by their doc_id to show them together
+  const docsById = {};
+  
+  docs.forEach(doc => {
+    const docId = doc.doc_id || 'unknown';
+    if (!docsById[docId]) {
+      docsById[docId] = [];
+    }
+    docsById[docId].push(doc);
+  });
+  
+  // Create document sections
+  Object.entries(docsById).forEach(([docId, docEntries]) => {
+    const docSection = document.createElement('div');
+    docSection.className = 'mb-6';
+    
+    // Add document title (only if it exists and is different from previous)
+    if (docEntries[0]?.doc) {
+      const title = document.createElement('h4');
+      title.className = 'text-md font-semibold text-eu-blue mb-2';
+      title.textContent = docEntries[0].doc.replace(/_/g, ' ');
+      docSection.appendChild(title);
+    }
+    
+    // Add document content
+    const content = document.createElement('div');
+    content.className = 'space-y-1';
+    
+    let lastSection = null;
+    
+    docEntries.forEach((entry, index) => {
+      if (!entry.text) return;
+      
+      // Add section header if it's different from the last one
+      if (entry.section && entry.section !== lastSection) {
+        const sectionHeader = document.createElement('div');
+        sectionHeader.className = 'mt-4 mb-2';
+        
+        const sectionTitle = document.createElement('h5');
+        sectionTitle.className = 'text-sm font-medium text-eu-blue flex items-center';
+        
+        const icon = document.createElement('i');
+        icon.className = `${getSectionIcon(entry.section)} mr-2`;
+        sectionTitle.appendChild(icon);
+        
+        sectionTitle.appendChild(document.createTextNode(entry.section));
+        sectionHeader.appendChild(sectionTitle);
+        content.appendChild(sectionHeader);
+        
+        lastSection = entry.section;
+      }
+      
+      // Create container for the entry
+      const entryContainer = document.createElement('div');
+      entryContainer.className = 'flex items-start group mb-1';
+      
+      // Line number
+      const lineNumber = document.createElement('span');
+      lineNumber.className = 'text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5';
+      lineNumber.textContent = (index + 1).toString().padStart(3, '0');
+      entryContainer.appendChild(lineNumber);
+      
+      // Content container
+      const contentWrapper = document.createElement('div');
+      contentWrapper.className = 'flex-1';
+      
+      // Handle different structure types
+      switch(entry.structure_type) {
+        case 'table_row':
+          const tableRow = document.createElement('div');
+          tableRow.className = 'flex border-b border-gray-100 py-1';
+          
+          // Split by tabs or multiple spaces for table cells
+          const cells = entry.text.split(/\t| {2,}/).filter(cell => cell.trim() !== '');
+          cells.forEach(cell => {
+            const cellEl = document.createElement('div');
+            cellEl.className = 'px-2 flex-1 text-sm';
+            cellEl.textContent = cell.trim();
+            tableRow.appendChild(cellEl);
+          });
+          
+          contentWrapper.appendChild(tableRow);
+          break;
+          
+        case 'heading':
+          const heading = document.createElement('h6');
+          heading.className = 'font-semibold text-eu-blue mt-2 mb-1';
+          heading.textContent = entry.text;
+          contentWrapper.appendChild(heading);
+          break;
+          
+        case 'list_item':
+          const listItem = document.createElement('div');
+          listItem.className = 'flex items-start';
+          
+          const bullet = document.createElement('span');
+          bullet.className = 'mr-2';
+          bullet.textContent = '•';
+          
+          const itemText = document.createElement('span');
+          itemText.className = 'text-sm';
+          itemText.textContent = entry.text;
+          
+          listItem.appendChild(bullet);
+          listItem.appendChild(itemText);
+          contentWrapper.appendChild(listItem);
+          break;
+          
+        case 'prose':
+        default:
+          const paragraph = document.createElement('p');
+          paragraph.className = 'text-sm text-gray-800 mb-2';
+          paragraph.textContent = entry.text;
+          contentWrapper.appendChild(paragraph);
+      }
+      
+      // Add any metadata if present
+      if (entry.metadata) {
+        const meta = document.createElement('div');
+        meta.className = 'text-xs text-gray-500 mt-1 ml-8';
+        meta.textContent = Object.entries(entry.metadata)
+          .map(([key, value]) => `${key}: ${value}`)
+          .join(' • ');
+        contentWrapper.appendChild(meta);
+      }
+      
+      entryContainer.appendChild(contentWrapper);
+      content.appendChild(entryContainer);
+    });
+    
+    docSection.appendChild(content);
+    viewer.appendChild(docSection);
+  });
+}
+
 // Function to process documents and group by section
 function processDocuments(docs) {
-  const sections = new Map();
-
-  docs.forEach((doc) => {
-    if (!doc.enrichment) return;
-
-    const sectionData = {
-      id: doc.id,
-      doc: doc.doc,
-      header: doc.header,
-      text: doc.text,
-      enrichment: doc.enrichment,
-      annotations: doc.annotations,
-      model: doc.enrichment._model,
-      _ts: doc._ts,
-      icon: getSectionIcon(doc.enrichment.title || 'section')
-    };
-
-    sections.set(doc.id, sectionData);
+  const sections = {};
+  
+  // First, display all documents in the viewer
+  displayDocumentContent(docs);
+  
+  // Then process for the left sidebar
+  docs.forEach((doc, index) => {
+    const sectionTitle = doc.section || 'Uncategorized';
+    
+    if (!sections[sectionTitle]) {
+      sections[sectionTitle] = {
+        title: sectionTitle,
+        docs: [],
+        icon: getSectionIcon(sectionTitle)
+      };
+    }
+    
+    sections[sectionTitle].docs.push(doc);
   });
 
-  return Array.from(sections.values());
+  // Return both the sections for the sidebar and the original docs array
+  return {
+    sections: sections,
+    documents: docs
+  };
+}
+
+// Update document analysis in the left column
+function updateDocumentAnalysis(documents) {
+  const analysisContainer = document.querySelector('.document-analysis');
+  if (!analysisContainer) return;
+
+  // Count documents by type
+  const docTypes = {};
+  let totalWords = 0;
+  let totalChars = 0;
+
+  documents.forEach(doc => {
+    const type = doc.structure_type || 'unknown';
+    docTypes[type] = (docTypes[type] || 0) + 1;
+    
+    if (doc.text) {
+      totalWords += doc.text.split(/\s+/).length;
+      totalChars += doc.text.length;
+    }
+  });
+
+  // Update the analysis HTML
+  let analysisHTML = `
+    <div class="space-y-4">
+      <div>
+        <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Document Stats</h4>
+        <div class="space-y-1">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-600">Total Documents</span>
+            <span class="font-medium">${documents.length}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-600">Total Words</span>
+            <span class="font-medium">${totalWords.toLocaleString()}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-600">Total Characters</span>
+            <span class="font-medium">${totalChars.toLocaleString()}</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Document Types</h4>
+        <div class="space-y-1">
+          ${Object.entries(docTypes)
+            .map(([type, count]) => `
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600 capitalize">${type.replace('_', ' ')}</span>
+                <span class="font-medium">${count}</span>
+              </div>
+            `)
+            .join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  analysisContainer.innerHTML = analysisHTML;
 }
 
 // Toggle between expanded and collapsed views
@@ -186,14 +392,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.log('Loading NDJSON data...');
     const rawDocuments = await loadNDJSONData();
     console.log('Raw documents loaded:', rawDocuments.length);
-    const processedDocuments = processDocuments(rawDocuments);
-    console.log('Processed documents:', processedDocuments.length);
+    const { sections, documents } = processDocuments(rawDocuments);
+    console.log('Processed documents:', documents.length);
 
     // Hide loading state
-    loadingElement.style.display = "none";
-
-    if (processedDocuments.length === 0) {
-      sectionsContainer.innerHTML = `
+    loadingElement.style.display = 'none';
+    
+    // If no sections found, show message
+    if (!sections || Object.keys(sections).length === 0) {
+      document.getElementById('document-sections').innerHTML = `
         <div class="text-center py-4 text-eu-blue/70">
           No document sections found.
         </div>
@@ -202,16 +409,16 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     // Process and display documents
-    processedDocuments.forEach((doc) => {
+    documents.forEach((doc) => {
       populateSection(doc);
     });
 
     // Process and display taxonomy data
-    const taxonomyData = processTaxonomyData(processedDocuments);
+    const taxonomyData = processTaxonomyData(documents);
     renderTaxonomy(taxonomyData);
     
     // Update document info with the latest document
-    const latestDoc = processedDocuments.sort((a, b) => new Date(b._ts) - new Date(a._ts))[0];
+    const latestDoc = documents.sort((a, b) => new Date(b._ts) - new Date(a._ts))[0];
     if (latestDoc) {
       // Update document info in both columns using the populateDocumentInfo function
       populateDocumentInfo(latestDoc);
@@ -233,10 +440,87 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
     document.dispatchEvent(event);
 
+    // Initialize tooltips
+    function initializeTooltips() {
+      // Initialize any tooltips in the application
+      const tooltipTriggers = document.querySelectorAll('[data-tooltip]');
+      
+      tooltipTriggers.forEach(trigger => {
+        const tooltipText = trigger.getAttribute('data-tooltip');
+        if (!tooltipText) return;
+        
+        trigger.setAttribute('title', tooltipText);
+        
+        // Add custom tooltip styling if not already added
+        if (!document.querySelector('style[data-tooltip-styles]')) {
+          const style = document.createElement('style');
+          style.setAttribute('data-tooltip-styles', '');
+          style.textContent = `
+            [data-tooltip] {
+              position: relative;
+              cursor: help;
+            }
+            [data-tooltip]:hover::after {
+              content: attr(data-tooltip);
+              position: absolute;
+              bottom: 100%;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #003087;
+              color: white;
+              padding: 4px 8px;
+              border-radius: 4px;
+              font-size: 12px;
+              white-space: nowrap;
+              z-index: 1000;
+              pointer-events: none;
+              opacity: 0;
+              transition: opacity 0.2s;
+            }
+            [data-tooltip]:hover::after {
+              opacity: 1;
+            }
+          `;
+          document.head.appendChild(style);
+        }
+      });
+    }
+
     // Set up event listeners for the first time
     function setupEventListeners() {
       // Add any global event listeners here
       console.log('Event listeners initialized');
+
+      // Initialize tooltips
+      initializeTooltips();
+
+      // Document Info Modal
+      const documentInfoIcon = document.getElementById('document-info-icon');
+      const documentInfoModal = document.getElementById('document-info-modal');
+      const closeDocumentInfo = document.getElementById('close-document-info');
+
+      if (documentInfoIcon && documentInfoModal) {
+        // Show modal on icon click
+        documentInfoIcon.addEventListener('click', (e) => {
+          e.stopPropagation();
+          documentInfoModal.classList.toggle('hidden');
+        });
+
+        // Close modal on close button click
+        if (closeDocumentInfo) {
+          closeDocumentInfo.addEventListener('click', (e) => {
+            e.stopPropagation();
+            documentInfoModal.classList.add('hidden');
+          });
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!documentInfoModal.contains(e.target) && e.target !== documentInfoIcon) {
+            documentInfoModal.classList.add('hidden');
+          }
+        });
+      }
     }
     
     setupEventListeners();
@@ -293,13 +577,11 @@ function createCollapsedSectionIcon(sectionData) {
   return icon;
 }
 
-// Update the populateSection function to handle the new data structure
+// Populate a section in the left column
 function populateSection(data) {
   if (!data.enrichment) return;
 
-  const template = document.querySelector(
-    '.document-section[data-section-id="template"]'
-  );
+  const template = document.querySelector('.document-section[data-section-id="template"]');
   const clone = template.cloneNode(true);
 
   clone.style.display = "";
