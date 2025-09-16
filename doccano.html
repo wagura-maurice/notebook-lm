@@ -315,7 +315,7 @@
           class="mobile-tab-content w-full lg:w-72 bg-eu-white text-text-primary transition-all duration-300 flex flex-col rounded-lg lg:block hidden"
         >
           <!-- Expanded view -->
-          <div class="flex flex-col h-full">
+          <div class="expanded-content flex flex-col h-full">
             <!-- Fixed Header -->
             <div class="flex-shrink-0 bg-white z-10">
               <div class="flex items-center justify-between px-5 py-3 border-b border-eu-blue">
@@ -393,17 +393,19 @@
             </div>
           </div>
 
-          <!-- Collapsed view (hidden when expanded) -->
-          <div class="collapsed-content hidden flex flex-col h-full w-16 bg-eu-white border-r border-eu-blue/20">
-            <!-- Collapsed header -->
-            <div class="flex items-center justify-center py-3 border-b border-eu-blue/20">
-              <button
-                id="expand-left"
-                class="text-eu-blue hover:text-eu-orange transition-colors"
-                title="Expand guide"
-              >
-                <i class="fas fa-chevron-right"></i>
-              </button>
+          <!-- Collapsed view -->
+          <div class="collapsed-content hidden">
+            <div class="relative h-[60px] w-12">
+              <div class="absolute bottom-0 left-0 right-0 border-b border-eu-blue"></div>
+              <div class="flex items-center justify-center h-full w-full">
+                <button
+                  id="expand-left"
+                  class="text-eu-blue text-lg hover:text-eu-orange"
+                  title="Expand guide"
+                >
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
             </div>
             
             <!-- Section icons -->
@@ -472,7 +474,7 @@
           </div>
 
           <!-- Document Content -->
-          <div class="flex flex-col h-full" id="document-content">
+          <div class="flex flex-col h-full overflow-hidden" id="document-content">
             <!-- Fixed Header -->
             <div class="flex-shrink-0 bg-white z-10">
               <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
@@ -495,7 +497,7 @@
             </div>
             
             <!-- Scrollable Content -->
-            <div class="flex-1 overflow-y-auto bg-white p-4">
+            <div class="flex-1 overflow-y-auto bg-white p-4 pb-8">
               <div id="document-viewer" class="font-mono text-sm text-gray-800 space-y-4">
                 <!-- Document lines will be inserted here by JavaScript -->
                 <div class="animate-pulse space-y-2">
@@ -514,7 +516,7 @@
           class="mobile-tab-content w-full lg:w-16 lg:hover:w-80 bg-eu-white text-text-primary border-l border-eu-blue transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)] lg:block hidden"
         >
           <!-- Expanded view -->
-          <div class="flex flex-col h-full">
+          <div class="expanded-content flex flex-col h-full">
             <!-- Fixed Header -->
             <div class="flex-shrink-0 bg-white z-10">
               <div class="flex items-center justify-between px-5 py-3 border-b border-eu-blue">
