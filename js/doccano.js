@@ -210,8 +210,20 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Update document info with the latest document
     const latestDoc = processedDocuments.sort((a, b) => new Date(b._ts) - new Date(a._ts))[0];
     if (latestDoc) {
-      document.getElementById('document-updated').textContent = new Date(latestDoc._ts).toLocaleDateString();
-      document.getElementById('document-id').textContent = latestDoc.id.substring(0, 6);
+      const updatedElement = document.getElementById('document-updated');
+      if (updatedElement) {
+        updatedElement.textContent = new Date(latestDoc._ts).toLocaleDateString();
+      }
+      // Only try to update document-id if it exists
+      const docIdElement = document.getElementById('document-id');
+      if (docIdElement && latestDoc.id) {
+        docIdElement.textContent = latestDoc.id.substring(0, 6);
+      }
+      // Also update the document title if it exists
+      const docTitleElement = document.getElementById('document-title');
+      if (docTitleElement && latestDoc.doc) {
+        docTitleElement.textContent = latestDoc.doc.split('_').join(' ');
+      }
     }
 
     // Notify other components that documents are loaded
@@ -348,6 +360,19 @@ function populateSection(data) {
 function populateDocumentInfo(data) {
   if (!data) return;
 
+  // Update document title in the right column
+  const docTitleElement = document.getElementById("document-title");
+  if (docTitleElement) {
+    docTitleElement.textContent = data.doc ? data.doc.split("_").join(" ") : "Untitled Document";
+  }
+
+  // Update last updated time in the right column
+  const docUpdatedElement = document.getElementById("document-updated");
+  if (docUpdatedElement && data._ts) {
+    docUpdatedElement.textContent = formatDate(data._ts);
+  }
+
+  // Original elements (keeping for backward compatibility)
   const titleElement = document.querySelector(".document-title");
   const idElement = document.querySelector(".document-id");
   const modelElement = document.querySelector(".document-model");
@@ -355,19 +380,19 @@ function populateDocumentInfo(data) {
   const lengthElement = document.querySelector(".document-length");
   const confidenceElement = document.querySelector(".confidence-value");
 
-  if (titleElement)
-    titleElement.textContent = data.doc
-      ? data.doc.split("_").join(" ")
-      : "Document";
-  // if (idElement) idElement.textContent = data.id ? `${data.id.substring(0, 8)}...` : '-';
-  if (idElement)
+  if (titleElement && !docTitleElement) {
+    titleElement.textContent = data.doc ? data.doc.split("_").join(" ") : "Document";
+  }
+  
+  if (idElement) {
     idElement.textContent = data.id ? data.id.substring(0, 32) : "-";
+  }
 
   if (modelElement && data.model) {
     modelElement.textContent = data.model;
   }
 
-  if (updatedElement && data._ts) {
+  if (updatedElement && data._ts && !docUpdatedElement) {
     updatedElement.textContent = `Last updated: ${formatDate(data._ts)}`;
   }
 
