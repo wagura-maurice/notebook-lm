@@ -479,11 +479,11 @@
               <!-- Fixed Header -->
               <div class="flex-shrink-0 z-10">
                 <div class="flex items-center justify-between px-5 py-3 border-b border-eu-blue">
-                  <h2 class="text-lg font-semibold">Annotation</h2>
+                  <h2 class="text-lg font-semibold">Document Content</h2>
                   <button
-                    id="collapse-right"
+                    id="collapse-left"
                     class="text-eu-blue text-lg hover:text-eu-orange"
-                    title="Collapse panel"
+                    title="Collapse document content"
                   >
                     <i class="fas fa-chevron-right"></i>
                   </button>
@@ -539,6 +539,43 @@
       </div>
     </div>
 
+    <!-- Context Menu -->
+    <div id="context-menu" class="fixed z-[9999] bg-white shadow-lg rounded-md border-2 border-red-500 w-64" style="display: none;">
+      <!-- Debug Header -->
+      <div class="bg-red-50 p-2 border-b border-red-200 text-xs text-red-700 font-mono">
+        Context Menu (Debug Mode)
+      </div>
+      
+      <!-- Content -->
+      <div class="p-2 border-b border-gray-200 text-sm font-medium text-gray-700">Highlight As</div>
+      <div class="py-1">
+        <div class="context-menu-item px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer flex items-center" data-category="almp">
+          <i class="fas fa-tag text-blue-500 mr-2 w-4 text-center"></i>
+          <span>ALMP Instruments</span>
+        </div>
+        <div class="context-menu-item px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer flex items-center" data-category="target">
+          <i class="fas fa-users text-green-500 mr-2 w-4 text-center"></i>
+          <span>Target Groups</span>
+        </div>
+        <div class="context-menu-item px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer flex items-center" data-category="delivery">
+          <i class="fas fa-truck text-yellow-500 mr-2 w-4 text-center"></i>
+          <span>Delivery Modes</span>
+        </div>
+      </div>
+      <div class="p-2 border-t border-gray-200">
+        <div id="remove-highlight" class="text-red-500 text-sm px-4 py-2 hover:bg-red-50 rounded cursor-pointer flex items-center">
+          <i class="fas fa-times-circle mr-2"></i>
+          <span>Remove Highlight</span>
+        </div>
+      </div>
+      
+      <!-- Debug Info -->
+      <div class="bg-gray-50 p-2 border-t border-gray-200 text-xs text-gray-500 font-mono">
+        <div>Status: <span id="context-menu-status">Initializing...</span></div>
+        <div>Position: <span id="context-menu-position">0, 0</span></div>
+      </div>
+    </div>
+
     <!-- Footer with Disclaimer -->
     <p class="text-center text-xs text-gray-500 mb-1">
       NotebookLM can be inaccurate; please double-check its responses.
@@ -549,6 +586,16 @@
       type="application/JavaScript"
       src="https://code.jquery.com/jquery-3.7.1.min.js"
     ></script>
+    <script>
+      // Debug: Check if text-highlighting.js is loaded
+      console.log('Before loading text-highlighting.js');
+    </script>
+    <script src="./js/text-highlighting.js"></script>
+    <script>
+      // Debug: Check if TextHighlighter is available
+      console.log('After loading text-highlighting.js');
+      console.log('TextHighlighter available:', typeof TextHighlighter !== 'undefined');
+    </script>
     <script
       type="application/JavaScript"
       src="https://cdn.jsdelivr.net/npm/sweetalert2@11"

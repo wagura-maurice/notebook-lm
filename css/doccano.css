@@ -215,6 +215,138 @@ body {
   background-color: var(--eu-white) !important;
 }
 
+/* Context Menu Styles */
+#context-menu {
+  position: fixed;
+  display: none;
+  z-index: 10000; /* Ensure it's above other elements */
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  min-width: 220px;
+  max-width: 280px;
+  pointer-events: auto;
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+  transform-origin: top left;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.95);
+  overflow: hidden;
+}
+
+#context-menu.visible {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(5px) scale(0.98);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Text Highlight Styles */
+.text-highlight {
+  padding: 0 0.15em;
+  margin: 0 0.1em;
+  border-radius: 0.25em;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  display: inline;
+  line-height: inherit;
+  position: relative;
+  z-index: 1;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+/* Ensure text remains selectable and clickable */
+.text-highlight * {
+  pointer-events: auto !important;
+  user-select: text !important;
+}
+
+/* Highlight category styles */
+.text-highlight.almp {
+  background-color: rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
+  border-bottom: 2px solid rgba(59, 130, 246, 0.5);
+  color: inherit;
+}
+
+.text-highlight.target {
+  background-color: rgba(34, 197, 94, 0.2);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.3);
+  border-bottom: 2px solid rgba(34, 197, 94, 0.5);
+  color: inherit;
+}
+
+.text-highlight.delivery {
+  background-color: rgba(234, 179, 8, 0.2);
+  box-shadow: 0 0 0 1px rgba(234, 179, 8, 0.3);
+  border-bottom: 2px solid rgba(234, 179, 8, 0.5);
+  color: inherit;
+}
+
+/* Hover and active states */
+.text-highlight:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+  z-index: 2;
+}
+
+.text-highlight:active {
+  filter: brightness(0.95);
+  transform: translateY(0);
+}
+
+/* Focus state for keyboard navigation */
+.text-highlight:focus {
+  outline: 2px solid rgba(59, 130, 246, 0.5);
+  outline-offset: 2px;
+}
+
+/* Make sure the highlight doesn't break text flow */
+.text-highlight::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+  border-radius: 0.25em;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+/* Ensure proper spacing between highlighted elements */
+.text-highlight + .text-highlight {
+  margin-left: 0.25em;
+}
+
+/* Print styles */
+@media print {
+  .text-highlight {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border-bottom: 2px solid #000 !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
 /* Taxonomy Highlighting */
 .taxonomy-highlight {
   position: relative;
