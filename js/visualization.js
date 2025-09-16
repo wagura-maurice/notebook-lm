@@ -199,7 +199,9 @@ class DoccanoVisualizer {
                 color: '#111827',
                 offsetY: 0,
                 formatter: (val, { seriesIndex, w }) => {
-                  return w.config.series[seriesIndex].toLocaleString();
+                  return w && w.config && w.config.series && w.config.series[seriesIndex] 
+                    ? Number(w.config.series[seriesIndex]).toLocaleString() 
+                    : '0';
                 }
               },
               total: {
