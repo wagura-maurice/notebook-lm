@@ -145,12 +145,17 @@ function displayDocumentContent(docs) {
     const docSection = document.createElement('div');
     docSection.className = 'mb-6';
     
+    // Track the last normalized title to avoid repetition
+    let lastNormalizedTitle = '';
+    
     // Add document title (only if it exists and is different from previous)
-    if (docEntries[0]?.doc) {
+    const docTitle = docEntries[0]?.doc ? docEntries[0].doc.replace(/_/g, ' ') : '';
+    if (docTitle) {
       const title = document.createElement('h4');
       title.className = 'text-md font-semibold text-eu-blue mb-2';
-      title.textContent = docEntries[0].doc.replace(/_/g, ' ');
+      title.textContent = docTitle;
       docSection.appendChild(title);
+      lastNormalizedTitle = docTitle.trim().toLowerCase(); // Initialize with normalized document title
     }
     
     // Add document content
@@ -179,6 +184,21 @@ function displayDocumentContent(docs) {
         content.appendChild(sectionHeader);
         
         lastSection = entry.section;
+      }
+      
+      // Add title only if it's different from the last one (case-insensitive and trimmed)
+      const entryTitle = entry.enrichment?.title;
+      if (entryTitle) {
+        const normalizedTitle = entryTitle.trim().toLowerCase();
+        
+        if (normalizedTitle && normalizedTitle !== lastNormalizedTitle) {
+          const titleElement = document.createElement('div');
+          titleElement.className = 'text-sm font-semibold text-eu-blue mt-2 mb-1';
+          titleElement.textContent = entryTitle.trim(); // Display original case but trimmed
+          content.appendChild(titleElement);
+          lastNormalizedTitle = normalizedTitle; // Store normalized version for comparison
+        }
+        // Skip if title is empty or same as previous (case-insensitive)
       }
       
       // Create container for the entry
