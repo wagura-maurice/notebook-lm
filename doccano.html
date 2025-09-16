@@ -335,9 +335,9 @@
                 <!-- Document Info -->
                 <div class="mb-6 bg-eu-blue/5 p-4 rounded-lg">
                   <div class="text-sm text-eu-blue mb-2 font-medium document-title">Loading document...</div>
-                  <div class="flex items-center text-[9px] text-gray-400/80 tracking-tight">
-                    <i class="far fa-clock mr-0.5"></i>
-                    <span>Last updated: <span class="document-updated">-</span></span>
+                  <div class="flex items-center text-sm text-gray-500">
+                    <i class="far fa-clock mr-1"></i>
+                    <small>Last updated: <span class="document-updated text-eu-orange">-</span></small>
                   </div>
                 </div>
 
@@ -408,49 +408,6 @@
                 </button>
               </div>
             </div>
-            
-            <!-- Section icons -->
-            <div id="collapsed-sections" class="flex-1 overflow-y-auto py-2">
-              <!-- Section icons will be dynamically added here -->
-            </div>
-            
-            <!-- Document info icon and modal -->
-            <div class="border-t border-eu-blue/20 py-2">
-              <div class="relative group w-full flex justify-center py-2">
-                <i id="document-info-icon" class="fas fa-info-circle text-eu-blue text-lg cursor-pointer hover:text-eu-orange transition-colors" 
-                   title="Document Info"></i>
-                
-                <!-- Document Info Modal -->
-                <div id="document-info-modal" class="hidden absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 bg-white rounded-lg shadow-lg border border-eu-blue/20 z-50">
-                  <div class="p-4">
-                    <div class="flex justify-between items-center mb-3">
-                      <h3 class="text-sm font-semibold text-eu-blue">Document Information</h3>
-                      <button id="close-document-info" class="text-gray-400 hover:text-eu-orange">
-                        <i class="fas fa-times"></i>
-                      </button>
-                    </div>
-                    <div class="space-y-2 text-xs">
-                      <div class="flex justify-between">
-                        <span class="text-gray-500">Title:</span>
-                        <span class="font-medium text-eu-blue document-title">-</span>
-                      </div>
-                      <div class="flex justify-between">
-                        <span class="text-gray-500">Last Updated:</span>
-                        <span class="font-medium text-eu-blue document-updated">-</span>
-                      </div>
-                      <div class="flex justify-between">
-                        <span class="text-gray-500">Length:</span>
-                        <span class="font-medium text-eu-blue document-length">-</span>
-                      </div>
-                      <div class="flex justify-between">
-                        <span class="text-gray-500">Model:</span>
-                        <span class="font-medium text-eu-blue document-model">-</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -479,9 +436,9 @@
             <!-- Fixed Header -->
             <div class="flex-shrink-0 z-10">
               <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
-                <div class="flex items-center text-sm text-gray-700">
+                <div class="flex items-center text-sm text-gray-500">
                   <i class="far fa-clock mr-2"></i>
-                  <span>Last updated: <span class="font-medium text-eu-blue document-updated">-</span></span>
+                  <small>Last updated: <span class="font-medium text-eu-orange document-updated">-</span></small>
                 </div>
                 <div class="flex items-center space-x-3">
                   <button class="text-gray-500 hover:text-eu-blue transition-colors" title="Undo" id="undo-btn">
@@ -538,9 +495,9 @@
                 <!-- Document Info -->
                 <div class="mb-6 bg-eu-blue/5 p-4 rounded-lg">
                   <div class="text-sm text-eu-blue mb-2 font-medium document-title">Loading document...</div>
-                  <div class="flex items-center text-xs text-gray-500">
+                  <div class="flex items-center text-sm text-gray-500">
                     <i class="far fa-clock mr-1"></i>
-                    <span>Last updated: <span class="document-updated font-medium">-</span></span>
+                    <small>Last updated: <span class="document-updated text-eu-orange">-</span></small>
                   </div>
                 </div>
                 
