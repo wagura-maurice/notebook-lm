@@ -472,13 +472,9 @@
           </div>
 
           <!-- Document Content -->
-          <div
-            class="overflow-y-auto flex-1 bg-eu-white scrollbar-transparent p-4 space-y-4"
-            id="document-content"
-            style="position: relative"
-          > 
-            <!-- Document Content -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div class="flex flex-col h-full" id="document-content">
+            <!-- Fixed Header -->
+            <div class="flex-shrink-0 bg-white z-10">
               <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
                 <div class="flex items-center text-sm text-gray-700">
                   <i class="far fa-clock mr-2"></i>
@@ -496,14 +492,16 @@
                   </button>
                 </div>
               </div>
-              <div class="p-4">
-                <div id="document-viewer" class="space-y-4 font-mono text-sm text-gray-800">
-                  <!-- Document lines will be inserted here by JavaScript -->
-                  <div class="animate-pulse space-y-2">
-                    <div class="h-4 bg-gray-200 rounded w-full"></div>
-                    <div class="h-4 bg-gray-200 rounded w-5/6"></div>
-                    <div class="h-4 bg-gray-200 rounded w-4/6"></div>
-                  </div>
+            </div>
+            
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto bg-white p-4">
+              <div id="document-viewer" class="font-mono text-sm text-gray-800 space-y-4">
+                <!-- Document lines will be inserted here by JavaScript -->
+                <div class="animate-pulse space-y-2">
+                  <div class="h-4 bg-gray-200 rounded w-full"></div>
+                  <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+                  <div class="h-4 bg-gray-200 rounded w-4/6"></div>
                 </div>
               </div>
             </div>
