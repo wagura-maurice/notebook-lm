@@ -11,61 +11,59 @@ class DoccanoVisualizer {
     const containersReady = this.ensureChartContainers();
     if (!containersReady) {
       console.warn('Could not initialize charts: Required containers not found');
+      // Retry initialization after a short delay in case the container isn't ready yet
+      setTimeout(() => this.initializeCharts(), 500);
     }
   }
 
   ensureChartContainers() {
-    // Create token usage chart container if it doesn't exist
+    console.log('Ensuring chart containers exist...');
+    const visualizationsContainer = document.getElementById('visualizations-container');
+    
+    if (!visualizationsContainer) {
+      console.warn('Visualizations container not found. Will retry...');
+      return false;
+    }
+
+    // Only create containers if they don't exist
     if (!document.getElementById('tokenUsageChart')) {
-      // Find the right column's content area
-      const rightColumn = document.querySelector('#right-column .expanded-content .overflow-y-auto');
-      if (!rightColumn) {
-        console.warn('Right column content area not found. Visualization will not be displayed.');
-        return false;
-      }
-      
       // Create container for visualizations
       const container = document.createElement('div');
       container.id = 'tokenUsageChart';
-      container.className = 'bg-white p-4 rounded-lg shadow mb-4';
+      container.className = 'w-full';
       
-      // Add confidence progress bar HTML
+      // Add confidence progress bar HTML with improved chart container
       container.innerHTML = `
         <div class="mb-6">
-          <h3 class="text-sm font-semibold text-eu-blue mb-1">Confidence Level</h3>
+          <h3 class="text-sm font-semibold text-gray-700 mb-1">Confidence Level</h3>
           <p class="text-xs text-gray-500 mb-2">Average confidence level of your annotations.</p>
           <div class="flex justify-between items-center mb-1">
             <span class="text-xs font-medium">Score</span>
             <span id="confidenceValue" class="text-xs font-medium">0%</span>
           </div>
-          <div class="w-full bg-gray-100 rounded-full h-2.5">
+          <div class="w-full bg-gray-200 rounded-full h-2.5">
             <div id="confidenceProgress" class="h-2.5 rounded-full transition-all duration-500 bg-eu-orange" style="width: 0%"></div>
           </div>
         </div>
-        <div class="mt-2">
-          <h3 class="text-sm font-semibold text-eu-blue">Token Usage</h3>
-          <p class="text-xs text-gray-500 mb-1">Visual representation of token distribution across your annotated data.</p>
-          <div class="h-40 mt-1" id="tokenChart"></div>
+        <div class="mt-6">
+          <h3 class="text-sm font-semibold text-gray-700 mb-1">Token Usage</h3>
+          <p class="text-xs text-gray-500 mb-2">Visual representation of token distribution across your annotated data.</p>
+          <div class="relative w-full" style="min-height: 200px;">
+            <div id="tokenChart" class="w-full h-full absolute"></div>
+          </div>
         </div>
       `;
       
-      // Find the taxonomy section to insert after it
-      const taxonomySection = rightColumn.querySelector('h3:has(+ .taxonomy-tags)')?.parentElement;
+      // Clear and append to visualizations container
+      visualizationsContainer.innerHTML = '';
+      visualizationsContainer.appendChild(container);
       
-      if (taxonomySection) {
-        // Insert after taxonomy section
-        taxonomySection.parentNode.insertBefore(container, taxonomySection.nextElementSibling);
-      } else {
-        // If taxonomy section not found, insert after document info or at the top
-        const documentInfo = rightColumn.querySelector('[class*="bg-eu-blue"][class*="p-4"]');
-        if (documentInfo && documentInfo.nextElementSibling) {
-          documentInfo.parentNode.insertBefore(container, documentInfo.nextElementSibling);
-        } else {
-          rightColumn.prepend(container);
-        }
+      // Initialize any charts if data is available
+      if (this.lastProcessedData) {
+        this.processData(this.lastProcessedData);
       }
-      return true;
     }
+    
     return true;
   }
 
@@ -77,6 +75,10 @@ class DoccanoVisualizer {
     }
     
     console.log('Processing data for visualization, document count:', documents.length);
+    
+    // Store the processed data for potential reinitialization
+    this.lastProcessedData = documents;
+    
     const usageStats = {
       prompt_tokens: 0,
       completion_tokens: 0,
@@ -104,7 +106,10 @@ class DoccanoVisualizer {
     });
 
     // Ensure chart containers exist
-    this.ensureChartContainers();
+    if (!this.ensureChartContainers()) {
+      console.log('Containers not ready, will retry after initialization');
+      return;
+    }
     
     // Update visualizations
     console.log('Updating visualizations with usage stats:', usageStats);
@@ -117,42 +122,92 @@ class DoccanoVisualizer {
   // Create or update token usage chart
   updateTokenUsageChart(usageStats) {
     console.log('Updating token usage chart with data:', usageStats);
-    const chartElement = document.getElementById('tokenUsageChart');
+    const chartElement = document.getElementById('tokenChart');
     if (!chartElement) {
-      console.warn('Token chart container not found, attempting to initialize...');
+      console.warn('Token chart element not found, attempting to initialize...');
       if (this.ensureChartContainers()) {
-        this.updateTokenUsageChart(usageStats); // Retry after initialization
+        // Small delay to ensure DOM is ready
+        setTimeout(() => this.updateTokenUsageChart(usageStats), 100);
       }
       return;
+    }
+
+    // Ensure we have a valid parent container
+    const parentElement = chartElement.parentElement;
+    if (parentElement) {
+      // Set a minimum height to prevent layout shifts
+      parentElement.style.minHeight = '200px';
     }
 
     const options = {
       series: [usageStats.prompt_tokens, usageStats.completion_tokens],
       chart: {
         type: 'donut',
-        height: 200,
+        height: '100%',
+        width: '100%',
         fontFamily: 'Rubik, sans-serif',
-        toolbar: { show: false }
+        toolbar: { show: false },
+        parentHeightOffset: 0,
+        redrawOnParentResize: true,
+        redrawOnWindowResize: true,
+        animations: {
+          enabled: true,
+          easing: 'easeinout',
+          speed: 800,
+          animateGradually: {
+            enabled: true,
+            delay: 150
+          },
+          dynamicAnimation: {
+            enabled: true,
+            speed: 350
+          }
+        }
       },
       colors: ['#003087', '#FF6900'],
       labels: ['Prompt Tokens', 'Completion Tokens'],
-      dataLabels: { enabled: false },
+      dataLabels: { 
+        enabled: false 
+      },
       legend: {
         position: 'bottom',
         horizontalAlign: 'center',
         fontSize: '12px',
-        fontFamily: 'Rubik, sans-serif'
+        fontFamily: 'Rubik, sans-serif',
+        itemMargin: {
+          horizontal: 8,
+          vertical: 4
+        }
       },
       plotOptions: {
         pie: {
           donut: {
-            size: '80%',
+            size: '75%',
             labels: {
               show: true,
+              name: {
+                show: true,
+                fontSize: '12px',
+                fontFamily: 'Rubik, sans-serif',
+                color: '#4B5563',
+                offsetY: -10
+              },
+              value: {
+                show: true,
+                fontSize: '16px',
+                fontFamily: 'Rubik, sans-serif',
+                color: '#111827',
+                offsetY: 0,
+                formatter: (val) => {
+                  return val ? Math.round(val) + '%' : '0%';
+                }
+              },
               total: {
                 show: true,
                 label: 'Total',
-                color: '#333',
+                color: '#111827',
+                fontSize: '14px',
+                fontFamily: 'Rubik, sans-serif',
                 formatter: () => usageStats.total_tokens.toLocaleString()
               }
             }
@@ -160,13 +215,31 @@ class DoccanoVisualizer {
         }
       },
       tooltip: {
-        y: { formatter: (val) => val.toLocaleString() }
+        y: { 
+          formatter: (val) => `${val.toLocaleString()} tokens`,
+          title: {
+            formatter: (seriesName) => seriesName
+          }
+        }
       },
       responsive: [{
         breakpoint: 768,
         options: {
-          chart: { height: 180 },
-          legend: { position: 'bottom' }
+          chart: { 
+            height: '100%',
+            width: '100%'
+          },
+          legend: { 
+            position: 'bottom',
+            fontSize: '11px'
+          },
+          plotOptions: {
+            pie: {
+              donut: {
+                size: '70%'
+              }
+            }
+          }
         }
       }]
     };

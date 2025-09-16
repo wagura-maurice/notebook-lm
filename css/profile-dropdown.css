@@ -21,11 +21,17 @@
 @media (max-width: 1023px) {
   #profile-dropdown {
     position: fixed;
-    top: 4rem;
+    top: 4.5rem; /* Slightly below the header */
     right: 1rem;
     width: calc(100% - 2rem);
     max-width: 20rem;
-    z-index: 50;
+    z-index: 1000; /* Higher than mobile tabs */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Ensure the avatar dropdown is above other elements */
+  #avatar-dropdown {
+    z-index: 1001 !important; /* Slightly higher than profile dropdown */
   }
   
   #mobile-menu-button {
