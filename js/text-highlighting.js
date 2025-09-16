@@ -305,38 +305,124 @@ class TextHighlighter {
     }
   }
 
+  /**
+   * Updates the context menu with available taxonomy options
+   */
+  updateContextMenu() {
+    if (!this.contextMenu) {
+      console.warn('Context menu element not found');
+      return;
+    }
+
+    // Clear existing taxonomy items
+    const existingItems = this.contextMenu.querySelectorAll('.taxonomy-item');
+    existingItems.forEach(item => item.remove());
+
+    // Add taxonomy items
+    this.taxonomies.forEach(taxonomy => {
+      const item = document.createElement('div');
+      item.className = 'taxonomy-item';
+      item.textContent = taxonomy.displayName || taxonomy.key;
+      
+      // Set the color for this taxonomy
+      if (taxonomy.colorClass) {
+        const colorClass = taxonomy.colorClass.split(' ')[0]; // Get just the base color class
+        item.style.backgroundColor = this.getColorFromClass(colorClass);
+      }
+      
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.highlightSelection(taxonomy.key);
+        this.hideContextMenu();
+      });
+      
+      this.contextMenu.insertBefore(item, this.contextMenu.lastElementChild);
+    });
+
+    console.log('Context menu updated with taxonomies:', this.taxonomies);
+  }
+
+  /**
+   * Helper to convert Tailwind color classes to CSS colors
+   */
+  getColorFromClass(className) {
+    const colorMap = {
+      'bg-blue-100': '#dbeafe',
+      'bg-green-100': '#d1fae5',
+      'bg-yellow-100': '#fef9c3',
+      'bg-red-100': '#fee2e2',
+      'bg-purple-100': '#f3e8ff',
+      'bg-pink-100': '#fce7f3',
+      'bg-indigo-100': '#e0e7ff'
+    };
+    return colorMap[className] || '#e0e7ff'; // Default to indigo-100 if not found
+  }
+
   // Process taxonomy data from documents
   processTaxonomyData(documents) {
-    // Process taxonomy data and update the context menu
+    console.log('Processing taxonomy data from documents:', documents);
+    
+    // Reset taxonomies and colors
     this.taxonomies = [];
     this.taxonomyColors = {};
     
-    // Get all unique taxonomy categories from documents
-    const taxonomySet = new Set();
-    documents.forEach(doc => {
-      if (doc.enrichment?.taxonomy) {
-        Object.keys(doc.enrichment.taxonomy).forEach(category => {
-          taxonomySet.add(category);
-        });
-      }
-    });
+    // Default taxonomy categories to use if none are found in documents
+    const defaultTaxonomies = [
+      'key_concept',
+      'important_quote',
+      'research_finding',
+      'methodology',
+      'limitation',
+      'recommendation',
+      'future_work'
+    ];
+    
+    let foundTaxonomies = new Set();
+    
+    // Try to extract taxonomies from documents if they exist
+    if (documents && documents.length > 0) {
+      documents.forEach(doc => {
+        if (doc.enrichment?.taxonomy) {
+          // The taxonomy data is an object with category keys and array values
+          Object.entries(doc.enrichment.taxonomy).forEach(([category, items]) => {
+            if (Array.isArray(items) && items.length > 0) {
+              // Only add non-empty taxonomy categories
+              foundTaxonomies.add(category);
+            }
+          });
+        }
+      });
+    }
+    
+    // Use default taxonomies if none were found in documents
+    const taxonomiesToUse = foundTaxonomies.size > 0 
+      ? Array.from(foundTaxonomies) 
+      : defaultTaxonomies;
     
     // Convert to array and assign colors
-    this.taxonomies = Array.from(taxonomySet).map((key, index) => {
+    this.taxonomies = taxonomiesToUse.map((key, index) => {
       const colorClass = this.colorPalette[index % this.colorPalette.length];
       this.taxonomyColors[key] = colorClass;
       
+      // Format the display name by splitting on underscores and capitalizing each word
+      const displayName = key
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+      
       return {
         key,
-        displayName: key.split('_')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' '),
+        displayName,
         colorClass
       };
     });
     
+    console.log('Processed taxonomies:', this.taxonomies);
+    
     // Update the context menu with new taxonomies
     this.updateContextMenu();
+    
+    return this.taxonomies;
   }
 
   highlightSelection(category) {
@@ -792,6 +878,23 @@ class TextHighlighter {
         category: hl.dataset.category,
         position: this.getTextPosition(hl)
       });
+    });
+    return highlights;
+  }
+
+  updateUndoRedoButtons() {
+    try {
+      // Ensure we have a valid history array
+      if (!Array.isArray(this.highlightHistory)) {
+        this.highlightHistory = [];
+      }
+      
+      // Get the undo/redo buttons
+      const undoBtn = document.querySelector('[data-action="undo"]');
+      const redoBtn = document.querySelector('[data-action="redo"]');
+      
+      // Update undo button state
+      if (undoBtn) {
         undoBtn.disabled = this.historyIndex < 0;
         undoBtn.title = this.historyIndex >= 0 ? 'Undo last action' : 'Nothing to undo';
       }
