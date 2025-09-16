@@ -366,55 +366,47 @@ function setupSidebarToggle() {
   
   // Toggle left column
   if (collapseLeftBtn) {
-    collapseLeftBtn.addEventListener('click', () => {
+    collapseLeftBtn.addEventListener('click', (e) => {
+      e.preventDefault();
       leftColumn.classList.add('collapsed');
-      leftColumn.querySelector('.expanded-content').classList.add('hidden');
-      leftColumn.querySelector('.collapsed-content').classList.remove('hidden');
       leftColumn.classList.remove('lg:w-72');
       leftColumn.classList.add('lg:w-16');
       // Update chevron icon
-      collapseLeftBtn.querySelector('i').classList.remove('fa-chevron-left');
-      collapseLeftBtn.querySelector('i').classList.add('fa-chevron-right');
+      collapseLeftBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
     });
   }
   
   if (expandLeftBtn) {
-    expandLeftBtn.addEventListener('click', () => {
+    expandLeftBtn.addEventListener('click', (e) => {
+      e.preventDefault();
       leftColumn.classList.remove('collapsed');
-      leftColumn.querySelector('.expanded-content').classList.remove('hidden');
-      leftColumn.querySelector('.collapsed-content').classList.add('hidden');
       leftColumn.classList.add('lg:w-72');
       leftColumn.classList.remove('lg:w-16');
       // Update chevron icon
-      expandLeftBtn.querySelector('i').classList.remove('fa-chevron-right');
-      expandLeftBtn.querySelector('i').classList.add('fa-chevron-left');
+      expandLeftBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
     });
   }
   
   // Toggle right column
   if (collapseRightBtn) {
-    collapseRightBtn.addEventListener('click', () => {
+    collapseRightBtn.addEventListener('click', (e) => {
+      e.preventDefault();
       rightColumn.classList.add('collapsed');
-      rightColumn.querySelector('.expanded-content').classList.add('hidden');
-      rightColumn.querySelector('.collapsed-content').classList.remove('hidden');
       rightColumn.classList.remove('lg:hover:w-80');
       rightColumn.classList.add('lg:w-16');
       // Update chevron icon
-      collapseRightBtn.querySelector('i').classList.remove('fa-chevron-right');
-      collapseRightBtn.querySelector('i').classList.add('fa-chevron-left');
+      collapseRightBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
     });
   }
   
   if (expandRightBtn) {
-    expandRightBtn.addEventListener('click', () => {
+    expandRightBtn.addEventListener('click', (e) => {
+      e.preventDefault();
       rightColumn.classList.remove('collapsed');
-      rightColumn.querySelector('.expanded-content').classList.remove('hidden');
-      rightColumn.querySelector('.collapsed-content').classList.add('hidden');
       rightColumn.classList.add('lg:hover:w-80');
       rightColumn.classList.remove('lg:w-16');
       // Update chevron icon
-      expandRightBtn.querySelector('i').classList.remove('fa-chevron-left');
-      expandRightBtn.querySelector('i').classList.add('fa-chevron-right');
+      expandRightBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
     });
   }
 }

@@ -315,78 +315,80 @@
           class="mobile-tab-content w-full lg:w-72 bg-eu-white text-text-primary transition-all duration-300 flex flex-col rounded-lg lg:block hidden"
         >
           <!-- Expanded view -->
-          <div class="expanded-content flex flex-col h-full">
-            <!-- Fixed Header -->
-            <div class="flex-shrink-0 bg-white z-10">
-              <div class="flex items-center justify-between px-5 py-3 border-b border-eu-blue">
-                <h2 class="text-lg font-semibold">Guide</h2>
-                <button
-                  id="collapse-left"
-                  class="text-eu-blue text-lg hover:text-eu-orange"
-                  title="Collapse guide"
-                >
-                  <i class="fas fa-chevron-left"></i>
-                </button>
-              </div>
-            </div>
-
-            <!-- Scrollable Content -->
-            <div class="flex-1 overflow-y-auto p-4" id="guide-content">
-              <!-- Document Info -->
-              <div class="mb-6 bg-eu-blue/5 p-4 rounded-lg">
-                <div class="text-sm text-eu-blue mb-2 font-medium document-title">Loading document...</div>
-                <div class="flex items-center text-xs text-gray-500">
-                  <i class="far fa-clock mr-1"></i>
-                  <span>Last updated: <span class="document-updated font-medium">-</span></span>
+          <div class="expanded-content">
+            <div class="flex flex-col h-full">
+              <!-- Fixed Header -->
+              <div class="flex-shrink-0 z-10">
+                <div class="flex items-center justify-between px-5 py-3 border-b border-eu-blue">
+                  <h2 class="text-lg font-semibold">Guide</h2>
+                  <button
+                    id="collapse-left"
+                    class="text-eu-blue text-lg hover:text-eu-orange"
+                    title="Collapse guide"
+                  >
+                    <i class="fas fa-chevron-left"></i>
+                  </button>
                 </div>
               </div>
 
-              <!-- Document Sections (will be populated dynamically) -->
-              <div id="document-sections" class="space-y-3">
-                <!-- Example section template (will be cloned and populated) -->
-                <div
-                  class="document-section border border-gray-200 rounded-lg overflow-hidden"
-                  data-section-id="template"
-                  style="display: none"
-                >
-                  <button
-                    class="section-trigger w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 font-medium flex items-center justify-between"
+              <!-- Scrollable Content -->
+              <div class="flex-1 overflow-y-auto p-4" id="guide-content">
+                <!-- Document Info -->
+                <div class="mb-6 bg-eu-blue/5 p-4 rounded-lg">
+                  <div class="text-sm text-eu-blue mb-2 font-medium document-title">Loading document...</div>
+                  <div class="flex items-center text-xs text-gray-500">
+                    <i class="far fa-clock mr-1"></i>
+                    <span>Last updated: <span class="document-updated font-medium">-</span></span>
+                  </div>
+                </div>
+
+                <!-- Document Sections (will be populated dynamically) -->
+                <div id="document-sections" class="space-y-3">
+                  <!-- Example section template (will be cloned and populated) -->
+                  <div
+                    class="document-section border border-gray-200 rounded-lg overflow-hidden"
+                    data-section-id="template"
+                    style="display: none"
                   >
-                    <span class="section-title">Section Title</span>
-                    <i
-                      class="fas fa-chevron-down text-xs text-gray-500 transition-transform section-icon"
-                    ></i>
-                  </button>
-                  <div class="section-content px-4 pb-3 hidden">
-                    <p class="text-sm text-gray-700 mb-3 section-summary">
-                      Section summary will appear here.
-                    </p>
-                    <div class="section-keywords flex flex-wrap gap-1.5 mt-2">
-                      <!-- Keywords will be inserted here -->
+                    <button
+                      class="section-trigger w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 font-medium flex items-center justify-between"
+                    >
+                      <span class="section-title">Section Title</span>
+                      <i
+                        class="fas fa-chevron-down text-xs text-gray-500 transition-transform section-icon"
+                      ></i>
+                    </button>
+                    <div class="section-content px-4 pb-3 hidden">
+                      <p class="text-sm text-gray-700 mb-3 section-summary">
+                        Section summary will appear here.
+                      </p>
+                      <div class="section-keywords flex flex-wrap gap-1.5 mt-2">
+                        <!-- Keywords will be inserted here -->
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Loading state -->
+                  <div id="sections-loading" class="text-center py-4">
+                    <div class="animate-pulse space-y-2">
+                      <div class="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
+                      <div class="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
                     </div>
                   </div>
                 </div>
 
-                <!-- Loading state -->
-                <div id="sections-loading" class="text-center py-4">
-                  <div class="animate-pulse space-y-2">
-                    <div class="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
-                    <div class="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Document Metadata -->
-              <div class="mt-6 pt-4 border-t border-gray-200">
-                <h3 class="text-xs font-semibold text-eu-blue uppercase tracking-wider mb-3">Document Analysis</h3>
-                <div class="space-y-3">
-                  <div class="flex items-center text-xs text-gray-500">
-                    <i class="fas fa-file-lines mr-2 w-4 text-center"></i>
-                    <span class="document-length">- characters • - words</span>
-                  </div>
-                  <div class="flex items-center text-xs text-gray-500">
-                    <i class="fas fa-brain mr-2 w-4 text-center"></i>
-                    <span>Model: <span class="document-model font-medium">-</span></span>
+                <!-- Document Metadata -->
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                  <h3 class="text-xs font-semibold text-eu-blue uppercase tracking-wider mb-3">Document Analysis</h3>
+                  <div class="space-y-3">
+                    <div class="flex items-center text-xs text-gray-500">
+                      <i class="fas fa-file-lines mr-2 w-4 text-center"></i>
+                      <span class="document-length">- characters • - words</span>
+                    </div>
+                    <div class="flex items-center text-xs text-gray-500">
+                      <i class="fas fa-brain mr-2 w-4 text-center"></i>
+                      <span>Model: <span class="document-model font-medium">-</span></span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -459,7 +461,7 @@
           class="mobile-tab-content flex-1 bg-eu-white text-text-primary flex flex-col lg:block transition-all duration-300 rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)]"
         >
           <!-- Header (visible only on desktop) -->
-          <div class="expanded-content">
+          <!-- <div class="expanded-content"> -->
             <div
               class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
             >
@@ -471,12 +473,12 @@
                 <i class="fas fa-expand-alt"></i>
               </button>
             </div>
-          </div>
+          <!-- </div> -->
 
           <!-- Document Content -->
           <div class="flex flex-col h-full overflow-hidden" id="document-content">
             <!-- Fixed Header -->
-            <div class="flex-shrink-0 bg-white z-10">
+            <div class="flex-shrink-0 z-10">
               <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
                 <div class="flex items-center text-sm text-gray-700">
                   <i class="far fa-clock mr-2"></i>
@@ -516,45 +518,47 @@
           class="mobile-tab-content w-full lg:w-16 lg:hover:w-80 bg-eu-white text-text-primary border-l border-eu-blue transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)] lg:block hidden"
         >
           <!-- Expanded view -->
-          <div class="expanded-content flex flex-col h-full">
-            <!-- Fixed Header -->
-            <div class="flex-shrink-0 bg-white z-10">
-              <div class="flex items-center justify-between px-5 py-3 border-b border-eu-blue">
-                <h2 class="text-lg font-semibold">Annotation</h2>
-                <button
-                  id="collapse-right"
-                  class="text-eu-blue text-lg hover:text-eu-orange"
-                  title="Collapse panel"
-                >
-                  <i class="fas fa-chevron-right"></i>
-                </button>
-              </div>
-            </div>
-
-            <!-- Scrollable Content -->
-            <div class="flex-1 overflow-y-auto p-4">
-              <!-- Document Info -->
-              <div class="mb-6 bg-eu-blue/5 p-4 rounded-lg">
-                <div class="text-sm text-eu-blue mb-2 font-medium document-title">Loading document...</div>
-                <div class="flex items-center text-xs text-gray-500">
-                  <i class="far fa-clock mr-1"></i>
-                  <span>Last updated: <span class="document-updated font-medium">-</span></span>
-                </div>
-              </div>
-              
-              <!-- Taxonomy Section -->
-              <div class="mb-4">
-                <h3 class="text-xs font-semibold text-eu-blue uppercase tracking-wider mb-3">Taxonomy</h3>
-                <div id="taxonomy-container" class="space-y-2">
-                  <!-- Taxonomy items will be populated by JavaScript -->
+          <div class="expanded-content">
+            <div class="flex flex-col h-full">
+              <!-- Fixed Header -->
+              <div class="flex-shrink-0 z-10">
+                <div class="flex items-center justify-between px-5 py-3 border-b border-eu-blue">
+                  <h2 class="text-lg font-semibold">Annotation</h2>
+                  <button
+                    id="collapse-right"
+                    class="text-eu-blue text-lg hover:text-eu-orange"
+                    title="Collapse panel"
+                  >
+                    <i class="fas fa-chevron-right"></i>
+                  </button>
                 </div>
               </div>
 
-              <!-- Visualizations Section -->
-              <div class="mb-4">
-                <h3 class="text-xs font-semibold text-eu-blue uppercase tracking-wider mb-3">Visualizations</h3>
-                <div id="visualizations-container" class="space-y-2">
-                  <!-- Visualizations will be populated by JavaScript -->
+              <!-- Scrollable Content -->
+              <div class="flex-1 overflow-y-auto p-4">
+                <!-- Document Info -->
+                <div class="mb-6 bg-eu-blue/5 p-4 rounded-lg">
+                  <div class="text-sm text-eu-blue mb-2 font-medium document-title">Loading document...</div>
+                  <div class="flex items-center text-xs text-gray-500">
+                    <i class="far fa-clock mr-1"></i>
+                    <span>Last updated: <span class="document-updated font-medium">-</span></span>
+                  </div>
+                </div>
+                
+                <!-- Taxonomy Section -->
+                <div class="mb-4">
+                  <h3 class="text-xs font-semibold text-eu-blue uppercase tracking-wider mb-3">Taxonomy</h3>
+                  <div id="taxonomy-container" class="space-y-2">
+                    <!-- Taxonomy items will be populated by JavaScript -->
+                  </div>
+                </div>
+
+                <!-- Visualizations Section -->
+                <div class="mb-4">
+                  <h3 class="text-xs font-semibold text-eu-blue uppercase tracking-wider mb-3">Visualizations</h3>
+                  <div id="visualizations-container" class="space-y-2">
+                    <!-- Visualizations will be populated by JavaScript -->
+                  </div>
                 </div>
               </div>
             </div>
@@ -563,14 +567,12 @@
           <!-- Collapsed view -->
           <div class="collapsed-content hidden">
             <div class="relative h-[60px] w-12">
-              <div
-                class="absolute bottom-0 left-0 right-0 border-b border-eu-blue"
-              ></div>
+              <div class="absolute bottom-0 left-0 right-0 border-b border-eu-blue"></div>
               <div class="flex items-center justify-center h-full w-full">
                 <button
                   id="expand-right"
                   class="text-eu-blue text-lg hover:text-eu-orange"
-                  title="Expand right column"
+                  title="Expand panel"
                 >
                   <i class="fas fa-chevron-left"></i>
                 </button>

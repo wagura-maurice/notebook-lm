@@ -53,9 +53,34 @@ body {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  height: 100%;
+  overflow: hidden;
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* Column content wrapper */
+#left-column .expanded-content,
+#right-column .expanded-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Fix for the middle column content */
+#middle-column .expanded-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure content areas are scrollable */
+.scrollable-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1rem;
 }
 
 /* Custom scrollbar for WebKit browsers (Chrome, Safari, Edge) */
@@ -95,6 +120,7 @@ body {
   width: 27.5%;
   min-width: 250px;
   position: relative;
+  height: 100%;
 }
 
 /* Middle Column */
@@ -109,6 +135,7 @@ body {
   width: 27.5%;
   min-width: 250px;
   position: relative;
+  height: 100%;
 }
 
 /* Collapsed States */
@@ -121,11 +148,8 @@ body {
 /* Header Styles */
 .expanded-content > div:first-child {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--eu-blue);
-  background-color: var(--eu-white);
   color: var(--eu-blue);
   font-weight: 500;
   min-height: 60px;
@@ -410,23 +434,13 @@ body {
 #left-column.collapsed .expanded-content > div,
 #right-column.collapsed .expanded-content > div {
   justify-content: center !important;
-  padding: 0; /* rely on min-height to align with middle header */
-}
-
-/* Adjust padding for collapsed state */
-#left-column.collapsed .expanded-content,
-#right-column.collapsed .expanded-content {
-  padding: 0;
 }
 
 /* Expanded Content */
 .expanded-content > div:first-child {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--eu-blue);
-  background-color: var(--eu-white);
   color: var(--eu-blue);
   min-height: 60px;
 }
