@@ -198,11 +198,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       return;
     }
 
-    // Populate document info with the first document
-    if (processedDocuments[0]) {
-      populateDocumentInfo(processedDocuments[0]);
-    }
-
     // Process and display documents
     processedDocuments.forEach((doc) => {
       populateSection(doc);
@@ -212,14 +207,25 @@ document.addEventListener("DOMContentLoaded", async function () {
     const taxonomyData = processTaxonomyData(processedDocuments);
     renderTaxonomy(taxonomyData);
     
-    // Update document info
+    // Update document info with the latest document
     const latestDoc = processedDocuments.sort((a, b) => new Date(b._ts) - new Date(a._ts))[0];
     if (latestDoc) {
       document.getElementById('document-updated').textContent = new Date(latestDoc._ts).toLocaleDateString();
       document.getElementById('document-id').textContent = latestDoc.id.substring(0, 6);
     }
 
+    // Notify other components that documents are loaded
+    const event = new CustomEvent('documentsUpdated', {
+      detail: { documents: rawDocuments }
+    });
+    document.dispatchEvent(event);
+
     // Set up event listeners for the first time
+    function setupEventListeners() {
+      // Add any global event listeners here
+      console.log('Event listeners initialized');
+    }
+    
     setupEventListeners();
 
     // Open the first section by default

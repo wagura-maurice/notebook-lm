@@ -118,15 +118,18 @@
             <button class="nav-button" title="Settings">
               <i class="fas fa-cog fa-md"></i>
             </button>
-            <div class="relative h-8 w-8">
-              <img
-                src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
-                class="h-full w-full rounded-full object-cover cursor-pointer transition-all"
-                id="avatar-dropdown-trigger"
-              />
-              <div
-                class="absolute inset-0 rounded-full border-2 border-eu-orange pointer-events-none"
-              ></div>
+            <!-- Mobile Avatar Dropdown -->
+            <div class="relative">
+              <div class="h-10 w-10 rounded-full overflow-hidden">
+                <img
+                  src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
+                  class="h-full w-full rounded-full object-cover cursor-pointer transition-all"
+                  id="avatar-dropdown-trigger"
+                />
+                <div
+                  class="absolute inset-0 rounded-full border-2 border-eu-orange pointer-events-none"
+                ></div>
+              </div>
               <!-- Dropdown menu -->
               <div
                 id="avatar-dropdown"
@@ -135,23 +138,19 @@
                 <div class="py-1" role="menu" aria-orientation="vertical">
                   <a
                     href="#"
-                    class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
+                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-blue/10"
                     role="menuitem"
+                    >Your Profile</a
                   >
-                    <i class="fas fa-user mr-3 w-5 text-center"></i>
-                    <span>Profile</span>
-                  </a>
                   <a
                     href="#"
-                    class="flex items-center px-4 py-3 text-sm text-text-primary hover:bg-eu-orange hover:text-eu-white transition-colors"
+                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-blue/10"
                     role="menuitem"
+                    >Settings</a
                   >
-                    <i class="fas fa-cog mr-3 w-5 text-center"></i>
-                    <span>Settings</span>
-                  </a>
-                  <div class="border-t border-eu-blue/20 my-1"></div>
                   <a
                     href="#"
+                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-blue/10"
                     class="flex items-center justify-start px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors group w-full"
                     role="menuitem"
                   >
