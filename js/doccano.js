@@ -221,16 +221,6 @@ function displayDocumentContent(docs) {
     // Track the last normalized title to avoid repetition
     let lastNormalizedTitle = '';
     
-    // Add document title (only if it exists and is different from previous)
-    const docTitle = docEntries[0]?.doc ? docEntries[0].doc.replace(/_/g, ' ') : '';
-    if (docTitle) {
-      const title = document.createElement('h4');
-      title.className = 'text-md font-semibold text-eu-blue mb-2';
-      title.textContent = docTitle;
-      docSection.appendChild(title);
-      lastNormalizedTitle = docTitle.trim().toLowerCase(); // Initialize with normalized document title
-    }
-    
     // Add document content
     const content = document.createElement('div');
     content.className = 'space-y-1';
