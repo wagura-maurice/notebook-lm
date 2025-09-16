@@ -333,11 +333,14 @@
               <!-- Scrollable Content -->
               <div class="flex-1 overflow-y-auto p-4" id="guide-content">
                 <!-- Document Info -->
-                <div class="mb-6 bg-eu-blue/5 p-4 rounded-lg">
-                  <div class="text-sm text-eu-blue mb-2 font-medium document-title">Loading document...</div>
-                  <div class="flex items-center text-sm text-gray-500">
-                    <i class="far fa-clock mr-1"></i>
-                    <small>Last updated: <span class="document-updated text-eu-orange">-</span></small>
+                <div class="mb-6 bg-eu-blue/5 p-4 rounded-lg border border-eu-blue/10">
+                  <h2 class="text-sm text-eu-blue/90 mb-2 font-medium document-title flex items-center">
+                    <i class="far fa-file-alt mr-2 text-eu-blue/70"></i>
+                    <span>Loading document...</span>
+                  </h2>
+                  <div class="flex items-center text-xs text-gray-600">
+                    <i class="far fa-clock mr-1.5 text-eu-orange/80"></i>
+                    <span>Last updated: <span class="document-updated font-medium text-eu-orange ml-0.5">-</span></span>
                   </div>
                 </div>
 
@@ -345,23 +348,26 @@
                 <div id="document-sections" class="space-y-3">
                   <!-- Example section template (will be cloned and populated) -->
                   <div
-                    class="document-section border border-gray-200 rounded-lg overflow-hidden"
+                    class="document-section border border-gray-200 rounded-lg overflow-hidden transition-shadow hover:shadow-sm"
                     data-section-id="template"
                     style="display: none"
                   >
                     <button
-                      class="section-trigger w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 font-medium flex items-center justify-between"
+                      class="section-trigger w-full text-left px-5 py-3.5 bg-gray-50 hover:bg-gray-100 font-medium flex items-center justify-between transition-colors duration-200"
                     >
-                      <span class="section-title">Section Title</span>
+                      <span class="text-base font-medium text-eu-blue section-title">Section Title</span>
                       <i
-                        class="fas fa-chevron-down text-xs text-gray-500 transition-transform section-icon"
+                        class="fas fa-chevron-down text-xs text-gray-500 transition-transform duration-200 section-icon"
                       ></i>
                     </button>
-                    <div class="section-content px-4 pb-3 hidden">
-                      <p class="text-sm text-gray-700 mb-3 section-summary">
-                        Section summary will appear here.
-                      </p>
-                      <div class="section-keywords flex flex-wrap gap-1.5 mt-2">
+                    <div class="section-content px-5 pb-4 hidden">
+                      <div class="relative pl-3.5 border-l-2 border-eu-orange my-2.5">
+                        <p class="text-sm text-gray-700 section-summary font-normal leading-relaxed">
+                          Section summary will appear here.
+                        </p>
+                        <div class="absolute -left-px top-0 w-0.5 h-full bg-gradient-to-b from-eu-orange/30 to-transparent"></div>
+                      </div>
+                      <div class="section-keywords flex flex-wrap gap-2 mt-3">
                         <!-- Keywords will be inserted here -->
                       </div>
                     </div>
@@ -434,20 +440,29 @@
           <!-- Document Content -->
           <div class="flex flex-col h-full overflow-hidden" id="document-content">
             <!-- Fixed Header -->
-            <div class="flex-shrink-0 z-10">
-              <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
-                <div class="flex items-center text-sm text-gray-500">
-                  <i class="far fa-clock mr-2"></i>
-                  <small>Last updated: <span class="font-medium text-eu-orange document-updated">-</span></small>
+            <div class="flex-shrink-0 z-10 bg-white border-b border-gray-200">
+              <!-- Document Info -->
+              <div class="px-5 pt-4 pb-2 border-b border-gray-100">
+                <h2 class="text-sm text-eu-blue/90 font-medium document-title flex items-center">
+                  <i class="far fa-file-alt mr-2 text-eu-blue/70"></i>
+                  <span>Loading document...</span>
+                </h2>
+              </div>
+              
+              <!-- Action Bar -->
+              <div class="px-5 py-2.5 flex justify-between items-center">
+                <div class="flex items-center text-xs text-gray-600">
+                  <i class="far fa-clock mr-1.5 text-eu-orange/80"></i>
+                  <span>Last updated: <span class="document-updated font-medium text-eu-orange ml-0.5">-</span></span>
                 </div>
-                <div class="flex items-center space-x-3">
-                  <button class="text-gray-500 hover:text-eu-blue transition-colors" title="Undo" id="undo-btn" data-action="undo">
+                <div class="flex items-center space-x-4">
+                  <button class="text-gray-400 hover:text-eu-blue transition-colors" title="Undo" id="undo-btn" data-action="undo">
                     <i class="fas fa-undo"></i>
                   </button>
-                  <button class="text-gray-500 hover:text-eu-blue transition-colors" title="Redo" id="redo-btn" data-action="redo">
+                  <button class="text-gray-400 hover:text-eu-blue transition-colors" title="Redo" id="redo-btn" data-action="redo">
                     <i class="fas fa-redo"></i>
                   </button>
-                  <button class="text-gray-500 hover:text-green-600 transition-colors" title="Save" id="save-btn" data-action="save">
+                  <button class="text-gray-400 hover:text-green-600 transition-colors" title="Save" id="save-btn" data-action="save">
                     <i class="far fa-save"></i>
                   </button>
                 </div>
@@ -493,11 +508,14 @@
               <!-- Scrollable Content -->
               <div class="flex-1 overflow-y-auto p-4">
                 <!-- Document Info -->
-                <div class="mb-6 bg-eu-blue/5 p-4 rounded-lg">
-                  <div class="text-sm text-eu-blue mb-2 font-medium document-title">Loading document...</div>
-                  <div class="flex items-center text-sm text-gray-500">
-                    <i class="far fa-clock mr-1"></i>
-                    <small>Last updated: <span class="document-updated text-eu-orange">-</span></small>
+                <div class="mb-6 bg-eu-blue/5 p-4 rounded-lg border border-eu-blue/10">
+                  <h2 class="text-sm text-eu-blue/90 mb-2 font-medium document-title flex items-center">
+                    <i class="far fa-file-alt mr-2 text-eu-blue/70"></i>
+                    <span>Loading document...</span>
+                  </h2>
+                  <div class="flex items-center text-xs text-gray-600">
+                    <i class="far fa-clock mr-1.5 text-eu-orange/80"></i>
+                    <span>Last updated: <span class="document-updated font-medium text-eu-orange ml-0.5">-</span></span>
                   </div>
                 </div>
                 
