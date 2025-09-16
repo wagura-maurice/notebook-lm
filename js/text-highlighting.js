@@ -115,6 +115,35 @@ class TextHighlighter {
       const selection = window.getSelection();
       const selectedText = selection.toString().trim();
       
+      // Only proceed if there's actual text selected
+      if (!selectedText) {
+        this.currentSelection = null;
+        return;
+      }
+      
+      // Only show menu if selection is within the #document-viewer element
+      const documentViewer = document.getElementById('document-viewer');
+      if (documentViewer) {
+        if (selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          const selectionRect = range.getBoundingClientRect();
+          const containerRect = documentViewer.getBoundingClientRect();
+          
+          // Check if selection is entirely within the document viewer
+          if (selectionRect.top < containerRect.top || 
+              selectionRect.bottom > containerRect.bottom ||
+              selectionRect.left < containerRect.left || 
+              selectionRect.right > containerRect.right) {
+            this.currentSelection = null;
+            return;
+          }
+        } else if (!documentViewer.contains(e?.target)) {
+          // If no selection but click is outside document viewer
+          this.currentSelection = null;
+          return;
+        }
+      }
+      
       console.log('Text selection detected:', { 
         selectedText, 
         rangeCount: selection.rangeCount,
@@ -301,6 +330,36 @@ class TextHighlighter {
   }
 
   /**
+   * Renders taxonomy items for a specific category
+   * @param {string} category - The category key
+   * @param {HTMLElement} container - The container to render items in
+   */
+  renderTaxonomyItems(category, container) {
+    if (!this.taxonomyItems[category] || this.taxonomyItems[category].length === 0) {
+      const emptyMsg = document.createElement('div');
+      emptyMsg.className = 'text-sm text-gray-500 italic pl-8 py-1';
+      emptyMsg.textContent = 'No items available';
+      container.appendChild(emptyMsg);
+      return;
+    }
+
+    this.taxonomyItems[category].forEach(item => {
+      const itemEl = document.createElement('div');
+      itemEl.className = 'flex items-center py-1.5 px-4 pl-8 hover:bg-gray-50 cursor-pointer text-sm';
+      itemEl.textContent = item;
+      itemEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.highlightSelection({
+          category,
+          item
+        });
+        this.hideContextMenu();
+      });
+      container.appendChild(itemEl);
+    });
+  }
+
+  /**
    * Updates the context menu with available taxonomy options
    */
   updateContextMenu() {
@@ -329,66 +388,67 @@ class TextHighlighter {
       loadingEl.className = 'context-menu__loading';
       loadingEl.innerHTML = `
         <i class="fas fa-spinner fa-spin mr-2"></i>
-        <span>Loading categories...</span>
+        <span>Loading items...</span>
       `;
       highlightOptions.appendChild(loadingEl);
       return;
     }
     
-    // Add taxonomy items with improved styling
+    // Create a container for the flat list of taxonomy items
+    const itemsContainer = document.createElement('div');
+    itemsContainer.className = 'space-y-1';
+    
+    // Add each taxonomy item as a clickable option
     this.taxonomies.forEach(taxonomy => {
-      const item = document.createElement('div');
-      item.className = 'taxonomy-item';
-      item.dataset.category = taxonomy.key;
+      const itemEl = document.createElement('button');
+      itemEl.className = 'w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center';
+      itemEl.style.transition = 'background-color 0.2s';
       
-      // Create color indicator
+      // Add color indicator
       const colorIndicator = document.createElement('span');
-      colorIndicator.className = 'w-4 h-4 rounded-full mr-3 flex-shrink-0';
+      colorIndicator.className = 'w-3 h-3 rounded-full mr-2 flex-shrink-0';
       
-      // Set the color for this taxonomy
+      // Set the color for this item
       if (taxonomy.colorClass) {
         const colorClass = taxonomy.colorClass.split(' ')[0]; // Get just the base color class
         colorIndicator.style.backgroundColor = this.getColorFromClass(colorClass);
       }
       
-      // Create label with formatted text
-      const label = document.createElement('span');
-      label.className = 'truncate';
-      label.textContent = taxonomy.displayName || taxonomy.key.replace(/_/g, ' ')
-        .replace(/\b\w/g, l => l.toUpperCase());
+      // Item name
+      const nameEl = document.createElement('span');
+      nameEl.className = 'text-sm text-gray-800';
+      nameEl.textContent = taxonomy.displayName || taxonomy.key;
       
-      // Add elements to item
-      item.appendChild(colorIndicator);
-      item.appendChild(label);
-      
-      // Add hover effect
-      item.addEventListener('mouseenter', () => {
-        item.style.backgroundColor = 'rgba(0, 0, 0, 0.04)';
-      });
-      
-      item.addEventListener('mouseleave', () => {
-        item.style.backgroundColor = '';
-      });
+      // Assemble the item
+      itemEl.appendChild(colorIndicator);
+      itemEl.appendChild(nameEl);
       
       // Add click handler
-      item.addEventListener('click', (e) => {
+      itemEl.addEventListener('click', (e) => {
         e.stopPropagation();
         this.highlightSelection(taxonomy.key);
         this.hideContextMenu();
       });
       
-      highlightOptions.appendChild(item);
+      itemsContainer.appendChild(itemEl);
     });
-
-    // Add close button handler if it exists
-    const closeBtn = this.contextMenu.querySelector('#close-context-menu');
-    if (closeBtn) {
-      closeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.hideContextMenu();
-      });
-    }
-
+    
+    // Add the items container to the menu
+    highlightOptions.appendChild(itemsContainer);
+    
+    // Add a close button at the bottom
+    const closeButton = document.createElement('div');
+    closeButton.className = 'flex items-center justify-center py-2 px-3 bg-gray-50 text-gray-600 hover:bg-gray-100 cursor-pointer mt-2 rounded-b-md';
+    closeButton.innerHTML = `
+      <i class="fas fa-times mr-2"></i>
+      <span>Close</span>
+    `;
+    closeButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.hideContextMenu();
+    });
+    highlightOptions.appendChild(closeButton);
+    
     console.log('Context menu updated with taxonomies:', this.taxonomies);
   }
 
@@ -435,36 +495,63 @@ class TextHighlighter {
     // Reset taxonomies and colors
     this.taxonomies = [];
     this.taxonomyColors = {};
+    this.uniqueTaxonomyItems = new Set(); // Store all unique taxonomy items
     
-    // Default taxonomy categories
-    const defaultTaxonomies = [
-      'key_concept',
-      'important_quote',
-      'research_finding',
-      'methodology',
-      'limitation',
-      'recommendation',
-      'future_work'
-    ];
-    
-    // Always use default taxonomies for now
-    const taxonomiesToUse = defaultTaxonomies;
-    
-    // Convert to array and assign colors
-    this.taxonomies = taxonomiesToUse.map((key, index) => {
-      const colorClass = this.colorPalette[index % this.colorPalette.length];
-      this.taxonomyColors[key] = colorClass;
-      
-      // Format the display name
-      const displayName = key
-        .split('_')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(' ');
-      
-      return { key, displayName, colorClass };
+    // Collect all unique taxonomy items from all documents
+    documents.forEach(doc => {
+      if (doc.enrichment?.taxonomy) {
+        Object.values(doc.enrichment.taxonomy).forEach(items => {
+          if (Array.isArray(items) && items.length > 0) {
+            items.forEach(item => {
+              if (item && typeof item === 'string') {
+                this.uniqueTaxonomyItems.add(item.trim());
+              }
+            });
+          }
+        });
+      }
     });
     
+    // Convert Set to Array and sort alphabetically
+    const sortedItems = Array.from(this.uniqueTaxonomyItems).sort();
+    
+    // Assign colors to items based on their position in the color palette
+    sortedItems.forEach((item, index) => {
+      const colorClass = this.colorPalette[index % this.colorPalette.length];
+      this.taxonomyColors[item] = colorClass;
+      
+      this.taxonomies.push({
+        key: item,
+        displayName: item,
+        colorClass: colorClass
+      });
+    });
+    
+    // If no taxonomies were found, use a default set
+    if (this.taxonomies.length === 0) {
+      console.log('No taxonomies found in documents, using default items');
+      const defaultItems = [
+        'Key Concept',
+        'Important Quote',
+        'Research Finding',
+        'Methodology',
+        'Limitation',
+        'Recommendation'
+      ];
+      
+      this.taxonomies = defaultItems.map((item, index) => {
+        const colorClass = this.colorPalette[index % this.colorPalette.length];
+        this.taxonomyColors[item] = colorClass;
+        return { 
+          key: item.toLowerCase().replace(/\s+/g, '_'),
+          displayName: item,
+          colorClass: colorClass
+        };
+      });
+    }
+    
     console.log('Processed taxonomies:', this.taxonomies);
+    console.log('Taxonomy items:', this.taxonomyItems);
     
     // Update the context menu if the method exists
     if (typeof this.updateContextMenu === 'function') {
@@ -476,15 +563,30 @@ class TextHighlighter {
     return this.taxonomies;
   }
 
-  highlightSelection(category) {
-    console.log('Highlighting selection with category:', category);
+  /**
+   * Handles highlighting the selected text with the specified category and item
+   * @param {string|Object} category - The category key or an object containing category and item
+   * @param {string} [item] - Optional item within the category (if not provided in the category object)
+   */
+  highlightSelection(category, item) {
+    console.log('Highlighting selection with:', { category, item });
     
     if (!this.currentSelection) {
       console.log('No current selection');
       return;
     }
     
-    if (!category) {
+    // Handle both object and string parameters for backward compatibility
+    let categoryKey, categoryItem;
+    if (typeof category === 'object' && category !== null) {
+      categoryKey = category.category;
+      categoryItem = category.item;
+    } else {
+      categoryKey = category;
+      categoryItem = item;
+    }
+    
+    if (!categoryKey) {
       console.log('No category provided');
       return;
     }
@@ -492,7 +594,7 @@ class TextHighlighter {
     try {
       // Use the preserved selection from currentSelection
       const { range: savedRange, text: selectedText } = this.currentSelection;
-      console.log('Highlighting selection with category:', category);
+      console.log('Highlighting selection with category:', categoryKey, 'item:', categoryItem);
       
       if (!savedRange) {
         console.log('No saved range in selection');
@@ -506,14 +608,45 @@ class TextHighlighter {
         return;
       }
       
+      // Get the color for this category
+      const colorClass = this.taxonomyColors[categoryKey] || 'bg-gray-100';
+      const bgColor = this.getColorFromClass(colorClass.split(' ')[0]);
+      
+      // Create a unique ID for this highlight
+      const highlightId = `highlight-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      
       // Create a new range from the saved range with error handling
       let range;
       let parentElement;
+      let highlightSpan;
       
       try {
         range = document.createRange();
         range.setStart(savedRange.startContainer, savedRange.startOffset);
         range.setEnd(savedRange.endContainer, savedRange.endOffset);
+        
+        // Create a span element to wrap the highlighted text
+        highlightSpan = document.createElement('span');
+        highlightSpan.className = `highlight ${colorClass} px-0.5 rounded`;
+        highlightSpan.style.backgroundColor = bgColor;
+        highlightSpan.dataset.highlightId = highlightId;
+        highlightSpan.dataset.category = categoryKey;
+        
+        // Add item data if provided
+        if (categoryItem) {
+          highlightSpan.dataset.item = categoryItem;
+        }
+        
+        // Store metadata for the highlight
+        highlightSpan.dataset.metadata = JSON.stringify({
+          category: categoryKey,
+          item: categoryItem || null,
+          text: selectedText,
+          timestamp: new Date().toISOString()
+        });
+        
+        // Apply the highlight
+        range.surroundContents(highlightSpan);
         
         // Get the parent element that contains the selection
         parentElement = range.commonAncestorContainer.nodeType === Node.TEXT_NODE 
@@ -524,125 +657,39 @@ class TextHighlighter {
         if (!parentElement || !parentElement.nodeType) {
           throw new Error('Invalid parent element');
         }
-      } catch (error) {
-        console.error('Error creating range or finding parent element:', error);
-        return; // Exit if we can't create a valid range
-      }
-      
-      // If the parent is already a highlight, don't nest highlights
-      if (parentElement.classList?.contains('text-highlight')) {
-        console.log('Cannot highlight inside an existing highlight');
-        return;
-      }
-      
-      // Save the HTML content before modification
-      const beforeHTML = parentElement.innerHTML;
-      
-      try {
-        // Create a new range for the exact selection
-        const highlightRange = document.createRange();
-        
-        // Ensure we have valid range boundaries
-        if (!range.startContainer || !range.endContainer) {
-          throw new Error('Invalid range boundaries');
+
+        // If the parent is already a highlight, don't nest highlights
+        if (parentElement.classList?.contains('highlight')) {
+          console.log('Cannot highlight inside an existing highlight');
+          return;
         }
         
-        // Set the range with error handling
-        try {
-          highlightRange.setStart(range.startContainer, range.startOffset);
-          highlightRange.setEnd(range.endContainer, range.endOffset);
-        } catch (error) {
-          console.error('Error setting range boundaries:', error);
-          throw new Error('Failed to set range boundaries');
-        }
-        
-        // Create the highlight element
-        const highlight = document.createElement('span');
-        const colorClass = this.taxonomyColors[category] || this.colorPalette[0].split(' ')[0];
-        
-        // Apply the taxonomy-highlight class and the specific color class
-        highlight.className = 'taxonomy-highlight text-highlight';
-        highlight.setAttribute('data-category', category);
-        highlight.setAttribute('title', category);
-        
-        // Set the background color based on the color class
-        const colorMap = {
-          'bg-blue-100': '#dbeafe',
-          'bg-green-100': '#d1fae5',
-          'bg-yellow-100': '#fef9c3',
-          'bg-red-100': '#fee2e2',
-          'bg-purple-100': '#f3e8ff',
-          'bg-pink-100': '#fce7f3',
-          'bg-indigo-100': '#e0e7ff'
-        };
-        
-        const bgColor = colorMap[colorClass] || '#e0e7ff';
-        highlight.style.backgroundColor = bgColor;
-        
-        // Extract the selected content
-        const selectedContent = highlightRange.extractContents();
-        
-        // Add the selected content to our highlight
-        highlight.appendChild(selectedContent);
-        
-        // Insert the highlight at the selection position
-        highlightRange.insertNode(highlight);
-        
-        // Get the HTML after modification
-        const afterHTML = parentElement.innerHTML;
-        
-        // Create a unique ID for this highlight
-        const highlightId = 'hl-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-        highlight.dataset.highlightId = highlightId;
-        
-        // Add to history for undo/redo
+        // Add to history for undo functionality
         this.addToHistory({
           type: 'add',
           id: highlightId,
-          element: highlight,
-          text: selectedText || '',
-          category: category || 'uncategorized',
-          parentElement: parentElement,
-          beforeHTML: beforeHTML,
-          afterHTML: afterHTML,
-          timestamp: Date.now()
+          element: highlightSpan,
+          category: categoryKey,
+          item: categoryItem,
+          text: selectedText
         });
         
-        // Force a reflow to ensure the highlight is rendered
-        void highlight.offsetHeight;
-        
-        // Log the highlight for debugging
-        console.log('Highlight applied:', {
-          element: highlight,
-          text: selectedText,
-          category: category,
-          parent: highlight.parentElement,
-          html: highlight.outerHTML
-        });
-        
-        // Clear the current selection and hide context menu
-        window.getSelection().removeAllRanges();
-        this.currentSelection = null;
-        this.hideContextMenu();
-        
-        console.log('Successfully highlighted text:', `"${selectedText}"`);
-        
-        // Dispatch a custom event that other parts of the app can listen for
-        const event = new CustomEvent('highlight-added', {
-          detail: {
-            element: highlight,
-            text: selectedText,
-            category: category
-          }
-        });
-        document.dispatchEvent(event);
-        
-      } catch (error) {
-        console.error('Error during highlight operation:', error);
-        // Restore the original content if something went wrong
-        if (parentElement && beforeHTML) {
-          parentElement.innerHTML = beforeHTML;
+        // Clear the current selection
+        if (window.getSelection) {
+          const selection = window.getSelection();
+          selection.removeAllRanges();
         }
+        
+        // Clear the current selection reference
+        this.currentSelection = null;
+        
+        // Save the highlights
+        this.saveHighlights();
+        
+        console.log(`Highlighted text with category: ${categoryKey}${categoryItem ? ` and item: ${categoryItem}` : ''}`);
+      } catch (error) {
+        console.error('Error creating highlight:', error);
+        return; // Exit if we can't create a valid highlight
       }
     } catch (error) {
       console.error('Error in highlightSelection:', error);
@@ -1013,6 +1060,26 @@ function initTextHighlighter() {
     if (!contextMenu) {
       console.error('Context menu element not found');
       return;
+    }
+    
+    // Add event listener for the close button in the header
+    const closeButton = contextMenu.querySelector('.context-menu__close-btn');
+    if (closeButton) {
+      closeButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const highlighter = window.textHighlighter;
+        if (highlighter) {
+          highlighter.hideContextMenu();
+        }
+      });
+    } else {
+      console.warn('Close button not found in context menu header');
+    }
+    
+    // Check if document content exists
+    const documentContent = document.querySelector('.document-content, #document-content, .content, #content');
+    if (!documentContent) {
+      console.warn('Document content element not found, text selection may not work');
     }
     
     // Initialize the highlighter

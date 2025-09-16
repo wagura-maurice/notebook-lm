@@ -582,10 +582,18 @@ document.addEventListener("DOMContentLoaded", async function () {
     renderTaxonomy(taxonomyData);
     
     // Update the text highlighter with taxonomy data
-    if (window.textHighlighter) {
-      window.textHighlighter.processTaxonomyData(documents);
-      console.log('Updated text highlighter with taxonomy data');
-    }
+    const updateHighlighterWithData = () => {
+      if (window.textHighlighter && typeof window.textHighlighter.processTaxonomyData === 'function') {
+        window.textHighlighter.processTaxonomyData(documents);
+        console.log('Updated text highlighter with taxonomy data');
+      } else {
+        console.log('Text highlighter not ready yet, retrying in 100ms...');
+        setTimeout(updateHighlighterWithData, 100);
+      }
+    };
+    
+    // Start the update process
+    updateHighlighterWithData();
     
     // Update document info with the latest document
     const latestDoc = documents.sort((a, b) => new Date(b._ts) - new Date(a._ts))[0];
