@@ -75,7 +75,7 @@ function highlightTaxonomyTerms(text, taxonomy) {
     // Add tooltip
     const tooltip = document.createElement('span');
     tooltip.className = 'taxonomy-tooltip';
-    tooltip.textContent = match.category.replace(/_/g, ' ');
+    tooltip.textContent = match.category.replace(/_/g, ' ').replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     span.appendChild(tooltip);
     
     fragment.appendChild(span);
