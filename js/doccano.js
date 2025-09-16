@@ -716,8 +716,8 @@ function populateDocumentInfo(data) {
   // Update document model in both columns
   const modelElements = document.querySelectorAll(".document-model");
   modelElements.forEach(el => {
-    if (data.model) {
-      el.textContent = data.model;
+    if (data.enrichment._model) {
+      el.textContent = data.enrichment._model;
     }
   });
 
