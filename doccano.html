@@ -315,23 +315,23 @@
           class="mobile-tab-content w-full lg:w-72 bg-eu-white text-text-primary transition-all duration-300 flex flex-col rounded-lg lg:block hidden"
         >
           <!-- Expanded view -->
-          <div class="flex flex-col h-full expanded-content">
-            <!-- Header -->
-            <div
-              class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
-            >
-              <h2 class="text-lg font-semibold">Guide</h2>
-              <button
-                id="collapse-left"
-                class="text-eu-blue text-lg hover:text-eu-orange"
-                title="Collapse guide"
-              >
-                <i class="fas fa-chevron-left"></i>
-              </button>
+          <div class="flex flex-col h-full">
+            <!-- Fixed Header -->
+            <div class="flex-shrink-0 bg-white z-10">
+              <div class="flex items-center justify-between px-5 py-3 border-b border-eu-blue">
+                <h2 class="text-lg font-semibold">Guide</h2>
+                <button
+                  id="collapse-left"
+                  class="text-eu-blue text-lg hover:text-eu-orange"
+                  title="Collapse guide"
+                >
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+              </div>
             </div>
 
-            <!-- Guide Content -->
-            <div class="flex-1 overflow-y-auto p-4 scrollbar-transparent" id="guide-content">
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto p-4" id="guide-content">
               <!-- Document Info -->
               <div class="mb-6 bg-eu-blue/5 p-4 rounded-lg">
                 <div class="text-sm text-eu-blue mb-2 font-medium document-title">Loading document...</div>
@@ -514,21 +514,23 @@
           class="mobile-tab-content w-full lg:w-16 lg:hover:w-80 bg-eu-white text-text-primary border-l border-eu-blue transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)] lg:block hidden"
         >
           <!-- Expanded view -->
-          <div class="flex flex-col h-full expanded-content">
-            <!-- Header -->
-            <div
-              class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
-            >
-              <h2 class="text-lg font-semibold lg:block hidden">Annotation</h2>
-              <button
-                id="collapse-right"
-                class="text-eu-blue text-lg hover:text-eu-orange"
-              >
-                <i class="fas fa-chevron-right"></i>
-              </button>
+          <div class="flex flex-col h-full">
+            <!-- Fixed Header -->
+            <div class="flex-shrink-0 bg-white z-10">
+              <div class="flex items-center justify-between px-5 py-3 border-b border-eu-blue">
+                <h2 class="text-lg font-semibold">Annotation</h2>
+                <button
+                  id="collapse-right"
+                  class="text-eu-blue text-lg hover:text-eu-orange"
+                  title="Collapse panel"
+                >
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
             </div>
 
-            <div class="flex-1 w-full overflow-y-auto bg-eu-white scrollbar-transparent p-4">
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto p-4">
               <!-- Document Info -->
               <div class="mb-6 bg-eu-blue/5 p-4 rounded-lg">
                 <div class="text-sm text-eu-blue mb-2 font-medium document-title">Loading document...</div>
