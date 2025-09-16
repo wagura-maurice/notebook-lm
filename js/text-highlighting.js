@@ -403,15 +403,21 @@ class TextHighlighter {
         // Get the HTML after modification
         const afterHTML = parentElement.innerHTML;
         
+        // Create a unique ID for this highlight
+        const highlightId = 'hl-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        highlight.dataset.highlightId = highlightId;
+        
         // Add to history for undo/redo
         this.addToHistory({
           type: 'add',
+          id: highlightId,
           element: highlight,
-          text: selectedText,
-          category: category,
+          text: selectedText || '',
+          category: category || 'uncategorized',
           parentElement: parentElement,
           beforeHTML: beforeHTML,
-          afterHTML: afterHTML
+          afterHTML: afterHTML,
+          timestamp: Date.now()
         });
         
         // Force a reflow to ensure the highlight is rendered
@@ -456,60 +462,76 @@ class TextHighlighter {
 
   removeHighlight(element = null) {
     try {
-      const target = element || 
-                   (window.getSelection().anchorNode?.parentElement?.closest('.text-highlight')) ||
-                   document.querySelector('.text-highlight:focus');
+      const highlight = element || 
+                      (window.getSelection().anchorNode?.parentElement?.closest('.text-highlight')) ||
+                      document.querySelector('.text-highlight:focus');
       
-      if (!target || !target.classList.contains('text-highlight')) {
+      if (!highlight || !highlight.classList.contains('text-highlight')) {
         console.log('No highlight element found to remove');
         return;
       }
       
-      console.log('Removing highlight:', {
-        element: target,
-        text: target.textContent,
-        category: target.dataset.category
-      });
+      const parent = highlight.parentNode;
+      if (!parent) {
+        console.warn('Highlight has no parent node');
+        return;
+      }
       
-      // Get parent element for history
-      const parentElement = target.parentNode;
-      const beforeHTML = parentElement.innerHTML;
+      // Store the highlight's HTML before removal
+      const beforeHTML = parent.innerHTML;
+      const highlightId = highlight.dataset.highlightId || 'unknown';
+      const category = highlight.dataset.category || 'uncategorized';
+      const textContent = highlight.textContent || '';
       
-      // Create a text node with the same content
-      const textNode = document.createTextNode(target.textContent);
+      // Create a text node with the highlight's content
+      const textNode = document.createTextNode(textContent);
       
       // Replace the highlight with the text node
-      parentElement.replaceChild(textNode, target);
+      parent.replaceChild(textNode, highlight);
+      
+      // Normalize the parent to merge adjacent text nodes
+      parent.normalize();
+      
+      // Get the HTML after modification
+      const afterHTML = parent.innerHTML;
       
       // Add to history for undo/redo
       this.addToHistory({
         type: 'remove',
-        element: target,
-        text: target.textContent,
-        category: target.dataset.category,
-        parentElement: parentElement,
+        id: highlightId,
+        element: highlight,
+        text: textContent,
+        category: category,
+        parentElement: parent,
         beforeHTML: beforeHTML,
-        afterHTML: parentElement.innerHTML
+        afterHTML: afterHTML,
+        timestamp: Date.now()
       });
       
-      console.log('Highlight removed successfully');
+      console.log('Highlight removed successfully', { id: highlightId, category, text: textContent });
     } catch (error) {
       console.error('Error removing highlight:', error);
+      throw error; // Re-throw to allow caller to handle if needed
     }
   }
 
   addToHistory(action) {
     try {
-      console.log('Adding to history:', {
-        type: action.type,
-        text: action.text,
-        category: action.category
-      });
-      
       // Ensure we have a valid action
       if (!action || typeof action !== 'object') {
         throw new Error('Invalid action provided to addToHistory');
       }
+      
+      // Ensure required action properties exist
+      if (typeof action.type !== 'string') {
+        throw new Error('Action type is required and must be a string');
+      }
+      
+      console.log('Adding to history:', {
+        type: action.type,
+        text: action.text || '',
+        category: action.category || 'unknown'
+      });
       
       // Initialize history array if it doesn't exist
       if (!Array.isArray(this.highlightHistory)) {
@@ -536,7 +558,7 @@ class TextHighlighter {
       // Update the undo/redo buttons
       this.updateUndoRedoButtons();
       
-      console.log('History updated:', this.history.length, 'items, current index:', this.historyIndex);
+      console.log('History updated:', this.highlightHistory.length, 'items, current index:', this.historyIndex);
     } catch (error) {
       console.error('Error adding to history:', error);
     }
@@ -614,41 +636,101 @@ class TextHighlighter {
   }
 
   undoAddHighlight(action) {
-    const { element } = action;
-    if (element.parentNode) {
-      const textNode = document.createTextNode(element.textContent);
-      element.parentNode.replaceChild(textNode, element);
+    try {
+      const { element, parentElement, beforeHTML } = action;
+      if (!parentElement) {
+        console.warn('No parent element in action for undoAddHighlight');
+        return;
+      }
+      
+      // Restore the parent's HTML to the state before the highlight was added
+      parentElement.innerHTML = beforeHTML;
+      
+      console.log('Undo add highlight:', {
+        id: action.id,
+        text: action.text,
+        category: action.category
+      });
+    } catch (error) {
+      console.error('Error in undoAddHighlight:', error);
+      throw error;
     }
   }
 
   undoRemoveHighlight(action) {
-    const { element, category } = action;
-    const highlight = document.createElement('span');
-    highlight.className = `text-highlight ${category}`;
-    highlight.setAttribute('data-category', category);
-    highlight.textContent = action.text;
-    
-    if (element.parentNode) {
-      element.parentNode.replaceChild(highlight, element);
+    try {
+      const { element, parentElement, afterHTML } = action;
+      if (!parentElement) {
+        console.warn('No parent element in action for undoRemoveHighlight');
+        return;
+      }
+      
+      // Restore the parent's HTML to the state before the highlight was removed
+      if (element && element.parentNode) {
+        // If we have the original element, re-insert it
+        parentElement.replaceChild(element, parentElement.firstChild);
+      } else if (afterHTML) {
+        // Fallback to using the stored HTML
+        parentElement.innerHTML = afterHTML;
+      }
+      
+      console.log('Undo remove highlight:', {
+        id: action.id,
+        text: action.text,
+        category: action.category
+      });
+    } catch (error) {
+      console.error('Error in undoRemoveHighlight:', error);
+      throw error;
     }
   }
 
   redoAddHighlight(action) {
-    const { element, category, text } = action;
-    const highlight = document.createElement('span');
-    highlight.className = `text-highlight ${category}`;
-    highlight.setAttribute('data-category', category);
-    highlight.textContent = text;
-    
-    if (element.parentNode) {
-      element.parentNode.replaceChild(highlight, element);
+    try {
+      const { parentElement, afterHTML } = action;
+      if (!parentElement) {
+        console.warn('No parent element in action for redoAddHighlight');
+        return;
+      }
+      
+      // Restore the parent's HTML to the state after the highlight was added
+      if (afterHTML) {
+        parentElement.innerHTML = afterHTML;
+      }
+      
+      console.log('Redo add highlight:', {
+        id: action.id,
+        text: action.text,
+        category: action.category
+      });
+    } catch (error) {
+      console.error('Error in redoAddHighlight:', error);
+      throw error;
     }
   }
-
+  
   redoRemoveHighlight(action) {
-    const { element } = action;
-    const textNode = document.createTextNode(element.textContent);
-    element.parentNode.replaceChild(textNode, element);
+    try {
+      const { parentElement, beforeHTML } = action;
+      if (!parentElement) {
+        console.warn('No parent element in action for redoRemoveHighlight');
+        return;
+      }
+      
+      // Restore the parent's HTML to the state before the highlight was removed
+      if (beforeHTML) {
+        parentElement.innerHTML = beforeHTML;
+      }
+      
+      console.log('Redo remove highlight:', {
+        id: action.id,
+        text: action.text,
+        category: action.category
+      });
+    } catch (error) {
+      console.error('Error in redoRemoveHighlight:', error);
+      throw error;
+    }
   }
 
   getHighlightData() {
