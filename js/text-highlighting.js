@@ -188,37 +188,35 @@ class TextHighlighter {
         return;
       }
       
-      let { rect, range } = this.currentSelection;
+      // Make sure the context menu is in the document flow but hidden
+      this.contextMenu.style.display = 'block';
+      this.contextMenu.style.visibility = 'hidden';
+      this.contextMenu.classList.add('visible');
       
-      // Ensure we have a valid range
-      if (!range && window.getSelection().rangeCount > 0) {
-        range = window.getSelection().getRangeAt(0);
-        this.currentSelection.range = range;
+      // Get the selection and its position
+      const selection = window.getSelection();
+      if (selection.rangeCount === 0) {
+        console.log('No selection range found');
+        return;
       }
       
-      // If no valid selection rect, try to get it from the range
-      if ((!rect || (rect.width === 0 && rect.height === 0)) && range) {
-        try {
-          const rangeRect = range.getBoundingClientRect();
-          if (rangeRect.width > 0 || rangeRect.height > 0) {
-            this.currentSelection.rect = rangeRect;
-            rect = rangeRect; // Update local reference
-          } else {
-            // Try getting the client rects of the range
-            const clientRects = range.getClientRects();
-            if (clientRects.length > 0) {
-              this.currentSelection.rect = clientRects[0];
-              rect = clientRects[0];
-            }
-          }
-        } catch (error) {
-          console.error('Error getting selection rectangle:', error);
-        }
+      const range = selection.getRangeAt(0);
+      const selectionRect = range.getBoundingClientRect();
+      
+      // If we don't have valid dimensions, try to get from the first client rect
+      let clientRects;
+      try {
+        clientRects = range.getClientRects();
+      } catch (error) {
+        console.error('Error getting client rects:', error);
+        clientRects = [];
       }
       
-      // If we still don't have a valid rect, try to use the event position
+      const rect = clientRects.length > 0 ? clientRects[0] : selectionRect;
+      
+      // If we still don't have valid dimensions, use the event position
       if ((!rect || (rect.width === 0 && rect.height === 0)) && e) {
-        this.currentSelection.rect = {
+        rect = {
           left: e.clientX,
           top: e.clientY,
           right: e.clientX,
@@ -226,65 +224,62 @@ class TextHighlighter {
           width: 0,
           height: 0
         };
-        rect = this.currentSelection.rect;
       }
       
-      // Calculate menu position
-      const menuRect = this.contextMenu.getBoundingClientRect();
+      // Calculate viewport dimensions
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
       const scrollX = window.scrollX || document.documentElement.scrollLeft;
       const scrollY = window.scrollY || document.documentElement.scrollTop;
       
-      // Use the stored rect or fallback to event position
-      const selectionRect = this.currentSelection.rect || { 
-        left: e?.clientX || 0, 
-        top: e?.clientY || 0,
-        width: 0,
-        height: 0,
-        bottom: e?.clientY || 0,
-        right: (e?.clientX || 0) + 100
-      };
+      // Get menu dimensions
+      const menuWidth = 240; // Fixed width from CSS
+      const menuHeight = this.contextMenu.offsetHeight;
       
-      // Position the menu below the selection by default
-      let left = selectionRect.left + scrollX;
-      let top = selectionRect.bottom + scrollY + 5; // 5px below selection
-      
-      console.log('Positioning context menu:', { left, top, selectionRect, scrollX, scrollY });
+      // Calculate initial position (below selection by default)
+      let left = rect.left + scrollX;
+      let top = rect.bottom + scrollY + 5; // 5px below selection
       
       // Adjust if too close to right edge
-      if (left + menuRect.width > viewportWidth + scrollX) {
-        left = Math.max(10, viewportWidth + scrollX - menuRect.width - 10); // 10px margin
+      if (left + menuWidth > viewportWidth + scrollX) {
+        left = Math.max(10, viewportWidth + scrollX - menuWidth - 10);
       }
       
       // Adjust if too close to bottom
-      if (top + menuRect.height > viewportHeight + scrollY) {
-        // Show above selection if there's not enough space below
-        top = selectionRect.top + scrollY - menuRect.height - 5; // 5px above selection
-        
-        // If still not enough space, show at top of viewport
-        if (top < scrollY) {
+      if (top + menuHeight > viewportHeight + scrollY) {
+        // Try to show above the selection
+        const spaceAbove = rect.top - 10; // 10px margin from top
+        if (spaceAbove > menuHeight) {
+          // Enough space above
+          top = rect.top + scrollY - menuHeight - 5;
+        } else {
+          // Not enough space above, show at top of viewport
           top = scrollY + 10;
         }
       }
       
       // Ensure minimum distance from edges
-      left = Math.max(10, Math.min(left, viewportWidth + scrollX - menuRect.width - 10));
-      top = Math.max(10, Math.min(top, viewportHeight + scrollY - menuRect.height - 10));
+      left = Math.max(10, Math.min(left, viewportWidth + scrollX - menuWidth - 10));
+      top = Math.max(10, Math.min(top, viewportHeight + scrollY - menuHeight - 10));
       
-      // Apply position and show menu
+      // Apply position and make visible
       this.contextMenu.style.left = `${left}px`;
       this.contextMenu.style.top = `${top}px`;
-      this.contextMenu.style.display = 'block';
-      this.contextMenu.classList.add('visible');
+      this.contextMenu.style.visibility = 'visible';
       
-      console.log('Context menu shown at:', { left, top });
+      // Add a small delay to ensure the menu is in the DOM before adding transition
+      requestAnimationFrame(() => {
+        this.contextMenu.classList.add('context-menu--visible');
+      });
       
-      // Prevent the context menu from closing immediately
+      // Prevent default context menu
       if (e) {
         e.preventDefault();
         e.stopPropagation();
       }
+      
+      // Update debug info
+      this.updateDebugInfo(left, top);
     } catch (error) {
       console.error('Error showing context menu:', error);
     }
@@ -309,37 +304,112 @@ class TextHighlighter {
    * Updates the context menu with available taxonomy options
    */
   updateContextMenu() {
+    console.log('updateContextMenu called');
+    
     if (!this.contextMenu) {
-      console.warn('Context menu element not found');
+      console.error('Context menu element not found');
       return;
     }
-
-    // Clear existing taxonomy items
-    const existingItems = this.contextMenu.querySelectorAll('.taxonomy-item');
-    existingItems.forEach(item => item.remove());
-
-    // Add taxonomy items
+    
+    const highlightOptions = this.contextMenu.querySelector('.highlight-options');
+    if (!highlightOptions) {
+      console.error('Highlight options container not found in context menu');
+      return;
+    }
+    
+    // Clear existing options
+    highlightOptions.innerHTML = '';
+    
+    console.log('Current taxonomies:', this.taxonomies);
+    
+    // Show loading state if no taxonomies are available
+    if (!this.taxonomies || this.taxonomies.length === 0) {
+      console.log('No taxonomies available, showing loading state');
+      const loadingEl = document.createElement('div');
+      loadingEl.className = 'context-menu__loading';
+      loadingEl.innerHTML = `
+        <i class="fas fa-spinner fa-spin mr-2"></i>
+        <span>Loading categories...</span>
+      `;
+      highlightOptions.appendChild(loadingEl);
+      return;
+    }
+    
+    // Add taxonomy items with improved styling
     this.taxonomies.forEach(taxonomy => {
       const item = document.createElement('div');
       item.className = 'taxonomy-item';
-      item.textContent = taxonomy.displayName || taxonomy.key;
+      item.dataset.category = taxonomy.key;
+      
+      // Create color indicator
+      const colorIndicator = document.createElement('span');
+      colorIndicator.className = 'w-4 h-4 rounded-full mr-3 flex-shrink-0';
       
       // Set the color for this taxonomy
       if (taxonomy.colorClass) {
         const colorClass = taxonomy.colorClass.split(' ')[0]; // Get just the base color class
-        item.style.backgroundColor = this.getColorFromClass(colorClass);
+        colorIndicator.style.backgroundColor = this.getColorFromClass(colorClass);
       }
       
+      // Create label with formatted text
+      const label = document.createElement('span');
+      label.className = 'truncate';
+      label.textContent = taxonomy.displayName || taxonomy.key.replace(/_/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase());
+      
+      // Add elements to item
+      item.appendChild(colorIndicator);
+      item.appendChild(label);
+      
+      // Add hover effect
+      item.addEventListener('mouseenter', () => {
+        item.style.backgroundColor = 'rgba(0, 0, 0, 0.04)';
+      });
+      
+      item.addEventListener('mouseleave', () => {
+        item.style.backgroundColor = '';
+      });
+      
+      // Add click handler
       item.addEventListener('click', (e) => {
         e.stopPropagation();
         this.highlightSelection(taxonomy.key);
         this.hideContextMenu();
       });
       
-      this.contextMenu.insertBefore(item, this.contextMenu.lastElementChild);
+      highlightOptions.appendChild(item);
     });
 
+    // Add close button handler if it exists
+    const closeBtn = this.contextMenu.querySelector('#close-context-menu');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.hideContextMenu();
+      });
+    }
+
     console.log('Context menu updated with taxonomies:', this.taxonomies);
+  }
+
+  /**
+   * Updates the debug information in the context menu
+   * @param {number} left - The left position of the context menu
+   * @param {number} top - The top position of the context menu
+   */
+  updateDebugInfo(left, top) {
+    if (!this.contextMenu) return;
+    
+    const statusEl = this.contextMenu.querySelector('#context-menu-status');
+    const positionEl = this.contextMenu.querySelector('#context-menu-position');
+    
+    if (statusEl) {
+      statusEl.textContent = 'Ready';
+    }
+    
+    if (positionEl && left !== undefined && top !== undefined) {
+      positionEl.textContent = `${Math.round(left)}, ${Math.round(top)}`;
+    }
   }
 
   /**
@@ -366,7 +436,7 @@ class TextHighlighter {
     this.taxonomies = [];
     this.taxonomyColors = {};
     
-    // Default taxonomy categories to use if none are found in documents
+    // Default taxonomy categories
     const defaultTaxonomies = [
       'key_concept',
       'important_quote',
@@ -377,50 +447,31 @@ class TextHighlighter {
       'future_work'
     ];
     
-    let foundTaxonomies = new Set();
-    
-    // Try to extract taxonomies from documents if they exist
-    if (documents && documents.length > 0) {
-      documents.forEach(doc => {
-        if (doc.enrichment?.taxonomy) {
-          // The taxonomy data is an object with category keys and array values
-          Object.entries(doc.enrichment.taxonomy).forEach(([category, items]) => {
-            if (Array.isArray(items) && items.length > 0) {
-              // Only add non-empty taxonomy categories
-              foundTaxonomies.add(category);
-            }
-          });
-        }
-      });
-    }
-    
-    // Use default taxonomies if none were found in documents
-    const taxonomiesToUse = foundTaxonomies.size > 0 
-      ? Array.from(foundTaxonomies) 
-      : defaultTaxonomies;
+    // Always use default taxonomies for now
+    const taxonomiesToUse = defaultTaxonomies;
     
     // Convert to array and assign colors
     this.taxonomies = taxonomiesToUse.map((key, index) => {
       const colorClass = this.colorPalette[index % this.colorPalette.length];
       this.taxonomyColors[key] = colorClass;
       
-      // Format the display name by splitting on underscores and capitalizing each word
+      // Format the display name
       const displayName = key
         .split('_')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
         .join(' ');
       
-      return {
-        key,
-        displayName,
-        colorClass
-      };
+      return { key, displayName, colorClass };
     });
     
     console.log('Processed taxonomies:', this.taxonomies);
     
-    // Update the context menu with new taxonomies
-    this.updateContextMenu();
+    // Update the context menu if the method exists
+    if (typeof this.updateContextMenu === 'function') {
+      this.updateContextMenu();
+    } else {
+      console.error('updateContextMenu method is not defined');
+    }
     
     return this.taxonomies;
   }
@@ -441,6 +492,7 @@ class TextHighlighter {
     try {
       // Use the preserved selection from currentSelection
       const { range: savedRange, text: selectedText } = this.currentSelection;
+      console.log('Highlighting selection with category:', category);
       
       if (!savedRange) {
         console.log('No saved range in selection');
@@ -966,6 +1018,15 @@ function initTextHighlighter() {
     // Initialize the highlighter
     window.textHighlighter = new TextHighlighter();
     console.log('TextHighlighter initialized successfully');
+    
+    // Initialize with default taxonomies
+    setTimeout(() => {
+      console.log('Initializing default taxonomies...');
+      window.textHighlighter.processTaxonomyData([]);
+      
+      // Verify taxonomies were loaded
+      console.log('Current taxonomies:', window.textHighlighter.taxonomies);
+    }, 100);
     
     // Setup toolbar buttons
     function setupButton(selector, handler) {
