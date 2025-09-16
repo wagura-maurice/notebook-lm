@@ -2,7 +2,7 @@
 async function loadNDJSONData() {
   try {
     const response = await fetch(
-      "/assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson"
+      "./assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson"
     );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
