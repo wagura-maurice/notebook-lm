@@ -4,6 +4,19 @@ class TextHighlighter {
     this.currentSelection = null;
     this.highlightHistory = [];
     this.historyIndex = -1;
+    this.taxonomies = [];
+    this.taxonomyColors = {}; // Store color mapping for taxonomies
+    
+    // Default color palette for taxonomies
+    this.colorPalette = [
+      'bg-blue-100 text-blue-800 border-blue-300',
+      'bg-green-100 text-green-800 border-green-300',
+      'bg-yellow-100 text-yellow-800 border-yellow-300',
+      'bg-red-100 text-red-800 border-red-300',
+      'bg-purple-100 text-purple-800 border-purple-300',
+      'bg-pink-100 text-pink-800 border-pink-300',
+      'bg-indigo-100 text-indigo-800 border-indigo-300'
+    ];
     
     this.initializeEventListeners();
   }
@@ -21,6 +34,18 @@ class TextHighlighter {
     // Prevent context menu from closing when clicking inside it
     this.contextMenu?.addEventListener('mousedown', (e) => {
       e.stopPropagation();
+    });
+
+    // Initialize context menu with taxonomies when they're available
+    this.updateContextMenu();
+    
+    // Handle remove highlight button
+    document.getElementById('remove-highlight')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (this.currentSelection) {
+        this.removeHighlight();
+        this.hideContextMenu();
+      }
     });
 
     // Context menu items
@@ -280,6 +305,40 @@ class TextHighlighter {
     }
   }
 
+  // Process taxonomy data from documents
+  processTaxonomyData(documents) {
+    // Process taxonomy data and update the context menu
+    this.taxonomies = [];
+    this.taxonomyColors = {};
+    
+    // Get all unique taxonomy categories from documents
+    const taxonomySet = new Set();
+    documents.forEach(doc => {
+      if (doc.enrichment?.taxonomy) {
+        Object.keys(doc.enrichment.taxonomy).forEach(category => {
+          taxonomySet.add(category);
+        });
+      }
+    });
+    
+    // Convert to array and assign colors
+    this.taxonomies = Array.from(taxonomySet).map((key, index) => {
+      const colorClass = this.colorPalette[index % this.colorPalette.length];
+      this.taxonomyColors[key] = colorClass;
+      
+      return {
+        key,
+        displayName: key.split('_')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' '),
+        colorClass
+      };
+    });
+    
+    // Update the context menu with new taxonomies
+    this.updateContextMenu();
+  }
+
   highlightSelection(category) {
     console.log('Highlighting selection with category:', category);
     
@@ -343,7 +402,7 @@ class TextHighlighter {
       
       try {
         // Create a new range for the exact selection
-        const newRange = document.createRange();
+        const highlightRange = document.createRange();
         
         // Ensure we have valid range boundaries
         if (!range.startContainer || !range.endContainer) {
@@ -352,53 +411,44 @@ class TextHighlighter {
         
         // Set the range with error handling
         try {
-          newRange.setStart(range.startContainer, range.startOffset);
-          newRange.setEnd(range.endContainer, range.endOffset);
+          highlightRange.setStart(range.startContainer, range.startOffset);
+          highlightRange.setEnd(range.endContainer, range.endOffset);
         } catch (error) {
           console.error('Error setting range boundaries:', error);
           throw new Error('Failed to set range boundaries');
         }
         
-        // Extract the selected content
-        let selectedContent;
-        try {
-          selectedContent = newRange.extractContents();
-          if (!selectedContent) {
-            throw new Error('Failed to extract content');
-          }
-        } catch (error) {
-          console.error('Error extracting content:', error);
-          throw new Error('Failed to extract selected content');
-        }
-        
         // Create the highlight element
         const highlight = document.createElement('span');
-        highlight.className = `text-highlight ${category}`;
+        const colorClass = this.taxonomyColors[category] || this.colorPalette[0].split(' ')[0];
+        
+        // Apply the taxonomy-highlight class and the specific color class
+        highlight.className = 'taxonomy-highlight text-highlight';
         highlight.setAttribute('data-category', category);
+        highlight.setAttribute('title', category);
+        
+        // Set the background color based on the color class
+        const colorMap = {
+          'bg-blue-100': '#dbeafe',
+          'bg-green-100': '#d1fae5',
+          'bg-yellow-100': '#fef9c3',
+          'bg-red-100': '#fee2e2',
+          'bg-purple-100': '#f3e8ff',
+          'bg-pink-100': '#fce7f3',
+          'bg-indigo-100': '#e0e7ff'
+        };
+        
+        const bgColor = colorMap[colorClass] || '#e0e7ff';
+        highlight.style.backgroundColor = bgColor;
+        
+        // Extract the selected content
+        const selectedContent = highlightRange.extractContents();
         
         // Add the selected content to our highlight
         highlight.appendChild(selectedContent);
         
-        try {
-          // Insert the highlight at the selection position
-          newRange.insertNode(highlight);
-          
-          // Normalize the parent to merge adjacent text nodes
-          parentElement.normalize();
-          
-          // Clear the current selection
-          const currentSelection = window.getSelection();
-          if (currentSelection.rangeCount > 0) {
-            currentSelection.removeAllRanges();
-          }
-        } catch (error) {
-          console.error('Error inserting highlight:', error);
-          // Try to restore the original content if possible
-          if (parentElement && beforeHTML) {
-            parentElement.innerHTML = beforeHTML;
-          }
-          throw new Error('Failed to insert highlight');
-        }
+        // Insert the highlight at the selection position
+        highlightRange.insertNode(highlight);
         
         // Get the HTML after modification
         const afterHTML = parentElement.innerHTML;
@@ -432,10 +482,9 @@ class TextHighlighter {
           html: highlight.outerHTML
         });
         
-        // Clear the current selection
+        // Clear the current selection and hide context menu
+        window.getSelection().removeAllRanges();
         this.currentSelection = null;
-        
-        // Hide the context menu
         this.hideContextMenu();
         
         console.log('Successfully highlighted text:', `"${selectedText}"`);
@@ -451,12 +500,14 @@ class TextHighlighter {
         document.dispatchEvent(event);
         
       } catch (error) {
-        // Restore original content if something goes wrong
-        console.error('Error applying highlight, restoring content:', error);
-        parentElement.innerHTML = beforeHTML;
+        console.error('Error during highlight operation:', error);
+        // Restore the original content if something went wrong
+        if (parentElement && beforeHTML) {
+          parentElement.innerHTML = beforeHTML;
+        }
       }
     } catch (error) {
-      console.error('Error highlighting selection:', error);
+      console.error('Error in highlightSelection:', error);
     }
   }
 
@@ -741,41 +792,11 @@ class TextHighlighter {
         category: hl.dataset.category,
         position: this.getTextPosition(hl)
       });
-    });
-    return highlights;
-  }
-
-  getTextPosition(element) {
-    // This is a simplified version - you might need to implement
-    // a more sophisticated way to track text positions
-    const range = document.createRange();
-    range.selectNodeContents(element);
-    const rect = range.getBoundingClientRect();
-    
-    return {
-      top: rect.top,
-      left: rect.left,
-      width: rect.width,
-      height: rect.height
-    };
-  }
-
-  updateUndoRedoButtons() {
-    try {
-      // Ensure we have a valid history array
-      if (!Array.isArray(this.highlightHistory)) {
-        this.highlightHistory = [];
-        this.historyIndex = -1;
-      }
-      
-      const undoBtn = document.querySelector('[data-action="undo"]');
-      const redoBtn = document.querySelector('[data-action="redo"]');
-      
-      if (undoBtn) {
         undoBtn.disabled = this.historyIndex < 0;
         undoBtn.title = this.historyIndex >= 0 ? 'Undo last action' : 'Nothing to undo';
       }
       
+      // Update redo button state
       if (redoBtn) {
         redoBtn.disabled = this.historyIndex >= this.highlightHistory.length - 1;
         redoBtn.title = this.historyIndex < this.highlightHistory.length - 1 ? 'Redo last action' : 'Nothing to redo';

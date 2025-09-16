@@ -581,6 +581,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     const taxonomyData = processTaxonomyData(documents);
     renderTaxonomy(taxonomyData);
     
+    // Update the text highlighter with taxonomy data
+    if (window.textHighlighter) {
+      window.textHighlighter.processTaxonomyData(documents);
+      console.log('Updated text highlighter with taxonomy data');
+    }
+    
     // Update document info with the latest document
     const latestDoc = documents.sort((a, b) => new Date(b._ts) - new Date(a._ts))[0];
     if (latestDoc) {

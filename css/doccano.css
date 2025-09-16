@@ -19,6 +19,30 @@
   --eu-orange-rgb: 255, 105, 0;
 }
 
+/* Highlighted Text Styles */
+.text-highlight {
+  padding: 0.1em 0.2em;
+  border-radius: 0.2em;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Color classes for different taxonomies */
+.bg-blue-100 { background-color: #dbeafe; color: #1e40af; }
+.bg-green-100 { background-color: #d1fae5; color: #065f46; }
+.bg-yellow-100 { background-color: #fef9c3; color: #854d0e; }
+.bg-red-100 { background-color: #fee2e2; color: #991b1b; }
+.bg-purple-100 { background-color: #f3e8ff; color: #6b21a8; }
+.bg-pink-100 { background-color: #fce7f3; color: #9d174d; }
+.bg-indigo-100 { background-color: #e0e7ff; color: #3730a3; }
+
+/* Hover effect for highlighted text */
+.text-highlight:hover {
+  filter: brightness(0.95);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
 /* Base Styles */
 body {
   font-family: "Rubik", sans-serif;
