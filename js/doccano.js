@@ -183,8 +183,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     const sectionsContainer = document.getElementById("document-sections");
 
     // Load and process the NDJSON data
+    console.log('Loading NDJSON data...');
     const rawDocuments = await loadNDJSONData();
+    console.log('Raw documents loaded:', rawDocuments.length);
     const processedDocuments = processDocuments(rawDocuments);
+    console.log('Processed documents:', processedDocuments.length);
 
     // Hide loading state
     loadingElement.style.display = "none";
@@ -210,19 +213,17 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Update document info with the latest document
     const latestDoc = processedDocuments.sort((a, b) => new Date(b._ts) - new Date(a._ts))[0];
     if (latestDoc) {
-      const updatedElement = document.getElementById('document-updated');
-      if (updatedElement) {
-        updatedElement.textContent = new Date(latestDoc._ts).toLocaleDateString();
-      }
-      // Only try to update document-id if it exists
-      const docIdElement = document.getElementById('document-id');
-      if (docIdElement && latestDoc.id) {
-        docIdElement.textContent = latestDoc.id.substring(0, 6);
-      }
-      // Also update the document title if it exists
-      const docTitleElement = document.getElementById('document-title');
-      if (docTitleElement && latestDoc.doc) {
-        docTitleElement.textContent = latestDoc.doc.split('_').join(' ');
+      // Update document info in both columns using the populateDocumentInfo function
+      populateDocumentInfo(latestDoc);
+      
+      // Also update the document length if available
+      if (latestDoc.annotations) {
+        const lengthElements = document.querySelectorAll('.document-length');
+        const length = latestDoc.annotations.length || 0;
+        const words = latestDoc.annotations.words || 0;
+        lengthElements.forEach(el => {
+          el.textContent = `${length} characters • ${words} words`;
+        });
       }
     }
 
@@ -358,61 +359,59 @@ function populateSection(data) {
 
 // Update the populateDocumentInfo function
 function populateDocumentInfo(data) {
-  if (!data) return;
-
-  // Update document title in the right column
-  const docTitleElement = document.getElementById("document-title");
-  if (docTitleElement) {
-    docTitleElement.textContent = data.doc ? data.doc.split("_").join(" ") : "Untitled Document";
+  console.log('populateDocumentInfo called with data:', data);
+  if (!data) {
+    console.error('No data provided to populateDocumentInfo');
+    return;
   }
 
-  // Update last updated time in the right column
-  const docUpdatedElement = document.getElementById("document-updated");
-  if (docUpdatedElement && data._ts) {
-    docUpdatedElement.textContent = formatDate(data._ts);
-  }
+  // Update document title in both columns
+  const docTitleElements = document.querySelectorAll(".document-title");
+  docTitleElements.forEach(el => {
+    el.textContent = data.doc ? data.doc.split("_").join(" ") : "Untitled Document";
+  });
 
-  // Original elements (keeping for backward compatibility)
-  const titleElement = document.querySelector(".document-title");
-  const idElement = document.querySelector(".document-id");
-  const modelElement = document.querySelector(".document-model");
-  const updatedElement = document.querySelector(".document-updated");
-  const lengthElement = document.querySelector(".document-length");
-  const confidenceElement = document.querySelector(".confidence-value");
+  // Update last updated time in both columns
+  const docUpdatedElements = document.querySelectorAll(".document-updated");
+  docUpdatedElements.forEach(el => {
+    if (data._ts) {
+      el.textContent = formatDate(data._ts);
+    }
+  });
 
-  if (titleElement && !docTitleElement) {
-    titleElement.textContent = data.doc ? data.doc.split("_").join(" ") : "Document";
-  }
-  
-  if (idElement) {
-    idElement.textContent = data.id ? data.id.substring(0, 32) : "-";
-  }
+  // Update document model in both columns
+  const modelElements = document.querySelectorAll(".document-model");
+  modelElements.forEach(el => {
+    if (data.model) {
+      el.textContent = data.model;
+    }
+  });
 
-  if (modelElement && data.model) {
-    modelElement.textContent = data.model;
-  }
-
-  if (updatedElement && data._ts && !docUpdatedElement) {
-    updatedElement.textContent = `Last updated: ${formatDate(data._ts)}`;
-  }
-
-  if (lengthElement && data.annotations) {
+  // Update document length and word count
+  const lengthElements = document.querySelectorAll(".document-length");
+  if (data.annotations) {
     const length = data.annotations.length || 0;
     const words = data.annotations.words || 0;
-    lengthElement.textContent = `${length} characters • ${words} words`;
+    lengthElements.forEach(el => {
+      el.textContent = `${length} characters • ${words} words`;
+    });
   }
 
-  if (confidenceElement && data.enrichment?.confidence) {
+  // Update confidence display if available
+  const confidenceElements = document.querySelectorAll(".confidence-value");
+  if (data.enrichment?.confidence) {
     const confidence = Math.round(data.enrichment.confidence * 100);
-    confidenceElement.textContent = confidence;
-    // Add color coding based on confidence level
-    if (confidence < 50) {
-      confidenceElement.className = 'text-eu-orange';
-    } else if (confidence < 80) {
-      confidenceElement.className = 'text-yellow-500';
-    } else {
-      confidenceElement.className = 'text-green-600';
-    }
+    confidenceElements.forEach(el => {
+      el.textContent = confidence;
+      // Add color coding based on confidence level
+      if (confidence < 50) {
+        el.className = 'confidence-value text-eu-orange';
+      } else if (confidence < 80) {
+        el.className = 'confidence-value text-yellow-500';
+      } else {
+        el.className = 'confidence-value text-green-600';
+      }
+    });
   }
 }
 
