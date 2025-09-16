@@ -123,25 +123,48 @@ class TextHighlighter {
       
       // Only show menu if selection is within the #document-viewer element
       const documentViewer = document.getElementById('document-viewer');
-      if (documentViewer) {
-        if (selection.rangeCount > 0) {
-          const range = selection.getRangeAt(0);
-          const selectionRect = range.getBoundingClientRect();
-          const containerRect = documentViewer.getBoundingClientRect();
-          
-          // Check if selection is entirely within the document viewer
-          if (selectionRect.top < containerRect.top || 
-              selectionRect.bottom > containerRect.bottom ||
-              selectionRect.left < containerRect.left || 
-              selectionRect.right > containerRect.right) {
-            this.currentSelection = null;
-            return;
-          }
-        } else if (!documentViewer.contains(e?.target)) {
-          // If no selection but click is outside document viewer
+      if (!documentViewer) {
+        this.currentSelection = null;
+        return;
+      }
+      
+      if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const selectionRect = range.getBoundingClientRect();
+        const containerRect = documentViewer.getBoundingClientRect();
+        
+        // Check if selection is entirely within the document viewer
+        if (selectionRect.top < containerRect.top || 
+            selectionRect.bottom > containerRect.bottom ||
+            selectionRect.left < containerRect.left || 
+            selectionRect.right > containerRect.right) {
           this.currentSelection = null;
           return;
         }
+        
+        // Check if selection is within a title element (which we want to exclude)
+        const commonAncestor = range.commonAncestorContainer;
+        const ancestorElement = commonAncestor.nodeType === Node.TEXT_NODE 
+          ? commonAncestor.parentElement 
+          : commonAncestor;
+          
+        // Check if any parent has the title class or is a title element
+        const isInTitle = ancestorElement.closest('.text-sm.font-semibold.text-eu-blue.mt-2.mb-1, h1, h2, h3, h4, h5, h6');
+        if (isInTitle) {
+          this.currentSelection = null;
+          return;
+        }
+        
+        // Check if we're in a valid line container (should have line number)
+        const lineContainer = ancestorElement.closest('.flex.items-start.group');
+        if (!lineContainer) {
+          this.currentSelection = null;
+          return;
+        }
+      } else if (!documentViewer.contains(e?.target)) {
+        // If no selection but click is outside document viewer
+        this.currentSelection = null;
+        return;
       }
       
       console.log('Text selection detected:', { 
