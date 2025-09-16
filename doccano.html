@@ -443,10 +443,32 @@
 
           <!-- Document Content -->
           <div
-            class="overflow-y-auto flex-1 bg-eu-white scrollbar-transparent p-4"
+            class="overflow-y-auto flex-1 bg-eu-white scrollbar-transparent p-4 space-y-4"
             id="document-content"
             style="position: relative"
           >
+            <!-- Document Info -->
+            <div class="bg-eu-blue/5 p-4 rounded-lg">
+              <div class="text-sm text-eu-blue mb-2 font-medium document-title">Loading document...</div>
+              <div class="flex items-center justify-between text-xs text-gray-500">
+                <div class="flex items-center">
+                  <i class="far fa-clock mr-1"></i>
+                  <span>Last updated: <span class="document-updated font-medium">-</span></span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <button class="text-gray-500 hover:text-eu-blue transition-colors" title="Undo" id="undo-btn">
+                    <i class="fas fa-undo"></i>
+                  </button>
+                  <button class="text-gray-500 hover:text-eu-blue transition-colors" title="Redo" id="redo-btn">
+                    <i class="fas fa-redo"></i>
+                  </button>
+                  <button class="text-gray-500 hover:text-green-600 transition-colors" title="Save" id="save-btn">
+                    <i class="far fa-save"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
             <!-- Document content will appear here -->
           </div>
         </div>
