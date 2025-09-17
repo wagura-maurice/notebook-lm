@@ -480,20 +480,17 @@ function showAssignmentPopup(selection, event) {
             popup.parentNode.removeChild(popup);
           }
           
+          // Clear the selection and reset highlighter state immediately
+          if (highlighterState.currentSelection) {
+            highlighterState.currentSelection.removeAllRanges();
+          }
+          highlighterState.currentSelection = null;
+          highlighterState.currentRange = null;
+          
           // Use requestAnimationFrame to ensure the popup is removed before highlighting
           requestAnimationFrame(() => {
-            // Restore the selection before highlighting
-            if (highlighterState.currentRange) {
-              const sel = window.getSelection();
-              sel.removeAllRanges();
-              sel.addRange(highlighterState.currentRange);
-              
-              // Apply the highlight
-              highlightSelection(taxonomy);
-              
-              // Clear the selection
-              sel.removeAllRanges();
-            }
+            // Apply the highlight
+            highlightSelection(taxonomy);
           });
         };
         buttonsContainer.appendChild(btn);
