@@ -148,49 +148,66 @@ function createContextMenu() {
 
 // Helper function to position and show the menu
 function positionAndShowMenu(menu, event) {
-  if (!menu || !event) return;
-  
   try {
-    // Prevent the context menu from appearing
-    event.preventDefault();
+    // Get the selection range and its position
+    const range = selection.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
     
-    // Hide any existing context menus
-    document.querySelectorAll('.context-menu').forEach(m => {
-      if (m !== menu) m.style.display = 'none';
+    // Make sure the menu is visible and positioned
+    menu.style.display = 'block';
+    menu.style.opacity = '1';
+    menu.style.visibility = 'visible';
+    menu.style.position = 'absolute';
+    
+    // Position the menu below the selection
+    menu.style.left = `${rect.left + window.scrollX}px`;
+    menu.style.top = `${rect.bottom + window.scrollY + 5}px`;
+    
+    // Prevent the menu from going off-screen
+    const menuRect = menu.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    // Adjust horizontal position if needed
+    if (menuRect.right > viewportWidth) {
+      menu.style.left = `${Math.max(10, viewportWidth - menuRect.width - 10)}px`;
+    }
+    
+    // Adjust vertical position if needed
+    if (menuRect.bottom > viewportHeight) {
+      menu.style.top = `${Math.max(10, rect.top + window.scrollY - menuRect.height - 5)}px`;
+    }
+    
+    // Ensure the menu is on top of other elements
+    menu.style.zIndex = '1000';
+    
+    // Log for debugging
+    console.log('Context menu shown at:', {
+      left: menu.style.left,
+      top: menu.style.top,
+      selection: selection.toString()
     });
     
-    // Position the menu
-    menu.style.display = 'block';
-    menu.style.left = `${event.pageX}px`;
-    menu.style.top = `${event.pageY}px`;
-    
-    // Use setTimeout to avoid immediate hide
-    setTimeout(() => {
-      document.addEventListener('click', hideMenu);
-    }, 0);
-    
   } catch (error) {
-    console.error('Error positioning menu:', error);
+    console.error('Error showing context menu:', error);
   }
 }
 
 // Function to show context menu
-function showContextMenu(e, taxonomies) {
-  console.log('Showing context menu at:', e.pageX, e.pageY);
+function showContextMenu(event, taxonomies) {
+  console.log('Showing context menu at:', event.pageX, event.pageY);
   console.log('Taxonomies to show:', taxonomies);
   
   // Ensure menu exists
   let menu = document.getElementById('context-menu');
   if (!menu) {
-    console.log('Menu not found, creating new one');
     menu = createContextMenu();
-    if (!menu) {
-      console.error('Failed to create context menu');
-      return;
-    }
   }
   
-  try {
+  // Position the menu at the cursor or selection
+  const menuRect = menu.getBoundingClientRect();
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
   
   // Ensure options container exists
   let optionsContainer = menu.querySelector('#taxonomy-options');
@@ -220,7 +237,7 @@ function showContextMenu(e, taxonomies) {
     optionsContainer.appendChild(noItems);
     
     // Still show the menu with the message
-    positionAndShowMenu(menu, e);
+    showContextMenu(e.target.ownerDocument.defaultView.getSelection());
     return;
   }
   
@@ -281,113 +298,169 @@ function showContextMenu(e, taxonomies) {
     });
     
     // Position and show the menu
-    positionAndShowMenu(menu, e);
-    
-  } catch (error) {
-    console.error('Error showing context menu:', error);
-    // If we have a menu but an error occurred, still try to show it
-    if (menu) {
-      positionAndShowMenu(menu, e);
+    try {
+      showContextMenu(e.target.ownerDocument.defaultView.getSelection());
+    } catch (error) {
+      console.error('Error showing context menu:', error);
+      // If we have a menu but an error occurred, still try to show it
+      if (menu && e && e.target && e.target.ownerDocument && e.target.ownerDocument.defaultView) {
+        try {
+          showContextMenu(e.target.ownerDocument.defaultView.getSelection());
+        } catch (innerError) {
+          console.error('Error in fallback context menu:', innerError);
+        }
+      }
     }
-  }
   
   // Set up click outside to hide menu
-  setTimeout(() => document.addEventListener('click', hideMenu), 0);
+  const setupClickOutside = () => {
+    try {
+      document.addEventListener('click', hideMenu, { once: true });
+    } catch (err) {
+      console.error('Error adding click listener:', err);
+    }
+  };
+  
+  // Use requestAnimationFrame for better performance
+  requestAnimationFrame(() => {
+    setupClickOutside();
+  });
+}
+
+// Function to show assignment popup
+function showAssignmentPopup(selection, event) {
+  // Create popup container
+  const popup = document.createElement('div');
+  popup.className = 'assignment-popup fixed z-50 bg-white shadow-lg rounded-md p-4';
+  popup.style.top = `${event.pageY - 50}px`;
+  popup.style.left = `${event.pageX}px`;
+  popup.style.minWidth = '200px';
+  popup.style.transform = 'translateY(-100%)';
+  
+  // Add header
+  const header = document.createElement('div');
+  header.className = 'text-sm font-medium mb-2 text-gray-800';
+  header.textContent = 'Assign to Taxonomy';
+  popup.appendChild(header);
+  
+  // Add input field
+  const inputContainer = document.createElement('div');
+  inputContainer.className = 'flex mb-2';
+  
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Enter taxonomy name';
+  input.className = 'flex-1 border border-gray-300 rounded-l px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500';
+  input.autofocus = true;
+  
+  const submitBtn = document.createElement('button');
+  submitBtn.className = 'bg-blue-500 text-white px-3 py-1 rounded-r text-sm hover:bg-blue-600';
+  submitBtn.textContent = 'Assign';
+  submitBtn.onclick = () => {
+    const category = input.value.trim();
+    if (category) {
+      highlightSelection(category);
+      popup.remove();
+    }
+  };
+  
+  // Submit on Enter key
+  input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      submitBtn.click();
+    }
+  });
+  
+  inputContainer.appendChild(input);
+  inputContainer.appendChild(submitBtn);
+  popup.appendChild(inputContainer);
+  
+  // Add existing taxonomies as quick select buttons
+  const taxonomies = Array.from(highlighterState.taxonomyColorMap.keys());
+  if (taxonomies.length > 0) {
+    const quickSelect = document.createElement('div');
+    quickSelect.className = 'mt-2';
+    
+    const label = document.createElement('div');
+    label.className = 'text-xs text-gray-500 mb-1';
+    label.textContent = 'Quick select:';
+    quickSelect.appendChild(label);
+    
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'flex flex-wrap gap-1';
+    
+    taxonomies.slice(0, 5).forEach(taxonomy => {
+      const btn = document.createElement('button');
+      btn.className = 'text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded';
+      btn.textContent = taxonomy;
+      btn.onclick = () => {
+        highlightSelection(taxonomy);
+        popup.remove();
+      };
+      buttonsContainer.appendChild(btn);
+    });
+    
+    quickSelect.appendChild(buttonsContainer);
+    popup.appendChild(quickSelect);
+  }
+  
+  // Close popup when clicking outside
+  const closeOnClickOutside = (e) => {
+    if (!popup.contains(e.target)) {
+      popup.remove();
+      document.removeEventListener('click', closeOnClickOutside);
+    }
+  };
+  
+  // Add to document
+  document.body.appendChild(popup);
+  
+  // Focus the input
+  setTimeout(() => input.focus(), 0);
+  
+  // Add click outside listener
+  setTimeout(() => {
+    document.addEventListener('click', closeOnClickOutside);
+  }, 0);
+  
+  return popup;
 }
 
 // Function to handle text selection
-function handleTextSelection(e) {
-  console.log('Text selection detected');
-  const selection = window.getSelection();
-  const selectedText = selection.toString().trim();
-  
-  if (selectedText && !e.target.closest('#context-menu')) {
-    console.log('Valid text selection:', selectedText);
+function handleTextSelection(event) {
+  try {
+    const selection = window.getSelection();
+    
+    // Only proceed if we have a valid selection
+    if (!selection || selection.isCollapsed) {
+      // Hide any existing context menu if selection is empty
+      const menu = document.getElementById('context-menu');
+      if (menu) menu.style.display = 'none';
+      return;
+    }
+
+    // Store the current selection and range
     highlighterState.currentSelection = selection;
-    highlighterState.currentRange = selection.getRangeAt(0).cloneRange();
+    highlighterState.currentRange = selection.getRangeAt(0);
     
-    // Get taxonomies from the page or use processed taxonomy data
-    let taxonomies = [];
-    
-    // First try to use the taxonomy data we have in memory
-    if (window.doccano?.taxonomyData?.length > 0) {
-      console.log('Using taxonomy data from doccano.taxonomyData');
-      taxonomies = window.doccano.taxonomyData.map(item => ({
-        key: item.key,
-        displayName: item.displayName || item.key
-      }));
-      console.log('Using processed taxonomies:', taxonomies);
+    // Only show popup if selection is within the document content
+    const targetElement = selection.anchorNode.parentElement;
+    const middleColumn = document.getElementById('middle-column');
+    if (!middleColumn || !middleColumn.contains(targetElement) || !targetElement.closest('.document-content p')) {
+      return;
     }
+
+    // Prevent default context menu
+    event.preventDefault();
     
-    // If no taxonomies in memory, try to get from the taxonomy container
-    if (taxonomies.length === 0) {
-      console.log('No taxonomies in memory, checking DOM...');
-      const taxonomyContainer = document.getElementById('taxonomy-container');
-      if (taxonomyContainer) {
-        console.log('Found taxonomy container, getting taxonomies...');
-        const taxonomyElements = taxonomyContainer.querySelectorAll('[data-taxonomy]');
-        if (taxonomyElements.length > 0) {
-          taxonomies = Array.from(taxonomyElements).map(el => ({
-            key: el.getAttribute('data-taxonomy'),
-            displayName: el.textContent.trim()
-          }));
-          console.log('Found taxonomies in DOM:', taxonomies);
-          
-          // Store these taxonomies for future use
-          if (!window.doccano) window.doccano = {};
-          if (!window.doccano.taxonomyData) {
-            window.doccano.taxonomyData = taxonomies;
-          }
-        }
-      }
-    }
+    // Remove any existing popups
+    document.querySelectorAll('.assignment-popup').forEach(popup => popup.remove());
     
-    // If we still don't have taxonomies, try to use the color map
-    if (taxonomies.length === 0 && highlighterState.taxonomyColorMap.size > 0) {
-      console.log('Using taxonomies from color map');
-      taxonomies = Array.from(highlighterState.taxonomyColorMap.entries()).map(([key, colorScheme]) => ({
-        key,
-        displayName: key
-      }));
-    }
+    // Show the assignment popup
+    showAssignmentPopup(selection, event);
     
-    if (taxonomies.length > 0) {
-      console.log('Showing context menu with taxonomies:', taxonomies);
-      e.preventDefault();
-      showContextMenu(e, taxonomies);
-    } else {
-      console.warn('No taxonomies found to show in context menu');
-      console.log('Highlighter state:', highlighterState);
-      console.log('Window.doccano:', window.doccano);
-      
-      // Try to find any taxonomy elements in the entire document
-      const allTaxonomyElements = document.querySelectorAll('[data-taxonomy]');
-      console.log('All taxonomy elements in document:', allTaxonomyElements);
-      
-      if (allTaxonomyElements.length > 0) {
-        console.log('Found taxonomy elements outside of container:', allTaxonomyElements);
-        taxonomies = Array.from(allTaxonomyElements).map(el => ({
-          key: el.getAttribute('data-taxonomy'),
-          displayName: el.textContent.trim()
-        }));
-        
-        if (taxonomies.length > 0) {
-          console.log('Showing context menu with taxonomies from document:', taxonomies);
-          e.preventDefault();
-          showContextMenu(e, taxonomies);
-          return;
-        }
-      }
-      
-      // As a last resort, show a default set of taxonomies
-      console.log('Showing default taxonomies');
-      taxonomies = [
-        { key: 'concept', displayName: 'Concept' },
-        { key: 'entity', displayName: 'Entity' },
-        { key: 'action', displayName: 'Action' }
-      ];
-      showContextMenu(e, taxonomies);
-    }
+  } catch (error) {
+    console.error('Error in handleTextSelection:', error);
   }
 }
 
@@ -453,39 +526,32 @@ function highlightSelection(category) {
   } else {
     colorScheme = highlighterState.taxonomyColorMap.get(category);
   }
+
+  // Create a highlighted span for the selected text
+  const span = document.createElement('span');
+  span.className = `taxonomy-highlight ${colorScheme.highlight} ${colorScheme.textColor} px-1 rounded border-b-2 ${colorScheme.highlightBorder} cursor-pointer`;
+  span.textContent = selectedText;
   
-  // Create a marker span at the selection position
-  const marker = document.createElement('span');
-  marker.className = 'highlight-marker relative inline-block';
-  
-  // Store the original text and category as data attributes
-  marker.setAttribute('data-original-text', selectedText);
-  marker.setAttribute('data-category', category);
-  
-  // Get the position for the popup
-  const rangeRect = range.getBoundingClientRect();
-  const popup = createPopup(selectedText, category, colorScheme, {
-    left: rangeRect.left + window.scrollX + (rangeRect.width / 2) - 60, // Centered
-    top: rangeRect.top + window.scrollY - 35 // Slightly higher for better visibility
+  // Store the category and color scheme data
+  span.dataset.category = category;
+  span.dataset.colorScheme = JSON.stringify({
+    bg: colorScheme.bg,
+    text: colorScheme.text,
+    border: colorScheme.border,
+    highlight: colorScheme.highlight,
+    highlightBorder: colorScheme.highlightBorder,
+    textColor: colorScheme.textColor
   });
   
-  document.body.appendChild(popup);
+  // Add click handler to show the popup
+  span.addEventListener('click', (e) => {
+    e.stopPropagation();
+    showHighlightPopup(span, selectedText, category, colorScheme);
+  });
   
-  // Adjust popup position to be centered
-  const popupWidth = popup.offsetWidth;
-  popup.style.left = `${position.left - (popupWidth / 2)}px`;
-  
-  // Close popup when clicking outside
-  const closePopup = (e) => {
-    if (!popup.contains(e.target)) {
-      popup.remove();
-      document.removeEventListener('click', closePopup);
-    }
-  };
-  
-  setTimeout(() => {
-    document.addEventListener('click', closePopup);
-  }, 0);
+  // Replace the selected text with our highlighted span
+  range.deleteContents();
+  range.insertNode(span);
   
   // Clear selection
   selection.removeAllRanges();
@@ -495,6 +561,82 @@ function highlightSelection(category) {
   // Hide context menu
   const menu = document.getElementById('context-menu');
   if (menu) menu.style.display = 'none';
+  
+  // Show a success message
+  const successMsg = document.createElement('div');
+  successMsg.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg';
+  successMsg.textContent = `Assigned "${selectedText}" to ${category}`;
+  document.body.appendChild(successMsg);
+  
+  // Remove the success message after 3 seconds
+  setTimeout(() => {
+    successMsg.remove();
+  }, 3000);
+}
+
+// Function to show a popup for an existing highlight
+function showHighlightPopup(element, text, category, colorScheme) {
+  // Remove any existing popups
+  document.querySelectorAll('.highlight-popup').forEach(popup => popup.remove());
+  
+  const rect = element.getBoundingClientRect();
+  const popup = document.createElement('div');
+  popup.className = 'highlight-popup fixed z-50 bg-white shadow-lg rounded-md p-3 flex flex-col items-center';
+  popup.style.top = `${rect.top + window.scrollY - 50}px`;
+  popup.style.left = `${rect.left + window.scrollX + (rect.width / 2) - 100}px`;
+  popup.style.minWidth = '200px';
+  
+  // Add header with category name
+  const header = document.createElement('div');
+  header.className = 'text-sm font-medium mb-2';
+  header.textContent = category.replace(/_/g, ' ').replace(/\w\S*/g, 
+    txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+  );
+  popup.appendChild(header);
+  
+  // Add the highlighted text
+  const content = document.createElement('div');
+  content.className = 'text-sm text-gray-700 mb-3';
+  content.textContent = text;
+  popup.appendChild(content);
+  
+  // Add action buttons
+  const actions = document.createElement('div');
+  actions.className = 'flex justify-between w-full';
+  
+  // Delete button
+  const deleteBtn = document.createElement('button');
+  deleteBtn.className = 'px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded';
+  deleteBtn.innerHTML = '<i class="fas fa-trash-alt mr-1"></i> Remove';
+  deleteBtn.onclick = () => {
+    // Replace the highlighted span with the original text
+    const textNode = document.createTextNode(text);
+    element.parentNode.replaceChild(textNode, element);
+    popup.remove();
+  };
+  actions.appendChild(deleteBtn);
+  
+  // Close button
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded';
+  closeBtn.textContent = 'Close';
+  closeBtn.onclick = () => popup.remove();
+  actions.appendChild(closeBtn);
+  
+  popup.appendChild(actions);
+  document.body.appendChild(popup);
+  
+  // Close popup when clicking outside
+  const closeOnClickOutside = (e) => {
+    if (!popup.contains(e.target) && e.target !== element) {
+      popup.remove();
+      document.removeEventListener('click', closeOnClickOutside);
+    }
+  };
+  
+  setTimeout(() => {
+    document.addEventListener('click', closeOnClickOutside);
+  }, 0);
 }
 
 // Function to load and process NDJSON data
