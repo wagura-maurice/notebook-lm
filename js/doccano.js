@@ -534,24 +534,30 @@ function showAssignmentPopup(selection, event) {
       
       btn.appendChild(colorIndicator);
       btn.appendChild(document.createTextNode(displayName));
-      btn.onclick = (e) => {
+      btn.onclick = async (e) => {
         e.preventDefault();
         e.stopPropagation();
         
-        // Restore the selection before highlighting
-        if (highlighterState.currentRange) {
-          const sel = window.getSelection();
-          sel.removeAllRanges();
-          sel.addRange(highlighterState.currentRange);
-          
-          // Apply the highlight
-          highlightSelection(taxonomy);
-          
-          // Clear the selection
-          sel.removeAllRanges();
+        // Remove the popup immediately for better UX
+        if (popup && popup.parentNode) {
+          popup.parentNode.removeChild(popup);
         }
         
-        popup.style.display = 'none';
+        // Use requestAnimationFrame to ensure the popup is removed before highlighting
+        requestAnimationFrame(() => {
+          // Restore the selection before highlighting
+          if (highlighterState.currentRange) {
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(highlighterState.currentRange);
+            
+            // Apply the highlight
+            highlightSelection(taxonomy);
+            
+            // Clear the selection
+            sel.removeAllRanges();
+          }
+        });
       };
       buttonsContainer.appendChild(btn);
     });
@@ -652,13 +658,29 @@ function createPopup(text, category, colorScheme, position) {
 
 // Function to highlight selected text as a popup
 function highlightSelection(category) {
-  const selection = window.getSelection();
-  if (!selection || selection.isCollapsed) return;
+  // First try to use the stored selection if available
+  let selection = highlighterState.currentSelection || window.getSelection();
+  
+  // If no selection is available or it's collapsed, try to restore from stored range
+  if (!selection || selection.isCollapsed) {
+    if (highlighterState.currentRange) {
+      selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(highlighterState.currentRange);
+    } else {
+      console.log('No valid selection or selection is collapsed');
+      return;
+    }
+  }
 
+  // Get the range and selected text
   const range = selection.getRangeAt(0);
   const selectedText = selection.toString().trim();
   
-  if (!selectedText) return;
+  if (!selectedText) {
+    console.log('No text selected');
+    return;
+  }
 
   // Only allow highlighting in the middle column document content
   const targetElement = selection.anchorNode.parentElement;
@@ -684,7 +706,17 @@ function highlightSelection(category) {
 
   // Create a highlighted span for the selected text
   const span = document.createElement('span');
-  span.className = `taxonomy-highlight ${colorScheme.highlight} ${colorScheme.textColor} px-1 rounded border-b-2 ${colorScheme.highlightBorder} cursor-pointer`;
+  span.className = `taxonomy-highlight ${colorScheme.highlight} ${colorScheme.textColor} px-1 py-0.5 rounded cursor-pointer`;
+  
+  // Get the base color class (remove 'bg-' prefix if it exists)
+  const baseColor = colorScheme.bg.replace('bg-', '');
+  
+  // Set the left border color using the color scheme's background color
+  span.style.borderLeft = `3px solid ${getComputedStyle(document.documentElement)
+    .getPropertyValue(`--color-${baseColor}-500`).trim() || '#3b82f6'}`;
+  span.style.backgroundColor = `${colorScheme.highlight}80`; // 50% opacity
+  span.style.transition = 'all 0.2s ease';
+  span.style.boxShadow = 'inset 0 -2px 0 0 rgba(0,0,0,0.05)';
   span.textContent = selectedText;
   
   // Store the category and color scheme data
