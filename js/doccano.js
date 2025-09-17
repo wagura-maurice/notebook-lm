@@ -243,6 +243,7 @@ function showContextMenu(event, taxonomies) {
     }
     
     console.log(`Adding ${taxonomies.length} taxonomy options`);
+    console.log('Taxonomy options:', taxonomies);
     
     taxonomies.forEach((taxonomy, index) => {
       try {
@@ -278,6 +279,7 @@ function showContextMenu(event, taxonomies) {
         option.addEventListener('click', () => {
           console.log('Selected taxonomy:', taxonomy.key);
           highlightSelection(taxonomy.key);
+          console.log('Highlight selection initiated for:', taxonomy.key);
         });
         
         // Add to container
@@ -375,6 +377,7 @@ function showAssignmentPopup(selection, event) {
     }
 
     console.log('showAssignmentPopup called with:', { selection, event });
+    console.log('Popup creation started');
     
     // Remove any existing popups first
     const existingPopups = document.querySelectorAll('.assignment-popup');
@@ -425,6 +428,7 @@ function showAssignmentPopup(selection, event) {
     // Add to body
     document.body.appendChild(popup);
     console.log('Popup added to DOM', popup);
+    console.log('Popup creation completed');
     
     // Clear previous content
     popup.innerHTML = '';
@@ -533,6 +537,7 @@ function handleTextSelection(event) {
   try {
     const selection = window.getSelection();
     console.log('Selection:', selection?.toString(), 'isCollapsed:', selection?.isCollapsed);
+    console.log('Text selection handling started');
     
     // Only proceed if we have a valid selection and it's not collapsed
     if (!selection || selection.isCollapsed) {
@@ -548,7 +553,8 @@ function handleTextSelection(event) {
     const selectedText = selection.toString().trim();
     if (!selectedText) return;
     
-    console.log('Selected text:', selectedText);
+        console.log('Selected text:', selectedText);
+        console.log('About to show assignment popup');
     
     // Show the assignment popup immediately
     showAssignmentPopup(selection, {
@@ -626,6 +632,7 @@ function highlightSelection(category) {
   if (!middleColumn.contains(targetElement) || !targetElement.closest('.document-content p')) {
     console.log('Highlighting only allowed in paragraph elements within the middle column');
     selection.removeAllRanges();
+    console.log('Selection cleared due to invalid target');
     highlighterState.currentSelection = null;
     highlighterState.currentRange = null;
     return;
@@ -756,6 +763,8 @@ function highlightSelection(category) {
   
   // Call the logging function
   const highlightInfo = logHighlightInfo();
+  console.log('Highlighting operation completed');
+  console.log('Highlighting finished for category:', category);
   
   // Remove any existing popup
   const existingPopup = document.getElementById('assignment-popup');
@@ -1455,6 +1464,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.log('Raw documents loaded:', rawDocuments.length);
     const { sections, documents } = processDocuments(rawDocuments);
     console.log('Processed documents:', documents.length);
+    console.log('Document processing completed');
 
     // Hide loading state
     loadingElement.style.display = 'none';
@@ -1482,6 +1492,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (!window.doccano) window.doccano = {};
     window.doccano.taxonomyData = taxonomyData;
     console.log('Stored taxonomy data in window.doccano.taxonomyData:', taxonomyData);
+    console.log('Taxonomy data storage completed');
+    console.log('Taxonomy data processing finished');
     
     // Track highlighter initialization state
     let isHighlighterInitializing = false;
@@ -1491,6 +1503,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Function to safely initialize the highlighter
     const initializeHighlighter = () => {
       console.log('Initializing highlighter...');
+      console.log('Highlighter initialization started');
       
       // Create context menu if it doesn't exist
       createContextMenu();
@@ -1565,6 +1578,8 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
       
       console.log('Highlighter initialized with', highlighterState.taxonomyColorMap.size, 'taxonomies');
+      console.log('Highlighter initialization completed');
+      console.log('Highlighter setup finished');
       
       // Log the current state for debugging
       console.log('Current highlighter state:', {
@@ -1614,6 +1629,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     
     // Start the initialization process
     initializeHighlighter();
+    console.log('Initialization process started');
+    console.log('Main initialization completed');
     
     // Update document info with the latest document
     const latestDoc = documents.sort((a, b) => new Date(b._ts) - new Date(a._ts))[0];
@@ -1688,6 +1705,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     function setupEventListeners() {
       // Add any global event listeners here
       console.log('Event listeners initialized');
+      console.log('Event listener setup completed');
+      console.log('UI event handlers set up');
 
       // Initialize tooltips
       initializeTooltips();
@@ -1840,6 +1859,7 @@ function populateSection(data) {
 // Update the populateDocumentInfo function
 function populateDocumentInfo(data) {
   console.log('populateDocumentInfo called with data:', data);
+  console.log('Document info population started');
   if (!data) {
     console.error('No data provided to populateDocumentInfo');
     return;
@@ -1893,6 +1913,8 @@ function populateDocumentInfo(data) {
       }
     });
   }
+  console.log('Document info population completed');
+  console.log('populateDocumentInfo finished');
 }
 
 // Keep the formatDate function
@@ -1906,4 +1928,5 @@ function formatDate(dateString) {
     return "Invalid date";
   }
 }
-
+console.log('doccano.js module loaded and initialized');
+console.log('doccano.js initialization complete');
