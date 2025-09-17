@@ -640,6 +640,9 @@ class TextHighlighter {
     // Store the color class for this highlight
     const highlightClass = `text-highlight ${categoryKey.toLowerCase()}`;
     
+    // Make sure the category class is properly formatted
+    const categoryClass = categoryKey.toLowerCase().replace(/\s+/g, '-');
+    
     // Generate a unique ID for this highlight
     const highlightId = `highlight-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
@@ -651,15 +654,22 @@ class TextHighlighter {
       // Create a new span for the highlight
       const highlightSpan = document.createElement('span');
       
-      // Set classes and styles for the highlight
-      highlightSpan.className = highlightClass;
+      // Set base and category-specific classes
+      highlightSpan.className = `text-highlight ${categoryClass}`;
+      
+      // Set inline styles as fallback (in case CSS classes don't load)
       highlightSpan.style.backgroundColor = bgColor;
       highlightSpan.style.borderBottom = `2px solid ${borderColor}`;
       highlightSpan.style.boxShadow = `0 0 0 1px ${borderColor}`;
       highlightSpan.style.borderRadius = '0.25rem';
       highlightSpan.style.padding = '0.125rem 0.25rem';
       highlightSpan.style.margin = '0 -0.125rem';
-      highlightSpan.style.transition = 'background-color 0.2s';
+      highlightSpan.style.transition = 'all 0.2s ease';
+      highlightSpan.style.display = 'inline';
+      highlightSpan.style.position = 'relative';
+      highlightSpan.style.zIndex = '1';
+      
+      // Set data attributes
       highlightSpan.dataset.highlightId = highlightId;
       highlightSpan.dataset.category = categoryKey;
       

@@ -450,19 +450,51 @@ body {
 
 /* Text Highlight Styles */
 .text-highlight {
-  padding: 0 0.15em;
+  padding: 0.1em 0.2em;
   margin: 0 0.1em;
   border-radius: 0.25em;
-  transition: all 0.15s ease;
-  cursor: pointer;
   display: inline;
-  line-height: inherit;
   position: relative;
-  z-index: 1;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
+  transition: all 0.2s ease;
+  cursor: default;
+  line-height: 1.5;
+  vertical-align: baseline;
+  box-sizing: border-box;
   text-decoration: none;
+  white-space: pre-wrap;
   word-break: break-word;
+  pointer-events: auto;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  border-bottom: 2px solid transparent;
+}
+
+/* Dynamic category styles - these will be overridden by inline styles */
+.text-highlight[data-category] {
+  background-color: rgba(59, 130, 246, 0.2);
+  border-bottom-color: rgba(59, 130, 246, 0.5);
+}
+
+/* Ensure the highlight is visible on all backgrounds */
+.text-highlight {
+  background-clip: padding-box;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* Better contrast for text inside highlights */
+.text-highlight,
+.text-highlight * {
+  color: inherit !important;
+  text-shadow: none !important;
+}
+
+/* Ensure proper stacking context */
+.text-highlight {
+  isolation: isolate;
 }
 
 /* Ensure text remains selectable and clickable */
