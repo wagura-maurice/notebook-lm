@@ -6,24 +6,31 @@ class TextHighlighter {
     this.historyIndex = -1;
     this.taxonomies = [];
     this.taxonomyColors = {}; // Store color mapping for taxonomies
+    
+    // Initialize with empty taxonomies - will be updated from doccano.js
+    this.taxonomyData = [];
+    
     // Color schemes that match the right sidebar in doccano.js
     this.colorSchemes = [
-      { bg: 'bg-blue-500', text: 'text-white', border: 'border-blue-600' },
-      { bg: 'bg-green-500', text: 'text-white', border: 'border-green-600' },
-      { bg: 'bg-yellow-500', text: 'text-white', border: 'border-yellow-600' },
-      { bg: 'bg-red-500', text: 'text-white', border: 'border-red-600' },
-      { bg: 'bg-purple-600', text: 'text-white', border: 'border-purple-700' },
-      { bg: 'bg-pink-500', text: 'text-white', border: 'border-pink-600' },
-      { bg: 'bg-indigo-600', text: 'text-white', border: 'border-indigo-700' },
-      { bg: 'bg-gray-600', text: 'text-white', border: 'border-gray-700' },
-      { bg: 'bg-cyan-500', text: 'text-white', border: 'border-cyan-600' },
-      { bg: 'bg-teal-500', text: 'text-white', border: 'border-teal-600' },
-      { bg: 'bg-amber-500', text: 'text-white', border: 'border-amber-600' },
-      { bg: 'bg-rose-600', text: 'text-white', border: 'border-rose-700' }
+      { bg: 'bg-blue-500', text: 'text-white', border: 'border-blue-600', textColor: 'text-blue-800', bgLight: 'bg-blue-100' },
+      { bg: 'bg-green-500', text: 'text-white', border: 'border-green-600', textColor: 'text-green-800', bgLight: 'bg-green-100' },
+      { bg: 'bg-yellow-500', text: 'text-white', border: 'border-yellow-600', textColor: 'text-yellow-800', bgLight: 'bg-yellow-100' },
+      { bg: 'bg-red-500', text: 'text-white', border: 'border-red-600', textColor: 'text-red-800', bgLight: 'bg-red-100' },
+      { bg: 'bg-purple-600', text: 'text-white', border: 'border-purple-700', textColor: 'text-purple-800', bgLight: 'bg-purple-100' },
+      { bg: 'bg-pink-500', text: 'text-white', border: 'border-pink-600', textColor: 'text-pink-800', bgLight: 'bg-pink-100' },
+      { bg: 'bg-indigo-600', text: 'text-white', border: 'border-indigo-700', textColor: 'text-indigo-800', bgLight: 'bg-indigo-100' },
+      { bg: 'bg-gray-600', text: 'text-white', border: 'border-gray-700', textColor: 'text-gray-800', bgLight: 'bg-gray-100' },
+      { bg: 'bg-cyan-500', text: 'text-white', border: 'border-cyan-600', textColor: 'text-cyan-800', bgLight: 'bg-cyan-100' },
+      { bg: 'bg-teal-500', text: 'text-white', border: 'border-teal-600', textColor: 'text-teal-800', bgLight: 'bg-teal-100' },
+      { bg: 'bg-amber-500', text: 'text-white', border: 'border-amber-600', textColor: 'text-amber-800', bgLight: 'bg-amber-100' },
+      { bg: 'bg-rose-600', text: 'text-white', border: 'border-rose-700', textColor: 'text-rose-800', bgLight: 'bg-rose-100' }
     ];
     
     // Map to store taxonomy key to color scheme mapping
     this.taxonomyColorMap = new Map();
+    
+    // Initialize with default taxonomies if none provided
+    this.initializeDefaultTaxonomies();
   }
 
   /**
@@ -113,7 +120,7 @@ class TextHighlighter {
             selection.addRange(this.currentRange.cloneRange());
             console.log('Restored selection, showing context menu...');
             // Show the context menu at the cursor position
-            this.showContextMenu(e);
+            setTimeout(() => this.showContextMenu(e), 0);
           } catch (err) {
             console.warn('Could not restore selection:', err);
           }
@@ -128,8 +135,8 @@ class TextHighlighter {
       this.currentRange = range.cloneRange();
       
       console.log('Stored selection and range, showing context menu...');
-      // Show the context menu at the cursor position
-      this.showContextMenu(e);
+      // Show the context menu at the cursor position with a small delay
+      setTimeout(() => this.showContextMenu(e), 0);
       
     } catch (error) {
       console.error('Error handling text selection:', error);
@@ -146,11 +153,24 @@ class TextHighlighter {
       }
       
       // Prevent default context menu
-      e.preventDefault();
+      if (e && e.preventDefault) {
+        e.preventDefault();
+      }
       
-      // Position the menu at the cursor
-      const x = e.clientX;
-      const y = e.clientY;
+      // Position the menu at the cursor or center of selection
+      let x, y;
+      if (e && e.clientX && e.clientY) {
+        x = e.clientX;
+        y = e.clientY;
+      } else if (this.currentRange) {
+        const range = this.currentRange.cloneRange();
+        const rect = range.getBoundingClientRect();
+        x = rect.left + (rect.width / 2);
+        y = rect.bottom + window.scrollY;
+      } else {
+        x = window.innerWidth / 2;
+        y = window.innerHeight / 2;
+      }
       
       console.log('Positioning context menu at:', { x, y });
       
@@ -162,7 +182,7 @@ class TextHighlighter {
       this.contextMenu.style.display = 'block';
       this.contextMenu.style.opacity = '1';
       this.contextMenu.style.pointerEvents = 'auto';
-      this.contextMenu.style.zIndex = '1000';
+      this.contextMenu.style.zIndex = '10000'; // Ensure it's above other elements
       
       // Update the context menu items
       this.updateContextMenu();
@@ -170,7 +190,13 @@ class TextHighlighter {
       // Force a reflow to ensure styles are applied
       this.contextMenu.offsetHeight;
       
+      // Add a class to prevent text selection while menu is open
+      document.body.classList.add('context-menu-open');
+      
       console.log('Context menu should be visible now');
+      
+      // Focus the context menu for keyboard navigation
+      this.contextMenu.focus();
       
     } catch (error) {
       console.error('Error showing context menu:', error);
@@ -181,7 +207,7 @@ class TextHighlighter {
    * Handles double click on highlighted text
    * @param {Event} e - The double click event
    */
-  handleDoubleClick(e) {
+  handleHighlightDoubleClick(e) {
     if (!e.target.classList.contains('text-highlight')) return;
     
     // Select the highlighted text
@@ -205,64 +231,200 @@ class TextHighlighter {
     });
   }
   
+  /**
+   * Initializes all event listeners
+   */
   initializeEventListeners() {
-    // Listen for selection changes to track the current selection
-    document.addEventListener('selectionchange', () => {
-      const selection = window.getSelection();
-      if (selection && selection.rangeCount > 0 && selection.toString().trim() !== '') {
+    console.log('Initializing event listeners...');
+    
+    // Bind the methods to maintain 'this' context
+    this.handleSelectionChange = this.handleSelectionChange.bind(this);
+    this.handleMouseUp = this.handleMouseUp.bind(this);
+    this.handleDoubleClick = this.handleDoubleClick.bind(this);
+    this.handleMouseDown = this.handleMouseDown.bind(this);
+    this.handleHighlightDoubleClick = this.handleHighlightDoubleClick.bind(this);
+    this.handleContextMenu = this.handleContextMenu.bind(this);
+    
+    // Remove any existing event listeners to prevent duplicates
+    document.removeEventListener('selectionchange', this.handleSelectionChange);
+    document.removeEventListener('mouseup', this.handleMouseUp);
+    document.removeEventListener('dblclick', this.handleDoubleClick);
+    document.removeEventListener('mousedown', this.handleMouseDown);
+    document.removeEventListener('dblclick', this.handleHighlightDoubleClick, true);
+    document.removeEventListener('contextmenu', this.handleContextMenu);
+    
+    // Add event listeners
+    document.addEventListener('selectionchange', this.handleSelectionChange);
+    document.addEventListener('mouseup', this.handleMouseUp);
+    document.addEventListener('dblclick', this.handleDoubleClick);
+    document.addEventListener('mousedown', this.handleMouseDown);
+    document.addEventListener('contextmenu', this.handleContextMenu);
+    
+    // Add double click listener for highlighted text
+    document.addEventListener('dblclick', this.handleHighlightDoubleClick, true);
+    
+    // Initialize context menu
+    this.initContextMenu();
+    
+    console.log('Event listeners initialized');
+  }
+  
+  /**
+   * Handles selection change events
+   */
+  handleSelectionChange() {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const selectedText = selection.toString().trim();
+      if (selectedText !== '') {
         this.currentSelection = selection;
         this.currentRange = selection.getRangeAt(0).cloneRange();
+        console.log('Selection updated:', { text: selectedText });
       }
-    });
-
-    // Handle mouseup for text selection
-    document.addEventListener('mouseup', (e) => {
-      // Don't show menu if clicking on the context menu itself
-      if (e.target.closest('#context-menu')) {
-        return;
-      }
+    }
+  }
+  
+  /**
+   * Handles mouse up events for text selection
+   */
+  handleMouseUp(e) {
+    // Don't show menu if clicking on the context menu itself
+    if (e.target.closest('#context-menu')) {
+      return;
+    }
+    
+    // Define the selection handler
+    const handleSelection = function() {
+      const selection = window.getSelection();
+      const selectedText = selection.toString().trim();
       
-      // Handle the selection with a small delay
-      setTimeout(() => {
-        this.handleTextSelection(e);
-      }, 10);
-    });
+      if (selectedText) {
+        try {
+          // Store the selection and range
+          this.currentSelection = selection;
+          this.currentRange = selection.rangeCount > 0 ? 
+            selection.getRangeAt(0).cloneRange() : 
+            null;
+          
+          console.log('Mouse up with selection:', selectedText);
+          
+          // Only show context menu if this was a text selection (not just a click)
+          if (this.currentRange && !this.currentRange.collapsed) {
+            this.handleTextSelection(e);
+          }
+        } catch (error) {
+          console.error('Error handling mouse up:', error);
+        }
+      }
+    }.bind(this);
+    
+    // Use a small delay to allow the selection to be properly set
+    setTimeout(handleSelection, 10);
+  }
 
-    // Handle double click for word selection
-    document.addEventListener('dblclick', (e) => {
-      // Prevent default to maintain selection
+  /**
+   * Handles mouse down events for hiding the context menu
+   */
+  handleMouseDown(e) {
+    // Only hide if clicking outside both the context menu and any highlighted text
+    if (this.contextMenu && !this.contextMenu.contains(e.target) && 
+        !e.target.classList.contains('text-highlight')) {
+      this.hideContextMenu();
+    }
+  }
+  
+  /**
+   * Handles context menu events
+   */
+  handleContextMenu(e) {
+    // Only show our custom context menu for text selections
+    const selection = window.getSelection();
+    const selectedText = selection.toString().trim();
+    
+    if (selectedText) {
       e.preventDefault();
       e.stopPropagation();
       
-      // Handle the double click selection with a small delay
-      setTimeout(() => {
-        this.handleTextSelection(e);
-      }, 10);
-    });
-
-    // Document click to hide context menu when clicking outside
-    document.addEventListener('mousedown', (e) => {
-      // Only hide if clicking outside both the context menu and any highlighted text
-      if (this.contextMenu && !this.contextMenu.contains(e.target) && 
-          !e.target.classList.contains('text-highlight')) {
-        this.hideContextMenu();
+      // Store the current selection and range
+      if (selection.rangeCount > 0) {
+        this.currentSelection = selection;
+        this.currentRange = selection.getRangeAt(0).cloneRange();
       }
-    });
+      
+      // Show the context menu with the stored selection
+      const showMenu = function() {
+        this.showContextMenu(e);
+      }.bind(this);
+      
+      // Use requestAnimationFrame to ensure the selection is preserved
+      requestAnimationFrame(showMenu);
+      
+      return false;
+    }
+  }
+  
+  /**
+   * Handles double click events for text selection
+   */
+  /**
+   * Handles double click events for text selection
+   */
+  handleDoubleClick(e) {
+    // Prevent default to maintain selection
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Define the selection handler
+    const handleSelection = function() {
+      const selection = window.getSelection();
+      const selectedText = selection.toString().trim();
+      
+      if (selectedText) {
+        this.currentSelection = selection;
+        this.currentRange = selection.rangeCount > 0 ? 
+          selection.getRangeAt(0).cloneRange() : 
+          null;
+        
+        console.log('Double click with selection:', selectedText);
+        this.handleTextSelection(e);
+      }
+    }.bind(this);
+    
+    // Use a small delay to allow the selection to be properly set
+    setTimeout(handleSelection, 10);
+  }
 
+  /**
+   * Initializes the context menu event listeners
+   */
+  initContextMenu() {
+    if (!this.contextMenu) {
+      // Try to find the context menu if not already set
+      this.contextMenu = document.getElementById('context-menu');
+      
+      if (!this.contextMenu) {
+        console.warn('Context menu element not found');
+        return;
+      }
+    }
+    
     // Prevent context menu from closing when clicking inside it
-    this.contextMenu?.addEventListener('mousedown', (e) => {
+    this.contextMenu.addEventListener('mousedown', (e) => {
       e.stopPropagation();
     });
     
     // Handle remove highlight button
-    document.getElementById('remove-highlight')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      if (this.currentSelection) {
-        this.removeHighlight();
-        this.hideContextMenu();
-      }
-    });
+    const removeHighlightBtn = document.getElementById('remove-highlight');
+    if (removeHighlightBtn) {
+      removeHighlightBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (this.currentSelection) {
+          this.removeHighlight();
+          this.hideContextMenu();
+        }
+      });
+    }
     
     // Initialize context menu with taxonomies when they're available
     // Use setTimeout to ensure the DOM is ready
@@ -293,15 +455,7 @@ class TextHighlighter {
       });
     });
 
-    // Remove highlight
-    const removeHighlightBtn = document.getElementById('remove-highlight');
-    if (removeHighlightBtn) {
-      removeHighlightBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.removeHighlight();
-        this.hideContextMenu();
-      });
-    }
+    // Remove highlight handler is already set up above
 
     // Listen for text selection
     document.addEventListener('mouseup', (e) => {
@@ -423,23 +577,21 @@ class TextHighlighter {
         
         // If surrounding fails (e.g., selection crosses node boundaries),
         // try a simpler approach that works with any selection
-        if (e instanceof DOMException) {
-          console.log('Falling back to text content replacement');
-          const selectedText = range.toString();
-          if (selectedText) {
-            highlightSpan.textContent = selectedText;
-            range.deleteContents();
-            range.insertNode(highlightSpan);
-            
-            // Clear the selection
-            if (window.getSelection) {
-              const sel = window.getSelection();
-              sel.removeAllRanges();
-            }
-            
-            // Add to history for undo/redo
-            this.addToHistory();
+        console.log('Falling back to text content replacement');
+        const selectedText = range.toString();
+        if (selectedText) {
+          highlightSpan.textContent = selectedText;
+          range.deleteContents();
+          range.insertNode(highlightSpan);
+          
+          // Clear the selection
+          if (window.getSelection) {
+            const sel = window.getSelection();
+            sel.removeAllRanges();
           }
+          
+          // Add to history for undo/redo
+          this.addToHistory();
         }
       }
       
@@ -553,6 +705,7 @@ class TextHighlighter {
       }
     }
     
+  }
 
   // Format category name for display
   formatCategoryName(name) {
@@ -563,20 +716,33 @@ class TextHighlighter {
       .trim();
   }
   
-  // Get color scheme for a taxonomy key
+  /**
+   * Get color scheme for a taxonomy key
+   * @param {string} key - The taxonomy key
+   * @returns {Object} Color scheme object with bg, text, border, etc.
+   */
   getColorSchemeForTaxonomy(key) {
     if (!key) return this.colorSchemes[0];
     
-    // Normalize the key
-    const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    // Normalize the key to match the format used in doccano.js
+    const normalizedKey = key.toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
     
-    // Return the color scheme if it exists, or create a new one
+    // Return existing color scheme if available
     if (this.taxonomyColorMap.has(normalizedKey)) {
       return this.taxonomyColorMap.get(normalizedKey);
     }
     
-    // Create a new color scheme for this key
-    const colorScheme = this.colorSchemes[Object.keys(this.taxonomyColorMap).length % this.colorSchemes.length];
+    // If not found, find the taxonomy in our data
+    const taxonomy = this.taxonomies.find(t => t.key === normalizedKey);
+    if (taxonomy && taxonomy.colorScheme) {
+      this.taxonomyColorMap.set(normalizedKey, taxonomy.colorScheme);
+      return taxonomy.colorScheme;
+    }
+    
+    // Assign a new color scheme if not found
+    const colorScheme = this.colorSchemes[this.taxonomyColorMap.size % this.colorSchemes.length];
     this.taxonomyColorMap.set(normalizedKey, colorScheme);
     return colorScheme;
   }
@@ -591,64 +757,84 @@ class TextHighlighter {
     ];
   }
 
-  // Process taxonomy data from documents or sync from sidebar
+  /**
+   * Initialize with default taxonomies if none are provided
+   */
+  initializeDefaultTaxonomies() {
+    this.taxonomies = [
+      { key: 'person', displayName: 'Person', colorScheme: this.colorSchemes[0] },
+      { key: 'organization', displayName: 'Organization', colorScheme: this.colorSchemes[1] },
+      { key: 'location', displayName: 'Location', colorScheme: this.colorSchemes[2] },
+      { key: 'date', displayName: 'Date', colorScheme: this.colorSchemes[3] },
+      { key: 'concept', displayName: 'Concept', colorScheme: this.colorSchemes[4] }
+    ];
+    
+    // Initialize color mapping
+    this.taxonomies.forEach((taxonomy, index) => {
+      this.taxonomyColorMap.set(taxonomy.key, this.colorSchemes[index % this.colorSchemes.length]);
+    });
+    
+    this.updateContextMenu();
+  }
+
+  /**
+   * Process taxonomy data from documents or sync from doccano.js
+   * @param {Array} documents - Array of document objects with taxonomy data
+   * @returns {Array} Processed taxonomies
+   */
   processTaxonomyData(documents) {
     try {
       console.log('Processing taxonomy data from documents:', documents);
       
       if (!documents || !Array.isArray(documents)) {
-        console.warn('Invalid or missing documents array');
-        return this.getDefaultTaxonomies();
+        console.warn('No documents provided for taxonomy processing');
+        return this.taxonomies;
       }
       
-      const taxonomyMap = new Map();
-      let colorIndex = 0;
+      // Get unique taxonomy keys from all documents
+      const taxonomyCounts = new Map();
       
-      // First, try to get taxonomies from document enrichment
-      documents.forEach(function(doc) {
-        if (doc.enrichment && doc.enrichment.taxonomy) {
-          Object.entries(doc.enrichment.taxonomy).forEach(function([key, items]) {
-            if (items && items.length > 0) {
-              // Normalize the key to match the format used in the sidebar
+      documents.forEach(doc => {
+        if (doc.enrichment?.taxonomy) {
+          Object.entries(doc.enrichment.taxonomy).forEach(([key, items]) => {
+            if (Array.isArray(items) && items.length > 0) {
               const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-              
-              if (!taxonomyMap.has(normalizedKey)) {
-                const colorScheme = this.colorSchemes[colorIndex % this.colorSchemes.length];
-                taxonomyMap.set(normalizedKey, {
-                  key: normalizedKey,
-                  displayName: this.formatCategoryName(key),
-                  count: 0,
-                  colorScheme: colorScheme
-                });
-                
-                // Update the color mapping for this taxonomy
-                this.taxonomyColorMap.set(normalizedKey, colorScheme);
-                
-                colorIndex++;
-              }
-              const category = taxonomyMap.get(normalizedKey);
-              category.count += Array.isArray(items) ? items.length : 0;
+              const currentCount = taxonomyCounts.get(normalizedKey) || 0;
+              taxonomyCounts.set(normalizedKey, currentCount + items.length);
             }
-          }.bind(this));
+          });
         }
-      }.bind(this));
+      });
       
-      // Convert map to array and sort by count (descending)
-      this.taxonomies = Array.from(taxonomyMap.values())
-        .sort(function(a, b) { return b.count - a.count; });
+      // Convert to array of objects with counts and sort by count (descending)
+      this.taxonomyData = Array.from(taxonomyCounts.entries())
+        .map(([key, count]) => ({
+          key,
+          count,
+          displayName: key
+            .split(/[-_]/)
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ')
+        }))
+        .sort((a, b) => b.count - a.count);
+      
+      // Update taxonomies with color schemes
+      this.taxonomies = this.taxonomyData.map((item, index) => {
+        const colorScheme = this.colorSchemes[index % this.colorSchemes.length];
+        this.taxonomyColorMap.set(item.key, colorScheme);
+        return {
+          ...item,
+          colorScheme
+        };
+      });
       
       console.log('Processed taxonomies:', this.taxonomies);
       
-      // If no taxonomies found, use defaults
-      if (this.taxonomies.length === 0) {
-        console.log('No taxonomies found, using defaults');
-        this.taxonomies = this.getDefaultTaxonomies();
-      }
-      
-      // Update the context menu with new taxonomies
+      // Update the context menu with the new taxonomies
       this.updateContextMenu();
       
       return this.taxonomies;
+      
     } catch (error) {
       console.error('Error processing taxonomy data:', error);
       return this.getDefaultTaxonomies();
@@ -786,6 +972,34 @@ function initToolbar() {
   });
 }
 
+// Initialize the text highlighter
+function initTextHighlighter() {
+  console.log('Initializing text highlighter...');
+  
+  // Create a single instance of TextHighlighter
+  if (!window.textHighlighter) {
+    window.textHighlighter = new TextHighlighter();
+    
+    // Initialize event listeners
+    window.textHighlighter.initializeEventListeners();
+    
+    // Initialize the toolbar
+    initToolbar();
+    
+    // Check if we have taxonomy data from doccano.js
+    if (window.doccano && window.doccano.taxonomyData) {
+      console.log('Found taxonomy data in doccano, processing...');
+      window.textHighlighter.processTaxonomyData(window.doccano.taxonomyData);
+    }
+    
+    console.log('Text highlighter initialized successfully');
+  } else {
+    console.log('Text highlighter already initialized');
+  }
+  
+  return window.textHighlighter;
+}
+
 // Export the TextHighlighter class and init function
 window.TextHighlighter = TextHighlighter;
 window.initTextHighlighter = initTextHighlighter;
@@ -795,10 +1009,8 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM fully loaded, initializing highlighter...');
     initTextHighlighter();
-    initToolbar();
   });
 } else {
   console.log('DOM already loaded, initializing highlighter immediately');
   initTextHighlighter();
-  initToolbar();
 }

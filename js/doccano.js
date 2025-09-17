@@ -1,3 +1,342 @@
+// Global function to hide context menu
+function hideMenu(clickEvent) {
+  const menu = document.getElementById('context-menu');
+  if (menu && !menu.contains(clickEvent.target)) {
+    menu.style.display = 'none';
+    document.removeEventListener('click', hideMenu);
+  }
+}
+
+// Global state for the highlighter
+const highlighterState = {
+  currentSelection: null,
+  currentRange: null,
+  colorSchemes: [
+    { bg: 'bg-blue-500', text: 'text-white', border: 'border-blue-600', textColor: 'text-blue-800', bgLight: 'bg-blue-100' },
+    { bg: 'bg-green-500', text: 'text-white', border: 'border-green-600', textColor: 'text-green-800', bgLight: 'bg-green-100' },
+    { bg: 'bg-yellow-500', text: 'text-white', border: 'border-yellow-600', textColor: 'text-yellow-800', bgLight: 'bg-yellow-100' },
+    { bg: 'bg-red-500', text: 'text-white', border: 'border-red-600', textColor: 'text-red-800', bgLight: 'bg-red-100' },
+    { bg: 'bg-purple-600', text: 'text-white', border: 'border-purple-700', textColor: 'text-purple-800', bgLight: 'bg-purple-100' },
+    { bg: 'bg-pink-500', text: 'text-white', border: 'border-pink-600', textColor: 'text-pink-800', bgLight: 'bg-pink-100' },
+    { bg: 'bg-indigo-600', text: 'text-white', border: 'border-indigo-700', textColor: 'text-indigo-800', bgLight: 'bg-indigo-100' },
+    { bg: 'bg-gray-600', text: 'text-white', border: 'border-gray-700', textColor: 'text-gray-800', bgLight: 'bg-gray-100' },
+    { bg: 'bg-cyan-500', text: 'text-white', border: 'border-cyan-600', textColor: 'text-cyan-800', bgLight: 'bg-cyan-100' },
+    { bg: 'bg-teal-500', text: 'text-white', border: 'border-teal-600', textColor: 'text-teal-800', bgLight: 'bg-teal-100' },
+    { bg: 'bg-amber-500', text: 'text-white', border: 'border-amber-600', textColor: 'text-amber-800', bgLight: 'bg-amber-100' },
+    { bg: 'bg-rose-600', text: 'text-white', border: 'border-rose-700', textColor: 'text-rose-800', bgLight: 'bg-rose-100' }
+  ],
+  taxonomyColorMap: new Map()
+};
+
+// Function to create context menu
+function createContextMenu() {
+  // Check if menu already exists
+  let menu = document.getElementById('context-menu');
+  if (menu) return menu;
+  
+  console.log('Creating new context menu');
+  menu = document.createElement('div');
+  menu.id = 'context-menu';
+  menu.className = 'fixed hidden bg-white rounded-lg shadow-lg z-50 py-2 min-w-[200px] border border-gray-200';
+  
+  // Create menu structure
+  const menuItems = document.createElement('div');
+  menuItems.className = 'context-menu__items';
+  
+  const menuHeader = document.createElement('div');
+  menuHeader.className = 'px-4 py-2 text-sm font-medium text-gray-700 border-b border-gray-100';
+  menuHeader.textContent = 'Add Label';
+  
+  const optionsContainer = document.createElement('div');
+  optionsContainer.id = 'taxonomy-options';
+  optionsContainer.className = 'max-h-60 overflow-y-auto';
+  
+  // Assemble the menu
+  menuItems.appendChild(menuHeader);
+  menuItems.appendChild(optionsContainer);
+  menu.appendChild(menuItems);
+  
+  // Add to body
+  document.body.appendChild(menu);
+  console.log('Context menu created');
+  return menu;
+}
+
+// Helper function to position and show the menu
+function positionAndShowMenu(menu, event) {
+  if (!menu || !event) return;
+  
+  try {
+    // Prevent the context menu from appearing
+    event.preventDefault();
+    
+    // Hide any existing context menus
+    document.querySelectorAll('.context-menu').forEach(m => {
+      if (m !== menu) m.style.display = 'none';
+    });
+    
+    // Position the menu
+    menu.style.display = 'block';
+    menu.style.left = `${event.pageX}px`;
+    menu.style.top = `${event.pageY}px`;
+    
+    // Use setTimeout to avoid immediate hide
+    setTimeout(() => {
+      document.addEventListener('click', hideMenu);
+    }, 0);
+    
+  } catch (error) {
+    console.error('Error positioning menu:', error);
+  }
+}
+
+// Function to show context menu
+function showContextMenu(e, taxonomies) {
+  console.log('Showing context menu at:', e.pageX, e.pageY);
+  console.log('Taxonomies to show:', taxonomies);
+  
+  // Ensure menu exists
+  let menu = document.getElementById('context-menu');
+  if (!menu) {
+    console.log('Menu not found, creating new one');
+    menu = createContextMenu();
+    if (!menu) {
+      console.error('Failed to create context menu');
+      return;
+    }
+  }
+  
+  try {
+  
+  // Ensure options container exists
+  let optionsContainer = menu.querySelector('#taxonomy-options');
+  if (!optionsContainer) {
+    console.warn('Options container not found, recreating menu');
+    if (menu.remove) menu.remove();
+    menu = createContextMenu();
+    optionsContainer = menu.querySelector('#taxonomy-options');
+    
+    if (!optionsContainer) {
+      console.error('Failed to create options container');
+      return;
+    }
+  }
+  
+  // Clear previous options
+  while (optionsContainer.firstChild) {
+    optionsContainer.removeChild(optionsContainer.firstChild);
+  }
+
+  // Handle empty taxonomies
+  if (!taxonomies || !Array.isArray(taxonomies) || taxonomies.length === 0) {
+    console.warn('No valid taxonomies provided');
+    const noItems = document.createElement('div');
+    noItems.className = 'px-4 py-2 text-sm text-gray-500';
+    noItems.textContent = 'No taxonomies available';
+    optionsContainer.appendChild(noItems);
+    
+    // Still show the menu with the message
+    positionAndShowMenu(menu, e);
+    return;
+  }
+  
+    // Add taxonomy options
+    if (!taxonomies || !Array.isArray(taxonomies)) {
+      console.error('Invalid taxonomies:', taxonomies);
+      const errorItem = document.createElement('div');
+      errorItem.className = 'px-4 py-2 text-sm text-red-500';
+      errorItem.textContent = 'No taxonomies available';
+      optionsContainer.appendChild(errorItem);
+      return;
+    }
+    
+    console.log(`Adding ${taxonomies.length} taxonomy options`);
+    
+    taxonomies.forEach((taxonomy, index) => {
+      try {
+        if (!taxonomy || !taxonomy.key) {
+          console.warn('Invalid taxonomy item at index', index, ':', taxonomy);
+          return;
+        }
+        
+        const colorIndex = index % highlighterState.colorSchemes.length;
+        const colorScheme = highlighterState.colorSchemes[colorIndex];
+        
+        // Update the color map
+        highlighterState.taxonomyColorMap.set(taxonomy.key, colorScheme);
+        
+        // Create option container
+        const option = document.createElement('div');
+        option.className = `px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center ${colorScheme.text} ${colorScheme.bg}`;
+        
+        // Create color indicator
+        const colorIndicator = document.createElement('span');
+        colorIndicator.className = `w-3 h-3 rounded-full ${colorScheme.bg} mr-2`;
+        
+        // Create text node for display name
+        const textNode = document.createTextNode(taxonomy.displayName || taxonomy.key);
+        
+        // Assemble option
+        option.appendChild(colorIndicator);
+        option.appendChild(textNode);
+        
+        // Add click handler
+        option.addEventListener('click', () => {
+          console.log('Selected taxonomy:', taxonomy.key);
+          highlightSelection(taxonomy.key);
+        });
+        
+        // Add to container
+        optionsContainer.appendChild(option);
+        
+      } catch (error) {
+        console.error('Error creating taxonomy option:', error, taxonomy);
+      }
+    });
+    
+    // Position and show the menu
+    positionAndShowMenu(menu, e);
+    
+  } catch (error) {
+    console.error('Error showing context menu:', error);
+    // If we have a menu but an error occurred, still try to show it
+    if (menu) {
+      positionAndShowMenu(menu, e);
+    }
+  }
+  
+  // Set up click outside to hide menu
+  setTimeout(() => document.addEventListener('click', hideMenu), 0);
+}
+
+// Function to handle text selection
+function handleTextSelection(e) {
+  console.log('Text selection detected');
+  const selection = window.getSelection();
+  const selectedText = selection.toString().trim();
+  
+  if (selectedText && !e.target.closest('#context-menu')) {
+    console.log('Valid text selection:', selectedText);
+    highlighterState.currentSelection = selection;
+    highlighterState.currentRange = selection.getRangeAt(0).cloneRange();
+    
+    // Get taxonomies from the page or use processed taxonomy data
+    let taxonomies = [];
+    
+    // First try to use the taxonomy data we have in memory
+    if (window.doccano?.taxonomyData?.length > 0) {
+      console.log('Using taxonomy data from doccano.taxonomyData');
+      taxonomies = window.doccano.taxonomyData.map(item => ({
+        key: item.key,
+        displayName: item.displayName || item.key
+      }));
+      console.log('Using processed taxonomies:', taxonomies);
+    }
+    
+    // If no taxonomies in memory, try to get from the taxonomy container
+    if (taxonomies.length === 0) {
+      console.log('No taxonomies in memory, checking DOM...');
+      const taxonomyContainer = document.getElementById('taxonomy-container');
+      if (taxonomyContainer) {
+        console.log('Found taxonomy container, getting taxonomies...');
+        const taxonomyElements = taxonomyContainer.querySelectorAll('[data-taxonomy]');
+        if (taxonomyElements.length > 0) {
+          taxonomies = Array.from(taxonomyElements).map(el => ({
+            key: el.getAttribute('data-taxonomy'),
+            displayName: el.textContent.trim()
+          }));
+          console.log('Found taxonomies in DOM:', taxonomies);
+          
+          // Store these taxonomies for future use
+          if (!window.doccano) window.doccano = {};
+          if (!window.doccano.taxonomyData) {
+            window.doccano.taxonomyData = taxonomies;
+          }
+        }
+      }
+    }
+    
+    // If we still don't have taxonomies, try to use the color map
+    if (taxonomies.length === 0 && highlighterState.taxonomyColorMap.size > 0) {
+      console.log('Using taxonomies from color map');
+      taxonomies = Array.from(highlighterState.taxonomyColorMap.entries()).map(([key, colorScheme]) => ({
+        key,
+        displayName: key
+      }));
+    }
+    
+    if (taxonomies.length > 0) {
+      console.log('Showing context menu with taxonomies:', taxonomies);
+      e.preventDefault();
+      showContextMenu(e, taxonomies);
+    } else {
+      console.warn('No taxonomies found to show in context menu');
+      console.log('Highlighter state:', highlighterState);
+      console.log('Window.doccano:', window.doccano);
+      
+      // Try to find any taxonomy elements in the entire document
+      const allTaxonomyElements = document.querySelectorAll('[data-taxonomy]');
+      console.log('All taxonomy elements in document:', allTaxonomyElements);
+      
+      if (allTaxonomyElements.length > 0) {
+        console.log('Found taxonomy elements outside of container:', allTaxonomyElements);
+        taxonomies = Array.from(allTaxonomyElements).map(el => ({
+          key: el.getAttribute('data-taxonomy'),
+          displayName: el.textContent.trim()
+        }));
+        
+        if (taxonomies.length > 0) {
+          console.log('Showing context menu with taxonomies from document:', taxonomies);
+          e.preventDefault();
+          showContextMenu(e, taxonomies);
+          return;
+        }
+      }
+      
+      // As a last resort, show a default set of taxonomies
+      console.log('Showing default taxonomies');
+      taxonomies = [
+        { key: 'concept', displayName: 'Concept' },
+        { key: 'entity', displayName: 'Entity' },
+        { key: 'action', displayName: 'Action' }
+      ];
+      showContextMenu(e, taxonomies);
+    }
+  }
+}
+
+// Function to highlight selected text
+function highlightSelection(category) {
+  if (!highlighterState.currentSelection || !highlighterState.currentRange) return;
+  
+  const selection = highlighterState.currentSelection;
+  const range = highlighterState.currentRange;
+  const selectedText = selection.toString().trim();
+  
+  if (!selectedText) return;
+  
+  const colorScheme = highlighterState.colorSchemes[
+    Array.from(highlighterState.taxonomyColorMap.keys()).indexOf(category) % highlighterState.colorSchemes.length
+  ] || highlighterState.colorSchemes[0];
+  
+  const span = document.createElement('span');
+  span.className = `highlighted ${colorScheme.bg} ${colorScheme.text} px-1 rounded`;
+  span.setAttribute('data-category', category);
+  span.textContent = selectedText;
+  
+  range.deleteContents();
+  range.insertNode(span);
+  
+  // Clear selection
+  selection.removeAllRanges();
+  highlighterState.currentSelection = null;
+  highlighterState.currentRange = null;
+  
+  // Hide context menu
+  const menu = document.getElementById('context-menu');
+  if (menu) menu.style.display = 'none';
+}
+
 // Function to load and process NDJSON data
 async function loadNDJSONData() {
   try {
@@ -539,6 +878,14 @@ function setupSidebarToggle() {
 
 // Update the DOMContentLoaded event listener
 document.addEventListener("DOMContentLoaded", async function () {
+  // Set up event listeners for text selection
+  document.addEventListener('mouseup', handleTextSelection);
+  document.addEventListener('contextmenu', (e) => {
+    if (highlighterState.currentSelection) {
+      e.preventDefault();
+    }
+  });
+  
   // Set up sidebar toggle functionality
   setupSidebarToggle();
   try {
@@ -575,31 +922,139 @@ document.addEventListener("DOMContentLoaded", async function () {
     const taxonomyData = processTaxonomyData(documents);
     renderTaxonomy(taxonomyData);
     
-    // Initialize the text highlighter
+    // Store taxonomy data in a globally accessible location
+    if (!window.doccano) window.doccano = {};
+    window.doccano.taxonomyData = taxonomyData;
+    console.log('Stored taxonomy data in window.doccano.taxonomyData:', taxonomyData);
+    
+    // Track highlighter initialization state
+    let isHighlighterInitializing = false;
+    let highlighterRetryCount = 0;
+    const MAX_RETRIES = 10;
+    
+    // Function to safely initialize the highlighter
     const initializeHighlighter = () => {
-      // Check if document viewer exists
-      const documentViewer = document.getElementById('document-viewer');
-      if (!documentViewer) {
-        console.log('Document viewer not found, retrying in 100ms...');
-        setTimeout(initializeHighlighter, 100);
+      console.log('Initializing highlighter...');
+      
+      // Create context menu if it doesn't exist
+      createContextMenu();
+      
+      // Clear any existing taxonomy mappings
+      highlighterState.taxonomyColorMap.clear();
+      
+      // First try to use the taxonomy data we just processed
+      if (window.doccano?.taxonomyData?.length > 0) {
+        console.log('Using taxonomy data from doccano.taxonomyData:', window.doccano.taxonomyData);
+        window.doccano.taxonomyData.forEach((taxonomy, index) => {
+          try {
+            const colorScheme = highlighterState.colorSchemes[index % highlighterState.colorSchemes.length];
+            highlighterState.taxonomyColorMap.set(taxonomy.key, colorScheme);
+            console.log(`Mapped taxonomy (from data): ${taxonomy.key} to color ${colorScheme.bg}`);
+            
+            // Also update the DOM elements if they exist
+            const selector = `[data-taxonomy="${taxonomy.key}"]`;
+            const elements = document.querySelectorAll(selector);
+            if (elements.length > 0) {
+              console.log(`Found ${elements.length} DOM elements for taxonomy: ${taxonomy.key}`);
+            }
+          } catch (error) {
+            console.error('Error processing taxonomy data:', error, taxonomy);
+          }
+        });
+      }
+      
+      // Then try to get taxonomies from the DOM as a fallback
+      const taxonomyElements = document.querySelectorAll('[data-taxonomy]');
+      console.log('Found taxonomy elements in DOM:', taxonomyElements.length);
+      
+      if (taxonomyElements.length > 0) {
+        taxonomyElements.forEach((el, index) => {
+          try {
+            const taxonomy = el.getAttribute('data-taxonomy');
+            // Only add if not already in the map
+            if (!highlighterState.taxonomyColorMap.has(taxonomy)) {
+              const colorIndex = Object.keys(highlighterState.taxonomyColorMap).length + index;
+              const colorScheme = highlighterState.colorSchemes[colorIndex % highlighterState.colorSchemes.length];
+              highlighterState.taxonomyColorMap.set(taxonomy, colorScheme);
+              console.log(`Mapped taxonomy (from DOM): ${taxonomy} to color ${colorScheme.bg}`);
+            }
+          } catch (error) {
+            console.error('Error processing taxonomy element:', error, el);
+          }
+        });
+      }
+      
+      if (highlighterState.taxonomyColorMap.size === 0) {
+        console.warn('No taxonomies found in either data or DOM. Checking renderTaxonomy...');
+        // Try to get taxonomies from the renderTaxonomy function if it exists
+        if (typeof renderTaxonomy === 'function') {
+          console.log('renderTaxonomy function exists, checking for taxonomies...');
+          // This is a hack to get the taxonomies from the renderTaxonomy function
+          try {
+            const tempDiv = document.createElement('div');
+            const originalConsoleLog = console.log;
+            const logs = [];
+            console.log = (...args) => logs.push(args);
+            
+            // Call renderTaxonomy with a mock container
+            renderTaxonomy(taxonomyData, tempDiv);
+            console.log = originalConsoleLog;
+            
+            console.log('Render taxonomy logs:', logs);
+            console.log('Render taxonomy output:', tempDiv.innerHTML);
+          } catch (e) {
+            console.error('Error checking renderTaxonomy:', e);
+          }
+        }
+      }
+      
+      console.log('Highlighter initialized with', highlighterState.taxonomyColorMap.size, 'taxonomies');
+      
+      // Log the current state for debugging
+      console.log('Current highlighter state:', {
+        colorSchemes: highlighterState.colorSchemes.length,
+        taxonomyMap: Object.fromEntries(highlighterState.taxonomyColorMap.entries())
+      });
+    };
+    
+    // Function to highlight the test section
+    const highlightTestSection = () => {
+      // Only proceed if we have a valid highlighter
+      if (!window.textHighlighter) {
+        console.error('Cannot highlight: textHighlighter not available');
         return;
       }
       
-      // Initialize the text highlighter
-      if (window.initTextHighlighter) {
-        console.log('Initializing text highlighter...');
-        window.initTextHighlighter();
+      const testSection = document.getElementById('test-section');
+      if (!testSection) {
+        console.error('Test section not found');
+        return;
+      }
+      
+      try {
+        const range = document.createRange();
+        range.selectNodeContents(testSection);
         
-        // Update the text highlighter with taxonomy data
-        if (window.textHighlighter && typeof window.textHighlighter.processTaxonomyData === 'function') {
-          window.textHighlighter.processTaxonomyData(documents);
-          console.log('Updated text highlighter with taxonomy data');
+        // Ensure the highlightSelection method exists
+        if (typeof window.textHighlighter.highlightSelection === 'function') {
+          window.textHighlighter.highlightSelection('test');
+          console.log('Test section highlighted successfully');
+        } else {
+          console.error('highlightSelection method not found on textHighlighter');
         }
-      } else {
-        console.log('Text highlighter not loaded yet, retrying in 100ms...');
-        setTimeout(initializeHighlighter, 100);
+      } catch (error) {
+        console.error('Error highlighting test section:', error);
+      } finally {
+        // Reset initialization state
+        isHighlighterInitializing = false;
       }
     };
+    
+    // Add a test section to the document viewer
+    const testSection = document.createElement('div');
+    testSection.id = 'test-section';
+    testSection.textContent = 'This is a test section.';
+    document.getElementById('document-viewer').appendChild(testSection);
     
     // Start the initialization process
     initializeHighlighter();
