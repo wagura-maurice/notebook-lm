@@ -642,9 +642,9 @@ function highlightSelection(category) {
     colorScheme = highlighterState.taxonomyColorMap.get(category);
   }
 
-  // Create a highlighted span for the selected text
+  // Create a highlighted span for the selected text with tooltip
   const span = document.createElement('span');
-  span.className = `taxonomy-highlight ${colorScheme.highlight} ${colorScheme.textColor} px-1 py-0.5 rounded cursor-pointer`;
+  span.className = `taxonomy-highlight group relative ${colorScheme.highlight} ${colorScheme.textColor} px-1 py-0.5 rounded cursor-pointer`;
   
   // Get the base color class (remove 'bg-' prefix if it exists)
   const baseColor = colorScheme.bg.replace('bg-', '');
@@ -656,6 +656,17 @@ function highlightSelection(category) {
   span.style.transition = 'all 0.2s ease';
   span.style.boxShadow = 'inset 0 -2px 0 0 rgba(0,0,0,0.05)';
   span.textContent = selectedText;
+  
+  // Create tooltip element
+  const tooltip = document.createElement('div');
+  tooltip.className = 'absolute z-50 px-2 py-1 text-xs text-white bg-gray-800 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap';
+  tooltip.style.top = '-30px';
+  tooltip.style.left = '50%';
+  tooltip.style.transform = 'translateX(-50%)';
+  tooltip.textContent = category;
+  
+  // Add tooltip to the highlight
+  span.appendChild(tooltip);
   
   // Store the category and color scheme data
   span.dataset.category = category;
@@ -671,7 +682,8 @@ function highlightSelection(category) {
   // Add click handler to show the popup
   span.addEventListener('click', (e) => {
     e.stopPropagation();
-    showHighlightPopup(span, selectedText, category, colorScheme);
+    // Optionally keep this if you want to show a popup on click
+    // showHighlightPopup(span, selectedText, category, colorScheme);
   });
   
   // Replace the selected text with our highlighted span
@@ -687,16 +699,86 @@ function highlightSelection(category) {
   const menu = document.getElementById('context-menu');
   if (menu) menu.style.display = 'none';
   
-  // Show a success message
+  // Log detailed information about the highlighted text
+  const logHighlightInfo = () => {
+    try {
+      // Get the parent paragraph element
+      const paragraph = span.closest('p');
+      if (!paragraph) return;
+      
+      // Get all text content of the paragraph
+      const paragraphText = paragraph.textContent || '';
+      
+      // Get the full text up to the highlighted text
+      const textUpToHighlight = paragraphText.substring(0, paragraphText.indexOf(selectedText));
+      
+      // Calculate line number by counting newlines
+      const linesUpToHighlight = textUpToHighlight.split('\n');
+      const lineNumber = linesUpToHighlight.length;
+      
+      // Get the position in the current line
+      const positionInLine = linesUpToHighlight[linesUpToHighlight.length - 1].length;
+      
+      // Create a map of the highlight information
+      const highlightInfo = {
+        text: selectedText,
+        category: category,
+        lineNumber: lineNumber,
+        positionInLine: positionInLine,
+        fullText: paragraphText,
+        context: {
+          before: textUpToHighlight.substring(textUpToHighlight.length - 30), // Last 30 chars before highlight
+          after: paragraphText.substring(paragraphText.indexOf(selectedText) + selectedText.length, 
+                                       paragraphText.indexOf(selectedText) + selectedText.length + 30) // Next 30 chars after highlight
+        },
+        timestamp: new Date().toISOString()
+      };
+      
+      // Log to console in a readable format
+      console.group('Highlight Information');
+      console.log('Text:', highlightInfo.text);
+      console.log('Category:', highlightInfo.category);
+      console.log('Line Number:', highlightInfo.lineNumber);
+      console.log('Position in Line:', highlightInfo.positionInLine);
+      console.log('Context:', highlightInfo.context);
+      console.log('Full Paragraph:', highlightInfo.fullText);
+      console.groupEnd();
+      
+      // Also log the complete info as a single object
+      console.log('Highlight Details:', highlightInfo);
+      
+      return highlightInfo;
+    } catch (error) {
+      console.error('Error logging highlight info:', error);
+      return null;
+    }
+  };
+  
+  // Call the logging function
+  const highlightInfo = logHighlightInfo();
+  
+  // Remove any existing popup
+  const existingPopup = document.getElementById('assignment-popup');
+  if (existingPopup) {
+    existingPopup.remove();
+  }
+  
+  // Show a subtle success message
   const successMsg = document.createElement('div');
-  successMsg.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg';
-  successMsg.textContent = `Assigned "${selectedText}" to ${category}`;
+  successMsg.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg text-sm';
+  successMsg.textContent = `✓ Assigned to ${category}`;
   document.body.appendChild(successMsg);
   
-  // Remove the success message after 3 seconds
+  // Remove the success message after 2 seconds
   setTimeout(() => {
-    successMsg.remove();
-  }, 3000);
+    successMsg.style.opacity = '0';
+    successMsg.style.transition = 'opacity 0.5s ease';
+    
+    // Remove from DOM after fade out
+    setTimeout(() => {
+      successMsg.remove();
+    }, 500);
+  }, 2000);
 }
 
 // Function to show a popup for an existing highlight
@@ -1825,23 +1907,3 @@ function formatDate(dateString) {
   }
 }
 
-
-// ----------------------------------
-// Update the DOMContentLoaded event listener
-document.addEventListener("DOMContentLoaded", function() {
-  // Show popup on text selection
-  document.addEventListener('mouseup', handleTextSelection);
-  
-  // Also show popup on double-click
-  document.addEventListener('dblclick', handleTextSelection);
-  
-  // Prevent context menu on selection
-  document.addEventListener('contextmenu', (e) => {
-    const selection = window.getSelection();
-    if (selection && !selection.isCollapsed) {
-      e.preventDefault();
-    }
-  });
-  
-  // Rest of your initialization code...
-});
