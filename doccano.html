@@ -612,16 +612,8 @@
       type="application/JavaScript"
       src="https://code.jquery.com/jquery-3.7.1.min.js"
     ></script>
-    <script>
-      // Debug: Check if text-highlighting.js is loaded
-      console.log('Before loading text-highlighting.js');
-    </script>
+    <!-- Load text-highlighting.js first but don't initialize yet -->
     <script src="./js/text-highlighting.js"></script>
-    <script>
-      // Debug: Check if TextHighlighter is available
-      console.log('After loading text-highlighting.js');
-      console.log('TextHighlighter available:', typeof TextHighlighter !== 'undefined');
-    </script>
     <script
       type="application/JavaScript"
       src="https://cdn.jsdelivr.net/npm/sweetalert2@11"

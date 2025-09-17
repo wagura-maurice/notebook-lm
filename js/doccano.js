@@ -575,19 +575,34 @@ document.addEventListener("DOMContentLoaded", async function () {
     const taxonomyData = processTaxonomyData(documents);
     renderTaxonomy(taxonomyData);
     
-    // Update the text highlighter with taxonomy data
-    const updateHighlighterWithData = () => {
-      if (window.textHighlighter && typeof window.textHighlighter.processTaxonomyData === 'function') {
-        window.textHighlighter.processTaxonomyData(documents);
-        console.log('Updated text highlighter with taxonomy data');
+    // Initialize the text highlighter
+    const initializeHighlighter = () => {
+      // Check if document viewer exists
+      const documentViewer = document.getElementById('document-viewer');
+      if (!documentViewer) {
+        console.log('Document viewer not found, retrying in 100ms...');
+        setTimeout(initializeHighlighter, 100);
+        return;
+      }
+      
+      // Initialize the text highlighter
+      if (window.initTextHighlighter) {
+        console.log('Initializing text highlighter...');
+        window.initTextHighlighter();
+        
+        // Update the text highlighter with taxonomy data
+        if (window.textHighlighter && typeof window.textHighlighter.processTaxonomyData === 'function') {
+          window.textHighlighter.processTaxonomyData(documents);
+          console.log('Updated text highlighter with taxonomy data');
+        }
       } else {
-        console.log('Text highlighter not ready yet, retrying in 100ms...');
-        setTimeout(updateHighlighterWithData, 100);
+        console.log('Text highlighter not loaded yet, retrying in 100ms...');
+        setTimeout(initializeHighlighter, 100);
       }
     };
     
-    // Start the update process
-    updateHighlighterWithData();
+    // Start the initialization process
+    initializeHighlighter();
     
     // Update document info with the latest document
     const latestDoc = documents.sort((a, b) => new Date(b._ts) - new Date(a._ts))[0];
