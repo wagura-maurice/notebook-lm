@@ -495,6 +495,42 @@ body {
 /* Ensure proper stacking context */
 .text-highlight {
   isolation: isolate;
+  position: relative;
+}
+
+/* Highlight container */
+.highlight-container {
+  position: relative;
+  display: inline-block;
+  margin: 0.2em 0;
+  line-height: 1.4;
+}
+
+/* Highlight label */
+.highlight-label {
+  position: absolute;
+  top: -1.2em;
+  left: 0;
+  font-size: 0.7em;
+  color: white;
+  padding: 0.1em 0.4em;
+  border-radius: 0.25em 0.25em 0 0;
+  white-space: nowrap;
+  line-height: 1.2;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+/* Show label on hover */
+.highlight-container:hover .highlight-label {
+  opacity: 1;
+}
+
+/* Adjust for better spacing */
+.highlight-container + .highlight-container {
+  margin-left: 0.2em;
 }
 
 /* Ensure text remains selectable and clickable */

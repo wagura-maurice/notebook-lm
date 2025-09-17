@@ -651,7 +651,13 @@ class TextHighlighter {
       const range = selection.getRangeAt(0);
       const selectedContent = range.extractContents();
       
-      // Create a new span for the highlight
+      // Create a container for the highlight and label
+      const highlightContainer = document.createElement('span');
+      highlightContainer.className = 'highlight-container';
+      highlightContainer.style.position = 'relative';
+      highlightContainer.style.display = 'inline-block';
+      
+      // Create the highlight span
       const highlightSpan = document.createElement('span');
       
       // Set base and category-specific classes
@@ -662,6 +668,29 @@ class TextHighlighter {
       highlightSpan.style.borderBottom = `2px solid ${borderColor}`;
       highlightSpan.style.boxShadow = `0 0 0 1px ${borderColor}`;
       highlightSpan.style.borderRadius = '0.25rem';
+      highlightSpan.style.display = 'inline-block';
+      
+      // Create the label
+      const label = document.createElement('span');
+      label.className = 'highlight-label';
+      label.textContent = categoryKey;
+      label.style.position = 'absolute';
+      label.style.top = '-1.2em';
+      label.style.left = '0';
+      label.style.fontSize = '0.7em';
+      label.style.backgroundColor = bgColor;
+      label.style.color = 'white';
+      label.style.padding = '0.1em 0.4em';
+      label.style.borderRadius = '0.25em 0.25em 0 0';
+      label.style.border = `1px solid ${borderColor}`;
+      label.style.borderBottom = 'none';
+      label.style.whiteSpace = 'nowrap';
+      label.style.lineHeight = '1.2';
+      label.style.zIndex = '2';
+      
+      // Add label and highlight to container
+      highlightContainer.appendChild(label);
+      highlightContainer.appendChild(highlightSpan);
       highlightSpan.style.padding = '0.125rem 0.25rem';
       highlightSpan.style.margin = '0 -0.125rem';
       highlightSpan.style.transition = 'all 0.2s ease';
@@ -689,8 +718,11 @@ class TextHighlighter {
       // Add the selected content to the highlight span
       highlightSpan.appendChild(selectedContent);
       
-      // Insert the highlight span into the document
-      range.insertNode(highlightSpan);
+      // Insert the highlight container into the document
+      range.insertNode(highlightContainer);
+      
+      // Update the highlight span reference to the container for the rest of the function
+      const highlightElement = highlightContainer;
       
       // Clear the selection
       if (window.getSelection) {
