@@ -11,21 +11,105 @@ function hideMenu(clickEvent) {
 const highlighterState = {
   currentSelection: null,
   currentRange: null,
+  taxonomyColorMap: new Map(),
   colorSchemes: [
-    { bg: 'bg-blue-500', text: 'text-white', border: 'border-blue-600', textColor: 'text-blue-800', bgLight: 'bg-blue-100' },
-    { bg: 'bg-green-500', text: 'text-white', border: 'border-green-600', textColor: 'text-green-800', bgLight: 'bg-green-100' },
-    { bg: 'bg-yellow-500', text: 'text-white', border: 'border-yellow-600', textColor: 'text-yellow-800', bgLight: 'bg-yellow-100' },
-    { bg: 'bg-red-500', text: 'text-white', border: 'border-red-600', textColor: 'text-red-800', bgLight: 'bg-red-100' },
-    { bg: 'bg-purple-600', text: 'text-white', border: 'border-purple-700', textColor: 'text-purple-800', bgLight: 'bg-purple-100' },
-    { bg: 'bg-pink-500', text: 'text-white', border: 'border-pink-600', textColor: 'text-pink-800', bgLight: 'bg-pink-100' },
-    { bg: 'bg-indigo-600', text: 'text-white', border: 'border-indigo-700', textColor: 'text-indigo-800', bgLight: 'bg-indigo-100' },
-    { bg: 'bg-gray-600', text: 'text-white', border: 'border-gray-700', textColor: 'text-gray-800', bgLight: 'bg-gray-100' },
-    { bg: 'bg-cyan-500', text: 'text-white', border: 'border-cyan-600', textColor: 'text-cyan-800', bgLight: 'bg-cyan-100' },
-    { bg: 'bg-teal-500', text: 'text-white', border: 'border-teal-600', textColor: 'text-teal-800', bgLight: 'bg-teal-100' },
-    { bg: 'bg-amber-500', text: 'text-white', border: 'border-amber-600', textColor: 'text-amber-800', bgLight: 'bg-amber-100' },
-    { bg: 'bg-rose-600', text: 'text-white', border: 'border-rose-700', textColor: 'text-rose-800', bgLight: 'bg-rose-100' }
-  ],
-  taxonomyColorMap: new Map()
+    { 
+      bg: 'bg-blue-500', 
+      text: 'text-white', 
+      border: 'border-blue-600',
+      highlight: 'bg-blue-100',
+      highlightBorder: 'border-blue-200',
+      textColor: 'text-blue-800'
+    },
+    { 
+      bg: 'bg-green-500', 
+      text: 'text-white', 
+      border: 'border-green-600',
+      highlight: 'bg-green-100',
+      highlightBorder: 'border-green-200',
+      textColor: 'text-green-800'
+    },
+    { 
+      bg: 'bg-yellow-500', 
+      text: 'text-white', 
+      border: 'border-yellow-600',
+      highlight: 'bg-yellow-100',
+      highlightBorder: 'border-yellow-200',
+      textColor: 'text-yellow-800'
+    },
+    { 
+      bg: 'bg-red-500', 
+      text: 'text-white', 
+      border: 'border-red-600',
+      highlight: 'bg-red-100',
+      highlightBorder: 'border-red-200',
+      textColor: 'text-red-800'
+    },
+    { 
+      bg: 'bg-purple-600', 
+      text: 'text-white', 
+      border: 'border-purple-700',
+      highlight: 'bg-purple-100',
+      highlightBorder: 'border-purple-200',
+      textColor: 'text-purple-800'
+    },
+    { 
+      bg: 'bg-pink-500', 
+      text: 'text-white', 
+      border: 'border-pink-600',
+      highlight: 'bg-pink-100',
+      highlightBorder: 'border-pink-200',
+      textColor: 'text-pink-800'
+    },
+    { 
+      bg: 'bg-indigo-600', 
+      text: 'text-white', 
+      border: 'border-indigo-700',
+      highlight: 'bg-indigo-100',
+      highlightBorder: 'border-indigo-200',
+      textColor: 'text-indigo-800'
+    },
+    { 
+      bg: 'bg-gray-600', 
+      text: 'text-white', 
+      border: 'border-gray-700',
+      highlight: 'bg-gray-100',
+      highlightBorder: 'border-gray-200',
+      textColor: 'text-gray-800'
+    },
+    { 
+      bg: 'bg-cyan-500', 
+      text: 'text-white', 
+      border: 'border-cyan-600',
+      highlight: 'bg-cyan-100',
+      highlightBorder: 'border-cyan-200',
+      textColor: 'text-cyan-800'
+    },
+    { 
+      bg: 'bg-teal-500', 
+      text: 'text-white', 
+      border: 'border-teal-600',
+      highlight: 'bg-teal-100',
+      highlightBorder: 'border-teal-200',
+      textColor: 'text-teal-800'
+    },
+    { 
+      bg: 'bg-amber-500', 
+      text: 'text-white', 
+      border: 'border-amber-600',
+      highlight: 'bg-amber-100',
+      highlightBorder: 'border-amber-200',
+      textColor: 'text-amber-800'
+    },
+    { 
+      bg: 'bg-rose-600', 
+      text: 'text-white', 
+      border: 'border-rose-700',
+      highlight: 'bg-rose-100',
+      highlightBorder: 'border-rose-200',
+      textColor: 'text-rose-800'
+    }
+  ]
 };
 
 // Function to create context menu
@@ -159,15 +243,17 @@ function showContextMenu(e, taxonomies) {
           return;
         }
         
-        const colorIndex = index % highlighterState.colorSchemes.length;
-        const colorScheme = highlighterState.colorSchemes[colorIndex];
+        // Get or create color scheme for this taxonomy
+        if (!highlighterState.taxonomyColorMap.has(taxonomy.key)) {
+          const colorIndex = highlighterState.taxonomyColorMap.size % highlighterState.colorSchemes.length;
+          highlighterState.taxonomyColorMap.set(taxonomy.key, highlighterState.colorSchemes[colorIndex]);
+        }
         
-        // Update the color map
-        highlighterState.taxonomyColorMap.set(taxonomy.key, colorScheme);
+        const colorScheme = highlighterState.taxonomyColorMap.get(taxonomy.key);
         
         // Create option container
         const option = document.createElement('div');
-        option.className = `px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center ${colorScheme.text} ${colorScheme.bg}`;
+        option.className = `px-4 py-2 text-sm cursor-pointer hover:opacity-90 flex items-center ${colorScheme.text} ${colorScheme.bg} rounded`;
         
         // Create color indicator
         const colorIndicator = document.createElement('span');
@@ -305,27 +391,101 @@ function handleTextSelection(e) {
   }
 }
 
-// Function to highlight selected text
-function highlightSelection(category) {
-  if (!highlighterState.currentSelection || !highlighterState.currentRange) return;
+// Function to create a popup element
+function createPopup(text, category, colorScheme, position) {
+  // Create popup container
+  const popup = document.createElement('div');
+  popup.className = `popup-highlight absolute z-50 px-2 py-1 rounded shadow-lg text-sm whitespace-nowrap ${colorScheme.bg} ${colorScheme.text}`;
+  popup.style.left = `${position.left}px`;
+  popup.style.top = `${position.top - 30}px`; // Position above the text
+  popup.setAttribute('data-category', category);
+  popup.style.minWidth = '120px';
+  popup.style.textAlign = 'center';
   
-  const selection = highlighterState.currentSelection;
-  const range = highlighterState.currentRange;
+  // Add category label
+  const label = document.createElement('span');
+  label.className = 'font-medium';
+  label.textContent = category;
+  
+  // Add close button
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'ml-2 text-xs opacity-70 hover:opacity-100';
+  closeBtn.innerHTML = '&times;';
+  closeBtn.onclick = (e) => {
+    e.stopPropagation();
+    popup.remove();
+  };
+  
+  popup.appendChild(label);
+  popup.appendChild(closeBtn);
+  
+  return popup;
+}
+
+// Function to highlight selected text as a popup
+function highlightSelection(category) {
+  const selection = window.getSelection();
+  if (!selection || selection.isCollapsed) return;
+
+  const range = selection.getRangeAt(0);
   const selectedText = selection.toString().trim();
   
   if (!selectedText) return;
+
+  // Only allow highlighting in the middle column document content
+  const targetElement = selection.anchorNode.parentElement;
+  const middleColumn = document.getElementById('middle-column');
+  if (!middleColumn.contains(targetElement) || !targetElement.closest('.document-content p')) {
+    console.log('Highlighting only allowed in paragraph elements within the middle column');
+    selection.removeAllRanges();
+    highlighterState.currentSelection = null;
+    highlighterState.currentRange = null;
+    return;
+  }
+
+  // Get or create color scheme for this category
+  let colorScheme;
+  if (!highlighterState.taxonomyColorMap.has(category)) {
+    // Use the same color scheme index as in renderTaxonomy
+    const index = highlighterState.taxonomyColorMap.size % highlighterState.colorSchemes.length;
+    colorScheme = highlighterState.colorSchemes[index];
+    highlighterState.taxonomyColorMap.set(category, colorScheme);
+  } else {
+    colorScheme = highlighterState.taxonomyColorMap.get(category);
+  }
   
-  const colorScheme = highlighterState.colorSchemes[
-    Array.from(highlighterState.taxonomyColorMap.keys()).indexOf(category) % highlighterState.colorSchemes.length
-  ] || highlighterState.colorSchemes[0];
+  // Create a marker span at the selection position
+  const marker = document.createElement('span');
+  marker.className = 'highlight-marker relative inline-block';
   
-  const span = document.createElement('span');
-  span.className = `highlighted ${colorScheme.bg} ${colorScheme.text} px-1 rounded`;
-  span.setAttribute('data-category', category);
-  span.textContent = selectedText;
+  // Store the original text and category as data attributes
+  marker.setAttribute('data-original-text', selectedText);
+  marker.setAttribute('data-category', category);
   
-  range.deleteContents();
-  range.insertNode(span);
+  // Get the position for the popup
+  const rangeRect = range.getBoundingClientRect();
+  const popup = createPopup(selectedText, category, colorScheme, {
+    left: rangeRect.left + window.scrollX + (rangeRect.width / 2) - 60, // Centered
+    top: rangeRect.top + window.scrollY - 35 // Slightly higher for better visibility
+  });
+  
+  document.body.appendChild(popup);
+  
+  // Adjust popup position to be centered
+  const popupWidth = popup.offsetWidth;
+  popup.style.left = `${position.left - (popupWidth / 2)}px`;
+  
+  // Close popup when clicking outside
+  const closePopup = (e) => {
+    if (!popup.contains(e.target)) {
+      popup.remove();
+      document.removeEventListener('click', closePopup);
+    }
+  };
+  
+  setTimeout(() => {
+    document.addEventListener('click', closePopup);
+  }, 0);
   
   // Clear selection
   selection.removeAllRanges();
@@ -406,10 +566,31 @@ function highlightTaxonomyTerms(text, taxonomy) {
       ));
     }
     
+    // Get or create color scheme for this category
+    let colorScheme;
+    if (!highlighterState.taxonomyColorMap.has(match.category)) {
+      // Use the same color scheme index as in renderTaxonomy
+      const index = highlighterState.taxonomyColorMap.size % highlighterState.colorSchemes.length;
+      colorScheme = highlighterState.colorSchemes[index];
+      highlighterState.taxonomyColorMap.set(match.category, colorScheme);
+    } else {
+      colorScheme = highlighterState.taxonomyColorMap.get(match.category);
+    }
+    
     // Create the highlighted span
     const span = document.createElement('span');
-    span.className = `taxonomy-highlight taxonomy-${match.category}`;
+    span.className = `taxonomy-highlight ${colorScheme.highlight} ${colorScheme.textColor} px-1 rounded border-b-2 ${colorScheme.highlightBorder} cursor-pointer`;
     span.textContent = text.substring(match.start, match.end);
+    
+    // Store the color scheme in the dataset for reference
+    span.dataset.colorScheme = JSON.stringify({
+      bg: colorScheme.bg,
+      text: colorScheme.text,
+      border: colorScheme.border,
+      highlight: colorScheme.highlight,
+      highlightBorder: colorScheme.highlightBorder,
+      textColor: colorScheme.textColor
+    });
     
     // Add tooltip
     const tooltip = document.createElement('span');
@@ -489,21 +670,8 @@ function renderTaxonomy(taxonomyData) {
     return;
   }
 
-  // Color schemes for taxonomy items - deeper colors for better visibility
-  const colorSchemes = [
-    { bg: 'bg-blue-500', text: 'text-white', border: 'border-blue-600' },
-    { bg: 'bg-green-500', text: 'text-white', border: 'border-green-600' },
-    { bg: 'bg-yellow-500', text: 'text-white', border: 'border-yellow-600' },
-    { bg: 'bg-red-500', text: 'text-white', border: 'border-red-600' },
-    { bg: 'bg-purple-600', text: 'text-white', border: 'border-purple-700' },
-    { bg: 'bg-pink-500', text: 'text-white', border: 'border-pink-600' },
-    { bg: 'bg-indigo-600', text: 'text-white', border: 'border-indigo-700' },
-    { bg: 'bg-gray-600', text: 'text-white', border: 'border-gray-700' },
-    { bg: 'bg-cyan-500', text: 'text-white', border: 'border-cyan-600' },
-    { bg: 'bg-teal-500', text: 'text-white', border: 'border-teal-600' },
-    { bg: 'bg-amber-500', text: 'text-white', border: 'border-amber-600' },
-    { bg: 'bg-rose-600', text: 'text-white', border: 'border-rose-700' }
-  ];
+  // Use the global color schemes from highlighterState
+  const { colorSchemes } = highlighterState;
 
   // Sort by count (descending)
   taxonomyData.sort((a, b) => b.count - a.count);
@@ -876,10 +1044,49 @@ function setupSidebarToggle() {
   }
 }
 
+// Function to get word under cursor
+function getWordAtPoint(e) {
+  const range = document.caretRangeFromPoint(e.clientX, e.clientY);
+  if (!range) return null;
+  
+  // Expand range to include full word
+  range.expand('word');
+  
+  // Get the text and trim any whitespace
+  const word = range.toString().trim();
+  if (!word) return null;
+  
+  return { range, word };
+}
+
+// Function to handle double click word selection
+function handleDoubleClick(e) {
+  const wordInfo = getWordAtPoint(e);
+  if (!wordInfo) return;
+  
+  const { range, word } = wordInfo;
+  
+  // Create a selection
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  
+  // Select the word
+  const newRange = range.cloneRange();
+  selection.addRange(newRange);
+  
+  // Store the selection in highlighter state
+  highlighterState.currentSelection = selection;
+  highlighterState.currentRange = newRange;
+  
+  // Get taxonomies and show context menu
+  handleTextSelection({ ...e, target: e.target, preventDefault: () => {} });
+}
+
 // Update the DOMContentLoaded event listener
 document.addEventListener("DOMContentLoaded", async function () {
   // Set up event listeners for text selection
   document.addEventListener('mouseup', handleTextSelection);
+  document.addEventListener('dblclick', handleDoubleClick);
   document.addEventListener('contextmenu', (e) => {
     if (highlighterState.currentSelection) {
       e.preventDefault();
