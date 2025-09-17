@@ -1167,11 +1167,36 @@ header {
 
 /* Assignment Popup */
 .assignment-popup {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e5e7eb;
+  position: fixed !important;
+  background: white !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  padding: 1rem !important;
+  z-index: 9999 !important; /* Ensure it's above everything */
+  min-width: 250px !important;
+  max-width: 300px !important;
+  border: 2px solid red !important; /* Debug border */
+  color: #000 !important;
+  pointer-events: auto !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
   animation: popupFadeIn 0.15s ease-out forwards;
-  transform-origin: top center;
-  z-index: 1000;
+}
+
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.assignment-popup input {
+  transition: all 0.2s ease;
 }
 
 .assignment-popup input:focus {
@@ -1366,4 +1391,48 @@ header {
     min-width: 250px;
     max-width: 25%;
   }
+}
+/* ------------------------------------- */
+/* Assignment Popup */
+.assignment-popup {
+  position: fixed;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1rem;
+  z-index: 9999;
+  min-width: 250px;
+  max-width: 300px;
+  border: 1px solid #e5e7eb;
+  animation: popupFadeIn 0.15s ease-out;
+}
+
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.assignment-popup input {
+  transition: all 0.2s ease;
+  border: 1px solid #d1d5db;
+  outline: none;
+}
+
+.assignment-popup input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.assignment-popup button {
+  transition: all 0.2s ease;
+}
+
+.assignment-popup button:hover {
+  filter: brightness(95%);
 }

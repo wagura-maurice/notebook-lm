@@ -329,33 +329,54 @@ function showContextMenu(event, taxonomies) {
 
 // Function to show assignment popup
 function showAssignmentPopup(selection, event) {
-  // Create popup container
+  console.log('showAssignmentPopup called with:', { selection, event });
+  
+  // Remove any existing popups first
+  const existingPopups = document.querySelectorAll('.assignment-popup');
+  existingPopups.forEach(popup => popup.remove());
+  
+  // Create new popup
   const popup = document.createElement('div');
-  popup.className = 'assignment-popup fixed z-50 bg-white shadow-lg rounded-md p-4';
-  popup.style.top = `${event.pageY - 50}px`;
-  popup.style.left = `${event.pageX}px`;
-  popup.style.minWidth = '200px';
-  popup.style.transform = 'translateY(-100%)';
+  popup.id = 'assignment-popup';
+  popup.className = 'assignment-popup';
+  popup.style.position = 'fixed';
+  popup.style.backgroundColor = 'white';
+  popup.style.padding = '1rem';
+  popup.style.borderRadius = '0.5rem';
+  popup.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+  popup.style.zIndex = '9999';
+  popup.style.minWidth = '250px';
+  popup.style.maxWidth = '300px';
+  popup.style.border = '1px solid #e5e7eb';
+  popup.style.display = 'block';
+  popup.style.visibility = 'visible';
+  popup.style.opacity = '1';
+  
+  // Position the popup near the selection
+  const range = selection.getRangeAt(0);
+  const rect = range.getBoundingClientRect();
+  popup.style.left = `${rect.left + window.scrollX}px`;
+  popup.style.top = `${rect.top + window.scrollY - 45}px`; // Position above the selection
   
   // Add header
   const header = document.createElement('div');
   header.className = 'text-sm font-medium mb-2 text-gray-800';
-  header.textContent = 'Assign to Taxonomy';
+  header.textContent = 'Assign to Category';
   popup.appendChild(header);
   
-  // Add input field
+  // Add input for new category
   const inputContainer = document.createElement('div');
-  inputContainer.className = 'flex mb-2';
+  inputContainer.className = 'flex mb-3';
   
   const input = document.createElement('input');
   input.type = 'text';
-  input.placeholder = 'Enter taxonomy name';
-  input.className = 'flex-1 border border-gray-300 rounded-l px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500';
-  input.autofocus = true;
+  input.placeholder = 'New category name';
+  input.className = 'flex-1 p-2 border rounded-l text-sm';
+  input.style.minWidth = '0';
   
   const submitBtn = document.createElement('button');
-  submitBtn.className = 'bg-blue-500 text-white px-3 py-1 rounded-r text-sm hover:bg-blue-600';
-  submitBtn.textContent = 'Assign';
+  submitBtn.className = 'bg-blue-500 text-white px-3 rounded-r text-sm';
+  submitBtn.textContent = 'Add';
   submitBtn.onclick = () => {
     const category = input.value.trim();
     if (category) {
@@ -364,45 +385,37 @@ function showAssignmentPopup(selection, event) {
     }
   };
   
-  // Submit on Enter key
-  input.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      submitBtn.click();
-    }
-  });
-  
   inputContainer.appendChild(input);
   inputContainer.appendChild(submitBtn);
   popup.appendChild(inputContainer);
   
-  // Add existing taxonomies as quick select buttons
-  const taxonomies = Array.from(highlighterState.taxonomyColorMap.keys());
-  if (taxonomies.length > 0) {
-    const quickSelect = document.createElement('div');
-    quickSelect.className = 'mt-2';
+  // Add existing categories
+  const categories = Array.from(highlighterState.taxonomyColorMap.keys());
+  if (categories.length > 0) {
+    const categoriesTitle = document.createElement('div');
+    categoriesTitle.className = 'text-xs text-gray-500 mb-1';
+    categoriesTitle.textContent = 'Existing categories:';
+    popup.appendChild(categoriesTitle);
     
-    const label = document.createElement('div');
-    label.className = 'text-xs text-gray-500 mb-1';
-    label.textContent = 'Quick select:';
-    quickSelect.appendChild(label);
+    const categoriesContainer = document.createElement('div');
+    categoriesContainer.className = 'flex flex-wrap gap-1';
     
-    const buttonsContainer = document.createElement('div');
-    buttonsContainer.className = 'flex flex-wrap gap-1';
-    
-    taxonomies.slice(0, 5).forEach(taxonomy => {
+    categories.forEach(category => {
       const btn = document.createElement('button');
       btn.className = 'text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded';
-      btn.textContent = taxonomy;
+      btn.textContent = category;
       btn.onclick = () => {
-        highlightSelection(taxonomy);
+        highlightSelection(category);
         popup.remove();
       };
-      buttonsContainer.appendChild(btn);
+      categoriesContainer.appendChild(btn);
     });
     
-    quickSelect.appendChild(buttonsContainer);
-    popup.appendChild(quickSelect);
+    popup.appendChild(categoriesContainer);
   }
+  
+  // Add to body
+  document.body.appendChild(popup);
   
   // Close popup when clicking outside
   const closeOnClickOutside = (e) => {
@@ -412,11 +425,155 @@ function showAssignmentPopup(selection, event) {
     }
   };
   
-  // Add to document
-  document.body.appendChild(popup);
+  // Add click outside listener
+  setTimeout(() => {
+    document.addEventListener('click', closeOnClickOutside);
+  }, 0);
   
   // Focus the input
-  setTimeout(() => input.focus(), 0);
+  input.focus();
+}
+
+// Function to update popup position based on selection
+function updatePopupPosition(popup, selection) {
+  const range = selection.getRangeAt(0);
+  const rect = range.getBoundingClientRect();
+  
+  // Position popup above the selected text
+  popup.style.top = `${window.scrollY + rect.top - popup.offsetHeight - 10}px`;
+  popup.style.left = `${window.scrollX + rect.left}px`;
+}
+
+// Function to show assignment popup
+function showAssignmentPopup(selection, event) {
+  console.log('showAssignmentPopup called with:', { selection, event });
+  
+  // Remove any existing popups first
+  const existingPopups = document.querySelectorAll('.assignment-popup');
+  existingPopups.forEach(popup => popup.remove());
+  
+  // Create new popup
+  console.log('Creating new popup element');
+  const popup = document.createElement('div');
+  popup.id = 'assignment-popup';
+  popup.className = 'assignment-popup';
+  popup.style.position = 'fixed';
+  popup.style.backgroundColor = 'white';
+  popup.style.padding = '0.75rem';
+  popup.style.borderRadius = '0.5rem';
+  popup.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+  popup.style.zIndex = '1000';
+  popup.style.minWidth = '200px';
+  popup.style.maxWidth = '300px';
+  popup.style.border = '1px solid #e5e7eb';
+  
+  // Make sure popup is visible
+  popup.style.display = 'block';
+  popup.style.visibility = 'visible';
+  popup.style.opacity = '1';
+  
+  // Position the popup at the cursor position
+  console.log('Positioning popup with event:', event);
+  const x = event?.clientX || window.innerWidth / 2;
+  const y = event?.clientY ? Math.max(100, event.clientY - 100) : 100; // Ensure it's not too close to the top
+  
+  popup.style.left = `${x}px`;
+  popup.style.top = `${y}px`;
+  
+  // Ensure popup is visible on screen
+  const rect = popup.getBoundingClientRect();
+  if (rect.right > window.innerWidth) {
+    popup.style.left = `${window.innerWidth - rect.width - 10}px`;
+  }
+  if (rect.bottom > window.innerHeight) {
+    popup.style.top = `${window.innerHeight - rect.height - 10}px`;
+  }
+  
+  // Add to body
+  document.body.appendChild(popup);
+  console.log('Popup added to DOM', popup);
+  
+  // Clear previous content
+  popup.innerHTML = '';
+  
+  // Add header
+  const header = document.createElement('div');
+  header.className = 'text-sm font-medium mb-2 text-gray-700';
+  header.textContent = 'Select a category';
+  popup.appendChild(header);
+  
+  // Store the current selection and range in the highlighter state
+  highlighterState.currentSelection = window.getSelection();
+  if (highlighterState.currentSelection.rangeCount > 0) {
+    highlighterState.currentRange = highlighterState.currentSelection.getRangeAt(0);
+  }
+  
+  // Add existing taxonomies as quick select buttons
+  const taxonomies = Array.from(highlighterState.taxonomyColorMap.entries());
+  
+  if (taxonomies.length > 0) {
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'flex flex-col gap-1 max-h-60 overflow-y-auto';
+    
+    taxonomies.forEach(([taxonomy, _]) => {
+      const btn = document.createElement('button');
+      btn.className = `text-left px-3 py-2 text-sm rounded hover:bg-gray-50 transition-colors flex items-center`;
+      
+      // Get the index of this taxonomy to match the color with the sidebar
+      const taxonomyIndex = Array.from(highlighterState.taxonomyColorMap.keys()).indexOf(taxonomy);
+      const colorScheme = highlighterState.colorSchemes[taxonomyIndex % highlighterState.colorSchemes.length];
+      
+      // Create a color indicator that matches the sidebar
+      const colorIndicator = document.createElement('span');
+      colorIndicator.className = `w-3 h-3 rounded-full mr-2 ${colorScheme.bg} border ${colorScheme.border}`;
+      
+      // Convert taxonomy key to human-readable format
+      const displayName = taxonomy
+        .replace(/_/g, ' ') // Replace underscores with spaces
+        .replace(/\b\w/g, char => char.toUpperCase()); // Capitalize first letter of each word
+      
+      btn.appendChild(colorIndicator);
+      btn.appendChild(document.createTextNode(displayName));
+      btn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Restore the selection before highlighting
+        if (highlighterState.currentRange) {
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(highlighterState.currentRange);
+          
+          // Apply the highlight
+          highlightSelection(taxonomy);
+          
+          // Clear the selection
+          sel.removeAllRanges();
+        }
+        
+        popup.style.display = 'none';
+      };
+      buttonsContainer.appendChild(btn);
+    });
+    
+    popup.appendChild(buttonsContainer);
+  } else {
+    const emptyMessage = document.createElement('div');
+    emptyMessage.className = 'text-sm text-gray-500 italic py-2';
+    emptyMessage.textContent = 'No categories available';
+    popup.appendChild(emptyMessage);
+  }
+  
+  // Position the popup
+  updatePopupPosition(popup, selection);
+  
+  // Close popup when clicking outside
+  const closeOnClickOutside = (e) => {
+    if (!popup.contains(e.target)) {
+      popup.style.display = 'none';
+      document.removeEventListener('click', closeOnClickOutside);
+    }
+  };
   
   // Add click outside listener
   setTimeout(() => {
@@ -428,14 +585,14 @@ function showAssignmentPopup(selection, event) {
 
 // Function to handle text selection
 function handleTextSelection(event) {
+  console.log('handleTextSelection called', event);
   try {
     const selection = window.getSelection();
+    console.log('Selection:', selection?.toString(), 'isCollapsed:', selection?.isCollapsed);
     
-    // Only proceed if we have a valid selection
+    // Only proceed if we have a valid selection and it's not collapsed
     if (!selection || selection.isCollapsed) {
-      // Hide any existing context menu if selection is empty
-      const menu = document.getElementById('context-menu');
-      if (menu) menu.style.display = 'none';
+      console.log('No valid selection or selection is collapsed');
       return;
     }
 
@@ -443,21 +600,19 @@ function handleTextSelection(event) {
     highlighterState.currentSelection = selection;
     highlighterState.currentRange = selection.getRangeAt(0);
     
-    // Only show popup if selection is within the document content
-    const targetElement = selection.anchorNode.parentElement;
-    const middleColumn = document.getElementById('middle-column');
-    if (!middleColumn || !middleColumn.contains(targetElement) || !targetElement.closest('.document-content p')) {
-      return;
-    }
-
-    // Prevent default context menu
-    event.preventDefault();
+    // Get the selected text
+    const selectedText = selection.toString().trim();
+    if (!selectedText) return;
     
-    // Remove any existing popups
-    document.querySelectorAll('.assignment-popup').forEach(popup => popup.remove());
+    console.log('Selected text:', selectedText);
     
-    // Show the assignment popup
-    showAssignmentPopup(selection, event);
+    // Show the assignment popup immediately
+    showAssignmentPopup(selection, {
+      clientX: event.clientX,
+      clientY: event.clientY,
+      pageX: event.pageX,
+      pageY: event.pageY
+    });
     
   } catch (error) {
     console.error('Error in handleTextSelection:', error);
@@ -1699,3 +1854,24 @@ function formatDate(dateString) {
     return "Invalid date";
   }
 }
+
+
+// ----------------------------------
+// Update the DOMContentLoaded event listener
+document.addEventListener("DOMContentLoaded", function() {
+  // Show popup on text selection
+  document.addEventListener('mouseup', handleTextSelection);
+  
+  // Also show popup on double-click
+  document.addEventListener('dblclick', handleTextSelection);
+  
+  // Prevent context menu on selection
+  document.addEventListener('contextmenu', (e) => {
+    const selection = window.getSelection();
+    if (selection && !selection.isCollapsed) {
+      e.preventDefault();
+    }
+  });
+  
+  // Rest of your initialization code...
+});
