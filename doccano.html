@@ -24,13 +24,45 @@
 
     <!-- Alpine.js with persistence plugin -->
     <script src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
-      defer
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
-    <!-- Main application script (must load after Alpine.js) -->
-    <script type="module" src="./js/doccano.js"></script>
+    <!-- App Initialization -->
+    <script>
+      document.addEventListener('alpine:init', () => {
+        // Store for shared state
+        Alpine.store('app', {
+          activeTab: Alpine.$persist('document'),
+          isMobile: window.innerWidth < 1024
+        });
+
+        // Global app functions
+        window.app = {
+          switchTab: function(tabId) {
+            // Hide all columns
+            document.querySelectorAll('.column').forEach(col => {
+              col.classList.remove('active');
+            });
+            
+            // Show selected column
+            const target = document.getElementById(tabId);
+            if (target) {
+              target.classList.add('active');
+              Alpine.store('app').activeTab = tabId.replace('-column', '');
+            }
+          }
+        };
+      });
+
+      // Initialize when DOM is ready
+      document.addEventListener('DOMContentLoaded', () => {
+        // Set initial tab
+        const initialTab = Alpine.store('app').activeTab;
+        window.app.switchTab(initialTab + '-column');
+      });
+    </script>
+
+    <!-- Your existing scripts -->
+    <script src="./js/doccano.js"></script>
     <script src="./js/app.js"></script>
 
     <!-- Custom CSS -->
@@ -40,30 +72,27 @@
   </head>
 
   <body
-    class="h-screen flex flex-col bg-eu-white font-sans text-text-primary overflow-hidden"
-    style="--tw-bg-opacity: 1"
-    x-data="{
-      ...appInfrastructure,
-      profileDropdownOpen: false,
-      activeTab: 'document',
-      handleDropdownMenuItemClick(action) {
-        this.profileDropdownOpen = false;
-        // Handle menu item click actions here
-        switch(action) {
-          case 'profile':
-            window.location.href = './profile.html';
-            break;
-          case 'settings':
-            window.location.href = './settings.html';
-            break;
-          case 'signout':
-            // Handle sign out logic here
-            console.log('Signing out...');
-            break;
-        }
+  class="h-screen flex flex-col bg-eu-white font-sans text-text-primary overflow-hidden"
+  style="--tw-bg-opacity: 1"
+  x-data="{
+    profileDropdownOpen: false,
+    handleDropdownMenuItemClick(action) {
+      this.profileDropdownOpen = false;
+      switch(action) {
+        case 'profile':
+          window.location.href = './profile.html';
+          break;
+        case 'settings':
+          window.location.href = './settings.html';
+          break;
+        case 'signout':
+          console.log('Signing out...');
+          // Add sign out logic here
+          break;
       }
-    }"
-  >
+    }
+  }"
+>
     <!-- Preloader -->
     <div
       id="preloader"
@@ -92,7 +121,7 @@
             alt="Logo"
             class="h-10 w-10"
           />
-          <span class="ml-2 text-eu-white text-lg font-semibold whitespace-nowrap">
+          <span class="ml-2 text-white text-base font-bold whitespace-nowrap">
             Notebook LLM
           </span>
         </a>
@@ -169,9 +198,9 @@
         </div>
       </div>
       
-      <!-- Bottom Row: Page Title -->
-      <div class="bg-[#003087] border-t border-[#1a4b9a] px-4 py-2">
-        <h1 class="text-lg font-bold text-eu-white text-center">
+      <!-- Mobile Page Title - Visible in header on mobile -->
+      <div class="lg:hidden bg-[#003087] px-4 py-2 relative z-10">
+        <h1 class="text-base font-bold text-white text-center">
           Document Annotation Page
         </h1>
       </div>
@@ -315,29 +344,29 @@
     <div id="main-content-wrapper" class="relative flex-1 flex flex-col overflow-hidden">
       <!-- Main Content Container - This will be behind the dropdowns -->
       <div id="main-content" class="flex-1 flex flex-col overflow-hidden relative z-0">
-        <!-- Mobile Tabs -->
-        <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
+              <!-- Mobile Tabs -->
+      <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
         <div class="flex justify-around">
           <button
             class="flex flex-col items-center justify-center py-2 px-4 w-full text-sm font-medium"
-            :class="activeTab === 'guide' ? 'text-eu-orange' : 'text-gray-500 hover:text-gray-700'"
-            @click="activeTab = 'guide'; switchTab('left-column')"
+            :class="{'text-eu-orange': $store.app.activeTab === 'left', 'text-gray-500 hover:text-gray-700': $store.app.activeTab !== 'left'}"
+            @click="window.app.switchTab('left-column')"
           >
             <i class="fas fa-book text-lg mb-1"></i>
             <span>Guide</span>
           </button>
           <button
             class="flex flex-col items-center justify-center py-2 px-4 w-full text-sm font-medium"
-            :class="activeTab === 'document' ? 'text-eu-orange' : 'text-gray-500 hover:text-gray-700'"
-            @click="activeTab = 'document'; switchTab('middle-column')"
+            :class="{'text-eu-orange': $store.app.activeTab === 'document', 'text-gray-500 hover:text-gray-700': $store.app.activeTab !== 'document'}"
+            @click="window.app.switchTab('middle-column')"
           >
             <i class="fas fa-file-alt text-lg mb-1"></i>
             <span>Document</span>
           </button>
           <button
             class="flex flex-col items-center justify-center py-2 px-4 w-full text-sm font-medium"
-            :class="activeTab === 'annotation' ? 'text-eu-orange' : 'text-gray-500 hover:text-gray-700'"
-            @click="activeTab = 'annotation'; switchTab('right-column')"
+            :class="{'text-eu-orange': $store.app.activeTab === 'right', 'text-gray-500 hover:text-gray-700': $store.app.activeTab !== 'right'}"
+            @click="window.app.switchTab('right-column')"
           >
             <i class="fas fa-tag text-lg mb-1"></i>
             <span>Annotation</span>
@@ -471,8 +500,5 @@
     <p class="text-center text-xs text-gray-500 mb-1">
       NotebookLM can be inaccurate; please double-check its responses.
     </p>
-
-    <!-- Main doccano script (loads other modules) -->
-    <!-- <script src="./js/doccano.js" type="module"></script> -->
   </body>
 </html>
