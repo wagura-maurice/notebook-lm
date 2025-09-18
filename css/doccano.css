@@ -19,8 +19,8 @@
   --eu-orange-rgb: 255, 105, 0;
 }
 
-/* Context Menu Styles */
-.context-menu {
+/* Doccano-specific namespace */
+.doccano-context-menu {
   position: fixed;
   z-index: 9999;
   width: 240px;
@@ -37,13 +37,13 @@
   font-family: 'Rubik', sans-serif;
 }
 
-.context-menu.visible {
+.doccano-context-menu.visible {
   opacity: 1;
   transform: scale(1);
   pointer-events: auto;
 }
 
-.context-menu__header {
+.doccano-context-menu__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -52,13 +52,13 @@
   border-bottom: 1px solid #e9ecef;
 }
 
-.context-menu__title {
+.doccano-context-menu__title {
   font-weight: 600;
   color: #212529;
   font-size: 14px;
 }
 
-.context-menu__close-btn {
+.doccano-context-menu__close-btn {
   background: none;
   border: none;
   color: #6c757d;
@@ -72,16 +72,16 @@
   transition: background-color 0.15s ease;
 }
 
-.context-menu__close-btn:hover {
+.doccano-context-menu__close-btn:hover {
   background-color: #e9ecef;
   color: #495057;
 }
 
-.context-menu__section {
+.doccano-context-menu__section {
   padding: 8px 0;
 }
 
-.context-menu__section-title {
+.doccano-context-menu__section-title {
   padding: 6px 16px;
   font-size: 12px;
   font-weight: 600;
@@ -90,13 +90,13 @@
   letter-spacing: 0.5px;
 }
 
-.highlight-options {
+.doccano-highlight-options {
   max-height: 200px;
   overflow-y: auto;
   padding: 4px 0;
 }
 
-.taxonomy-item {
+.doccano-taxonomy-item {
   display: flex;
   align-items: center;
   padding: 8px 16px;
@@ -108,11 +108,11 @@
   overflow: hidden;
 }
 
-.taxonomy-item:hover {
+.doccano-taxonomy-item:hover {
   background-color: #f8f9fa;
 }
 
-.taxonomy-item::before {
+.doccano-taxonomy-item::before {
   content: '';
   position: absolute;
   left: 0;
@@ -124,17 +124,17 @@
   transition: opacity 0.2s ease;
 }
 
-.taxonomy-item:hover::before {
+.doccano-taxonomy-item:hover::before {
   opacity: 1;
 }
 
-.context-menu__divider {
+.doccano-context-menu__divider {
   height: 1px;
   background-color: #e9ecef;
   margin: 4px 0;
 }
 
-.context-menu__action-btn {
+.doccano-context-menu__action-btn {
   display: flex;
   align-items: center;
   width: 100%;
@@ -148,19 +148,19 @@
   transition: background-color 0.15s ease;
 }
 
-.context-menu__action-btn:hover {
+.doccano-context-menu__action-btn:hover {
   background-color: #f8f9fa;
 }
 
-.context-menu__action-btn--danger {
+.doccano-context-menu__action-btn--danger {
   color: #dc3545;
 }
 
-.context-menu__action-btn--danger:hover {
+.doccano-context-menu__action-btn--danger:hover {
   background-color: #fff5f5;
 }
 
-.context-menu__loading {
+.doccano-context-menu__loading {
   display: flex;
   align-items: center;
   padding: 12px 16px;
@@ -168,7 +168,7 @@
   font-size: 13px;
 }
 
-.context-menu__debug {
+.doccano-context-menu__debug {
   padding: 8px 16px;
   background-color: #f8f9fa;
   border-top: 1px solid #e9ecef;
@@ -178,19 +178,19 @@
   display: none; /* Hidden by default, can be enabled for debugging */
 }
 
-.context-menu__debug-item {
+.doccano-context-menu__debug-item {
   margin: 4px 0;
   display: flex;
   justify-content: space-between;
 }
 
-.context-menu__debug-label {
+.doccano-context-menu__debug-label {
   font-weight: 600;
   margin-right: 8px;
 }
 
 /* Highlighted Text Styles */
-.text-highlight {
+.doccano-text-highlight {
   padding: 0.1em 0.2em;
   border-radius: 0.2em;
   transition: all 0.2s ease;
@@ -199,22 +199,22 @@
 }
 
 /* Color classes for different taxonomies */
-.bg-blue-100 { background-color: #dbeafe; color: #1e40af; }
-.bg-green-100 { background-color: #d1fae5; color: #065f46; }
-.bg-yellow-100 { background-color: #fef9c3; color: #854d0e; }
-.bg-red-100 { background-color: #fee2e2; color: #991b1b; }
-.bg-purple-100 { background-color: #f3e8ff; color: #6b21a8; }
-.bg-pink-100 { background-color: #fce7f3; color: #9d174d; }
-.bg-indigo-100 { background-color: #e0e7ff; color: #3730a3; }
+.doccano-bg-blue-100 { background-color: #dbeafe; color: #1e40af; }
+.doccano-bg-green-100 { background-color: #d1fae5; color: #065f46; }
+.doccano-bg-yellow-100 { background-color: #fef9c3; color: #854d0e; }
+.doccano-bg-red-100 { background-color: #fee2e2; color: #991b1b; }
+.doccano-bg-purple-100 { background-color: #f3e8ff; color: #6b21a8; }
+.doccano-bg-pink-100 { background-color: #fce7f3; color: #9d174d; }
+.doccano-bg-indigo-100 { background-color: #e0e7ff; color: #3730a3; }
 
 /* Hover effect for highlighted text */
-.text-highlight:hover {
+.doccano-text-highlight:hover {
   filter: brightness(0.95);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Base Styles */
-body {
+.doccano-body {
   font-family: "Rubik", sans-serif;
   margin: 0;
   padding: 0;
@@ -223,7 +223,7 @@ body {
 }
 
 /* Layout */
-#columns-container {
+.doccano-columns-container {
   display: flex;
   gap: 0.5rem;
   overflow: hidden;
@@ -270,7 +270,7 @@ body {
 }
 
 /* Ensure content areas are scrollable */
-.scrollable-content {
+.doccano-scrollable-content {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -278,34 +278,34 @@ body {
 }
 
 /* Custom scrollbar for WebKit browsers (Chrome, Safari, Edge) */
-#left-column::-webkit-scrollbar,
-#middle-column::-webkit-scrollbar,
-#right-column::-webkit-scrollbar,
-.scrollbar-transparent::-webkit-scrollbar {
+.doccano-left-column::-webkit-scrollbar,
+.doccano-middle-column::-webkit-scrollbar,
+.doccano-right-column::-webkit-scrollbar,
+.doccano-scrollbar-transparent::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
-#left-column::-webkit-scrollbar-track,
-#middle-column::-webkit-scrollbar-track,
-#right-column::-webkit-scrollbar-track,
-.scrollbar-transparent::-webkit-scrollbar-track {
+.doccano-left-column::-webkit-scrollbar-track,
+.doccano-middle-column::-webkit-scrollbar-track,
+.doccano-right-column::-webkit-scrollbar-track,
+.doccano-scrollbar-transparent::-webkit-scrollbar-track {
   background: transparent;
   border-radius: 3px;
 }
 
-#left-column::-webkit-scrollbar-thumb,
-#middle-column::-webkit-scrollbar-thumb,
-#right-column::-webkit-scrollbar-thumb,
-.scrollbar-transparent::-webkit-scrollbar-thumb {
+.doccano-left-column::-webkit-scrollbar-thumb,
+.doccano-middle-column::-webkit-scrollbar-thumb,
+.doccano-right-column::-webkit-scrollbar-thumb,
+.doccano-scrollbar-transparent::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 3px;
 }
 
-#left-column::-webkit-scrollbar-thumb:hover,
-#middle-column::-webkit-scrollbar-thumb:hover,
-#right-column::-webkit-scrollbar-thumb:hover,
-.scrollbar-transparent::-webkit-scrollbar-thumb:hover {
+.doccano-left-column::-webkit-scrollbar-thumb:hover,
+.doccano-middle-column::-webkit-scrollbar-thumb:hover,
+.doccano-right-column::-webkit-scrollbar-thumb:hover,
+.doccano-scrollbar-transparent::-webkit-scrollbar-thumb:hover {
   background-color: rgba(0, 0, 0, 0.3);
 }
 
@@ -373,7 +373,6 @@ body {
   background-color: var(--eu-white) !important;
 }
 
-.collapsed-content .relative,
 .collapsed-content .flex,
 #left-column.collapsed .relative,
 #right-column.collapsed .relative,
@@ -410,7 +409,7 @@ body {
 }
 
 /* Context Menu Styles */
-#context-menu {
+.doccano-context-menu-container {
   position: fixed;
   display: none;
   z-index: 10000; /* Ensure it's above other elements */
@@ -429,28 +428,28 @@ body {
   overflow: hidden;
 }
 
-#context-menu.visible {
+.doccano-context-menu-container.visible {
   display: block;
   opacity: 1;
   visibility: visible;
   transform: scale(1);
-  animation: fadeIn 0.15s ease-out;
+  animation: doccano-fadeIn 0.15s ease-out;
 }
 
-@keyframes fadeIn {
-  from { 
-    opacity: 0; 
+@keyframes doccano-fadeIn {
+  from {
+    opacity: 0;
     transform: translateY(5px) scale(0.98);
   }
-  to { 
-    opacity: 1; 
+  to {
+    opacity: 1;
     transform: translateY(0) scale(1);
   }
 }
 
 /* Popup Highlight Styles */
-.popup-highlight {
-  animation: popIn 0.2s ease-out forwards;
+.doccano-popup-highlight {
+  animation: doccano-popIn 0.2s ease-out forwards;
   transform-origin: center bottom;
   pointer-events: auto;
   max-width: 90vw;
@@ -460,7 +459,7 @@ body {
   z-index: 10000;
 }
 
-.popup-highlight::after {
+.doccano-popup-highlight::after {
   content: '';
   position: absolute;
   bottom: -5px;
@@ -474,7 +473,7 @@ body {
   opacity: 0.9;
 }
 
-@keyframes popIn {
+@keyframes doccano-popIn {
   0% {
     opacity: 0;
     transform: translateY(10px) scale(0.95);
@@ -486,7 +485,7 @@ body {
 }
 
 /* Ensure paragraphs in the document content are selectable */
-#middle-column .document-content p {
+.doccano-middle-column .doccano-document-content p {
   position: relative;
   line-height: 1.6;
   margin-bottom: 1rem;
@@ -494,14 +493,14 @@ body {
 }
 
 /* Style for the highlighted text marker */
-.highlight-marker {
+.doccano-highlight-marker {
   position: relative;
   display: inline;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
-.highlight-marker::after {
+.doccano-highlight-marker::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -512,13 +511,13 @@ body {
   transition: opacity 0.2s, height 0.2s;
 }
 
-.highlight-marker:hover::after {
+.doccano-highlight-marker:hover::after {
   opacity: 0.9;
   height: 3px;
 }
 
 /* Text Highlight Styles */
-.text-highlight {
+.doccano-text-highlight {
   padding: 0.1em 0.2em;
   margin: 0 0.1em;
   border-radius: 0.25em;
@@ -542,33 +541,33 @@ body {
 }
 
 /* Dynamic category styles - these will be overridden by inline styles */
-.text-highlight[data-category] {
+.doccano-text-highlight[data-category] {
   background-color: rgba(59, 130, 246, 0.2);
   border-bottom-color: rgba(59, 130, 246, 0.5);
 }
 
 /* Ensure the highlight is visible on all backgrounds */
-.text-highlight {
+.doccano-text-highlight {
   background-clip: padding-box;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
 
 /* Better contrast for text inside highlights */
-.text-highlight,
-.text-highlight * {
+.doccano-text-highlight,
+.doccano-text-highlight * {
   color: inherit !important;
   text-shadow: none !important;
 }
 
 /* Ensure proper stacking context */
-.text-highlight {
+.doccano-text-highlight {
   isolation: isolate;
   position: relative;
 }
 
 /* Highlight container */
-.highlight-container {
+.doccano-highlight-container {
   position: relative;
   display: inline-block;
   margin: 0.2em 0;
@@ -576,7 +575,7 @@ body {
 }
 
 /* Highlight label */
-.highlight-label {
+.doccano-highlight-label {
   position: absolute;
   top: -1.2em;
   left: 0;
@@ -593,37 +592,37 @@ body {
 }
 
 /* Show label on hover */
-.highlight-container:hover .highlight-label {
+.doccano-highlight-container:hover .doccano-highlight-label {
   opacity: 1;
 }
 
 /* Adjust for better spacing */
-.highlight-container + .highlight-container {
+.doccano-highlight-container + .doccano-highlight-container {
   margin-left: 0.2em;
 }
 
 /* Ensure text remains selectable and clickable */
-.text-highlight * {
+.doccano-text-highlight * {
   pointer-events: auto !important;
   user-select: text !important;
 }
 
 /* Highlight category styles */
-.text-highlight.almp {
+.doccano-text-highlight.almp {
   background-color: rgba(59, 130, 246, 0.2);
   box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
   border-bottom: 2px solid rgba(59, 130, 246, 0.5);
   color: inherit;
 }
 
-.text-highlight.target {
+.doccano-text-highlight.target {
   background-color: rgba(34, 197, 94, 0.2);
   box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.3);
   border-bottom: 2px solid rgba(34, 197, 94, 0.5);
   color: inherit;
 }
 
-.text-highlight.delivery {
+.doccano-text-highlight.delivery {
   background-color: rgba(234, 179, 8, 0.2);
   box-shadow: 0 0 0 1px rgba(234, 179, 8, 0.3);
   border-bottom: 2px solid rgba(234, 179, 8, 0.5);
@@ -631,25 +630,25 @@ body {
 }
 
 /* Hover and active states */
-.text-highlight:hover {
+.doccano-text-highlight:hover {
   filter: brightness(1.05);
   transform: translateY(-1px);
   z-index: 2;
 }
 
-.text-highlight:active {
+.doccano-text-highlight:active {
   filter: brightness(0.95);
   transform: translateY(0);
 }
 
 /* Focus state for keyboard navigation */
-.text-highlight:focus {
+.doccano-text-highlight:focus {
   outline: 2px solid rgba(59, 130, 246, 0.5);
   outline-offset: 2px;
 }
 
 /* Make sure the highlight doesn't break text flow */
-.text-highlight::after {
+.doccano-text-highlight::after {
   content: '';
   position: absolute;
   left: 0;
@@ -663,13 +662,13 @@ body {
 }
 
 /* Ensure proper spacing between highlighted elements */
-.text-highlight + .text-highlight {
+.doccano-text-highlight + .doccano-text-highlight {
   margin-left: 0.25em;
 }
 
 /* Print styles */
 @media print {
-  .text-highlight {
+  .doccano-text-highlight {
     background-color: transparent !important;
     box-shadow: none !important;
     border-bottom: 2px solid #000 !important;
@@ -679,7 +678,7 @@ body {
 }
 
 /* Taxonomy Highlighting */
-.taxonomy-highlight {
+.doccano-taxonomy-highlight {
   position: relative;
   display: inline-block;
   font-weight: 500;
@@ -693,13 +692,13 @@ body {
   transition: all 0.2s ease-in-out;
 }
 
-.taxonomy-highlight:hover {
+.doccano-taxonomy-highlight:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Highlight Popup */
-.highlight-popup {
+.doccano-highlight-popup {
   position: fixed;
   z-index: 1000;
   background: white;
@@ -708,11 +707,11 @@ body {
   padding: 0.75rem;
   min-width: 200px;
   max-width: 300px;
-  animation: popIn 0.15s ease-out;
+  animation: doccano-popIn 0.15s ease-out;
   transform-origin: top center;
 }
 
-@keyframes popIn {
+@keyframes doccano-popIn {
   from {
     opacity: 0;
     transform: translateY(10px) scale(0.95);
@@ -723,7 +722,7 @@ body {
   }
 }
 
-.highlight-popup::before {
+.doccano-highlight-popup::before {
   content: '';
   position: absolute;
   bottom: -8px;
@@ -738,7 +737,7 @@ body {
 }
 
 /* Success Message */
-@keyframes slideInUp {
+@keyframes doccano-slideInUp {
   from {
     opacity: 0;
     transform: translateY(20px);
@@ -749,17 +748,17 @@ body {
   }
 }
 
-@keyframes fadeOut {
+@keyframes doccano-fadeOut {
   from { opacity: 1; }
   to { opacity: 0; }
 }
 
-.success-message {
-  animation: slideInUp 0.3s ease-out forwards, fadeOut 0.5s ease-in 2.5s forwards;
+.doccano-success-message {
+  animation: doccano-slideInUp 0.3s ease-out forwards, doccano-fadeOut 0.5s ease-in 2.5s forwards;
 }
 
 /* Highlight marker styles */
-.highlight-marker {
+.doccano-highlight-marker {
   position: relative;
   display: inline-block;
   cursor: pointer;
@@ -771,13 +770,13 @@ body {
   border-bottom-style: solid;
 }
 
-.highlight-marker:hover {
+.doccano-highlight-marker:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Popup highlight styles */
-.popup-highlight {
+.doccano-popup-highlight {
   position: absolute;
   z-index: 1000;
   padding: 0.25rem 0.5rem;
@@ -786,14 +785,14 @@ body {
   font-weight: 500;
   white-space: nowrap;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  animation: popIn 0.2s ease-out forwards;
+  animation: doccano-popIn 0.2s ease-out forwards;
   transform-origin: bottom center;
   pointer-events: auto;
   min-width: 120px;
   text-align: center;
 }
 
-@keyframes popIn {
+@keyframes doccano-popIn {
   0% {
     opacity: 0;
     transform: translateY(10px) scale(0.95);
@@ -805,7 +804,7 @@ body {
 }
 
 /* Tooltip */
-.taxonomy-tooltip {
+.doccano-taxonomy-tooltip {
   visibility: hidden;
   width: max-content;
   max-width: 200px;
@@ -827,15 +826,15 @@ body {
   pointer-events: none;
 }
 
-.taxonomy-highlight:hover .taxonomy-tooltip {
+.doccano-taxonomy-highlight:hover .doccano-taxonomy-tooltip {
   visibility: visible;
   opacity: 1;
 }
 
 /* Dynamic taxonomy colors are now handled by inline styles */
 
-#left-column.collapsed *,
-#right-column.collapsed * {
+.doccano-left-column.collapsed *,
+.doccano-right-column.collapsed * {
   background-color: var(--eu-white) !important;
   color: var(--eu-blue) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -850,16 +849,16 @@ body {
 }
 
 /* Smooth hover effects for interactive elements */
-button,
+.nav-button,
 .btn,
-[role="button"],
-[tabindex="0"] {
+.role-button,
+.tabindex-button {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 }
 
-button:active,
+.nav-button:active,
 .btn:active {
   transform: translateY(1px);
 }
@@ -966,7 +965,7 @@ html {
   --indigo-600: var(--eu-blue);
 }
 
-body {
+.doccano-body {
   font-family: "Rubik", sans-serif;
   margin: 0;
   padding: 0;
@@ -977,13 +976,13 @@ body {
 /* ============================================ */
 /* === LAYOUT STRUCTURE === */
 /* ============================================ */
-#columns-container {
-  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+.doccano-columns-container {
+  animation: doccano-fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-#left-column,
-#middle-column,
-#right-column {
+.doccano-left-column,
+.doccano-middle-column,
+.doccano-right-column {
   background-color: var(--eu-white);
   color: var(--text-primary);
   border-radius: 0.5rem;
@@ -993,9 +992,9 @@ body {
 }
 
 /* EU-themed hover elevation */
-#left-column:hover,
-#middle-column:hover,
-#right-column:hover {
+.doccano-left-column:hover,
+.doccano-middle-column:hover,
+.doccano-right-column:hover {
   box-shadow: 0 10px 25px -5px rgba(var(--eu-blue-rgb), 0.15),
     0 8px 10px -6px rgba(var(--eu-orange-rgb), 0.2);
   transform: translateY(-1px);
@@ -1049,7 +1048,7 @@ body {
 /* ============================================ */
 /* === HEADER & NAVIGATION === */
 /* ============================================ */
-header {
+.doccano-header {
   background-color: var(--eu-blue);
   min-height: 4rem;
   padding: 0.75rem 1rem;
@@ -1057,7 +1056,7 @@ header {
 }
 
 /* Mobile Tabs */
-.mobile-tabs {
+.doccano-mobile-tabs {
   display: flex;
   border-bottom: 1px solid var(--eu-blue);
   background-color: var(--eu-white);
@@ -1066,7 +1065,7 @@ header {
   z-index: 10;
 }
 
-.tab-button {
+.doccano-tab-button {
   flex: 1;
   padding: 0.5rem 0;
   text-align: center;
@@ -1081,7 +1080,7 @@ header {
   justify-content: center;
 }
 
-.tab-button i {
+.doccano-tab-button i {
   display: block;
   margin-bottom: 0.25rem;
   font-size: 1.1rem;
@@ -1089,21 +1088,21 @@ header {
   transition: color 0.2s ease;
 }
 
-.tab-button span {
+.doccano-tab-button span {
   font-size: 0.8rem;
   display: block;
 }
 
-.tab-button.active {
+.doccano-tab-button.active {
   color: var(--eu-orange);
   font-weight: 600;
 }
 
-.tab-button.active i {
+.doccano-tab-button.active i {
   color: var(--eu-orange);
 }
 
-.tab-button.active::after {
+.doccano-tab-button.active::after {
   content: "";
   position: absolute;
   bottom: 0;
@@ -1119,7 +1118,7 @@ header {
 /* === UTILITY CLASSES === */
 /* ============================================ */
 /* Preloader */
-#preloader {
+.doccano-preloader {
   position: fixed;
   inset: 0;
   background-color: var(--eu-blue);
@@ -1130,43 +1129,43 @@ header {
 }
 
 /* Scrollbar Utility */
-.scrollbar-transparent {
+.doccano-scrollbar-transparent {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
 }
 
-.scrollbar-transparent::-webkit-scrollbar {
+.doccano-scrollbar-transparent::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
-.scrollbar-transparent::-webkit-scrollbar-track {
+.doccano-scrollbar-transparent::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.scrollbar-transparent::-webkit-scrollbar-thumb {
+.doccano-scrollbar-transparent::-webkit-scrollbar-thumb {
   background-color: rgba(var(--eu-blue-rgb), 0.2);
   border-radius: 3px;
 }
 
 /* Scrollbar thumb hover styles */
 @media (hover: hover) {
-  .scrollbar-transparent::-webkit-scrollbar-thumb {
+  .doccano-scrollbar-transparent::-webkit-scrollbar-thumb {
     background-color: rgba(var(--eu-blue-rgb), 0.5);
   }
 
-  .scrollbar-transparent:hover::-webkit-scrollbar-thumb {
+  .doccano-scrollbar-transparent:hover::-webkit-scrollbar-thumb {
     background-color: rgba(var(--eu-blue-rgb), 0.7);
   }
 }
 
 /* Message Time Hover */
-.group:hover .text-blue-100 {
+.doccano-group:hover .doccano-text-blue-100 {
   z-index: 10;
 }
 
 /* Assignment Popup */
-.assignment-popup {
+.doccano-assignment-popup {
   position: fixed !important;
   background: white !important;
   border-radius: 0.5rem !important;
@@ -1181,10 +1180,10 @@ header {
   opacity: 1 !important;
   visibility: visible !important;
   display: block !important;
-  animation: popupFadeIn 0.15s ease-out forwards;
+  animation: doccano-popupFadeIn 0.15s ease-out forwards;
 }
 
-@keyframes popupFadeIn {
+@keyframes doccano-popupFadeIn {
   from {
     opacity: 0;
     transform: translateY(10px);
@@ -1195,21 +1194,21 @@ header {
   }
 }
 
-.assignment-popup input {
+.doccano-assignment-popup input {
   transition: all 0.2s ease;
 }
 
-.assignment-popup input:focus {
+.doccano-assignment-popup input:focus {
   border-color: #3b82f6;
   box-shadow: 0 0 0 1px #3b82f6;
 }
 
-.assignment-popup button:focus {
+.doccano-assignment-popup button:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
 }
 
-@keyframes popupFadeIn {
+@keyframes doccano-popupFadeIn {
   from {
     opacity: 0;
     transform: translateY(-90%) scale(0.95);
@@ -1221,7 +1220,7 @@ header {
 }
 
 /* Animations */
-@keyframes fadeIn {
+@keyframes doccano-fadeIn {
   from {
     opacity: 0;
   }
@@ -1230,7 +1229,7 @@ header {
   }
 }
 
-@keyframes spin {
+@keyframes doccano-spin {
   from {
     transform: rotate(0deg);
   }
@@ -1239,7 +1238,7 @@ header {
   }
 }
 
-@keyframes bounce {
+@keyframes doccano-bounce {
   0%,
   100% {
     transform: translateY(0);
@@ -1249,19 +1248,19 @@ header {
   }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+.doccano-animate-fade-in {
+  animation: doccano-fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.animate-bounce-slow {
-  animation: bounce 2s infinite;
+.doccano-animate-bounce-slow {
+  animation: doccano-bounce 2s infinite;
 }
 
-.animation-delay-100 {
+.doccano-animation-delay-100 {
   animation-delay: 0.1s;
 }
 
-.animation-delay-200 {
+.doccano-animation-delay-200 {
   animation-delay: 0.2s;
 }
 
@@ -1270,13 +1269,13 @@ header {
 /* ============================================ */
 /* Mobile (below 1024px) */
 @media (max-width: 1023px) {
-  #columns-container {
+  .doccano-columns-container {
     /* flex-direction: column; */
   }
 
-  #left-column,
-  #middle-column,
-  #right-column {
+  .doccano-left-column,
+  .doccano-middle-column,
+  .doccano-right-column {
     width: 100%;
     height: calc(100vh - 8rem);
     position: absolute;
@@ -1286,15 +1285,15 @@ header {
     flex-direction: column;
   }
 
-  #collapse-left,
-  #collapse-right,
-  #expand-left,
-  #expand-right {
+  .doccano-collapse-left,
+  .doccano-collapse-right,
+  .doccano-expand-left,
+  .doccano-expand-right {
     display: none;
   }
 
   /* Mobile Tab Content */
-  .mobile-tab-content {
+  .doccano-mobile-tab-content {
     width: 100%;
     height: calc(100vh - 8rem);
     position: absolute;
@@ -1304,89 +1303,89 @@ header {
     transition: opacity 0.3s ease;
   }
 
-  .mobile-tab-content.active {
+  .doccano-mobile-tab-content.active {
     display: flex;
     opacity: 1;
     z-index: 1;
   }
 
-  .mobile-tab-content.inactive {
+  .doccano-mobile-tab-content.inactive {
     display: none;
     opacity: 0;
     z-index: -1;
   }
 
   /* Ensure all columns are styled correctly when active */
-  #left-column.active,
-  #middle-column.active,
-  #right-column.active {
+  .doccano-left-column.active,
+  .doccano-middle-column.active,
+  .doccano-right-column.active {
     display: flex;
   }
 
-  .tab-button {
+  .doccano-tab-button {
     padding: 1rem 0;
   }
 
-  button,
-  [type="button"],
-  [type="reset"],
-  [type="submit"] {
+  .doccano-button,
+  .doccano-type-button,
+  .doccano-type-reset,
+  .doccano-type-submit {
     min-height: 44px;
   }
 }
 
 /* Small mobile (below 640px) */
 @media (max-width: 639px) {
-  header {
+  .doccano-header {
     padding: 0.5rem;
     min-height: 3.5rem;
   }
 
-  .mobile-tabs {
+  .doccano-mobile-tabs {
     top: 3.5rem;
   }
 }
 
 /* Tablet (640px - 1023px) */
 @media (min-width: 640px) and (max-width: 1023px) {
-  #middle-column {
+  .doccano-middle-column {
     flex: 1.5;
   }
 }
 
 /* Desktop (1024px and above) */
 @media (min-width: 1024px) {
-  .mobile-tabs {
+  .doccano-mobile-tabs {
     display: none;
   }
 
-  .mobile-tab-content {
+  .doccano-mobile-tab-content {
     display: flex !important;
   }
 
-  #left-column,
-  #middle-column,
-  #right-column {
+  .doccano-left-column,
+  .doccano-middle-column,
+  .doccano-right-column {
     display: flex !important;
   }
 
-  #columns-container {
+  .doccano-columns-container {
     /* display: flex; */
     /* gap: 0.5rem; */
     width: 100%;
   }
 
-  #left-column {
+  .doccano-left-column {
     width: 25%;
     min-width: 250px;
     max-width: 25%;
   }
 
-  #middle-column {
+  .doccano-middle-column {
     flex: 2;
   }
 
-  #right-column {
+  .doccano-right-column {
     width: 25%;
     min-width: 250px;
     max-width: 25%;
@@ -1394,7 +1393,7 @@ header {
 }
 /* ------------------------------------- */
 /* Assignment Popup */
-.assignment-popup {
+.doccano-assignment-popup {
   position: fixed;
   background: white;
   border-radius: 0.5rem;
@@ -1404,10 +1403,10 @@ header {
   min-width: 250px;
   max-width: 300px;
   border: 1px solid #e5e7eb;
-  animation: popupFadeIn 0.15s ease-out;
+  animation: doccano-popupFadeIn 0.15s ease-out;
 }
 
-@keyframes popupFadeIn {
+@keyframes doccano-popupFadeIn {
   from {
     opacity: 0;
     transform: translateY(10px);
@@ -1418,21 +1417,21 @@ header {
   }
 }
 
-.assignment-popup input {
+.doccano-assignment-popup input {
   transition: all 0.2s ease;
   border: 1px solid #d1d5db;
   outline: none;
 }
 
-.assignment-popup input:focus {
+.doccano-assignment-popup input:focus {
   border-color: #3b82f6;
   box-shadow: 0 0 0 1px #3b82f6;
 }
 
-.assignment-popup button {
+.doccano-assignment-popup button {
   transition: all 0.2s ease;
 }
 
-.assignment-popup button:hover {
+.doccano-assignment-popup button:hover {
   filter: brightness(95%);
 }

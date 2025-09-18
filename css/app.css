@@ -8,7 +8,8 @@
 #profile-dropdown {
   transform-origin: top right;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 #profile-dropdown:not(.hidden) {
@@ -28,12 +29,12 @@
     z-index: 1000; /* Higher than mobile tabs */
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
   }
-  
+
   /* Ensure the avatar dropdown is above other elements */
   #avatar-dropdown {
     z-index: 1001 !important; /* Slightly higher than profile dropdown */
   }
-  
+
   #mobile-menu-button {
     display: flex;
     align-items: center;
@@ -104,7 +105,7 @@
 }
 
 .nav-item::before {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -160,12 +161,12 @@
     padding-top: 0.5rem;
   }
 
-/* Mobile Navigation */
+  /* Mobile Navigation */
   /* Hide desktop header elements on mobile */
   .desktop-only {
     display: none !important;
   }
-  
+
   /* Ensure mobile menu items are properly spaced */
   .mobile-menu-item {
     display: flex;
@@ -174,7 +175,7 @@
     width: 100%;
     text-align: left;
   }
-  
+
   /* Mobile menu container */
   .mobile-menu-container {
     position: fixed;
@@ -185,7 +186,7 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     z-index: 40;
   }
-  
+
   /* Mobile tabs */
   .mobile-tabs {
     position: sticky;
@@ -201,11 +202,11 @@
     margin: 0.25rem 0;
     text-align: left;
   }
-  
+
   .nav-item::before {
     display: none;
   }
-  
+
   .nav-item:hover {
     background-color: rgba(255, 255, 255, 0.1);
     transform: translateX(4px);
@@ -230,7 +231,8 @@
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--eu-orange);
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .nav-button:active {
@@ -250,13 +252,18 @@
 }
 
 .logo-link::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
   transform: translateX(-100%);
   transition: transform 0.6s ease;
   z-index: 0;
@@ -295,7 +302,9 @@
   -moz-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  color: var(--eu-white); /* Fallback for browsers that don't support background-clip:text */
+  color: var(
+    --eu-white
+  ); /* Fallback for browsers that don't support background-clip:text */
   transition: all 0.3s ease;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
@@ -308,7 +317,8 @@
 }
 
 @keyframes logoPulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -335,14 +345,19 @@
 }
 
 .header-title::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 0;
   height: 2px;
   bottom: -4px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(90deg, transparent, var(--eu-orange), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--eu-orange),
+    transparent
+  );
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0;
 }
