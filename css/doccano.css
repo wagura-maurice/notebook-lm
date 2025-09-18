@@ -969,6 +969,58 @@
   border-radius: 0.375rem;
 }
 
+/* Collapsible Sections */
+.document-section {
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.document-section.is-active {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.section-trigger {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-trigger:hover {
+  background-color: #f9fafb;
+}
+
+.section-content {
+  transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0 1.25rem;
+}
+
+.section-content:not(.hidden) {
+  max-height: 1000px; /* Adjust based on your content */
+  opacity: 1;
+  padding: 0.5rem 1.25rem 1.25rem;
+}
+
+.section-icon {
+  transition: transform 0.3s ease;
+  margin-left: 0.5rem;
+}
+
+.document-section.is-active .section-icon {
+  transform: rotate(180deg);
+}
+
 /* Animation for content */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
@@ -977,4 +1029,65 @@
 
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Taxonomy Highlighting */
+.taxonomy-highlight {
+  position: relative;
+  display: inline-block;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  margin: 0 1px;
+  line-height: 1.4;
+}
+
+.taxonomy-highlight:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Tooltip Styling */
+.taxonomy-tooltip {
+  visibility: hidden;
+  width: 160px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 4px;
+  padding: 6px 8px;
+  position: absolute;
+  z-index: 1000;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  font-size: 0.75rem;
+  font-weight: 500;
+  pointer-events: none;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Tooltip Arrow */
+.taxonomy-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
+/* Show tooltip on hover */
+.taxonomy-highlight:hover .taxonomy-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Ensure tooltip stays visible when hovering over it */
+.taxonomy-tooltip:hover {
+  visibility: visible;
+  opacity: 1;
 }
