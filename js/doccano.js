@@ -131,9 +131,28 @@
     
         // Text selection handling
         function initTextSelection() {
-            // Use capture phase to ensure we handle the event before other handlers
-            document.addEventListener('mouseup', handleTextSelection, true);
-            document.addEventListener('mousedown', clearSelectionIfOutside, true);
+            // Get the document content element
+            const docContent = document.getElementById('document-content');
+            if (!docContent) return;
+            
+            // Only add event listeners to the document content area
+            docContent.addEventListener('mouseup', handleTextSelection, true);
+            docContent.addEventListener('mousedown', clearSelectionIfOutside, true);
+        }
+    
+        function isSelectionInParagraph(selection) {
+            // Check if the selection is within a paragraph element
+            const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+            if (!range) return false;
+            
+            // Get the common ancestor container
+            const container = range.commonAncestorContainer;
+            
+            // If it's a text node, get its parent element
+            const element = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
+            
+            // Check if the element or any of its parents is a paragraph
+            return element.closest('p') !== null;
         }
     
         function handleTextSelection(e) {
@@ -148,8 +167,13 @@
             
             console.log('Selected text:', selectedText);
             
-            // Only proceed if there's a valid text selection and we're not inside the popup
-            if (selectedText.length > 0 && !isInside(selection, 'taxonomy-popup')) {
+            // Check if selection is within document-content and inside a paragraph
+            const isInValidArea = isSelectionInParagraph(selection) && 
+                                document.getElementById('document-content').contains(selection.anchorNode);
+            
+            // Only proceed if there's a valid text selection, we're not inside the popup,
+            // and we're inside a paragraph within document-content
+            if (selectedText.length > 0 && !isInside(selection, 'taxonomy-popup') && isInValidArea) {
                 console.log('Valid selection, showing popup');
                 
                 // Store the current selection
@@ -163,11 +187,12 @@
                 e.preventDefault();
                 return false;
             } else {
-                console.log('Invalid selection or inside popup');
+                console.log('Invalid selection, inside popup, or not in valid area');
                 if (selectedText.length === 0) {
                     console.log('No text selected');
-                }
-                if (isInside(selection, 'taxonomy-popup')) {
+                } else if (!isInValidArea) {
+                    console.log('Selection not within a paragraph in document-content');
+                } else if (isInside(selection, 'taxonomy-popup')) {
                     console.log('Inside taxonomy popup');
                 }
             }
