@@ -1,265 +1,263 @@
 // js/app.js
+// =====================================================
+// MAIN APPLICATION ENTRY POINT
+// =====================================================
+// This is the main entry point for the application.
+// It initializes Alpine.js and all application components.
 
-document.addEventListener("DOMContentLoaded", function () {
-  // Mobile avatar dropdown
-  const mobileDropdownTrigger = document.getElementById('avatar-dropdown-trigger');
-  const mobileDropdown = document.getElementById('avatar-dropdown');
-  
-  // Desktop profile dropdown
-  const desktopDropdownTrigger = document.getElementById('profile-dropdown-trigger');
-  const desktopDropdown = document.getElementById('profile-dropdown');
-  
-  // Toggle mobile dropdown
-  if (mobileDropdownTrigger && mobileDropdown) {
-      mobileDropdownTrigger.addEventListener('click', function(e) {
-          e.stopPropagation();
-          mobileDropdown.classList.toggle('hidden');
-          
-          // Position the dropdown for mobile
-          if (!mobileDropdown.classList.contains('hidden') && window.innerWidth < 1024) {
-              const rect = mobileDropdownTrigger.getBoundingClientRect();
-              mobileDropdown.style.position = 'fixed';
-              mobileDropdown.style.top = `${rect.bottom + window.scrollY}px`;
-              mobileDropdown.style.right = '1rem';
-              mobileDropdown.style.zIndex = '1000'; // Ensure it's above mobile tabs (which are usually z-10 or z-20)
-          }
-      });
-  }
-  
-  // Toggle desktop dropdown
-  if (desktopDropdownTrigger && desktopDropdown) {
-      desktopDropdownTrigger.addEventListener('click', function(e) {
-          e.stopPropagation();
-          desktopDropdown.classList.toggle('hidden');
-          desktopDropdown.classList.toggle('opacity-0');
-          desktopDropdown.classList.toggle('translate-y-2');
-          
-          // Toggle aria-expanded
-          const isExpanded = this.getAttribute('aria-expanded') === 'true';
-          this.setAttribute('aria-expanded', !isExpanded);
-      });
-  }
-  
-  // Close dropdowns when clicking outside
-  document.addEventListener('click', function(e) {
-      // Mobile dropdown
-      if (mobileDropdown && mobileDropdownTrigger && 
-          !mobileDropdown.contains(e.target) && 
-          !mobileDropdownTrigger.contains(e.target)) {
-          mobileDropdown.classList.add('hidden');
-      }
-      
-      // Desktop dropdown
-      if (desktopDropdown && desktopDropdownTrigger && 
-          !desktopDropdown.contains(e.target) && 
-          !desktopDropdownTrigger.contains(e.target)) {
-          desktopDropdown.classList.add('hidden', 'opacity-0', 'translate-y-2');
-          if (desktopDropdownTrigger) {
-              desktopDropdownTrigger.setAttribute('aria-expanded', 'false');
-          }
-      }
-  });
-  
-  // Close dropdowns when pressing Escape key
-  document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-          if (mobileDropdown) mobileDropdown.classList.add('hidden');
-          if (desktopDropdown) {
-              desktopDropdown.classList.add('hidden', 'opacity-0', 'translate-y-2');
-              if (desktopDropdownTrigger) {
-                  desktopDropdownTrigger.setAttribute('aria-expanded', 'false');
-              }
-          }
-      }
-  });
-  
-  // Handle dropdown menu item clicks
-  function setupDropdownMenuItems(dropdown) {
-      if (!dropdown) return;
-      
-      const menuItems = dropdown.querySelectorAll('a[role="menuitem"]');
-      menuItems.forEach(item => {
-          item.addEventListener('click', function(e) {
-              e.preventDefault();
-              // Close the dropdown
-              const dropdown = this.closest('[role="menu"]');
-              if (dropdown) {
-                  dropdown.classList.add('hidden');
-                  if (desktopDropdown && dropdown === desktopDropdown) {
-                      dropdown.classList.add('opacity-0', 'translate-y-2');
-                      if (desktopDropdownTrigger) {
-                          desktopDropdownTrigger.setAttribute('aria-expanded', 'false');
-                      }
-                  }
-              }
-              console.log('Clicked:', this.textContent.trim());
-              // Add your navigation logic here
-          });
-      });
-  }
-  
-  // Set up menu items for both dropdowns
-  setupDropdownMenuItems(mobileDropdown);
-  setupDropdownMenuItems(desktopDropdown);
-  
-  // Handle mobile menu button
-  const mobileMenuButton = document.getElementById("mobile-menu-button");
-  if (mobileMenuButton) {
-    mobileMenuButton.addEventListener("click", function () {
-      const isExpanded = this.getAttribute("aria-expanded") === "true";
-      this.setAttribute("aria-expanded", !isExpanded);
-      // Toggle mobile menu visibility (you can add your mobile menu logic here)
-      console.log("Mobile menu toggled");
+// Load external dependencies
+function loadScript(src, type = 'text/javascript', isModule = false, attributes = {}) {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.type = type;
+        script.async = true;
+        if (isModule) script.type = 'module';
+        
+        // Add any additional attributes
+        Object.entries(attributes).forEach(([key, value]) => {
+            script.setAttribute(key, value);
+        });
+        
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+        document.head.appendChild(script);
     });
-  }
+}
 
-  // Handle keyboard navigation for desktop dropdown
-  if (desktopDropdown) {
-    const menuItems = desktopDropdown.querySelectorAll('a[role="menuitem"]');
-    const firstItem = menuItems[0];
-    const lastItem = menuItems[menuItems.length - 1];
-
-    desktopDropdown.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") {
-        desktopDropdownTrigger.focus();
-        desktopDropdown.classList.add("hidden", "opacity-0", "translate-y-2");
-        desktopDropdownTrigger.setAttribute("aria-expanded", "false");
-      }
-
-      if (!e.shiftKey && e.key === "Tab" && e.target === lastItem) {
-        e.preventDefault();
-        firstItem.focus();
-      }
-
-      if (e.shiftKey && e.key === "Tab" && e.target === firstItem) {
-        e.preventDefault();
-        lastItem.focus();
-      }
+function loadStylesheet(href) {
+    return new Promise((resolve, reject) => {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        link.onload = () => resolve();
+        link.onerror = () => reject(new Error(`Failed to load stylesheet: ${href}`));
+        document.head.appendChild(link);
     });
-  }
-});
+}
 
-document.addEventListener("DOMContentLoaded", function () {
-  // Preloader logic
-  function showPreloader() {
-    var preloader = document.getElementById("preloader");
-    var mainContent = document.getElementById("main-content");
-    if (preloader) {
-      preloader.classList.remove("hide");
-      preloader.style.opacity = "1";
-      preloader.style.pointerEvents = "auto";
-    }
-    if (mainContent) {
-      mainContent.classList.remove("show");
-      mainContent.style.opacity = "0";
-      mainContent.style.pointerEvents = "none";
-    }
-  }
-  function hidePreloader() {
-    var preloader = document.getElementById("preloader");
-    var mainContent = document.getElementById("main-content");
-    if (preloader) {
-      preloader.classList.add("hide");
-      preloader.style.opacity = "0";
-      preloader.style.pointerEvents = "none";
-    }
-    if (mainContent) {
-      mainContent.classList.add("show");
-      mainContent.style.opacity = "1";
-      mainContent.style.pointerEvents = "auto";
-    }
-  }
-  showPreloader();
-  setTimeout(hidePreloader, 3000);
-});
+// Global state variables - these will be managed by Alpine.js components
+console.log('%c[APP] Initializing application...', 'color: #4CAF50; font-weight: bold;');
 
-document.addEventListener("DOMContentLoaded", function () {
-  const leftColumn = document.getElementById("left-column");
-  const rightColumn = document.getElementById("right-column");
-  const middleColumn = document.getElementById("middle-column");
-
-  const collapseLeftBtn = document.getElementById("collapse-left");
-  const expandLeftBtn = document.getElementById("expand-left");
-  const collapseRightBtn = document.getElementById("collapse-right");
-  const expandRightBtn = document.getElementById("expand-right");
-  const expandMiddleBtn = document.getElementById("expand-middle");
-
-  function updateColumnState(columnElement, shouldCollapse) {
-    if (!columnElement) return;
-    const expandedContent = columnElement.querySelector(".expanded-content");
-    const collapsedContent = columnElement.querySelector(".collapsed-content");
-
-    if (shouldCollapse) {
-      columnElement.classList.add("collapsed");
-      if (expandedContent) expandedContent.classList.add("hidden");
-      if (collapsedContent) collapsedContent.classList.remove("hidden");
-    } else {
-      columnElement.classList.remove("collapsed");
-      if (expandedContent) expandedContent.classList.remove("hidden");
-      if (collapsedContent) collapsedContent.classList.add("hidden");
-    }
-  }
-
-  // Function to handle left column collapse/expand
-  if (collapseLeftBtn && expandLeftBtn) {
-    collapseLeftBtn.addEventListener("click", () => {
-      updateColumnState(leftColumn, true);
-    });
-
-    expandLeftBtn.addEventListener("click", () => {
-      updateColumnState(leftColumn, false);
-    });
-  }
-
-  // Function to handle right column collapse/expand
-  if (collapseRightBtn && expandRightBtn) {
-    collapseRightBtn.addEventListener("click", () => {
-      updateColumnState(rightColumn, true);
-    });
-
-    expandRightBtn.addEventListener("click", () => {
-      updateColumnState(rightColumn, false);
-    });
-  }
-
-  // Function to handle middle column expand
-  if (expandMiddleBtn) {
-    expandMiddleBtn.addEventListener("click", () => {
-      const leftIsCollapsed = leftColumn?.classList.contains("collapsed");
-      const rightIsCollapsed = rightColumn?.classList.contains("collapsed");
-
-      const bothCollapsed = leftIsCollapsed && rightIsCollapsed;
-
-      if (bothCollapsed) {
-        // Currently focused on middle; expand side columns
-        updateColumnState(leftColumn, false);
-        updateColumnState(rightColumn, false);
-      } else {
-        // Collapse both sides to focus middle
-        updateColumnState(leftColumn, true);
-        updateColumnState(rightColumn, true);
-      }
-    });
-  }
-
-  // Tab switching functionality
-  const tabButtons = document.querySelectorAll(".tab-button");
-  const mobileTabContents = document.querySelectorAll(".mobile-tab-content");
-
-  tabButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const tab = button.getAttribute("data-tab");
-
-      tabButtons.forEach((btn) => btn.classList.remove("active"));
-      button.classList.add("active");
-
-      mobileTabContents.forEach((content) => {
-        if (content.id === tab) {
-          content.classList.add("active");
+// Define the appInfrastructure component
+const appInfrastructure = {
+    // Component state
+    mobileDropdownOpen: false,
+    desktopDropdownOpen: false,
+    mobileDropdownPosition: {},
+    activeTab: 'document',
+    isMobileMenuOpen: false,
+    preloaderVisible: true,
+    leftColumnCollapsed: false,
+    rightColumnCollapsed: false,
+    middleColumnFocused: false,
+    
+    // Initialize function called when component is mounted
+    init() {
+        console.log('%c[APP] Initializing app infrastructure', 'color: #6366f1;');
+        
+        // Initialize all systems
+        this.initDropdownSystem();
+        this.initPreloaderSystem();
+        this.initColumnManagementSystem();
+        this.initTabSystem();
+        
+        // Hide preloader after a short delay
+        setTimeout(() => {
+            this.preloaderVisible = false;
+            document.dispatchEvent(new CustomEvent('appContentReady'));
+        }, 1000);
+    },
+    
+    // Initialize dropdown system
+    initDropdownSystem() {
+        console.log('%c[APP] Initializing dropdown system', 'color: #6366f1;');
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            const mobileDropdownTrigger = document.getElementById('avatar-dropdown-trigger');
+            const mobileDropdown = document.getElementById('avatar-dropdown');
+            const desktopDropdownTrigger = document.getElementById('profile-dropdown-trigger');
+            const desktopDropdown = document.getElementById('profile-dropdown');
+            
+            // Mobile dropdown closure
+            if (mobileDropdown && mobileDropdownTrigger && 
+                !mobileDropdown.contains(e.target) && !mobileDropdownTrigger.contains(e.target)) {
+                this.mobileDropdownOpen = false;
+                console.log('%c[APP] Mobile dropdown closed (outside click)', 'color: #6366f1;');
+            }
+            
+            // Desktop dropdown closure
+            if (desktopDropdown && desktopDropdownTrigger &&
+                !desktopDropdown.contains(e.target) && !desktopDropdownTrigger.contains(e.target)) {
+                this.desktopDropdownOpen = false;
+                console.log('%c[APP] Desktop dropdown closed (outside click)', 'color: #6366f1;');
+            }
+        });
+        
+        // Close dropdowns when pressing Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (this.mobileDropdownOpen) {
+                    this.mobileDropdownOpen = false;
+                    console.log('%c[APP] Mobile dropdown closed (Escape key)', 'color: #6366f1;');
+                }
+                if (this.desktopDropdownOpen) {
+                    this.desktopDropdownOpen = false;
+                    console.log('%c[APP] Desktop dropdown closed (Escape key)', 'color: #6366f1;');
+                }
+            }
+        });
+    },
+    
+    // Initialize preloader system
+    initPreloaderSystem() {
+        console.log('%c[APP] Initializing preloader system', 'color: #6366f1;');
+    },
+    
+    // Initialize column management system
+    initColumnManagementSystem() {
+        console.log('%c[APP] Initializing column management system', 'color: #6366f1;');
+    },
+    
+    // Initialize tab system
+    initTabSystem() {
+        console.log('%c[APP] Initializing tab system', 'color: #6366f1;');
+    },
+    
+    // Toggle mobile menu
+    toggleMobileMenu() {
+        this.isMobileMenuOpen = !this.isMobileMenuOpen;
+        console.log(`%c[APP] Mobile menu ${this.isMobileMenuOpen ? 'opened' : 'closed'}`, 'color: #6366f1;');
+    },
+    
+    // Toggle middle column focus
+    toggleMiddleColumnFocus() {
+        const bothCollapsed = this.leftColumnCollapsed && this.rightColumnCollapsed;
+        console.log(`%c[APP] Middle column focus mode: ${bothCollapsed ? 'expanding sides' : 'focusing middle'}`, 'color: #6366f1;');
+        
+        if (bothCollapsed) {
+            this.leftColumnCollapsed = false;
+            this.rightColumnCollapsed = false;
+            this.middleColumnFocused = false;
         } else {
-          content.classList.remove("active");
+            this.leftColumnCollapsed = true;
+            this.rightColumnCollapsed = true;
+            this.middleColumnFocused = true;
         }
-      });
+    },
+    
+    // Toggle left column
+    toggleLeftColumn() {
+        this.leftColumnCollapsed = !this.leftColumnCollapsed;
+        console.log(`%c[APP] Left column ${this.leftColumnCollapsed ? 'collapsed' : 'expanded'}`, 'color: #6366f1;');
+    },
+    
+    // Toggle right column
+    toggleRightColumn() {
+        this.rightColumnCollapsed = !this.rightColumnCollapsed;
+        console.log(`%c[APP] Right column ${this.rightColumnCollapsed ? 'collapsed' : 'expanded'}`, 'color: #6366f1;');
+    }
+};
+
+// Register the component with Alpine.js when it's available
+function registerAlpineComponent() {
+    if (typeof Alpine !== 'undefined') {
+        Alpine.data('appInfrastructure', () => appInfrastructure);
+        console.log('%c[APP] Alpine.js component registered', 'color: #4CAF50;');
+        return true;
+    }
+    return false;
+}
+
+// Initialize Tailwind CSS
+async function initTailwind() {
+    return new Promise((resolve) => {
+        // Load Tailwind CSS
+        const tailwindScript = document.createElement('script');
+        tailwindScript.src = 'https://cdn.tailwindcss.com';
+        
+        // Set up the Tailwind configuration
+        tailwindScript.onload = () => {
+            // Load the Tailwind config
+            const configScript = document.createElement('script');
+            configScript.src = './js/tailwind-config.js';
+            configScript.onload = resolve;
+            configScript.onerror = (error) => {
+                console.error('Failed to load Tailwind config:', error);
+                resolve(); // Continue even if config fails
+            };
+            document.head.appendChild(configScript);
+        };
+        
+        tailwindScript.onerror = (error) => {
+            console.error('Failed to load Tailwind CSS:', error);
+            resolve(); // Continue even if Tailwind fails
+        };
+        
+        document.head.appendChild(tailwindScript);
     });
-  });
+}
+
+// Initialize the application
+async function initializeApplication() {
+    console.log('%c[APP] Initializing application', 'color: #6366f1;');
+    
+    try {
+        // Register Alpine component
+        if (!registerAlpineComponent()) {
+            console.warn('Alpine.js not available yet, will retry...');
+            // If Alpine isn't loaded yet, wait for it
+            const checkAlpine = setInterval(() => {
+                if (registerAlpineComponent()) {
+                    clearInterval(checkAlpine);
+                }
+            }, 100);
+        }
+        
+        // Load external dependencies
+        console.log('%c[APP] Loading external dependencies...', 'color: #6366f1;');
+        
+        // Initialize Tailwind CSS first
+        await initTailwind();
+        
+        // Load other dependencies
+        await Promise.all([
+            // Load Shepherd.js (for tours)
+            loadStylesheet('https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/css/shepherd.css'),
+            loadScript('https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/js/shepherd.min.js'),
+            
+            // Load ApexCharts
+            loadScript('https://cdn.jsdelivr.net/npm/apexcharts', 'application/JavaScript'),
+            
+            // Load SweetAlert2
+            loadScript('https://cdn.jsdelivr.net/npm/sweetalert2@11', 'application/JavaScript')
+        ]);
+        
+        console.log('%c[APP] All dependencies loaded', 'color: #4CAF50;');
+    } catch (error) {
+        console.error('%c[APP] Error loading dependencies:', 'color: #F44336; font-weight: bold;', error);
+    }
+}
+
+// Start the application when the DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApplication);
+} else {
+    initializeApplication();
+}
+
+// Error handling
+window.addEventListener('error', function(event) {
+    console.error('%c[ERROR]', 'color: #F44336; font-weight: bold;', event.error || event.message || 'Unknown error');
+    return false; // Prevent default error handling
 });
+
+window.addEventListener('unhandledrejection', function(event) {
+    const reason = event.reason || 'Unknown rejection reason';
+    console.error('%c[UNHANDLED PROMISE REJECTION]', 'color: #F44336; font-weight: bold;', reason);
+    return false; // Prevent default error handling
+});
+
+// Make appInfrastructure available globally
+window.appInfrastructure = appInfrastructure;
