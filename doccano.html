@@ -5005,6 +5005,7 @@ Bruegel, Rue de la Charité 33, B-1210 Brussels (+32) 2 227 4210 info@bruegel.or
                 <h3 class="text-xs font-semibold text-eu-blue uppercase tracking-wider mb-2">
                   Taxonomies
                 </h3>
+                <p class="text-xs text-gray-500">Below are the taxonomy categories that are annotable in this document.</p>
                 <div id="taxonomy-container" class="space-y-2 mb-6">
     <div class="group flex items-center justify-between py-2 px-3 rounded-lg transition-all duration-200 hover:shadow-sm hover:bg-gradient-to-r hover:from-white hover:to-gray-50 border border-transparent hover:border-gray-200">
       <div class="flex items-center min-w-0">
@@ -5205,5 +5206,20 @@ opacity: 0.45;
     <p class="text-center text-xs text-gray-500 mb-1">
       NotebookLM can be inaccurate; please double-check its responses.
     </p>
-  </body>
+
+  <!-- Taxonomy Assignment Popup -->
+  <div id="taxonomy-popup" class="fixed z-50 hidden bg-white rounded-lg shadow-xl border border-gray-200 w-64 transform transition-all duration-200 ease-in-out">
+    <div class="p-4">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-sm font-semibold text-eu-blue">Assign to Category</h3>
+        <button id="close-popup" class="text-gray-400 hover:text-gray-600">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="space-y-2 max-h-60 overflow-y-auto pr-2">
+        <!-- Taxonomy items will be dynamically inserted here -->
+      </div>
+    </div>
+  </div>
+</body>
 </html>
