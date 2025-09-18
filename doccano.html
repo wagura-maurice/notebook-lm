@@ -191,7 +191,7 @@
               />
               <div class="absolute inset-0 rounded-full border-2 border-transparent group-hover:border-eu-orange transition-all duration-300"></div>
             </div>
-            <span class="ml-3 text-eu-white text-lg lg:text-xl font-semibold group-hover:text-eu-orange transition-colors">
+            <span class="ml-3 text-eu-white text-lg lg:text-xl font-semibold transition-colors duration-200 hover:text-eu-orange">
               Notebook LLM
             </span>
           </a>
@@ -199,7 +199,7 @@
 
         <!-- Title in the center with hover effect -->
         <div class="flex-1 flex justify-center px-4">
-          <h1 class="text-xl lg:text-2xl font-bold text-eu-white whitespace-nowrap hover:text-eu-orange transition-colors">
+          <h1 class="text-xl lg:text-2xl font-bold text-eu-white whitespace-nowrap transition-all duration-300 transform hover:scale-105 hover:text-eu-orange">
             Document Annotation Page
           </h1>
         </div>
@@ -210,8 +210,9 @@
             <button class="text-eu-white hover:text-eu-orange transition-colors" title="Help">
               <i class="fas fa-question-circle text-xl"></i>
             </button>
-            <button class="text-eu-white hover:text-eu-orange transition-colors" title="Notifications">
+            <button class="text-eu-white hover:text-eu-orange transition-colors relative" title="Notifications">
               <i class="fas fa-bell text-xl"></i>
+              <span class="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-eu-orange"></span>
             </button>
           </div>
 
@@ -219,14 +220,34 @@
           <div class="relative">
             <button
               @click.stop="profileDropdownOpen = !profileDropdownOpen"
-              class="p-1 rounded-full bg-eu-white hover:bg-eu-orange transition-colors duration-200 focus:outline-none"
+              class="p-1 focus:outline-none group"
+              :class="{'ring-2 ring-eu-orange': profileDropdownOpen}"
             >
-              <div class="h-10 w-10 rounded-full overflow-hidden">
-                <img
-                  src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
-                  class="h-full w-full object-cover"
-                  alt="Profile"
-                />
+              <div class="relative">
+                <!-- Background circle with hover/active states -->
+                <div class="relative h-10 w-10 flex items-center justify-center">
+                  <!-- Hover background -->
+                  <div class="absolute inset-0 rounded-full bg-eu-orange/0 group-hover:bg-eu-orange/10 transition-colors duration-200"></div>
+                  
+                  <!-- Active state background -->
+                  <div 
+                    class="absolute inset-0 rounded-full transition-opacity duration-200"
+                    :class="{'bg-eu-orange/20': profileDropdownOpen}"
+                  ></div>
+                  
+                  <!-- Border ring -->
+                  <div 
+                    class="absolute inset-0 rounded-full ring-1 ring-white/50 group-hover:ring-2 group-hover:ring-eu-orange transition-all duration-200"
+                    :class="{'ring-2 ring-eu-orange': profileDropdownOpen}"
+                  ></div>
+                  
+                  <!-- Profile image -->
+                  <img
+                    src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
+                    class="h-8 w-8 rounded-full object-cover transition-transform duration-200 group-hover:scale-105"
+                    alt="Profile"
+                  />
+                </div>
               </div>
             </button>
 
@@ -290,10 +311,12 @@
       </div>
     </header>
 
-    <!-- Main Content Container -->
-    <div id="main-content" class="flex-1 flex flex-col overflow-hidden">
-      <!-- Mobile Tabs -->
-      <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
+    <!-- Main Content Wrapper -->
+    <div id="main-content-wrapper" class="relative flex-1 flex flex-col overflow-hidden">
+      <!-- Main Content Container - This will be behind the dropdowns -->
+      <div id="main-content" class="flex-1 flex flex-col overflow-hidden relative z-0">
+        <!-- Mobile Tabs -->
+        <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
         <div class="flex justify-around">
           <button
             class="flex flex-col items-center justify-center py-2 px-4 w-full text-sm font-medium"
@@ -323,10 +346,10 @@
       </div>
 
       <!-- Main Content Column  -->
-      <div class="flex flex-1 overflow-hidden gap-2 p-2" id="columns-container">
+      <div class="flex flex-1 overflow-hidden gap-2 p-2 relative z-0" id="columns-container">
         <div
           id="left-column"
-          class="mobile-tab-content w-full lg:w-72 bg-eu-white text-text-primary transition-all duration-300 flex flex-col rounded-lg lg:block hidden"
+          class="mobile-tab-content w-full lg:w-72 bg-white text-text-primary transition-all duration-300 flex flex-col rounded-lg lg:block hidden relative z-10"
         >
           <div class="expanded-content">
             <div class="flex flex-col h-full">
@@ -372,7 +395,7 @@
 
         <div
           id="middle-column"
-          class="mobile-tab-content flex-1 bg-eu-white text-text-primary flex flex-col lg:block transition-all duration-300 rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)]"
+          class="mobile-tab-content flex-1 bg-white text-text-primary flex flex-col lg:block transition-all duration-300 rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)] relative z-10"
         >
           <div
             class="flex items-center justify-between px-5 py-3 border-b border-eu-blue"
@@ -396,7 +419,7 @@
 
         <div
           id="right-column"
-          class="mobile-tab-content w-full lg:w-16 lg:hover:w-80 bg-eu-white text-text-primary border-l border-eu-blue transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)] lg:block hidden"
+          class="mobile-tab-content w-full lg:w-16 lg:hover:w-80 bg-white text-text-primary border-l border-eu-blue transition-all duration-300 flex flex-col rounded-lg shadow-[0_4px_6px_-1px_rgba(0,48,135,0.25),0_2px_4px_-1px_rgba(0,48,135,0.15)] lg:block hidden relative z-10"
         >
           <div class="expanded-content">
             <div class="flex flex-col h-full">
