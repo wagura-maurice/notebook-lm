@@ -1,6 +1,13 @@
 // Tailwind configuration
-export function configureTailwind() {
-  if (typeof tailwind !== 'undefined') {
+(function() {
+  // Wait for Tailwind to be available
+  function initTailwind() {
+    if (typeof tailwind === 'undefined') {
+      console.warn('Tailwind not loaded yet, retrying...');
+      setTimeout(initTailwind, 100);
+      return;
+    }
+
     tailwind.config = {
       theme: {
         fontFamily: {
@@ -28,8 +35,14 @@ export function configureTailwind() {
         },
       },
     };
+    
     console.log('%c[Tailwind] Configuration applied', 'color: #4CAF50;');
-  } else {
-    console.error('Tailwind CSS not found. Make sure to load Tailwind before this configuration.');
   }
-}
+
+  // Start initialization
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTailwind);
+  } else {
+    initTailwind();
+  }
+})();

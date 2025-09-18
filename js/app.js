@@ -170,35 +170,7 @@ function registerAlpineComponent() {
     return false;
 }
 
-// Initialize Tailwind CSS
-async function initTailwind() {
-    return new Promise((resolve) => {
-        // Load Tailwind CSS
-        const tailwindScript = document.createElement('script');
-        tailwindScript.src = 'https://cdn.tailwindcss.com';
-        
-        // Set up the Tailwind configuration
-        tailwindScript.onload = () => {
-            // Load the Tailwind config
-            const configScript = document.createElement('script');
-            configScript.src = './js/tailwind-config.js';
-            configScript.onload = resolve;
-            configScript.onerror = (error) => {
-                console.error('Failed to load Tailwind config:', error);
-                resolve(); // Continue even if config fails
-            };
-            document.head.appendChild(configScript);
-        };
-        
-        tailwindScript.onerror = (error) => {
-            console.error('Failed to load Tailwind CSS:', error);
-            resolve(); // Continue even if Tailwind fails
-        };
-        
-        document.head.appendChild(tailwindScript);
-    });
-}
-
+// Tailwind initialization is now handled by tailwind-config.js
 // Initialize the application
 async function initializeApplication() {
     console.log('%c[APP] Initializing application', 'color: #6366f1;');
@@ -215,11 +187,8 @@ async function initializeApplication() {
             }, 100);
         }
         
-        // Load external dependencies
+        // Load other dependencies
         console.log('%c[APP] Loading external dependencies...', 'color: #6366f1;');
-        
-        // Initialize Tailwind CSS first
-        await initTailwind();
         
         // Load other dependencies
         await Promise.all([
