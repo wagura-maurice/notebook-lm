@@ -481,45 +481,156 @@
     }
   }
 
-  // Save current document state with line information
+  // Save current document state with line information and track changes
   function saveState() {
     const docContent = document.getElementById("document-content");
-    if (docContent) {
-      // Get the currently active highlight
-      const activeHighlight = document.querySelector(
-        ".taxonomy-highlight.highlight-active"
-      );
+    if (!docContent) return null;
 
-      // Create a snapshot of the current state with line numbers
-      const snapshot = {
-        html: docContent.innerHTML,
-        highlights: [],
-        timestamp: new Date().toISOString(),
-        currentHighlightId: activeHighlight ? activeHighlight.id : null,
-      };
+    // Get the currently active highlight
+    const activeHighlight = document.querySelector(
+      ".taxonomy-highlight.highlight-active"
+    );
 
-      // Store information about each highlight with their positions
-      document.querySelectorAll(".taxonomy-highlight").forEach((hl) => {
-        snapshot.highlights.push({
-          id: hl.id,
-          text: hl.textContent,
-          lineNumber: hl.dataset.lineNumber || "",
-          taxonomyId: hl.dataset.taxonomyId || "",
-          isActive: hl.classList.contains("highlight-active"),
+    // Create a snapshot of the current state with line numbers
+    const currentHighlights = [];
+    const currentHighlightElements = document.querySelectorAll(".taxonomy-highlight");
+    
+    // Track current highlights
+    currentHighlightElements.forEach((hl) => {
+      // Get the text content of just the highlight, excluding any tooltip content
+      let text = '';
+      
+      // Find the first text node within the highlight
+      const textNode = Array.from(hl.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
+      if (textNode) {
+        text = textNode.textContent.trim();
+      } else {
+        // Fallback to textContent if no direct text node is found
+        text = hl.textContent.trim()
+          .replace(/\s+/g, ' ')  // Replace multiple whitespace with single space
+          .replace(/\n+/g, ' ')  // Replace newlines with space
+          .trim();
+        
+        // Remove any taxonomy category name that might be at the end
+        const taxonomy = taxonomies.find(t => t.id === (hl.dataset.taxonomyId || ''));
+        if (taxonomy) {
+          text = text.replace(new RegExp(`\\s*${taxonomy.name}\\s*$`, 'i'), '').trim();
+        }
+      }
+      
+      // Ensure line number is captured from the closest parent with data-line-number
+      let lineNumber = hl.dataset.lineNumber || "";
+      if (!lineNumber) {
+        const lineElement = hl.closest('[data-line-number]');
+        if (lineElement) {
+          lineNumber = lineElement.dataset.lineNumber || "";
+        }
+      }
+      
+      currentHighlights.push({
+        id: hl.id,
+        text: text,
+        lineNumber: lineNumber,
+        taxonomyId: hl.dataset.taxonomyId || "",
+        isActive: true, // If element exists in DOM, it's active
+      });
+    });
+    
+    // If we have a previous state, mark any missing highlights as inactive
+    if (stateHistory.currentIndex >= 0 && stateHistory.stack[stateHistory.currentIndex]) {
+      try {
+        const prevState = JSON.parse(stateHistory.stack[stateHistory.currentIndex]);
+        const prevHighlights = prevState.highlights || [];
+        
+        // Find highlights that were in previous state but not in current
+        const currentIds = new Set(currentHighlights.map(h => h.id));
+        prevHighlights.forEach(prevHl => {
+          if (!currentIds.has(prevHl.id)) {
+            // This highlight was removed
+            currentHighlights.push({
+              ...prevHl,
+              isActive: false
+            });
+          }
         });
-      });
-
-      // Save the state to history
-      stateHistory.pushState(JSON.stringify(snapshot));
-
-      console.log("State saved:", {
-        currentHighlightId: snapshot.currentHighlightId,
-        highlights: snapshot.highlights.length,
-      });
-
-      return snapshot;
+      } catch (e) {
+        console.error('Error processing previous state:', e);
+      }
     }
-    return null;
+
+    // Get the previous state for comparison
+    let added = 0;
+    let removed = 0;
+    let hasChanges = false;
+
+    // Only compare if we have a previous state
+    if (stateHistory.currentIndex >= 0 && stateHistory.stack[stateHistory.currentIndex]) {
+      try {
+        const prevState = JSON.parse(stateHistory.stack[stateHistory.currentIndex]);
+        const prevHighlights = prevState.highlights || [];
+        
+        // Create maps for easier comparison
+        const currentMap = new Map(currentHighlights.map(h => [h.id, h]));
+        const prevMap = new Map(prevHighlights.map(h => [h.id, h]));
+        
+        // Find added highlights (in current but not in previous)
+        added = currentHighlights.filter(h => !prevMap.has(h.id)).length;
+        
+        // Find removed highlights (in previous but not in current)
+        removed = prevHighlights.filter(h => !currentMap.has(h.id)).length;
+        
+        // Check for modified highlights (same ID but different content)
+        let modified = 0;
+        currentHighlights.forEach(ch => {
+          const ph = prevMap.get(ch.id);
+          if (ph && 
+              (ch.text !== ph.text || 
+               ch.taxonomyId !== ph.taxonomyId || 
+               ch.isActive !== ph.isActive)) {
+            modified++;
+          }
+        });
+        
+        hasChanges = added > 0 || removed > 0 || modified > 0;
+        
+        console.log('Changes detected:', { added, removed, modified });
+      } catch (e) {
+        console.error('Error comparing states:', e);
+        // If we can't compare, assume there are changes to be safe
+        hasChanges = currentHighlights.length > 0;
+      }
+    } else if (currentHighlights.length > 0) {
+      // First state with highlights
+      hasChanges = true;
+      added = currentHighlights.length;
+    }
+
+    const snapshot = {
+      html: docContent.innerHTML,
+      highlights: currentHighlights,
+      timestamp: new Date().toISOString(),
+      currentHighlightId: activeHighlight ? activeHighlight.id : null,
+    };
+
+    // Only push to history if there are actual changes
+    if (hasChanges) {
+      stateHistory.pushState(JSON.stringify(snapshot));
+    }
+
+    console.log("State saved:", {
+      currentHighlightId: snapshot.currentHighlightId,
+      highlights: currentHighlights.length,
+      added,
+      removed,
+      hasChanges
+    });
+
+    return {
+      snapshot,
+      added,
+      removed,
+      hasChanges
+    };
   }
 
   // Set up all event listeners
@@ -1335,24 +1446,58 @@
   }
 
   function removeHighlight(highlightElement) {
-    // Save state before making changes
-    saveState();
-
-    const taxonomyId = highlightElement.id.replace("taxonomy-", "");
-    const taxonomy = taxonomies.find((t) => t.id === taxonomyId);
-
-    if (taxonomy && taxonomy.count > 0) {
-      taxonomy.count--;
-      renderTaxonomies();
-    }
-
-    // Get the original text content (excluding the tooltip)
-    const originalText =
-      highlightElement.firstChild.textContent || highlightElement.textContent;
-
-    // Replace the highlight with just the original text
+    // Get the taxonomy ID from the data attribute instead of the element ID
+    const taxonomyId = highlightElement.dataset.taxonomyId;
+    
+    // Get the highlight info before removing it
+    const highlightInfo = {
+      id: highlightElement.id,
+      text: highlightElement.textContent.trim(),
+      taxonomyId: taxonomyId,
+      lineNumber: highlightElement.dataset.lineNumber || ""
+    };
+    
+    // Remove the highlight from the DOM first
+    const originalText = highlightElement.firstChild.textContent || highlightElement.textContent;
     const textNode = document.createTextNode(originalText);
     highlightElement.parentNode.replaceChild(textNode, highlightElement);
+    
+    // Update the taxonomy count
+    if (taxonomyId) {
+      const taxonomy = taxonomies.find((t) => t.id === taxonomyId);
+      if (taxonomy && (taxonomy.count > 0 || typeof taxonomy.count === 'undefined')) {
+        taxonomy.count = Math.max(0, (taxonomy.count || 0) - 1);
+        renderTaxonomies();
+      }
+    }
+    
+    // Create a new state that reflects this removal
+    const newState = saveState();
+    
+    // If saveState didn't detect the change (which can happen with direct DOM manipulation),
+    // force a new state with the removal
+    if (newState && !newState.hasChanges) {
+      console.log('Forcing state update after highlight removal');
+      // Push a new state manually
+      const docContent = document.getElementById("document-content");
+      if (docContent) {
+        const snapshot = {
+          html: docContent.innerHTML,
+          highlights: Array.from(document.querySelectorAll(".taxonomy-highlight")).map(hl => ({
+            id: hl.id,
+            text: hl.textContent.trim(),
+            lineNumber: hl.dataset.lineNumber || "",
+            taxonomyId: hl.dataset.taxonomyId || "",
+            isActive: hl.classList.contains("highlight-active")
+          })),
+          timestamp: new Date().toISOString(),
+          currentHighlightId: null
+        };
+        
+        stateHistory.pushState(JSON.stringify(snapshot));
+        console.log('Manual state update after highlight removal');
+      }
+    }
 
     // Clear any existing selection
     clearSelection();
@@ -1373,10 +1518,24 @@
 
     // This will be called when taxonomies are loaded
     onTaxonomiesLoaded((taxonomyList) => {
+      const taxonomiesHeading = container.closest('.mb-4')?.querySelector('h3');
+      
       if (!taxonomyList || taxonomyList.length === 0) {
         container.innerHTML =
           '<div class="text-sm text-red-500 py-4">No taxonomies available</div>';
+        if (taxonomiesHeading) {
+          taxonomiesHeading.innerHTML = 'Taxonomies <span class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-normal rounded-full">0 items</span>';
+        }
         return;
+      }
+
+      // Calculate total count of all taxonomy items
+      const totalCount = taxonomyList.reduce((sum, taxonomy) => sum + (taxonomy.count || 0), 0);
+      const formattedCount = totalCount.toLocaleString(); // Format number with thousand separators
+      
+      // Update the taxonomies heading with the total count
+      if (taxonomiesHeading) {
+        taxonomiesHeading.innerHTML = `Taxonomies <span class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-normal rounded-full">${formattedCount} item${totalCount !== 1 ? 's' : ''}</span>`;
       }
 
       container.innerHTML = "";
@@ -1555,6 +1714,35 @@
     }
   }
 
+  // Helper function to download JSON file
+  function downloadJSON(data, filename) {
+    try {
+      // Create a blob with the JSON data
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      // Create a temporary anchor element
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename || 'highlights-export.json';
+      
+      // Trigger the download
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 0);
+      
+      return true;
+    } catch (error) {
+      console.error('Error downloading JSON:', error);
+      return false;
+    }
+  }
+
   // Handle save action with export functionality
   async function handleSaveWithExport(event) {
     event.preventDefault();
@@ -1563,6 +1751,7 @@
     const saveBtn = document.getElementById("save-btn");
     const saveIcon = saveBtn ? saveBtn.querySelector("i, svg") : null;
     const originalHtml = saveBtn ? saveBtn.innerHTML : "";
+    let exportData = null;
     
     try {
       // Add loading state to button
@@ -1579,22 +1768,111 @@
 
       // First save the current state
       const changes = saveState();
-      const addedCount = changes?.added || 0;
-      const removedCount = changes?.removed || 0;
-      const hasChanges = addedCount > 0 || removedCount > 0;
+      if (!changes) {
+        throw new Error('Failed to save document state');
+      }
+      
+      const addedCount = changes.added || 0;
+      const removedCount = changes.removed || 0;
+      const hasChanges = changes.hasChanges || false;
+      
+      // Get all current highlight elements from the DOM
+      const currentHighlightElements = Array.from(document.querySelectorAll('.taxonomy-highlight'));
+      
+      // Get the current document's line number from the document content wrapper
+      const documentWrapper = document.querySelector('.document-content-wrapper');
+      
+      // Process only the active highlights from the DOM
+      const activeHighlights = currentHighlightElements.map(hl => {
+        // Get text content
+        let text = '';
+        const textNode = Array.from(hl.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
+        if (textNode) {
+          text = textNode.textContent.trim();
+        } else {
+          text = hl.textContent.trim()
+            .replace(/\s+/g, ' ')
+            .replace(/\n+/g, ' ')
+            .trim();
+          
+          const taxonomy = taxonomies.find(t => t.id === (hl.dataset.taxonomyId || ''));
+          if (taxonomy) {
+            text = text.replace(new RegExp(`\\s*${taxonomy.name}\\s*$`, 'i'), '').trim();
+          }
+        }
+        
+        // Get highlight's line number within the document
+        let lineNumber = hl.dataset.lineNumber || '';
+        if (!lineNumber) {
+          // Try to get line number from the closest line element
+          const lineElement = hl.closest('.flex.items-start.group');
+          if (lineElement) {
+            const lineNumberSpan = lineElement.querySelector('span.text-xs.text-gray-400');
+            if (lineNumberSpan) {
+              lineNumber = lineNumberSpan.textContent.trim();
+            }
+          }
+          
+          // If still no line number, try to get from data attributes
+          if (!lineNumber) {
+            const lineElement = hl.closest('[data-line-number]');
+            if (lineElement) {
+              lineNumber = lineElement.dataset.lineNumber || '';
+            }
+          }
+        }
+        
+        // Get taxonomy info
+        const taxonomy = taxonomies.find(t => t.id === (hl.dataset.taxonomyId || '')) || {};
+        
+        return {
+          text: text,
+          line_number: lineNumber,
+          taxonomy_category: taxonomy.name || '',
+          taxonomy_id: hl.dataset.taxonomyId || ''
+        };
+      });
+      
+      // Prepare export data with only active highlights
+      exportData = {
+        metadata: {
+          exported_at: new Date().toISOString(),
+          document_title: document.title,
+          highlights_count: activeHighlights.length
+        },
+        highlights: activeHighlights
+      };
 
       // Simulate API call delay (replace with actual save/export logic)
       await new Promise((resolve, reject) => {
         setTimeout(() => {
-          // Simulate random errors (10% chance)
-          if (Math.random() < 0.1) {
-            reject(new Error("Failed to connect to the server. Please check your connection and try again."));
-          } else {
-            resolve();
+          try {
+            // Download the highlights as JSON file
+            const filename = `highlights-${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+            const downloadSuccess = downloadJSON(exportData, filename);
+            
+            if (!downloadSuccess) {
+              throw new Error('Failed to generate download');
+            }
+            
+            // Simulate random errors (10% chance)
+            if (Math.random() < 0.1) {
+              reject(new Error("Failed to connect to the server. Your highlights were saved locally, but could not be synced to the server."));
+            } else {
+              resolve();
+            }
+          } catch (error) {
+            console.error('Error during export:', error);
+            reject(error);
           }
-        }, 1500);
+        }, 500); // Reduced delay for better UX
       });
 
+      // Prepare success message
+      const successMessage = hasChanges 
+        ? `Successfully exported ${addedCount} added and ${removedCount} removed highlights.`
+        : 'No changes to export.';
+      
       // Show success message with SweetAlert2
       const Toast = Swal.mixin({
         toast: true,
@@ -1648,11 +1926,11 @@
                 </div>
               </div>
               <div class="ml-3 flex-1">
-                <p class="text-sm font-medium text-gray-900">Changes saved successfully!</p>
+                <p class="text-sm font-medium text-gray-900">Highlights exported successfully!</p>
                 <div class="mt-1 flex flex-wrap items-center gap-1.5">
                   ${addedBadge}${removedBadge}
                 </div>
-                <p class="mt-1 text-xs text-gray-500">Your changes have been saved to the database.</p>
+                <p class="mt-1 text-xs text-gray-500">${successMessage} File download started automatically.</p>
               </div>
               <button type="button" class="ml-4 flex-shrink-0 text-gray-400 hover:text-gray-500 focus:outline-none">
                 <span class="sr-only">Close</span>
