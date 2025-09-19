@@ -1412,9 +1412,14 @@
     const container = document.getElementById("taxonomy-container");
     if (!container) return;
 
-    // Show loading state
-    container.innerHTML =
-      '<div class="text-sm text-gray-500 py-4 text-center">Loading taxonomies...</div>';
+    // Show loading state with animation
+    container.innerHTML = `
+      <div class="text-center py-4">
+        <div class="animate-pulse space-y-2">
+          <div class="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
+          <div class="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+        </div>
+      </div>`;
 
     // This will be called when taxonomies are loaded
     onTaxonomiesLoaded((taxonomyList) => {
