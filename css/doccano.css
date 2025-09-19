@@ -1046,50 +1046,114 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Tooltip Styling */
-.taxonomy-tooltip {
-  visibility: hidden;
-  width: 160px;
-  background-color: #333;
-  color: #fff;
-  text-align: center;
-  border-radius: 4px;
-  padding: 6px 8px;
-  position: absolute;
-  z-index: 1000;
-  bottom: 125%;
-  left: 50%;
-  transform: translateX(-50%);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  font-size: 0.75rem;
+/* Taxonomy highlight base style */
+.taxonomy-highlight {
+  position: relative;
+  display: inline;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  line-height: 1.6;
+  margin: 0 0.1rem;
+  padding: 0 0.15rem;
+  border-radius: 0.2rem;
+  white-space: nowrap;
   font-weight: 500;
-  pointer-events: none;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  text-decoration: none;
+  vertical-align: baseline;
 }
 
-/* Tooltip Arrow */
-.taxonomy-tooltip::after {
-  content: '';
+/* Hover effect */
+.taxonomy-highlight:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Tooltip container */
+.taxonomy-tooltip {
   position: absolute;
-  top: 100%;
+  bottom: 100%;
   left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #333 transparent transparent transparent;
+  transform: translateX(-50%) translateY(-8px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.15s ease;
+  pointer-events: none;
+  z-index: 1000;
+  white-space: nowrap;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 /* Show tooltip on hover */
 .taxonomy-highlight:hover .taxonomy-tooltip {
-  visibility: visible;
   opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-10px);
 }
 
-/* Ensure tooltip stays visible when hovering over it */
-.taxonomy-tooltip:hover {
-  visibility: visible;
-  opacity: 1;
+/* Tooltip content */
+.taxonomy-tooltip > div:first-child {
+  background: white;
+  border-radius: 4px;
+  padding: 4px 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: #333;
+  display: flex;
+  align-items: center;
+  line-height: 1.4;
+  position: relative;
+  z-index: 2;
+}
+
+/* Tooltip arrow */
+.taxonomy-tooltip > div:last-child {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  background: white;
+  box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  z-index: 1;
+}
+
+/* Color dot in tooltip */
+.taxonomy-tooltip span:first-child {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+/* Ensure proper display in various contexts */
+p .taxonomy-highlight,
+div .taxonomy-highlight,
+span .taxonomy-highlight,
+li .taxonomy-highlight {
+  display: inline;
+}
+
+/* Ensure proper spacing in different contexts */
+p,
+div,
+span,
+li {
+  line-height: 1.6;
+}
+
+/* Prevent line breaks inside highlighted terms */
+.taxonomy-highlight {
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+/* Slightly reduce opacity for better readability on hover */
+.taxonomy-highlight:hover {
+  opacity: 0.95;
 }
 
 /* Taxonomy Assignment Popup */
