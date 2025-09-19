@@ -13,7 +13,128 @@
     // Private variables
     let currentSelection = null;
     let currentSelectionRange = null;
-    let taxonomies = [
+    let lastChangeTime = 0;
+    const DEBOUNCE_TIME = 300; // ms to wait before considering a new state change
+    
+    // Get line number for a given element
+    function getLineNumber(element) {
+        // Ensure the element is a valid DOM element that has the closest method
+        if (!element || typeof element.closest !== 'function') {
+            // If it's a text node, try to use its parent element
+            if (element && element.parentElement) {
+                element = element.parentElement;
+            } else {
+                return null;
+            }
+        }
+        
+        try {
+            // Find the closest parent with a line number
+            const lineElement = element.closest('.flex.items-start.group');
+            if (lineElement) {
+                const lineNumberSpan = lineElement.querySelector('span.text-xs.text-gray-400');
+                if (lineNumberSpan) {
+                    return lineNumberSpan.textContent.trim();
+                }
+            }
+        } catch (e) {
+            console.error('Error getting line number:', e);
+        }
+        return null;
+    }
+
+    // Undo/Redo stack
+    const stateHistory = {
+        stack: [],
+        currentIndex: -1,
+        maxStates: 50,
+        
+        pushState: function(html) {
+            const now = Date.now();
+            
+            // Debounce rapid state changes
+            if (now - lastChangeTime < DEBOUNCE_TIME) {
+                // If this is a rapid change, replace the last state instead of adding a new one
+                if (this.stack.length > 0) {
+                    this.stack[this.currentIndex] = html;
+                } else {
+                    this.stack.push(html);
+                    this.currentIndex = 0;
+                }
+            } else {
+                // Normal state change
+                if (this.currentIndex < this.stack.length - 1) {
+                    this.stack = this.stack.slice(0, this.currentIndex + 1);
+                }
+                this.stack.push(html);
+                this.currentIndex++;
+                
+                // Limit stack size
+                if (this.stack.length > this.maxStates) {
+                    this.stack.shift();
+                    this.currentIndex--;
+                }
+            }
+            
+            lastChangeTime = now;
+            this.updateButtonStates();
+            
+            console.log('State saved:', {
+                currentIndex: this.currentIndex,
+                stackSize: this.stack.length,
+                time: new Date().toISOString()
+            });
+        },
+        
+        updateButtonStates: function() {
+            const undoBtn = document.getElementById('undo-btn');
+            const redoBtn = document.getElementById('redo-btn');
+            
+            if (undoBtn) {
+                undoBtn.disabled = this.currentIndex <= 0;
+                undoBtn.classList.toggle('opacity-50', this.currentIndex <= 0);
+                undoBtn.classList.toggle('cursor-not-allowed', this.currentIndex <= 0);
+            }
+            
+            if (redoBtn) {
+                // Enable redo button if we're not at the latest state
+                const atLatestState = this.currentIndex >= this.stack.length - 1;
+                redoBtn.disabled = atLatestState;
+                redoBtn.classList.toggle('opacity-50', atLatestState);
+                redoBtn.classList.toggle('cursor-not-allowed', atLatestState);
+                
+                // Debug logging
+                console.log('Redo state:', {
+                    currentIndex: this.currentIndex,
+                    stackLength: this.stack.length,
+                    canRedo: !atLatestState
+                });
+            }
+        },
+        
+        // Handle undo action
+        undo: function() {
+            if (this.currentIndex > 0) {
+                this.currentIndex--;
+                this.updateButtonStates();
+                return this.stack[this.currentIndex];
+            }
+            return null;
+        },
+        
+        // Handle redo action
+        redo: function() {
+            if (this.currentIndex < this.stack.length - 1) {
+                this.currentIndex++;
+                this.updateButtonStates();
+                return this.stack[this.currentIndex];
+            }
+            return null;
+        }
+    };
+    
+    // Taxonomies data
+    const taxonomies = [
         {
             id: 'target-groups',
             name: 'Target Groups',
@@ -56,34 +177,216 @@
             color: 'pink',
             count: 12
         }
-        ];
+    ];
     
-        // Initialize the application
-        function init() {
-            initCollapsibleSections();
-            initTextSelection();
-            initTaxonomyPopup();
-            setupEventListeners();
-            renderTaxonomies();
-            
-            // Add double-click event listener to remove highlights
-            document.addEventListener('dblclick', function(e) {
-                const highlight = e.target.closest('.taxonomy-highlight');
-                if (highlight) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    removeHighlight(highlight);
+    // Handle undo action
+    function handleUndo() {
+        const state = stateHistory.undo();
+        if (state !== null) {
+            const docContent = document.getElementById('document-content');
+            if (docContent) {
+                try {
+                    const snapshot = JSON.parse(state);
+                    
+                    // Save current scroll position
+                    const scrollY = window.scrollY;
+                    
+                    // Restore the HTML content
+                    docContent.innerHTML = snapshot.html;
+                    
+                    // Restore all highlight states
+                    snapshot.highlights.forEach(hlState => {
+                        const highlight = document.getElementById(hlState.id);
+                        if (highlight) {
+                            if (hlState.isActive) {
+                                highlight.classList.add('highlight-active');
+                            } else {
+                                highlight.classList.remove('highlight-active');
+                            }
+                        }
+                    });
+                    
+                    // Restore active highlight and scroll to it if it exists
+                    if (snapshot.currentHighlightId) {
+                        const activeHighlight = document.getElementById(snapshot.currentHighlightId);
+                        if (activeHighlight) {
+                            activeHighlight.classList.add('highlight-active');
+                            setTimeout(() => {
+                                activeHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }, 100);
+                        }
+                    } else {
+                        // Restore scroll position if no active highlight
+                        window.scrollTo(0, scrollY);
+                    }
+                    
+                    initTextSelection();
+                    console.log('Undo to state:', { 
+                        currentHighlightId: snapshot.currentHighlightId,
+                        highlights: snapshot.highlights.length 
+                    });
+                } catch (e) {
+                    console.error('Error during undo:', e);
+                    // Fallback for old format states
+                    docContent.innerHTML = state;
+                    initTextSelection();
                 }
-            });
+            }
         }
+    }
+
+    // Handle redo action
+    function handleRedo() {
+        const state = stateHistory.redo();
+        if (state !== null) {
+            const docContent = document.getElementById('document-content');
+            if (docContent) {
+                try {
+                    const snapshot = JSON.parse(state);
+                    
+                    // Save current scroll position
+                    const scrollY = window.scrollY;
+                    
+                    // Restore the HTML content
+                    docContent.innerHTML = snapshot.html;
+                    
+                    // Restore all highlight states
+                    snapshot.highlights.forEach(hlState => {
+                        const highlight = document.getElementById(hlState.id);
+                        if (highlight) {
+                            if (hlState.isActive) {
+                                highlight.classList.add('highlight-active');
+                            } else {
+                                highlight.classList.remove('highlight-active');
+                            }
+                        }
+                    });
+                    
+                    // Restore active highlight and scroll to it if it exists
+                    if (snapshot.currentHighlightId) {
+                        const activeHighlight = document.getElementById(snapshot.currentHighlightId);
+                        if (activeHighlight) {
+                            activeHighlight.classList.add('highlight-active');
+                            setTimeout(() => {
+                                activeHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }, 100);
+                        }
+                    } else {
+                        // Restore scroll position if no active highlight
+                        window.scrollTo(0, scrollY);
+                    }
+                    
+                    initTextSelection();
+                    console.log('Redo to state:', { 
+                        currentHighlightId: snapshot.currentHighlightId,
+                        highlights: snapshot.highlights.length 
+                    });
+                } catch (e) {
+                    console.error('Error during redo:', e);
+                    // Fallback for old format states
+                    docContent.innerHTML = state;
+                    initTextSelection();
+                }
+            }
+        }
+    }
+
+    // Save current document state with line information
+    function saveState() {
+        const docContent = document.getElementById('document-content');
+        if (docContent) {
+            // Get the currently active highlight
+            const activeHighlight = document.querySelector('.taxonomy-highlight.highlight-active');
+            
+            // Create a snapshot of the current state with line numbers
+            const snapshot = {
+                html: docContent.innerHTML,
+                highlights: [],
+                timestamp: new Date().toISOString(),
+                currentHighlightId: activeHighlight ? activeHighlight.id : null
+            };
+
+            // Store information about each highlight with their positions
+            document.querySelectorAll('.taxonomy-highlight').forEach(hl => {
+                snapshot.highlights.push({
+                    id: hl.id,
+                    text: hl.textContent,
+                    lineNumber: hl.dataset.lineNumber || '',
+                    taxonomyId: hl.dataset.taxonomyId || '',
+                    isActive: hl.classList.contains('highlight-active')
+                });
+            });
+            
+            // Save the state to history
+            stateHistory.pushState(JSON.stringify(snapshot));
+            
+            console.log('State saved:', { 
+                currentHighlightId: snapshot.currentHighlightId,
+                highlights: snapshot.highlights.length 
+            });
+            
+            return snapshot;
+        }
+        return null;
+    }
+
+// Set up all event listeners
+function setupEventListeners() {
+    // Add event listeners for undo/redo buttons if they exist
+    const undoBtn = document.getElementById('undo-btn');
+    const redoBtn = document.getElementById('redo-btn');
+    const saveBtn = document.getElementById('save-btn');
     
-        // Set up event listeners
-        function setupEventListeners() {
-        // Handle section triggers
-        document.addEventListener('click', function(e) {
-            // Check if the click was on a section trigger or its children
-            const trigger = e.target.closest('.section-trigger');
-            if (trigger) {
+    if (undoBtn) {
+        undoBtn.addEventListener('click', handleUndo);
+    }
+    
+    if (redoBtn) {
+        redoBtn.addEventListener('click', handleRedo);
+    }
+    
+    if (saveBtn) {
+        saveBtn.addEventListener('click', handleSaveWithExport);
+    }
+}
+
+// Initialize the application
+function init() {
+    initCollapsibleSections();
+    initTextSelection();
+    initTaxonomyPopup();
+    setupEventListeners();
+    renderTaxonomies();
+    
+    // Add double-click event listener to remove highlights
+    document.addEventListener('dblclick', function(e) {
+        const highlight = e.target.closest('.taxonomy-highlight');
+        if (highlight) {
+            e.preventDefault();
+            e.stopPropagation();
+            removeHighlight(highlight);
+        }
+    });
+            
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+            e.shiftKey ? handleRedo() : handleUndo();
+            e.preventDefault();
+        } else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+            handleRedo();
+            e.preventDefault();
+        } else if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            handleSaveWithExport();
+            e.preventDefault();
+        }
+    });
+    
+    // Handle section triggers
+    document.addEventListener('click', function(e) {
+        // Check if the click was on a section trigger or its children
+        const trigger = e.target.closest('.section-trigger');
+        if (trigger) {
             e.preventDefault();
             
             // Find the parent section
@@ -372,6 +675,12 @@
         function assignTaxonomyToSelection(taxonomy) {
             if (!currentSelection || !currentSelectionRange) return;
             
+            // Save state before making changes
+            saveState();
+            
+            // Get the line number for this selection
+            const lineNumber = getLineNumber(currentSelectionRange.startContainer);
+            
             // Check if the selection is already highlighted
             const selectionContainer = currentSelectionRange.commonAncestorContainer;
             const existingHighlight = selectionContainer.parentElement.closest('.taxonomy-highlight');
@@ -393,11 +702,23 @@
             // Create a span to wrap the selected text
             const span = document.createElement('span');
             span.className = `taxonomy-highlight bg-${taxonomy.color}-100 text-${taxonomy.color}-800 px-1 rounded border-b-2 border-${taxonomy.color}-200 cursor-pointer`;
-            span.id = `taxonomy-${taxonomy.id}`;
+            span.id = `taxonomy-${taxonomy.id}-${Date.now()}`; // Add timestamp for unique ID
             span.dataset.taxonomyId = taxonomy.id;
+            span.dataset.lineNumber = lineNumber || '';
+            span.dataset.originalText = currentSelection; // Store original text separately
             
             // Add tooltip
             span.innerHTML = `${currentSelection}<span class="taxonomy-tooltip">${taxonomy.name}</span>`;
+            
+            // Store position information
+            const range = currentSelectionRange.cloneRange();
+            const preCaretRange = range.cloneRange();
+            preCaretRange.selectNodeContents(document.getElementById('document-content'));
+            preCaretRange.setEnd(range.startContainer, range.startOffset);
+            const startOffset = preCaretRange.toString().length;
+            
+            span.dataset.startOffset = startOffset;
+            span.dataset.endOffset = startOffset + currentSelection.length;
             
             // Replace the selected text with our highlighted span
             currentSelectionRange.deleteContents();
@@ -414,6 +735,9 @@
         }
         
         function removeHighlight(highlightElement) {
+            // Save state before making changes
+            saveState();
+            
             const taxonomyId = highlightElement.id.replace('taxonomy-', '');
             const taxonomy = taxonomies.find(t => t.id === taxonomyId);
             
@@ -460,10 +784,197 @@
     });
 }
 
-    // Assign to window
-    window.DoccanoApp = {
-        init: init
-    };
+    // Export highlights to a structured format
+    function exportHighlights() {
+        const highlights = [];
+        const docContent = document.getElementById('document-content');
+        
+        if (!docContent) {
+            console.log("No document content found");
+            return null;
+        }
+        
+        try {
+            // Get all highlight elements
+            const highlightElements = docContent.querySelectorAll('.taxonomy-highlight');
+            
+            // First, process pre-rendered highlights
+            const preRenderedHighlights = [];
+            const processedIds = new Set();
+            
+            // Process all highlight elements
+            highlightElements.forEach(hl => {
+                try {
+                    let taxonomyId = hl.dataset.taxonomyId;
+                    let taxonomyName = '';
+                    
+                    // For pre-rendered highlights, extract taxonomy info from color scheme
+                    if (!taxonomyId && hl.dataset.colorScheme) {
+                        try {
+                            const colorScheme = JSON.parse(hl.dataset.colorScheme);
+                            // Find the taxonomy that matches this color scheme
+                            const taxonomy = taxonomies.find(t => 
+                                t.color === colorScheme.bg.replace('bg-', '').replace('-500', '')
+                            );
+                            if (taxonomy) {
+                                taxonomyId = taxonomy.id;
+                                taxonomyName = taxonomy.name;
+                            }
+                        } catch (e) {
+                            console.warn("Failed to parse color scheme:", e);
+                        }
+                    }
+                    
+                    // Skip if we couldn't determine the taxonomy
+                    if (!taxonomyId) {
+                        console.warn("Skipping highlight - could not determine taxonomy:", hl);
+                        return;
+                    }
+                    
+                    // Get the text content without the tooltip
+                    let text = hl.textContent;
+                    const tooltip = hl.querySelector('.taxonomy-tooltip');
+                    if (tooltip) {
+                        text = text.replace(tooltip.textContent, '').trim();
+                    }
+                    
+                    // Generate a unique ID if needed
+                    const id = hl.id || `highlight-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+                    
+                    // Skip if we've already processed this ID
+                    if (processedIds.has(id)) return;
+                    processedIds.add(id);
+                    
+                    // Get line number from parent element if available
+                    let lineNumber = hl.dataset.lineNumber || '';
+                    if (!lineNumber) {
+                        const lineElement = hl.closest('.flex.items-start.group');
+                        if (lineElement) {
+                            const lineNumberSpan = lineElement.querySelector('span.text-xs.text-gray-400');
+                            if (lineNumberSpan) {
+                                lineNumber = lineNumberSpan.textContent.trim();
+                            }
+                        }
+                    }
+                    
+                    // Calculate position if not available
+                    let startOffset = parseInt(hl.dataset.startOffset);
+                    let endOffset = parseInt(hl.dataset.endOffset);
+                    
+                    if (isNaN(startOffset) || isNaN(endOffset)) {
+                        try {
+                            const range = document.createRange();
+                            range.selectNodeContents(docContent);
+                            const preCaretRange = range.cloneRange();
+                            const tempSpan = document.createElement('span');
+                            tempSpan.id = 'temp-highlight-marker';
+                            hl.parentNode.insertBefore(tempSpan, hl);
+                            preCaretRange.setEndBefore(tempSpan);
+                            startOffset = preCaretRange.toString().length;
+                            endOffset = startOffset + text.length;
+                            tempSpan.remove();
+                        } catch (e) {
+                            console.warn("Failed to calculate position for highlight:", e);
+                            startOffset = 0;
+                            endOffset = text.length;
+                        }
+                    }
+                    
+                    highlights.push({
+                        id: id,
+                        text: text,
+                        line: lineNumber,
+                        taxonomy: taxonomyId,
+                        taxonomyName: taxonomyName,
+                        position: {
+                            start: startOffset,
+                            end: endOffset
+                        },
+                        timestamp: hl.dataset.timestamp || new Date().toISOString(),
+                        isPreRendered: !hl.id.startsWith('taxonomy-')
+                    });
+                    
+                } catch (error) {
+                    console.error("Error processing highlight:", error, hl);
+                }
+            });
+            
+            // Get document title or use a default
+            const docTitle = document.querySelector('h1')?.textContent || "Untitled Document";
+            
+            // Create export data structure
+            const exportData = {
+                document: docTitle.trim(),
+                timestamp: new Date().toISOString(),
+                highlights: highlights
+            };
+            
+            console.log("Exporting highlights:", exportData);
+            return exportData;
+        } catch (error) {
+            console.error("Error exporting highlights:", error);
+            return null;
+        }
+    }
+    
+    // Handle save action with export functionality
+    function handleSaveWithExport() {
+        try {
+            // First save the current state
+            saveState();
+            
+            // Export the highlights
+            const exportData = exportHighlights();
+            
+            if (exportData) {
+                // Convert to pretty-printed JSON string
+                const jsonString = JSON.stringify(exportData, null, 2);
+                
+                // Create a blob and download link
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `highlights_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                
+                // Cleanup
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }, 100);
+                
+                // Show success message
+                const saveBtn = document.getElementById('save-btn');
+                if (saveBtn) {
+                    const originalText = saveBtn.textContent;
+                    saveBtn.textContent = 'Saved!';
+                    saveBtn.classList.add('text-green-500');
+                    
+                    setTimeout(() => {
+                        saveBtn.textContent = originalText;
+                        saveBtn.classList.remove('text-green-500');
+                    }, 2000);
+                }
+                
+                return jsonString;
+            } else {
+                console.warn("No highlights to export");
+                return null;
+            }
+        } catch (error) {
+            console.error("Error in handleSaveWithExport:", error);
+            return null;
+        }
+    }
+    
+// Assign to window
+window.DoccanoApp = {
+    init: init,
+    exportHighlights: exportHighlights,
+    handleSaveWithExport: handleSaveWithExport
+};
 
     // Initialize when DOM is loaded
     if (document.readyState === 'loading') {
