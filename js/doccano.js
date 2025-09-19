@@ -758,31 +758,31 @@ function init() {
         }
     
         function renderTaxonomies() {
-        const container = document.getElementById('taxonomy-container');
-        if (!container) return;
-        
-        container.innerHTML = '';
-        
-        taxonomies.forEach(taxonomy => {
-            const element = document.createElement('div');
-            element.className = 'group flex items-center justify-between py-2 px-3 rounded-lg transition-all duration-200 hover:shadow-sm hover:bg-gradient-to-r hover:from-white hover:to-gray-50 border border-transparent hover:border-gray-200';
-            element.innerHTML = `
-            <div class="flex items-center min-w-0">
-                <span class="inline-flex items-center justify-center w-6 h-6 rounded-md bg-${taxonomy.color}-500 border-${taxonomy.color}-600 border shadow-sm group-hover:shadow-md transition-shadow">
-                <span class="text-xs font-bold text-white">${taxonomy.prefix}</span>
+            const container = document.getElementById('taxonomy-container');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            taxonomies.forEach(taxonomy => {
+                const element = document.createElement('div');
+                element.className = 'group flex items-center justify-between py-2 px-3 rounded-lg transition-all duration-200 hover:shadow-sm hover:bg-gradient-to-r hover:from-white hover:to-gray-50 border border-transparent hover:border-gray-200';
+                element.innerHTML = `
+                <div class="flex items-center min-w-0">
+                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-md bg-${taxonomy.color}-500 border-${taxonomy.color}-600 border shadow-sm group-hover:shadow-md transition-shadow">
+                    <span class="text-xs font-bold text-white">${taxonomy.prefix}</span>
+                    </span>
+                    <span class="ml-3 text-sm font-medium text-gray-800 truncate" title="${taxonomy.name}">
+                    ${taxonomy.name}
+                    </span>
+                </div>
+                <span class="ml-2 flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-full bg-white border border-gray-200 text-sm font-medium text-gray-700 group-hover:bg-eu-blue/5 group-hover:border-eu-blue/20 group-hover:text-eu-blue transition-colors">
+                    ${taxonomy.count}
                 </span>
-                <span class="ml-3 text-sm font-medium text-gray-800 truncate" title="${taxonomy.name}">
-                ${taxonomy.name}
-                </span>
-            </div>
-            <span class="ml-2 flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-full bg-white border border-gray-200 text-sm font-medium text-gray-700 group-hover:bg-eu-blue/5 group-hover:border-eu-blue/20 group-hover:text-eu-blue transition-colors">
-                ${taxonomy.count}
-            </span>
-        `;
+            `;
 
-        container.appendChild(element);
-    });
-}
+            container.appendChild(element);
+        });
+    }
 
     // Export highlights to a structured format
     function exportHighlights() {
