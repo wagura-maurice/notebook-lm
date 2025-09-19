@@ -720,81 +720,31 @@
             )
             .join(" ");
 
-          // Create a highlight that matches the user-highlighted style
+          // Create a highlight with consistent styling and dynamic color application
+          const rgbaColor = hexToRgba(highlightColor, 0.125);
+          const borderColor = hexToRgba(highlightColor, 0.5);
+          
           return `
-                    <span class="taxonomy-highlight" 
-                          id="${highlightId}"
-                          data-taxonomy-id="${category
-                            .toLowerCase()
-                            .replace(/\s+/g, "_")}"
-                          data-original-text="${match}"
-                          style="
-                            background-color: ${hexToRgba(
-                              highlightColor,
-                              0.1
-                            )}; 
-                            color: ${highlightColor}; 
-                            border-bottom: 2px solid ${highlightColor}80; 
-                            padding: 0 0.15rem; 
-                            margin: 0 0.1rem;
-                            border-radius: 0.2rem; 
-                            cursor: pointer; 
-                            position: relative;
-                            display: inline;
-                            line-height: 1.6;
-                            white-space: nowrap;
-                            transition: all 0.15s ease;
-                            font-weight: 500;
-                          ">
-                        ${match}
-                        <div class="taxonomy-tooltip" 
-                             style="
-                                position: absolute;
-                                bottom: 100%;
-                                left: 50%;
-                                transform: translateX(-50%) translateY(-8px);
-                                opacity: 0;
-                                visibility: hidden;
-                                transition: all 0.15s ease;
-                                pointer-events: none;
-                                z-index: 1000;
-                                white-space: nowrap;
-                             ">
-                            <div style="
-                                background: white;
-                                border-radius: 4px;
-                                padding: 4px 8px;
-                                box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-                                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                                font-size: 12px;
-                                color: #333;
-                                display: flex;
-                                align-items: center;
-                                line-height: 1.4;
-                            ">
-                                <span style="
-                                    display: inline-block;
-                                    width: 10px;
-                                    height: 10px;
-                                    border-radius: 50%;
-                                    background-color: ${highlightColor};
-                                    margin-right: 6px;
-                                    flex-shrink: 0;
-                                "></span>
-                                <span>${formattedDisplayName}</span>
-                            </div>
-                            <div style="
-                                position: absolute;
-                                bottom: -4px;
-                                left: 50%;
-                                transform: translateX(-50%) rotate(45deg);
-                                width: 8px;
-                                height: 8px;
-                                background: white;
-                                box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-                            "></div>
-                        </div>
-                    </span>`;
+            <span 
+              class="taxonomy-highlight"
+              id="${highlightId}"
+              data-taxonomy-id="${category.toLowerCase().replace(/\s+/g, "_")}"
+              data-original-text="${match}"
+              style="
+                background-color: ${rgbaColor};
+                color: ${highlightColor};
+                border-bottom: 2px solid ${borderColor};
+              "
+            >
+              ${match}
+              <span class="taxonomy-tooltip">
+                <span 
+                  class="taxonomy-tooltip-dot" 
+                  style="background-color: ${highlightColor}">
+                </span>
+                ${formattedDisplayName}
+              </span>
+            </span>`;
         });
       }
 
