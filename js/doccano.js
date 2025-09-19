@@ -513,8 +513,144 @@ function setupEventListeners() {
     }
 }
 
+// Generate document content dynamically
+function generateDocumentContent() {
+    // Sample data - in a real app, this would come from an API or other data source
+    const documentSections = [
+        {
+            title: "AI Adoption in Public Sector",
+            paragraphs: [
+                "Several factors were crucial in the successful adoption of a human-centred approach to AI, including a fast discovery phase that involved workers (or end users) in the development early on, and aligning human resources, information technology and business processes.",
+                "The slow adaptation of existing work processes and legacy IT systems was a barrier to the optimal usage of the technology.",
+                "Moreover, the usefulness of the technology depended on both the task routineness and worker experience, thereby necessitating a rethinking of the work division between technology and workers, and between junior and senior workers.",
+                "Successful human-centred roll-out of AI in Europe will therefore depend on the availability of, or investments in, complementary intangible organisational capital.",
+                "'AI adoption in the public sector: a case study', *Working Paper* 03/2023, Bruegel"
+            ]
+        },
+        {
+            title: "AI Adoption Case Study",
+            paragraphs: [
+                "This case study illustrates the drivers of and barriers to artificial intelligence adoption by organisations, and acceptance of AI by workers in the public sector.",
+                "Subsidy support mechanisms were also specifically targeted and acquired to support the adoption.",
+                "However, making AI support available to workers proved insufficient to ensure its widespread usage throughout the organisation."
+            ]
+        },
+        {
+            title: "AI Adoption Methodology",
+            paragraphs: [
+                "The methodology involved in-depth interviews with key stakeholders, analysis of internal documents, and observation of work processes.",
+                "Both qualitative and quantitative data were collected to understand the full spectrum of AI adoption challenges and successes.",
+                "The study focused on three main areas: technical implementation, organizational change, and user acceptance."
+            ]
+        }
+    ];
+
+    // Generate the HTML content
+    let contentHtml = '';
+    let lineNumber = 1;
+
+    documentSections.forEach((section, sectionIndex) => {
+        // Add section title
+        contentHtml += `<div class="mb-6"><div class="space-y-1">`;
+        contentHtml += `<div class="text-sm font-semibold text-eu-blue mt-2 mb-1">${section.title}</div>`;
+        
+        // Add paragraphs
+        section.paragraphs.forEach(paragraph => {
+            const lineStr = lineNumber.toString().padStart(3, '0');
+            contentHtml += `
+                <div class="flex items-start group mb-1">
+                    <span class="text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5">${lineStr}</span>
+                    <div class="flex-1">
+                        <p class="text-sm text-gray-800 mb-2">${paragraph}</p>
+                    </div>
+                </div>`;
+            lineNumber++;
+        });
+        
+        contentHtml += `</div></div>`;
+        
+        // Add a table of contents section after the first section
+        if (sectionIndex === 0) {
+            const tocItems = [
+                { title: "1 Introduction", page: 2 },
+                { title: "1.1 Productivity and technology acceptance", page: 2 },
+                { title: "1.2 The organisations in this case study", page: 3 },
+                { title: "2 AI adoption by the organisation", page: 5 },
+                { title: "2.1 Adoption process", page: 5 },
+                { title: "2.2 Drivers and barriers to adoption", page: 9 }
+            ];
+            
+            contentHtml += `
+            <div class="mb-6">
+                <div class="space-y-1">
+                    <div class="text-sm font-semibold text-eu-blue mt-2 mb-1">Table of Contents</div>
+            `;
+            
+            tocItems.forEach(item => {
+                const lineStr = lineNumber.toString().padStart(3, '0');
+                contentHtml += `
+                <div class="flex items-start group mb-1">
+                    <span class="text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5">${lineStr}</span>
+                    <div class="flex-1">
+                        <div class="flex border-b border-gray-100 py-1">
+                            <div class="px-2 flex-1 text-sm">${item.title}</div>
+                            <div class="px-2 flex-1 text-sm">${item.page} |</div>
+                        </div>
+                    </div>
+                </div>`;
+                lineNumber++;
+            });
+            
+            contentHtml += `
+                </div>
+            </div>`;
+        }
+    });
+
+    return contentHtml;
+}
+
+// Load document content
+function loadDocumentContent() {
+    try {
+        const targetElement = document.getElementById('document-content');
+        if (targetElement) {
+            // Generate the document content
+            const content = generateDocumentContent();
+            targetElement.innerHTML = content;
+            
+            console.log('Document content generated successfully');
+            
+            // Re-initialize text selection for the new content
+            initTextSelection();
+            
+            // Save the initial state for undo/redo
+            saveState();
+        }
+    } catch (error) {
+        console.error('Error generating document content:', error);
+        
+        // Fallback content in case of error
+        const fallbackContent = `
+            <div class="p-4 text-center text-gray-500">
+                <p>Unable to generate the document content.</p>
+                <p>Please try refreshing the page or contact support if the problem persists.</p>
+            </div>
+        `;
+        
+        const targetElement = document.getElementById('document-content');
+        if (targetElement) {
+            targetElement.innerHTML = fallbackContent;
+        }
+    }
+}
+
 // Initialize the application
 function init() {
+    // Load document content first
+    loadDocumentContent();
+    
+    // Initialize other components
     initCollapsibleSections();
     initTextSelection();
     initTaxonomyPopup();
