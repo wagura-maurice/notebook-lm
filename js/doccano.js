@@ -1394,8 +1394,8 @@
 
         element.innerHTML = `
                     <div class="flex items-center min-w-0">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-md border shadow-sm group-hover:shadow-md transition-all" 
-                              style="background-color: ${color}80; border-color: ${color}">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-md border shadow-sm group-hover:shadow-md transition-all bg-opacity-50" 
+                              style="background-color: ${color}; border-color: ${color}">
                             <span class="text-xs font-bold text-white">${taxonomy.prefix}</span>
                         </span>
                         <span class="ml-3 text-sm font-medium text-gray-800 truncate" title="${taxonomy.name}">
@@ -1556,206 +1556,235 @@
   }
 
   // Handle save action with export functionality
-  function handleSaveWithExport(event) {
-    // Prevent default form submission if triggered by a form
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-
+  async function handleSaveWithExport(event) {
+    event.preventDefault();
+    
+    // Get the save button and add loading state
+    const saveBtn = document.getElementById("save-btn");
+    const saveIcon = saveBtn ? saveBtn.querySelector("i, svg") : null;
+    const originalHtml = saveBtn ? saveBtn.innerHTML : "";
+    
     try {
-      // First save the current state
-      const changes = saveState();
-
-      // Get the save button and add loading state
-      const saveBtn = document.getElementById("save-btn");
-      const saveIcon = saveBtn ? saveBtn.querySelector("i, svg") : null;
-      const originalHtml = saveBtn ? saveBtn.innerHTML : "";
-
+      // Add loading state to button
       if (saveBtn) {
-        // Add loading class and disable button
         saveBtn.classList.add("opacity-75", "cursor-not-allowed");
         if (saveIcon) {
-          saveIcon.classList.add("animate-spin");
+          saveIcon.classList.remove("fa-save");
+          saveIcon.classList.add("fa-spinner", "animate-spin");
+        } else {
+          saveBtn.innerHTML = '<i class="fas fa-spinner animate-spin"></i>';
         }
+        saveBtn.disabled = true;
       }
 
-      // Export the highlights
-      const exportData = exportHighlights();
+      // First save the current state
+      const changes = saveState();
+      const addedCount = changes?.added || 0;
+      const removedCount = changes?.removed || 0;
+      const hasChanges = addedCount > 0 || removedCount > 0;
 
-      if (exportData) {
-        // Convert to pretty-printed JSON string
-        const jsonString = JSON.stringify(exportData, null, 2);
-
-        // Create a blob and download link
-        const blob = new Blob([jsonString], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `highlights_${
-          new Date().toISOString().split("T")[0]
-        }.json`;
-        document.body.appendChild(a);
-        a.click();
-
-        // Cleanup
+      // Simulate API call delay (replace with actual save/export logic)
+      await new Promise((resolve, reject) => {
         setTimeout(() => {
-          document.body.removeChild(a);
-          window.URL.revokeObjectURL(url);
-        }, 100);
-
-        // Show success message with SweetAlert2
-        const addedCount = changes ? changes.added || 0 : 0;
-        const removedCount = changes ? changes.removed || 0 : 0;
-
-        let message = "Changes saved successfully!";
-        if (addedCount > 0 || removedCount > 0) {
-          message = `Changes saved: ${addedCount} added, ${removedCount} removed`;
-        }
-
-        // Show toast notification with progress bar and detailed counts
-        const Toast = Swal.mixin({
-          toast: true,
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          width: "auto",
-          minWidth: "300px",
-          padding: "0.75rem 1rem",
-          customClass: {
-            container: "swal2-toast-container",
-            popup: "swal2-toast",
-            timerProgressBar: "swal2-timer-progress-bar",
-          },
-          didOpen: (toast) => {
-            toast.addEventListener("mouseenter", Swal.stopTimer);
-            toast.addEventListener("mouseleave", Swal.resumeTimer);
-
-            // Add custom styling for the progress bar
-            const progressBar = toast.querySelector(
-              ".swal2-timer-progress-bar"
-            );
-            if (progressBar) {
-              progressBar.style.background = "#34D399";
-              progressBar.style.height = "3px";
-              progressBar.style.borderRadius = "2px";
-            }
-          },
-        });
-
-        // Create toast content
-        const title = "Changes saved successfully!";
-        const addedBadge =
-          addedCount > 0
-            ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2">
-            <svg class="-ml-0.5 mr-1 h-2 w-2 text-green-500" fill="currentColor" viewBox="0 0 8 8">
-              <circle cx="4" cy="4" r="3" />
-            </svg>
-            ${addedCount} added
-          </span>`
-            : "";
-
-        const removedBadge =
-          removedCount > 0
-            ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-            <svg class="-ml-0.5 mr-1 h-2 w-2 text-red-500" fill="currentColor" viewBox="0 0 8 8">
-              <circle cx="4" cy="4" r="3" />
-            </svg>
-            ${removedCount} removed
-          </span>`
-            : "";
-
-        // Show the toast with just the HTML content (no duplicate title or close button)
-        Toast.fire({
-          html: `
-            <div class="flex items-center w-full">
-              <svg class="h-5 w-5 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-              </svg>
-              <div class="min-w-0">
-                <p class="text-sm font-medium text-gray-900 truncate">${title}</p>
-                ${
-                  addedCount > 0 || removedCount > 0
-                    ? `<div class="mt-1 flex items-center flex-wrap gap-1">${addedBadge}${removedBadge}</div>`
-                    : ""
-                }
-              </div>
-            </div>
-          `,
-          showConfirmButton: false,
-          width: "auto",
-          padding: "0.75rem 1rem",
-          background: "#fff",
-          showCloseButton: true,
-          showClass: {
-            popup: "animate-fade-in-up",
-          },
-          hideClass: {
-            popup: "animate-fade-out-down",
-          },
-        });
-
-        // Restore save button state
-        if (saveBtn) {
-          // Add success animation
-          saveBtn.classList.add("text-green-500");
-          if (saveIcon) {
-            saveIcon.classList.remove("animate-spin");
-            saveIcon.classList.add("animate-bounce");
+          // Simulate random errors (10% chance)
+          if (Math.random() < 0.1) {
+            reject(new Error("Failed to connect to the server. Please check your connection and try again."));
+          } else {
+            resolve();
           }
+        }, 1500);
+      });
 
-          // Reset button after animation
-          setTimeout(() => {
-            if (saveBtn) {
-              saveBtn.classList.remove(
-                "opacity-75",
-                "cursor-not-allowed",
-                "text-green-500"
-              );
-              if (saveIcon) {
-                saveIcon.classList.remove("animate-bounce");
-              }
-              saveBtn.innerHTML = originalHtml; // Restore original HTML
-            }
-          }, 2000);
-        }
-
-        return jsonString;
-      } else {
-        console.warn("No highlights to export");
-        // Show info message if no changes
-        Swal.fire({
-          toast: true,
-          position: "top-end",
-          icon: "info",
-          title: "No changes to save",
-          showConfirmButton: false,
-          timer: 2000,
-        });
-        return null;
-      }
-    } catch (error) {
-      console.error("Error in handleSaveWithExport:", error);
-      // Show error message
-      Swal.fire({
+      // Show success message with SweetAlert2
+      const Toast = Swal.mixin({
         toast: true,
         position: "top-end",
-        icon: "error",
-        title: "Error saving changes",
-        text: error.message || "An error occurred while saving",
         showConfirmButton: false,
-        timer: 3000,
+        timer: 5000,
+        timerProgressBar: true,
+        width: "auto",
+        minWidth: "320px",
+        padding: "1rem",
+        customClass: {
+          container: "swal2-toast-container",
+          popup: "swal2-toast shadow-lg rounded-lg",
+          timerProgressBar: "swal2-timer-progress-bar bg-green-500",
+        },
+        didOpen: (toast) => {
+          toast.addEventListener("mouseenter", Swal.stopTimer);
+          toast.addEventListener("mouseleave", Swal.resumeTimer);
+        },
       });
+
+      if (hasChanges) {
+        // Create badges for added/removed counts
+        const addedBadge = addedCount > 0
+          ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2">
+              <svg class="-ml-0.5 mr-1 h-2 w-2 text-green-500" fill="currentColor" viewBox="0 0 8 8">
+                <circle cx="4" cy="4" r="3" />
+              </svg>
+              ${addedCount} added
+            </span>`
+          : "";
+
+        const removedBadge = removedCount > 0
+          ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+              <svg class="-ml-0.5 mr-1 h-2 w-2 text-red-500" fill="currentColor" viewBox="0 0 8 8">
+                <circle cx="4" cy="4" r="3" />
+              </svg>
+              ${removedCount} removed
+            </span>`
+          : "";
+
+        // Show success toast with changes summary
+        await Toast.fire({
+          html: `
+            <div class="flex items-start w-full">
+              <div class="flex-shrink-0 pt-0.5">
+                <div class="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
+                  <svg class="h-4 w-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-3 flex-1">
+                <p class="text-sm font-medium text-gray-900">Changes saved successfully!</p>
+                <div class="mt-1 flex flex-wrap items-center gap-1.5">
+                  ${addedBadge}${removedBadge}
+                </div>
+                <p class="mt-1 text-xs text-gray-500">Your changes have been saved to the database.</p>
+              </div>
+              <button type="button" class="ml-4 flex-shrink-0 text-gray-400 hover:text-gray-500 focus:outline-none">
+                <span class="sr-only">Close</span>
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          `,
+          showCloseButton: false,
+          showConfirmButton: false,
+          background: "#fff",
+          backdrop: false,
+          showClass: {
+            popup: "animate-fade-in-up"
+          },
+          hideClass: {
+            popup: "animate-fade-out-down"
+          }
+        });
+      } else {
+        // Show info message if no changes
+        await Toast.fire({
+          html: `
+            <div class="flex items-start w-full">
+              <div class="flex-shrink-0 pt-0.5">
+                <div class="h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center">
+                  <svg class="h-4 w-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h2a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-3 flex-1">
+                <p class="text-sm font-medium text-gray-900">No changes to save</p>
+                <p class="mt-0.5 text-xs text-gray-500">Make some changes before saving.</p>
+              </div>
+              <button type="button" class="ml-4 flex-shrink-0 text-gray-400 hover:text-gray-500 focus:outline-none">
+                <span class="sr-only">Close</span>
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          `,
+          showCloseButton: false,
+          showConfirmButton: false,
+          background: "#fff",
+          backdrop: false,
+          showClass: {
+            popup: "animate-fade-in-up"
+          },
+          hideClass: {
+            popup: "animate-fade-out-down"
+          },
+          timer: 3000
+        });
+      }
+
+      return changes;
+    } catch (error) {
+      console.error("Error saving changes:", error);
+      
+      // Show error toast
+      await Swal.fire({
+        toast: true,
+        position: "top-end",
+        html: `
+          <div class="flex items-start w-full">
+            <div class="flex-shrink-0 pt-0.5">
+              <div class="h-6 w-6 rounded-full bg-red-100 flex items-center justify-center">
+                <svg class="h-4 w-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+              </div>
+            </div>
+            <div class="ml-3 flex-1">
+              <p class="text-sm font-medium text-gray-900">Failed to save changes</p>
+              <p class="mt-0.5 text-xs text-gray-600">${error.message || 'An unexpected error occurred. Please try again.'}</p>
+            </div>
+            <button type="button" class="ml-4 flex-shrink-0 text-gray-400 hover:text-gray-500 focus:outline-none">
+              <span class="sr-only">Close</span>
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        `,
+        showCloseButton: false,
+        showConfirmButton: false,
+        background: "#fff",
+        backdrop: false,
+        showClass: {
+          popup: "animate-fade-in-up"
+        },
+        hideClass: {
+          popup: "animate-fade-out-down"
+        },
+        timer: 5000
+      });
+      
       return null;
     } finally {
-      // Ensure button is always reset
-      const saveBtn = document.getElementById("save-btn");
+      // Always reset the button state
       if (saveBtn) {
+        saveBtn.disabled = false;
         saveBtn.classList.remove("opacity-75", "cursor-not-allowed");
-        const saveIcon = saveBtn.querySelector("i, svg");
+        
         if (saveIcon) {
-          saveIcon.classList.remove("animate-spin", "animate-bounce");
+          saveIcon.classList.remove("fa-spinner", "animate-spin");
+          saveIcon.classList.add("fa-save");
+        } else {
+          saveBtn.innerHTML = originalHtml;
+        }
+        
+        // Add success checkmark briefly if save was successful
+        if (!saveBtn.classList.contains("error")) {
+          saveBtn.classList.add("text-green-500");
+          if (saveIcon) {
+            saveIcon.classList.remove("fa-save");
+            saveIcon.classList.add("fa-check");
+          }
+          
+          // Reset to original state after delay
+          setTimeout(() => {
+            if (saveBtn) {
+              saveBtn.classList.remove("text-green-500");
+              if (saveIcon) {
+                saveIcon.classList.remove("fa-check");
+                saveIcon.classList.add("fa-save");
+              }
+            }
+          }, 2000);
         }
       }
     }
