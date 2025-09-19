@@ -4,6 +4,159 @@
 (function() {
     'use strict';
     
+    // Enhanced color palette with maximum perceptual difference
+    // Colors are organized by hue for maximum distinction
+    const colorPalette = [
+        // Primary colors (0-120° hue)
+        { name: 'vivid-red', hex: '#FF3B30' },      // Bright red
+        { name: 'vivid-orange', hex: '#FF9500' },   // Vivid orange
+        { name: 'vivid-yellow', hex: '#FFCC00' },   // Vivid yellow
+        { name: 'vivid-green', hex: '#34C759' },    // Vivid green
+        { name: 'vivid-cyan', hex: '#00C7BE' },     // Vivid cyan
+        { name: 'vivid-blue', hex: '#007AFF' },     // Vivid blue
+        
+        // Secondary colors (120-240° hue)
+        { name: 'vivid-indigo', hex: '#5856D6' },   // Vivid indigo
+        { name: 'vivid-violet', hex: '#AF52DE' },   // Vivid violet
+        { name: 'vivid-purple', hex: '#FF2D55' },   // Vivid purple
+        { name: 'vivid-magenta', hex: '#FF2D55' },  // Vivid magenta
+        { name: 'vivid-pink', hex: '#FF375F' },     // Vivid pink
+        
+        // Tertiary colors (240-360° hue)
+        { name: 'deep-sky-blue', hex: '#007AFF' },   // Deep sky blue
+        { name: 'spring-green', hex: '#00E5A1' },    // Spring green
+        { name: 'electric-lime', hex: '#CDDC39' },   // Electric lime
+        { name: 'amber', hex: '#FFC107' },           // Amber
+        { name: 'deep-orange', hex: '#FF7043' },     // Deep orange
+        { name: 'bright-red', hex: '#FF3B30' },      // Bright red
+        
+        // Additional distinct colors with varied saturation and lightness
+        { name: 'emerald', hex: '#2ECC71' },         // Emerald
+        { name: 'peter-river', hex: '#3498DB' },     // Peter river
+        { name: 'amethyst', hex: '#9B59B6' },        // Amethyst
+        { name: 'sun-flower', hex: '#F1C40F' },      // Sun flower
+        { name: 'carrot', hex: '#E67E22' },          // Carrot
+        { name: 'alizarin', hex: '#E74C3C' },        // Alizarin
+        { name: 'turquoise', hex: '#1ABC9C' },       // Turquoise
+        { name: 'peter-river', hex: '#3498DB' },     // Peter river
+        { name: 'wisteria', hex: '#8E44AD' },        // Wisteria
+        { name: 'midnight-blue', hex: '#2C3E50' }    // Midnight blue
+    ];
+    
+    // Track which colors have been used
+    const usedColorIndices = new Set();
+    
+    // Transformer functions (moved from transformer.js)
+    function stringToColor(str) {
+        // Generate a hash from the string
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        
+        // Try to get a color from our palette first
+        const colorIndex = Math.abs(hash) % colorPalette.length;
+        
+        if (!usedColorIndices.has(colorIndex)) {
+            // If we haven't used this color yet, use it
+            usedColorIndices.add(colorIndex);
+            return colorPalette[colorIndex];
+        } else {
+            // If we've used all colors, start reusing from the beginning
+            // but with a different shade based on the string
+            const baseColor = colorPalette[colorIndex];
+            const shadeVariant = (Math.abs(hash) % 7) + 1; // 1-7
+            
+            // Return a new object with the same name but different shade
+            return {
+                name: baseColor.name,
+                hex: adjustShade(baseColor.hex, shadeVariant * 50)
+            };
+        }
+    }
+    
+    // Helper function to adjust color shade
+    function adjustShade(hex, amount) {
+        // Convert hex to RGB
+        let r = parseInt(hex.slice(1, 3), 16);
+        let g = parseInt(hex.slice(3, 5), 16);
+        let b = parseInt(hex.slice(5, 7), 16);
+        
+        // Adjust brightness
+        r = Math.max(0, Math.min(255, r + amount));
+        g = Math.max(0, Math.min(255, g + amount));
+        b = Math.max(0, Math.min(255, b + amount));
+        
+        // Convert back to hex
+        return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+    }
+
+    function getPrefix(str) {
+        return str
+            .split('_')
+            .map(word => word[0]?.toUpperCase() || '')
+            .join('')
+            .substring(0, 2);
+    }
+
+    function processLine(line, taxonomyMap = {}) {
+        try {
+            const data = JSON.parse(line);
+            
+            if (data.enrichment?.taxonomy) {
+                const { taxonomy } = data.enrichment;
+                
+                // Process each category in the taxonomy
+                for (const [category, items] of Object.entries(taxonomy)) {
+                    // Only process if the category has items
+                    if (Array.isArray(items) && items.length > 0) {
+                        const key = category.toLowerCase();
+                        if (!taxonomyMap[key]) {
+                            taxonomyMap[key] = {
+                                id: key,
+                                name: category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                                prefix: getPrefix(category),
+                                color: stringToColor(category),
+                                count: 0
+                            };
+                        }
+                        // Increment count for each document that has this category
+                        taxonomyMap[key].count++;
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('Failed to parse line:', line, e);
+        }
+        return taxonomyMap;
+    }
+
+    function transformNdjsonToTaxonomies(ndjson) {
+        const lines = ndjson.split('\n').filter(line => line.trim());
+        const taxonomyMap = {};
+        
+        lines.forEach(line => {
+            processLine(line, taxonomyMap);
+        });
+        
+        // Convert the map to an array and sort by count (descending)
+        return Object.values(taxonomyMap).sort((a, b) => b.count - a.count);
+    }
+    
+    async function fetchAndProcessTaxonomies(filePath) {
+        try {
+            const response = await fetch(filePath);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const ndjson = await response.text();
+            return transformNdjsonToTaxonomies(ndjson);
+        } catch (error) {
+            console.error('Error fetching or processing taxonomies:', error);
+            return []; // Return empty array in case of error
+        }
+    }
+    
     // Only create the app if it doesn't exist
     if (window.DoccanoApp) {
         console.warn('DoccanoApp is already defined');
@@ -133,51 +286,61 @@
         }
     };
     
-    // Taxonomies data
-    const taxonomies = [
-        {
-            id: 'target-groups',
-            name: 'Target Groups',
-            prefix: 'T',
-            color: 'blue',
-            count: 16
-        },
-        {
-            id: 'almp-instruments',
-            name: 'Almp Instruments',
-            prefix: 'A',
-            color: 'green',
-            count: 9
-        },
-        {
-            id: 'delivery-modes',
-            name: 'Delivery Modes',
-            prefix: 'D',
-            color: 'yellow',
-            count: 9
-        },
-        {
-            id: 'evaluation-methods',
-            name: 'Evaluation Methods',
-            prefix: 'E',
-            color: 'red',
-            count: 5
-        },
-        {
-            id: 'policy-areas',
-            name: 'Policy Areas',
-            prefix: 'P',
-            color: 'purple',
-            count: 7
-        },
-        {
-            id: 'geographic-scope',
-            name: 'Geographic Scope',
-            prefix: 'G',
-            color: 'pink',
-            count: 12
+    // Taxonomies data - will be loaded asynchronously
+    let taxonomies = [];
+    let taxonomiesLoaded = false;
+    const taxonomyCallbacks = [];
+
+    /**
+     * Load taxonomies from the NDJSON file
+     * @returns {Promise<Array>} Promise that resolves with the loaded taxonomies
+     */
+    async function loadTaxonomies() {
+        if (taxonomiesLoaded) {
+            return taxonomies;
         }
-    ];
+
+        try {
+            taxonomies = await fetchAndProcessTaxonomies(
+                './assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson'
+            );
+            console.log('Taxonomies loaded successfully:', taxonomies);
+            taxonomiesLoaded = true;
+            
+            // Execute all pending callbacks
+            while (taxonomyCallbacks.length) {
+                const callback = taxonomyCallbacks.shift();
+                if (typeof callback === 'function') {
+                    try {
+                        callback(taxonomies);
+                    } catch (err) {
+                        console.error('Error in taxonomy callback:', err);
+                    }
+                }
+            }
+            
+            return taxonomies;
+        } catch (error) {
+            console.error('Failed to load taxonomies:', error);
+            // Return empty array if loading fails
+            return [];
+        }
+    }
+
+    /**
+     * Register a callback to be called when taxonomies are loaded
+     * @param {Function} callback - Function to call with the taxonomies array
+     */
+    function onTaxonomiesLoaded(callback) {
+        if (taxonomiesLoaded) {
+            callback(taxonomies);
+        } else {
+            taxonomyCallbacks.push(callback);
+        }
+    }
+
+    // Start loading taxonomies when the script loads
+    loadTaxonomies().catch(console.error);
     
     // Handle undo action
     function handleUndo() {
@@ -573,28 +736,23 @@ function init() {
             console.log('Popup found:', popup);
             console.log('Options container found:', optionsContainer);
             
-            // Remove the hidden class and set display to block
-            popup.classList.remove('hidden');
-            popup.style.display = 'block';
-            
-            // Clear previous options
+            // Clear existing options
             optionsContainer.innerHTML = '';
             
             // Add taxonomy options
             taxonomies.forEach(taxonomy => {
+                const color = typeof taxonomy.color === 'object' ? taxonomy.color.hex : taxonomy.color;
                 const option = document.createElement('div');
-                option.className = 'taxonomy-option flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer';
+                option.className = 'flex items-center justify-between p-2 hover:bg-gray-50 rounded cursor-pointer';
                 option.innerHTML = `
                     <div class="flex items-center">
-                        <span class="inline-flex items-center justify-center w-5 h-5 mr-2">
-                            <span class="w-3 h-3 rounded-full bg-${taxonomy.color}-500 border-${taxonomy.color}-600 border"></span>
-                        </span>
-                        <span class="text-sm">${taxonomy.name}</span>
+                        <span class="w-3 h-3 rounded-full mr-2" style="background-color: ${color}; border: 1px solid ${color}"></span>
+                        <span class="text-sm text-gray-700">${taxonomy.name}</span>
                     </div>
+                    <span class="text-xs text-gray-500">${taxonomy.count || 0}</span>
                 `;
                 
-                option.addEventListener('click', (e) => {
-                    e.stopPropagation();
+                option.addEventListener('click', () => {
                     assignTaxonomyToSelection(taxonomy);
                 });
                 
@@ -701,14 +859,70 @@ function init() {
             
             // Create a span to wrap the selected text
             const span = document.createElement('span');
-            span.className = `taxonomy-highlight bg-${taxonomy.color}-100 text-${taxonomy.color}-800 px-1 rounded border-b-2 border-${taxonomy.color}-200 cursor-pointer`;
+            const bgColor = typeof taxonomy.color === 'object' ? taxonomy.color.hex : taxonomy.color;
+            
+            // Use inline styles for consistent coloring with the taxonomy list
+            span.style.cssText = `
+                background-color: ${bgColor}20;
+                color: ${bgColor};
+                border-bottom: 2px solid ${bgColor}80;
+                padding: 0 0.25rem;
+                border-radius: 0.25rem;
+                cursor: pointer;
+                position: relative;
+            `;
+            
+            span.className = 'taxonomy-highlight';
             span.id = `taxonomy-${taxonomy.id}-${Date.now()}`; // Add timestamp for unique ID
             span.dataset.taxonomyId = taxonomy.id;
             span.dataset.lineNumber = lineNumber || '';
             span.dataset.originalText = currentSelection; // Store original text separately
             
-            // Add tooltip
-            span.innerHTML = `${currentSelection}<span class="taxonomy-tooltip">${taxonomy.name}</span>`;
+            // Add tooltip with matching color and hover effects
+            span.innerHTML = `
+                ${currentSelection}
+                <span class="taxonomy-tooltip" style="
+                    background-color: white;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 0.375rem;
+                    padding: 0.25rem 0.5rem;
+                    position: absolute;
+                    z-index: 50;
+                    bottom: 100%;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(-5px);
+                    white-space: nowrap;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                    opacity: 0;
+                    visibility: hidden;
+                    color: #374151;
+                    font-size: 0.75rem;
+                    font-weight: 500;
+                    transition: all 0.2s ease-in-out;
+                    pointer-events: none;
+                ">
+                    <span class="inline-block w-2 h-2 rounded-full mr-1" style="background-color: ${bgColor}"></span>
+                    ${taxonomy.name}
+                </span>`;
+                
+            // Add hover effects for the tooltip
+            span.addEventListener('mouseenter', (e) => {
+                const tooltip = span.querySelector('.taxonomy-tooltip');
+                if (tooltip) {
+                    tooltip.style.opacity = '1';
+                    tooltip.style.visibility = 'visible';
+                    tooltip.style.transform = 'translateX(-50%) translateY(-10px)';
+                }
+            });
+            
+            span.addEventListener('mouseleave', (e) => {
+                const tooltip = span.querySelector('.taxonomy-tooltip');
+                if (tooltip) {
+                    tooltip.style.opacity = '0';
+                    tooltip.style.visibility = 'hidden';
+                    tooltip.style.transform = 'translateX(-50%) translateY(-5px)';
+                }
+            });
             
             // Store position information
             const range = currentSelectionRange.cloneRange();
@@ -761,28 +975,43 @@ function init() {
             const container = document.getElementById('taxonomy-container');
             if (!container) return;
             
-            container.innerHTML = '';
+            // Show loading state
+            container.innerHTML = '<div class="text-sm text-gray-500 py-4 text-center">Loading taxonomies...</div>';
             
-            taxonomies.forEach(taxonomy => {
-                const element = document.createElement('div');
-                element.className = 'group flex items-center justify-between py-2 px-3 rounded-lg transition-all duration-200 hover:shadow-sm hover:bg-gradient-to-r hover:from-white hover:to-gray-50 border border-transparent hover:border-gray-200';
-                element.innerHTML = `
-                <div class="flex items-center min-w-0">
-                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-md bg-${taxonomy.color}-500 border-${taxonomy.color}-600 border shadow-sm group-hover:shadow-md transition-shadow">
-                    <span class="text-xs font-bold text-white">${taxonomy.prefix}</span>
-                    </span>
-                    <span class="ml-3 text-sm font-medium text-gray-800 truncate" title="${taxonomy.name}">
-                    ${taxonomy.name}
-                    </span>
-                </div>
-                <span class="ml-2 flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-full bg-white border border-gray-200 text-sm font-medium text-gray-700 group-hover:bg-eu-blue/5 group-hover:border-eu-blue/20 group-hover:text-eu-blue transition-colors">
-                    ${taxonomy.count}
-                </span>
-            `;
-
-            container.appendChild(element);
-        });
-    }
+            // This will be called when taxonomies are loaded
+            onTaxonomiesLoaded((taxonomyList) => {
+                if (!taxonomyList || taxonomyList.length === 0) {
+                    container.innerHTML = '<div class="text-sm text-red-500 py-4">No taxonomies available</div>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                taxonomyList.forEach(taxonomy => {
+                    const element = document.createElement('div');
+                    element.className = 'group flex items-center justify-between py-2 px-3 rounded-lg transition-all duration-200 hover:shadow-sm hover:bg-gradient-to-r hover:from-white hover:to-gray-50 border border-transparent hover:border-gray-200';
+                    
+                    // Get the color from the taxonomy
+                    const color = typeof taxonomy.color === 'object' ? taxonomy.color.hex : taxonomy.color;
+                    
+                    element.innerHTML = `
+                    <div class="flex items-center min-w-0">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-md border shadow-sm group-hover:shadow-md transition-all" 
+                              style="background-color: ${color}80; border-color: ${color}">
+                            <span class="text-xs font-bold text-white">${taxonomy.prefix}</span>
+                        </span>
+                        <span class="ml-3 text-sm font-medium text-gray-800 truncate" title="${taxonomy.name}">
+                            ${taxonomy.name}
+                        </span>
+                    </div>
+                    <span class="ml-2 flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-full bg-white border border-gray-200 text-sm font-medium text-gray-700 group-hover:bg-gray-100 transition-colors">
+                        ${taxonomy.count}
+                    </span>`;
+                    
+                    container.appendChild(element);
+                });
+            });
+        }
 
     // Export highlights to a structured format
     function exportHighlights() {
