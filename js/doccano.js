@@ -1556,10 +1556,29 @@
   }
 
   // Handle save action with export functionality
-  function handleSaveWithExport() {
+  function handleSaveWithExport(event) {
+    // Prevent default form submission if triggered by a form
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
     try {
       // First save the current state
-      saveState();
+      const changes = saveState();
+      
+      // Get the save button and add loading state
+      const saveBtn = document.getElementById("save-btn");
+      const saveIcon = saveBtn ? saveBtn.querySelector("i, svg") : null;
+      const originalHtml = saveBtn ? saveBtn.innerHTML : '';
+      
+      if (saveBtn) {
+        // Add loading class and disable button
+        saveBtn.classList.add("opacity-75", "cursor-not-allowed");
+        if (saveIcon) {
+          saveIcon.classList.add("animate-spin");
+        }
+      }
 
       // Export the highlights
       const exportData = exportHighlights();
@@ -1585,27 +1604,148 @@
           window.URL.revokeObjectURL(url);
         }, 100);
 
-        // Show success message
-        const saveBtn = document.getElementById("save-btn");
-        if (saveBtn) {
-          const originalText = saveBtn.textContent;
-          saveBtn.textContent = "Saved!";
-          saveBtn.classList.add("text-green-500");
+        // Show success message with SweetAlert2
+        const addedCount = changes ? changes.added || 0 : 0;
+        const removedCount = changes ? changes.removed || 0 : 0;
+        
+        let message = "Changes saved successfully!";
+        if (addedCount > 0 || removedCount > 0) {
+          message = `Changes saved: ${addedCount} added, ${removedCount} removed`;
+        }
+        
+        // Show toast notification with progress bar and detailed counts
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          width: 'auto',
+          minWidth: '300px',
+          padding: '0.75rem 1rem',
+          customClass: {
+            container: 'swal2-toast-container',
+            popup: 'swal2-toast',
+            timerProgressBar: 'swal2-timer-progress-bar',
+          },
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+            
+            // Add custom styling for the progress bar
+            const progressBar = toast.querySelector('.swal2-timer-progress-bar');
+            if (progressBar) {
+              progressBar.style.background = '#34D399';
+              progressBar.style.height = '3px';
+              progressBar.style.borderRadius = '2px';
+            }
+          }
+        });
 
+        // Create toast content
+        const title = 'Changes saved successfully!';
+        const addedBadge = addedCount > 0 ? 
+          `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2">
+            <svg class="-ml-0.5 mr-1 h-2 w-2 text-green-500" fill="currentColor" viewBox="0 0 8 8">
+              <circle cx="4" cy="4" r="3" />
+            </svg>
+            ${addedCount} added
+          </span>` : '';
+        
+        const removedBadge = removedCount > 0 ?
+          `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+            <svg class="-ml-0.5 mr-1 h-2 w-2 text-red-500" fill="currentColor" viewBox="0 0 8 8">
+              <circle cx="4" cy="4" r="3" />
+            </svg>
+            ${removedCount} removed
+          </span>` : '';
+
+        // Show the toast with just the HTML content (no duplicate title or close button)
+        Toast.fire({
+          html: `
+            <div class="flex items-center w-full">
+              <svg class="h-5 w-5 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <div class="min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">${title}</p>
+                ${(addedCount > 0 || removedCount > 0) ? 
+                  `<div class="mt-1 flex items-center flex-wrap gap-1">${addedBadge}${removedBadge}</div>` : ''
+                }
+              </div>
+            </div>
+          `,
+          showConfirmButton: false,
+          width: 'auto',
+          padding: '0.75rem 1rem',
+          background: '#fff',
+          showCloseButton: true,
+          showClass: {
+            popup: 'animate-fade-in-up'
+          },
+          hideClass: {
+            popup: 'animate-fade-out-down'
+          }
+        });
+
+        // Restore save button state
+        if (saveBtn) {
+          // Add success animation
+          saveBtn.classList.add("text-green-500");
+          if (saveIcon) {
+            saveIcon.classList.remove("animate-spin");
+            saveIcon.classList.add("animate-bounce");
+          }
+          
+          // Reset button after animation
           setTimeout(() => {
-            saveBtn.textContent = originalText;
-            saveBtn.classList.remove("text-green-500");
+            if (saveBtn) {
+              saveBtn.classList.remove("opacity-75", "cursor-not-allowed", "text-green-500");
+              if (saveIcon) {
+                saveIcon.classList.remove("animate-bounce");
+              }
+              saveBtn.innerHTML = originalHtml; // Restore original HTML
+            }
           }, 2000);
         }
 
         return jsonString;
       } else {
         console.warn("No highlights to export");
+        // Show info message if no changes
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'info',
+          title: 'No changes to save',
+          showConfirmButton: false,
+          timer: 2000
+        });
         return null;
       }
     } catch (error) {
       console.error("Error in handleSaveWithExport:", error);
+      // Show error message
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'error',
+        title: 'Error saving changes',
+        text: error.message || 'An error occurred while saving',
+        showConfirmButton: false,
+        timer: 3000
+      });
       return null;
+    } finally {
+      // Ensure button is always reset
+      const saveBtn = document.getElementById("save-btn");
+      if (saveBtn) {
+        saveBtn.classList.remove("opacity-75", "cursor-not-allowed");
+        const saveIcon = saveBtn.querySelector("i, svg");
+        if (saveIcon) {
+          saveIcon.classList.remove("animate-spin", "animate-bounce");
+        }
+      }
     }
   }
 
