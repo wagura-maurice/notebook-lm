@@ -158,6 +158,33 @@ header .hover\:text-eu-orange:hover {
   padding: 1rem;
 }
 
+/* Document line styles */
+.document-line {
+  margin: 0.5rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+}
+
+/* Hover effect - subtle background and shadow */
+.document-line:hover {
+  background-color: rgba(0, 48, 135, 0.03);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Active/Selected line effect - more prominent */
+.document-line.active,
+.document-line:active {
+  background-color: rgba(0, 48, 135, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+  z-index: 1;
+  border-left: 3px solid var(--eu-blue);
+  padding-left: calc(1rem - 3px);
+}
+
 /* Left Column (25% width) */
 #left-column {
   width: 25%;

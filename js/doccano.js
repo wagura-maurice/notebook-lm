@@ -611,6 +611,14 @@
   function handleLineClick(lineElement) {
     console.log('Line element clicked:', lineElement);
     
+    // Remove active class from all document lines
+    document.querySelectorAll('.document-line').forEach(el => {
+      el.classList.remove('active');
+    });
+    
+    // Add active class to clicked line
+    lineElement.classList.add('active');
+    
     // Get the line number from the element
     const lineNumber = getLineNumber(lineElement);
     if (!lineNumber) {
