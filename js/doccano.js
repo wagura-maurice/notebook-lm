@@ -1373,6 +1373,96 @@
         }
       }
     });
+
+    // Function to get document statistics
+    const getDocumentStats = () => {
+      const documentContent = document.querySelector('#document-content');
+      if (!documentContent) return { charCount: 0, wordCount: 0 };
+
+      // Get all text nodes within the document content
+      const walker = document.createTreeWalker(
+        documentContent,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
+      );
+
+      let fullText = '';
+      let node;
+      while (node = walker.nextNode()) {
+        // Skip script and style elements
+        if (node.parentNode.nodeName === 'SCRIPT' || node.parentNode.nodeName === 'STYLE') {
+          continue;
+        }
+        fullText += ' ' + node.textContent;
+      }
+
+      // Count characters (excluding whitespace)
+      const charCount = fullText.replace(/\s+/g, '').length;
+      // Count words (split by whitespace and filter out empty strings)
+      const wordCount = fullText.split(/\s+/).filter(word => word.length > 0).length;
+      
+      return { charCount, wordCount };
+    };
+
+    // Update document statistics display
+    const updateDocumentStats = () => {
+      const { charCount, wordCount } = getDocumentStats();
+      
+      // Update length elements
+      const lengthElements = document.querySelectorAll('.document-length');
+      lengthElements.forEach(el => {
+        if (!el.closest('template') && !el.getRootNode().host) {
+          el.textContent = `${charCount.toLocaleString()} characters • ${wordCount.toLocaleString()} words`;
+        }
+      });
+
+      // Update model elements
+      const modelElements = document.querySelectorAll('.document-model');
+      modelElements.forEach(el => {
+        if (!el.closest('template') && !el.getRootNode().host) {
+          // You can update this to show the actual model being used
+          const modelName = 'gpt-4o';
+          el.textContent = modelName;
+          el.className = 'document-model font-medium text-eu-blue/90';
+        }
+      });
+
+      // Update status elements
+      const statusElements = document.querySelectorAll('.document-status');
+      statusElements.forEach(el => {
+        if (!el.closest('template') && !el.getRootNode().host) {
+          // You can update this to show the actual status
+          const isActive = true; // Set based on your logic
+          const statusText = isActive ? 'Active' : 'Inactive';
+          const statusClass = isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-800';
+          const dotClass = isActive ? 'bg-emerald-500' : 'bg-gray-500';
+          
+          el.innerHTML = `
+            <span class="w-1.5 h-1.5 rounded-full ${dotClass} mr-1.5"></span>
+            ${statusText}
+          `;
+          el.className = `document-status inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusClass}`;
+        }
+      });
+    };
+
+    // Run the update and also set up a mutation observer to update when content changes
+    updateDocumentStats();
+    
+    // Set up a mutation observer to update stats when content changes
+    const observer = new MutationObserver(() => {
+      updateDocumentStats();
+    });
+    
+    const documentContent = document.querySelector('#document-content');
+    if (documentContent) {
+      observer.observe(documentContent, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      });
+    }
     
     // Update all elements with the document-updated class
     const dateElements = document.querySelectorAll('.document-updated');
@@ -1468,7 +1558,7 @@
       // Keep the existing header
       const header = analysisSection.querySelector('.flex.items-center.mb-3');
       const content = `
-        <div class="space-y-2.5 pl-10">
+        <div class="space-y-2.5">
           <div class="flex items-center text-xs text-gray-700">
             <span class="w-20 text-gray-500">Content:</span>
             <span class="document-length font-medium">
