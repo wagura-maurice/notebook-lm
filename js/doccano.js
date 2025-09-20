@@ -582,6 +582,16 @@
           </div>
         ` : ''}
         
+        <div class="mt-3 pt-3 border-t border-gray-100">
+          <button 
+            class="w-full flex items-center justify-center px-3 py-2 bg-eu-blue text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+            onclick="window.DoccanoApp.openCuratorStudio()"
+          >
+            <i class="fas fa-user-edit mr-2"></i>
+            Curator Studio
+          </button>
+        </div>
+        
         <div class="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500 space-y-1.5">
           <div class="flex items-center">
             <span class="font-medium mr-2 text-gray-600">ID:</span>
@@ -1445,6 +1455,143 @@
       }
     };
 
+    // Process token usage data from all documents
+    const processTokenUsage = () => {
+      if (!window.documentData || !Array.isArray(window.documentData)) {
+        return { prompt: 0, completion: 0, total: 0 };
+      }
+
+      let promptTokens = 0;
+      let completionTokens = 0;
+      let totalTokens = 0;
+
+      window.documentData.forEach(doc => {
+        if (doc?.enrichment?._usage) {
+          const usage = doc.enrichment._usage;
+          promptTokens += parseInt(usage.prompt_tokens) || 0;
+          completionTokens += parseInt(usage.completion_tokens) || 0;
+          totalTokens += parseInt(usage.total_tokens) || 0;
+        }
+      });
+
+      return {
+        prompt: promptTokens,
+        completion: completionTokens,
+        total: totalTokens
+      };
+    };
+
+    // Initialize token usage chart
+    const initTokenChart = () => {
+      const usage = processTokenUsage();
+      
+      // Only initialize if we have data
+      if (usage.total === 0) return;
+
+      const options = {
+        series: [usage.prompt, usage.completion],
+        chart: {
+          type: 'donut',
+          height: 250,
+          fontFamily: 'Inter, sans-serif',
+          toolbar: {
+            show: false
+          },
+        },
+        labels: ['Prompt Tokens', 'Completion Tokens'],
+        colors: ['#3B82F6', '#10B981'], // Blue for prompt, Green for completion
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }],
+        plotOptions: {
+          pie: {
+            donut: {
+              size: '75%',  // Increase center space by making the donut thinner
+              offsetY: 0,   // Center the donut vertically
+              labels: {
+                show: true,
+                total: {
+                  show: true,
+                  label: 'Total Tokens',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  color: '#4B5563',
+                  formatter: function (w) {
+                    return usage.total.toLocaleString();
+                  }
+                },
+                value: {
+                  formatter: function(val) {
+                    return parseInt(val).toLocaleString();
+                  }
+                },
+                percentage: {
+                  formatter: function(val) {
+                    return Math.round(parseFloat(val)) + '%';
+                  }
+                }
+              }
+            }
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        legend: {
+          position: 'bottom',
+          horizontalAlign: 'center',
+          fontSize: '13px',
+          itemMargin: {
+            horizontal: 8,
+            vertical: 8
+          }
+        },
+        tooltip: {
+          y: {
+            formatter: function(val) {
+              return `${val.toLocaleString()} tokens (${Math.round((val / usage.total) * 100)}%)`;
+            }
+          }
+        }
+      };
+
+      // Get chart element
+      const chartElement = document.querySelector('#tokenChart');
+      if (!chartElement) return;
+      
+      // Clear any existing content
+      chartElement.innerHTML = '';
+      
+      // Create new chart
+      if (typeof ApexCharts !== 'undefined') {
+        // Store the chart instance in a local variable first
+        const chart = new ApexCharts(chartElement, options);
+        
+        // Store reference to the chart instance
+        if (!window.tokenCharts) {
+          window.tokenCharts = new Map();
+        }
+        
+        // Remove existing chart if it exists
+        if (window.tokenCharts.has('main')) {
+          window.tokenCharts.get('main').destroy();
+          window.tokenCharts.delete('main');
+        }
+        
+        // Store and render the new chart
+        window.tokenCharts.set('main', chart);
+        chart.render();
+      }
+    };
+
     // Update document statistics display
     const updateDocumentStats = () => {
       const { charCount, wordCount } = getDocumentStats();
@@ -1456,7 +1603,10 @@
           el.textContent = `${charCount.toLocaleString()} characters • ${wordCount.toLocaleString()} words`;
         }
       });
-      
+
+      // Initialize token chart
+      initTokenChart();
+
       // Update confidence score
       const confidence = calculateAverageConfidence();
       const confidenceValue = document.getElementById('confidenceValue');
@@ -1690,10 +1840,18 @@
     }
   }
 
+  // Curator Studio functionality
+  function openCuratorStudio() {
+    console.log('Curator button clicked');
+    // Add your curator functionality here
+    alert('Curator functionality will be implemented here');
+  }
+
   // Make functions available globally
   window.DoccanoApp = window.DoccanoApp || {};
   window.DoccanoApp.loadDocumentContent = loadDocumentContent;
   window.DoccanoApp.getLineContent = getLineContent;
+  window.DoccanoApp.openCuratorStudio = openCuratorStudio;
 
   // Helper function to get confidence from annotation data
   function getConfidenceFromAnnotation(annotation) {
