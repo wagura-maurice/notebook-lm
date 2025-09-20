@@ -1410,6 +1410,9 @@
         updateEnrichmentSummary(null); // Pass null to show document summary
       }
       
+      // Update the document analysis section with dynamic data
+      updateDocumentAnalysis();
+      
       return documentData;
     } catch (error) {
       console.error("Error loading document data:", error);
@@ -1419,11 +1422,114 @@
 
   // Function to get line content by line number
   function getLineContent(lineNumber) {
-    if (!documentDataLoaded) {
-      console.warn("Document data not loaded yet");
-      return null;
+    if (!documentData || !Array.isArray(documentData)) {
+      console.error('Document data not loaded or invalid');
+      return '';
     }
-    return documentData[lineNumber - 1]; // Convert to 0-based index
+    
+    const line = documentData[lineNumber - 1];
+    return line ? line.text || '' : '';
+  }
+
+  // Function to update the Document Analysis section with dynamic data
+  function updateDocumentAnalysis() {
+    if (!documentData || documentData.length === 0) {
+      console.warn('No document data available for analysis');
+      return;
+    }
+
+    // Generate document summary
+    const summary = generateDocumentSummary();
+    
+    // Calculate total characters
+    const totalChars = documentData.reduce((acc, item) => {
+      return acc + (item.text ? item.text.length : 0);
+    }, 0);
+
+    // Count unique entities
+    const entities = new Set();
+    documentData.forEach(item => {
+      if (item.enrichment?.entities) {
+        item.enrichment.entities.forEach(entity => entities.add(entity.type));
+      }
+    });
+
+    // Count unique categories
+    const categories = new Set();
+    documentData.forEach(item => {
+      if (item.enrichment?.categories) {
+        item.enrichment.categories.forEach(cat => categories.add(cat));
+      }
+    });
+
+    // Update the Document Analysis section while preserving the header
+    const analysisSection = document.querySelector('.document-analysis-section');
+    if (analysisSection) {
+      // Keep the existing header
+      const header = analysisSection.querySelector('.flex.items-center.mb-3');
+      const content = `
+        <div class="space-y-2.5 pl-10">
+          <div class="flex items-center text-xs text-gray-700">
+            <span class="w-20 text-gray-500">Content:</span>
+            <span class="document-length font-medium">
+              ${totalChars.toLocaleString()} characters • ${summary.totalWords.toLocaleString()} words
+            </span>
+          </div>
+          <div class="flex items-center text-xs text-gray-700">
+            <span class="w-20 text-gray-500">Sections:</span>
+            <span class="font-medium">${summary.totalSections}</span>
+          </div>
+          <div class="flex items-center text-xs text-gray-700">
+            <span class="w-20 text-gray-500">Entities:</span>
+            <span class="font-medium">${entities.size} types</span>
+          </div>
+          <div class="flex items-center text-xs text-gray-700">
+            <span class="w-20 text-gray-500">Categories:</span>
+            <span class="font-medium">${categories.size}</span>
+          </div>
+          <div class="flex items-center text-xs text-gray-700">
+            <span class="w-20 text-gray-500">Keywords:</span>
+            <span class="font-medium">${summary.keywords.length} key terms</span>
+          </div>
+          <div class="flex items-center text-xs text-gray-700">
+            <span class="w-20 text-gray-500">Model:</span>
+            <span class="font-medium text-eu-blue/90">gpt-4o</span>
+          </div>
+          <div class="flex items-center text-xs text-gray-700">
+            <span class="w-20 text-gray-500">Status:</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+              Active
+            </span>
+          </div>
+          <div class="pt-2 text-xs text-gray-500">
+            <p>Last analyzed: ${new Date().toLocaleString()}</p>
+          </div>
+        </div>
+      `;
+      
+      // Only replace the content after the header
+      const contentDiv = analysisSection.querySelector('.space-y-2.5');
+      if (contentDiv) {
+        contentDiv.outerHTML = content;
+      } else if (header) {
+        // If no content div found, insert after header
+        header.insertAdjacentHTML('afterend', content);
+      } else {
+        // Fallback: replace entire content
+        analysisSection.innerHTML = `
+          <div class="flex items-center mb-3">
+            <div class="bg-eu-blue/10 p-1.5 rounded-lg mr-3">
+              <i class="fas fa-chart-pie text-eu-blue/80 text-sm"></i>
+            </div>
+            <h3 class="text-xs font-semibold text-eu-blue/90 uppercase tracking-wider">
+              Document Analysis
+            </h3>
+          </div>
+          ${content}
+        `;
+      }
+    }
   }
 
   // Make functions available globally
