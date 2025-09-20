@@ -375,7 +375,7 @@
     summaryContainer.innerHTML = '';
 
     if (!lineData) {
-      summaryContainer.innerHTML = '<p class="text-gray-500">Click on a line to see its details</p>';
+      summaryContainer.innerHTML = '<p class="text-gray-500 text-sm p-4">Click on a line in the document to see its details</p>';
       return;
     }
 
@@ -385,6 +385,14 @@
     const summary = enrichment.summary || lineData.text || 'No content available';
     const keywords = enrichment.keywords || [];
     const rhetoricalRole = enrichment.rhetorical_role;
+    
+    // Handle temporal data with new structure
+    const temporalData = lineData.temporal || {};
+    const hasTemporalData = temporalData.start_date || temporalData.end_date || 
+                          (temporalData.dates_mentioned && temporalData.dates_mentioned.length > 0);
+    
+    // Handle annotations with new structure
+    const annotations = lineData.annotations || {};
 
     // Create section wrapper
     const section = document.createElement('div');
@@ -409,15 +417,79 @@
             ).join('')}
           </div>
         ` : ''}
+        
+        <!-- Temporal Data Section -->
+        <div class="mt-3 pt-3 border-t border-gray-100">
+          <p class="text-xs text-gray-500 mb-2">Temporal Data</p>
+          ${hasTemporalData ? `
+            <ul class="space-y-1.5 text-sm text-gray-700">
+              ${temporalData.start_date ? `
+                <li class="flex items-start">
+                  <span class="inline-block w-1.5 h-1.5 rounded-full bg-eu-orange mt-1.5 mr-2 flex-shrink-0"></span>
+                  <span>Start Date: <span class="font-medium">${temporalData.start_date}</span></span>
+                </li>
+              ` : ''}
+              ${temporalData.end_date ? `
+                <li class="flex items-start">
+                  <span class="inline-block w-1.5 h-1.5 rounded-full bg-eu-orange mt-1.5 mr-2 flex-shrink-0"></span>
+                  <span>End Date: <span class="font-medium">${temporalData.end_date}</span></span>
+                </li>
+              ` : ''}
+              ${temporalData.dates_mentioned && temporalData.dates_mentioned.length > 0 ? `
+                ${temporalData.dates_mentioned.map(date => `
+                  <li class="flex items-start">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-eu-orange/50 mt-1.5 mr-2 flex-shrink-0"></span>
+                    <span>Mentioned: <span class="font-medium">${date}</span></span>
+                  </li>
+                `).join('')}
+              ` : ''}
+            </ul>
+          ` : `
+            <p class="text-sm text-gray-400 italic">No temporal data available</p>
+          `}
+        </div>
+        
+        <!-- Annotations Section -->
+        <div class="mt-3 pt-3 border-t border-gray-100">
+          <p class="text-xs text-gray-500 mb-2">Annotation Analysis</p>
+          ${annotations.length || annotations.words ? `
+            <ul class="space-y-2 text-sm">
+              ${annotations.length ? `
+                <li class="p-2 bg-gray-50 rounded border border-gray-100">
+                  <div class="flex justify-between items-center">
+                    <span class="font-medium text-eu-blue">Annotation Length</span>
+                    <span class="text-sm font-medium">${annotations.length} characters</span>
+                  </div>
+                </li>
+              ` : ''}
+              ${annotations.words ? `
+                <li class="p-2 bg-gray-50 rounded border border-gray-100">
+                  <div class="flex justify-between items-center">
+                    <span class="font-medium text-eu-blue">Word Count</span>
+                    <span class="text-sm font-medium">${annotations.words} words</span>
+                  </div>
+                </li>
+              ` : ''}
+            </ul>
+          ` : `
+            <p class="text-sm text-gray-400 italic">No annotation analysis available</p>
+          `}
+        </div>
+        
         ${rhetoricalRole ? `
           <div class="mt-3 pt-3 border-t border-gray-100">
             <p class="text-xs text-gray-500">Rhetorical Role</p>
             <p class="text-sm font-medium text-gray-700">${rhetoricalRole}</p>
           </div>
         ` : ''}
-        <div class="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
-          <div class="flex justify-between items-center">
-            <span>ID: ${lineData.id?.substring(0, 8) || 'N/A'}</span>
+        
+        <div class="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500 space-y-1.5">
+          <div class="flex items-center">
+            <span class="font-medium mr-2 text-gray-600">ID:</span>
+            <span class="font-mono">${lineData.id?.substring(0, 8) || 'N/A'}</span>
+          </div>
+          <div class="flex items-center">
+            <span class="font-medium mr-2 text-gray-600">Created:</span>
             <span>${new Date(lineData._ts || new Date()).toLocaleString()}</span>
           </div>
         </div>
