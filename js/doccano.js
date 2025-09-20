@@ -366,6 +366,140 @@
     loadDocumentData().catch(console.error)
   ]);
 
+  // Update Enrichment Summary with line data
+  function updateEnrichmentSummary(lineData) {
+    const summaryContainer = document.getElementById('enrichment-summary-content');
+    if (!summaryContainer) return;
+
+    // Clear existing content
+    summaryContainer.innerHTML = '';
+
+    if (!lineData) {
+      summaryContainer.innerHTML = '<p class="text-gray-500">Click on a line to see its details</p>';
+      return;
+    }
+
+    // Get enrichment data with defaults
+    const enrichment = lineData.enrichment || {};
+    const title = enrichment.title || 'Document Details';
+    const summary = enrichment.summary || lineData.text || 'No content available';
+    const keywords = enrichment.keywords || [];
+    const rhetoricalRole = enrichment.rhetorical_role;
+
+    // Create section wrapper
+    const section = document.createElement('div');
+    section.className = 'document-section border border-gray-200 rounded-lg overflow-hidden transition-shadow hover:shadow-sm';
+    
+    // Create section header
+    section.innerHTML = `
+      <div class="w-full text-left px-5 py-3.5 bg-gray-50 font-medium">
+        <h3 class="text-base font-medium text-eu-blue">${title}</h3>
+      </div>
+      <div class="px-5 py-4">
+        <div class="relative pl-3.5 border-l-2 border-eu-orange my-1">
+          <p class="text-sm text-gray-700 font-normal leading-relaxed">${summary}</p>
+          <div class="absolute -left-px top-0 w-0.5 h-full bg-gradient-to-b from-eu-orange/30 to-transparent"></div>
+        </div>
+        ${keywords.length > 0 ? `
+          <div class="flex flex-wrap gap-2 mt-3">
+            ${keywords.map(keyword => 
+              `<span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">
+                ${keyword}
+              </span>`
+            ).join('')}
+          </div>
+        ` : ''}
+        ${rhetoricalRole ? `
+          <div class="mt-3 pt-3 border-t border-gray-100">
+            <p class="text-xs text-gray-500">Rhetorical Role</p>
+            <p class="text-sm font-medium text-gray-700">${rhetoricalRole}</p>
+          </div>
+        ` : ''}
+        <div class="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
+          <div class="flex justify-between items-center">
+            <span>ID: ${lineData.id?.substring(0, 8) || 'N/A'}</span>
+            <span>${new Date(lineData._ts || new Date()).toLocaleString()}</span>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    summaryContainer.appendChild(section);
+  }
+
+  // Handle line click in the document
+  function handleLineClick(lineElement) {
+    console.log('Line element clicked:', lineElement);
+    
+    // Get the line number from the element
+    const lineNumber = getLineNumber(lineElement);
+    if (!lineNumber) {
+      console.error('No line number found for element:', lineElement);
+      return;
+    }
+
+    // Try to get the line data from the element's dataset first
+    let lineData = null;
+    
+    // Check if the line element has a data-line-data attribute with the full data
+    if (lineElement.dataset.lineData) {
+      try {
+        lineData = JSON.parse(lineElement.dataset.lineData);
+        console.log('Found line data in dataset:', lineData);
+      } catch (e) {
+        console.error('Error parsing line data from dataset:', e);
+      }
+    }
+    
+    // If no data in dataset, try to find it in documentData
+    if (!lineData) {
+      lineData = documentData.find(item => 
+        item.lineNumber === lineNumber || 
+        (item.id && item.id === lineElement.dataset.id) ||
+        (item._hash && item._hash === lineElement.dataset.hash)
+      );
+      
+      if (lineData) {
+        console.log('Found line data in documentData:', lineData);
+      }
+    }
+
+    // If still no data, create a basic one
+    if (!lineData) {
+      console.log('Creating basic line data');
+      lineData = {
+        lineNumber: lineNumber,
+        text: lineElement.textContent.trim(),
+        type: lineElement.dataset.type || 'text',
+        id: lineElement.dataset.id || '',
+        section: lineElement.closest('[data-section]')?.dataset.section || 'Document',
+        metadata: {
+          length: lineElement.textContent.length,
+          words: lineElement.textContent.trim().split(/\s+/).length
+        }
+      };
+    } else {
+      // Ensure lineNumber is set
+      lineData.lineNumber = lineNumber;
+    }
+
+    // Add the line data to the element's dataset for future reference
+    try {
+      lineElement.dataset.lineData = JSON.stringify(lineData);
+    } catch (e) {
+      console.error('Error saving line data to dataset:', e);
+    }
+
+    // Update the URL with the line number
+    window.history.pushState({ lineNumber }, '', `#L${lineNumber}`);
+    
+    // Log the line data for debugging
+    console.log('Final line data:', lineData);
+
+    // Update the enrichment summary
+    updateEnrichmentSummary(lineData);
+  }
+
   // Handle undo action
   function handleUndo() {
     const state = stateHistory.undo();
@@ -695,6 +829,14 @@
       let currentSection = null;
 
       items.forEach((item, index) => {
+        // Clean up header by removing page spans and markdown formatting
+        const sectionHeader = item.header
+        ? item.header
+            .replace(/<span[^>]*>[^<]*<\/span>/g, '') // Remove page spans
+            .replace(/\*\*/g, '') // Remove markdown bold
+            .trim()
+        : '';
+
         const sectionTitle =
           item.enrichment?.title || `Section ${sections.length + 1}`;
 
@@ -707,6 +849,7 @@
 
           // Start a new section
           currentSection = {
+            header: sectionHeader,
             title: sectionTitle,
             items: [],
           };
@@ -877,7 +1020,7 @@
         html += `
             <div class="mb-6">
                 <div class="space-y-1">
-                    <div class="text-sm font-semibold text-eu-blue mt-2 mb-1">${section.title}</div>`;
+                    <div class="text-sm font-semibold text-eu-blue mt-2 mb-1">${section.header}</div>`;
 
         // Add section items (paragraphs)
         section.items.forEach((item) => {
@@ -897,17 +1040,24 @@
           ) {
             // Format as a table row
             const [left, right = ""] = text.split("|").map((s) => s.trim());
+            // Create a unique ID for this line
+            const tocLineId = `line-${lineNumber}`;
+            const tocLineData = JSON.stringify({
+              lineNumber: lineNumber,
+              text: left + (right ? ` | ${right}` : ''),
+              id: tocLineId,
+              type: 'table_of_contents',
+              section: section.title,
+              enrichment: item.enrichment || null,
+              _ts: item._ts || new Date().toISOString(),
+              doc: item.doc || 'Document',
+              header: item.header || ''
+            });
+
             html += `
-                    <div class="flex items-start group mb-1">
-                        <span class="text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5 cursor-pointer hover:text-gray-600" onclick="(function(e) {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          console.log('Line number clicked:', ${lineNumber});
-                          const lineContent = window.DoccanoApp.getLineContent(${lineNumber});
-                          console.log('Line content:', lineContent || 'Line not found');
-                          return false;
-                        })(event)">${lineStr}</span>
-                        <div class="flex-1">
+                    <div class="document-line flex items-start group mb-1" data-line-number="${lineNumber}" data-line-data='${tocLineData.replace(/'/g, '&#39;')}'>
+                        <span class="line-number text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5 cursor-pointer hover:text-gray-600">${lineStr}</span>
+                        <div class="line-content flex-1">
                             <div class="flex border-b border-gray-100 py-1">
                                 <div class="px-2 flex-1 text-sm">${left}</div>
                                 ${
@@ -920,17 +1070,24 @@
                     </div>`;
           } else {
             // Format as a regular paragraph with potentially highlighted text
+            // Create a unique ID for this line
+            const lineId = `line-${lineNumber}`;
+            const lineData = JSON.stringify({
+              lineNumber: lineNumber,
+              text: text.replace(/<[^>]*>/g, ''), // Remove HTML tags for plain text
+              id: lineId,
+              type: 'text',
+              section: section.title,
+              enrichment: item.enrichment || null,
+              _ts: item._ts || new Date().toISOString(),
+              doc: item.doc || 'Document',
+              header: item.header || ''
+            });
+
             html += `
-                    <div class="flex items-start group mb-1">
-                        <span class="text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5 cursor-pointer hover:text-gray-600" onclick="(function(e) {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          console.log('Line number clicked:', ${lineNumber});
-                          const lineContent = window.DoccanoApp.getLineContent(${lineNumber});
-                          console.log('Line content:', lineContent || 'Line not found');
-                          return false;
-                        })(event)">${lineStr}</span>
-                        <div class="flex-1">
+                    <div class="document-line flex items-start group mb-1" data-line-number="${lineNumber}" data-line-data='${lineData.replace(/'/g, '&#39;')}'>
+                        <span class="line-number text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5 cursor-pointer hover:text-gray-600">${lineStr}</span>
+                        <div class="line-content flex-1">
                             <p class="text-sm text-gray-800 mb-2">${text}</p>
                         </div>
                     </div>`;
@@ -1035,15 +1192,92 @@
   window.DoccanoApp.loadDocumentContent = loadDocumentContent;
   window.DoccanoApp.getLineContent = getLineContent;
 
+  // Toggle enrichment summary section
+  function initEnrichmentSummary() {
+    const toggleBtn = document.getElementById('enrichment-summary-toggle');
+    const summarySection = document.querySelector('.enrichment-summary');
+    
+    if (toggleBtn && summarySection) {
+      // Check if the section should be collapsed by default (from localStorage)
+      const isCollapsed = localStorage.getItem('enrichmentSummaryCollapsed') === 'true';
+      
+      if (isCollapsed) {
+        summarySection.classList.add('collapsed');
+      }
+      
+      toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        summarySection.classList.toggle('collapsed');
+        // Save the state to localStorage
+        localStorage.setItem('enrichmentSummaryCollapsed', summarySection.classList.contains('collapsed'));
+      });
+    }
+  }
+
   // Initialize the application
   function init() {
-    // Load document content first
-    loadDocumentContent();
+    // Add click handler for document lines
+    document.addEventListener('click', (e) => {
+      // Check if the click is on a line number or line content
+      const lineNumberElement = e.target.closest('.line-number');
+      const lineContentElement = e.target.closest('.line-content');
+      let lineElement = null;
+
+      if (lineNumberElement) {
+        // If clicking on a line number, get the parent line element
+        lineElement = lineNumberElement.closest('[data-line-number]');
+      } else if (lineContentElement) {
+        // If clicking on line content, get the parent line element
+        lineElement = lineContentElement.closest('[data-line-number]');
+      } else {
+        // Try to find any line element
+        lineElement = e.target.closest('[data-line-number]');
+      }
+
+      if (lineElement) {
+        console.log('Line element found:', lineElement);
+        handleLineClick(lineElement);
+      } else {
+        console.log('No line element found for click target:', e.target);
+      }
+    });
+
+    // Handle back/forward navigation
+    window.addEventListener('popstate', (e) => {
+      if (e.state && e.state.lineNumber) {
+        // Find and highlight the line
+        const lineElement = document.querySelector(`[data-line-number="${e.state.lineNumber}"]`);
+        if (lineElement) {
+          handleLineClick(lineElement);
+          // Scroll to the line
+          lineElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } else {
+        // Clear the summary if no line is selected
+        updateEnrichmentSummary(null);
+      }
+    });
+    // Initialize the document content
+    loadDocumentContent().then(() => {
+      // Check for line hash in URL on initial load
+      if (window.location.hash.startsWith('#L')) {
+        const lineNumber = window.location.hash.substring(2);
+        const lineElement = document.querySelector(`[data-line-number="${lineNumber}"]`);
+        if (lineElement) {
+          handleLineClick(lineElement);
+          // Small delay to ensure the document is fully rendered
+          setTimeout(() => {
+            lineElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 100);
+        }
+      }
+    });
 
     // Initialize other components
     initCollapsibleSections();
     initTextSelection();
     initTaxonomyPopup();
+    initEnrichmentSummary();
     setupEventListeners();
     renderTaxonomies();
 
