@@ -303,9 +303,13 @@
     },
   };
 
-  // Taxonomies data - will be loaded asynchronously
+  // Document data - will be loaded asynchronously
   let taxonomies = [];
   let taxonomiesLoaded = false;
+  
+  // Store the loaded document data
+  let documentData = [];
+  let documentDataLoaded = false;
   const taxonomyCallbacks = [];
 
   /**
@@ -356,8 +360,11 @@
     }
   }
 
-  // Start loading taxonomies when the script loads
-  loadTaxonomies().catch(console.error);
+  // Start loading taxonomies and document data when the script loads
+  Promise.all([
+    loadTaxonomies().catch(console.error),
+    loadDocumentData().catch(console.error)
+  ]);
 
   // Handle undo action
   function handleUndo() {
@@ -892,7 +899,14 @@
             const [left, right = ""] = text.split("|").map((s) => s.trim());
             html += `
                     <div class="flex items-start group mb-1">
-                        <span class="text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5">${lineStr}</span>
+                        <span class="text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5 cursor-pointer hover:text-gray-600" onclick="(function(e) {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          console.log('Line number clicked:', ${lineNumber});
+                          const lineContent = window.DoccanoApp.getLineContent(${lineNumber});
+                          console.log('Line content:', lineContent || 'Line not found');
+                          return false;
+                        })(event)">${lineStr}</span>
                         <div class="flex-1">
                             <div class="flex border-b border-gray-100 py-1">
                                 <div class="px-2 flex-1 text-sm">${left}</div>
@@ -908,7 +922,14 @@
             // Format as a regular paragraph with potentially highlighted text
             html += `
                     <div class="flex items-start group mb-1">
-                        <span class="text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5">${lineStr}</span>
+                        <span class="text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5 cursor-pointer hover:text-gray-600" onclick="(function(e) {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          console.log('Line number clicked:', ${lineNumber});
+                          const lineContent = window.DoccanoApp.getLineContent(${lineNumber});
+                          console.log('Line content:', lineContent || 'Line not found');
+                          return false;
+                        })(event)">${lineStr}</span>
                         <div class="flex-1">
                             <p class="text-sm text-gray-800 mb-2">${text}</p>
                         </div>
@@ -974,9 +995,45 @@
     }
   }
 
-  // Make loadDocumentContent available globally
+  // Load document data from NDJSON file
+  async function loadDocumentData() {
+    try {
+      console.log("Loading document data from NDJSON...");
+      const response = await fetch(
+        "./assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson"
+      );
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const text = await response.text();
+      documentData = text.split('\n')
+        .filter(line => line.trim() !== '')
+        .map(line => JSON.parse(line));
+      
+      console.log("Document data loaded successfully");
+      documentDataLoaded = true;
+      return documentData;
+    } catch (error) {
+      console.error("Error loading document data:", error);
+      throw error;
+    }
+  }
+
+  // Function to get line content by line number
+  function getLineContent(lineNumber) {
+    if (!documentDataLoaded) {
+      console.warn("Document data not loaded yet");
+      return null;
+    }
+    return documentData[lineNumber - 1]; // Convert to 0-based index
+  }
+
+  // Make functions available globally
   window.DoccanoApp = window.DoccanoApp || {};
   window.DoccanoApp.loadDocumentContent = loadDocumentContent;
+  window.DoccanoApp.getLineContent = getLineContent;
 
   // Initialize the application
   function init() {
