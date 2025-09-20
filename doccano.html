@@ -672,21 +672,21 @@
           :class="{ 'collapsed': isRightCollapsed }"
         >
           <!-- Expanded View -->
-          <div class="expanded-content">
+          <div class="expanded-content flex flex-col h-full min-h-0">
             <div class="column-header">
               <h2>Annotations</h2>
               <div class="flex items-center space-x-2">
                 <button
                   @click="isRightCollapsed = true"
-                  class="text-white hover:text-eu-orange active:text-eu-orange transition-colors duration-200"
+                  class="text-gray-400 hover:text-gray-500 active:text-gray-600 transition-colors duration-200"
                   title="Collapse panel"
                 >
                   <i class="fas fa-chevron-right"></i>
                 </button>
               </div>
             </div>
-            <div
-              class="scrollable-content flex flex-col min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-eu-orange scrollbar-track-eu-gray-10 p-4"
+            <div 
+              class="flex-1 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-eu-orange scrollbar-track-eu-gray-10"
               :class="{ 'mb-8': $store.app.isMobile }"
               id="document-annotation"
             >
