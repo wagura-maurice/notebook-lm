@@ -23,52 +23,62 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Alpine.js with persistence plugin -->
-    <script type="application/javascript" src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
-    <script type="application/javascript" src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script
+      type="application/javascript"
+      src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script
+      type="application/javascript"
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+      defer
+    ></script>
 
     <!-- App Initialization -->
     <script type="application/javascript">
-      document.addEventListener('alpine:init', () => {
+      document.addEventListener("alpine:init", () => {
         // Store for shared state
-        Alpine.store('app', {
-          activeTab: Alpine.$persist('middle-column'),
-          isMobile: window.innerWidth < 1024
+        Alpine.store("app", {
+          activeTab: Alpine.$persist("middle-column"),
+          isMobile: window.innerWidth < 1024,
         });
 
         // Global app functions
         window.app = {
-          switchTab: function(tabId) {
+          switchTab: function (tabId) {
             // Hide all columns
-            document.querySelectorAll('.column').forEach(col => {
-              col.classList.remove('active');
+            document.querySelectorAll(".column").forEach((col) => {
+              col.classList.remove("active");
             });
-            
+
             // Show selected column
             const target = document.getElementById(tabId);
             if (target) {
-              target.classList.add('active');
+              target.classList.add("active");
               // Store the full tab ID with -column suffix
-              Alpine.store('app').activeTab = tabId;
+              Alpine.store("app").activeTab = tabId;
             }
-          }
+          },
         };
       });
 
       // Initialize when DOM is ready
-      document.addEventListener('DOMContentLoaded', () => {
+      document.addEventListener("DOMContentLoaded", () => {
         // Set initial tab - ensure it has the -column suffix
-        let initialTab = Alpine.store('app').activeTab;
-        if (!initialTab.endsWith('-column')) {
-          initialTab = 'middle-column'; // Default to middle column if format is incorrect
-          Alpine.store('app').activeTab = initialTab;
+        let initialTab = Alpine.store("app").activeTab;
+        if (!initialTab.endsWith("-column")) {
+          initialTab = "middle-column"; // Default to middle column if format is incorrect
+          Alpine.store("app").activeTab = initialTab;
         }
         window.app.switchTab(initialTab);
       });
     </script>
 
     <!-- Tailwind Configuration -->
-    <script type="application/javascript" src="./js/tailwind-config.js"></script>
-    
+    <script
+      type="application/javascript"
+      src="./js/tailwind-config.js"
+    ></script>
+
     <!-- Application Scripts -->
     <script type="application/javascript" src="./js/doccano.js"></script>
     <script type="application/javascript" src="./js/app.js"></script>
@@ -80,9 +90,9 @@
   </head>
 
   <body
-  class="h-screen flex flex-col bg-eu-white font-sans text-text-primary overflow-hidden"
-  style="--tw-bg-opacity: 1"
-  x-data="{
+    class="h-screen flex flex-col bg-eu-white font-sans text-text-primary overflow-hidden"
+    style="--tw-bg-opacity: 1"
+    x-data="{
     preloaderVisible: true,
     profileDropdownOpen: false,
     handleDropdownMenuItemClick(action) {
@@ -109,8 +119,8 @@
       });
     }
   }"
-  x-init="init()"
->
+    x-init="init()"
+  >
     <!-- Preloader -->
     <div
       id="preloader"
@@ -154,12 +164,15 @@
           >
             <span class="sr-only">Open user menu</span>
             <div class="relative">
-              <div class="absolute inset-0 rounded-full transition-all duration-200" :class="{ 'ring-2 ring-eu-orange': profileDropdownOpen, 'ring-2 ring-white': !profileDropdownOpen }"></div>
+              <div
+                class="absolute inset-0 rounded-full transition-all duration-200"
+                :class="{ 'ring-2 ring-eu-orange': profileDropdownOpen, 'ring-2 ring-white': !profileDropdownOpen }"
+              ></div>
               <img
                 class="h-8 w-8 rounded-full"
                 src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
                 alt="Profile"
-              >
+              />
             </div>
           </button>
 
@@ -180,7 +193,9 @@
             <div class="py-1" role="none">
               <div class="px-4 py-3 border-b border-gray-100">
                 <p class="text-xs text-gray-500">Welcome back,</p>
-                <p class="text-sm font-medium text-gray-900 truncate">Peter Thirikwa</p>
+                <p class="text-sm font-medium text-gray-900 truncate">
+                  Peter Thirikwa
+                </p>
                 <p class="text-xs text-gray-500 truncate">peter@rgb.co.tz</p>
               </div>
               <a
@@ -189,7 +204,9 @@
                 role="menuitem"
                 @click.stop="handleDropdownMenuItemClick('profile')"
               >
-                <i class="fas fa-user-circle w-5 text-center text-eu-blue mr-3"></i>
+                <i
+                  class="fas fa-user-circle w-5 text-center text-eu-blue mr-3"
+                ></i>
                 <span>My Profile</span>
               </a>
               <a
@@ -208,14 +225,16 @@
                 role="menuitem"
                 @click.stop="handleDropdownMenuItemClick('signout')"
               >
-                <i class="fas fa-sign-out-alt w-5 text-center text-red-500 mr-3"></i>
+                <i
+                  class="fas fa-sign-out-alt w-5 text-center text-red-500 mr-3"
+                ></i>
                 <span>Sign out</span>
               </a>
             </div>
           </div>
         </div>
       </div>
-      
+
       <!-- Mobile Page Title - Visible in header on mobile -->
       <div class="lg:hidden bg-[#003087] px-4 py-2 relative z-10">
         <h1 class="text-base font-bold text-white text-center">
@@ -236,9 +255,13 @@
                 alt="Logo"
                 class="h-10 w-10 lg:h-12 lg:w-12 rounded-full transform transition-transform duration-300 group-hover:rotate-12"
               />
-              <div class="absolute inset-0 rounded-full border-2 border-transparent group-hover:border-eu-orange transition-all duration-300"></div>
+              <div
+                class="absolute inset-0 rounded-full border-2 border-transparent group-hover:border-eu-orange transition-all duration-300"
+              ></div>
             </div>
-            <span class="ml-3 text-eu-white text-lg lg:text-xl font-semibold transition-colors duration-200 hover:text-eu-orange">
+            <span
+              class="ml-3 text-eu-white text-lg lg:text-xl font-semibold transition-colors duration-200 hover:text-eu-orange"
+            >
               Notebook LLM
             </span>
           </a>
@@ -246,7 +269,9 @@
 
         <!-- Title in the center with hover effect -->
         <div class="flex-1 flex justify-center px-4">
-          <h1 class="text-xl lg:text-2xl font-bold text-eu-white whitespace-nowrap transition-all duration-300 transform hover:scale-105 hover:text-eu-orange">
+          <h1
+            class="text-xl lg:text-2xl font-bold text-eu-white whitespace-nowrap transition-all duration-300 transform hover:scale-105 hover:text-eu-orange"
+          >
             Document Annotation Page
           </h1>
         </div>
@@ -254,12 +279,20 @@
         <!-- Icons and profile on the right -->
         <div class="flex items-center space-x-6">
           <div class="flex items-center space-x-5">
-            <button class="text-eu-white hover:text-eu-orange transition-colors" title="Help">
+            <button
+              class="text-eu-white hover:text-eu-orange transition-colors"
+              title="Help"
+            >
               <i class="fas fa-question-circle text-xl"></i>
             </button>
-            <button class="text-eu-white hover:text-eu-orange transition-colors relative" title="Notifications">
+            <button
+              class="text-eu-white hover:text-eu-orange transition-colors relative"
+              title="Notifications"
+            >
               <i class="fas fa-bell text-xl"></i>
-              <span class="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-eu-orange"></span>
+              <span
+                class="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-eu-orange"
+              ></span>
             </button>
           </div>
 
@@ -272,22 +305,26 @@
             >
               <div class="relative">
                 <!-- Background circle with hover/active states -->
-                <div class="relative h-10 w-10 flex items-center justify-center">
+                <div
+                  class="relative h-10 w-10 flex items-center justify-center"
+                >
                   <!-- Hover background -->
-                  <div class="absolute inset-0 rounded-full bg-eu-orange/0 group-hover:bg-eu-orange/10 transition-colors duration-200"></div>
-                  
+                  <div
+                    class="absolute inset-0 rounded-full bg-eu-orange/0 group-hover:bg-eu-orange/10 transition-colors duration-200"
+                  ></div>
+
                   <!-- Active state background -->
-                  <div 
+                  <div
                     class="absolute inset-0 rounded-full transition-opacity duration-200"
                     :class="{'bg-eu-orange/20': profileDropdownOpen}"
                   ></div>
-                  
+
                   <!-- Border ring -->
-                  <div 
+                  <div
                     class="absolute inset-0 rounded-full ring-1 ring-white/50 group-hover:ring-2 group-hover:ring-eu-orange transition-all duration-200"
                     :class="{'ring-2 ring-eu-orange': profileDropdownOpen}"
                   ></div>
-                  
+
                   <!-- Profile image -->
                   <img
                     src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
@@ -359,20 +396,28 @@
     </header>
 
     <!-- Main Content Wrapper -->
-    <div id="main-content-wrapper" class="relative flex-1 flex flex-col overflow-hidden">
+    <div
+      id="main-content-wrapper"
+      class="relative flex-1 flex flex-col overflow-hidden"
+    >
       <!-- Main Content Container - This will be behind the dropdowns -->
-      <div id="main-content" class="flex-1 flex flex-col overflow-hidden relative z-0">
-              <!-- Mobile Tabs -->
-      <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 shadow-sm">
+      <!-- <div id="main-content" class="flex-1 flex flex-col overflow-hidden relative z-0"> -->
+      <!-- Mobile Tabs -->
+      <div
+        class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 shadow-sm"
+      >
         <div class="flex justify-around">
           <button
             class="flex flex-col items-center justify-center py-2 px-4 w-full text-sm font-medium relative group transition-colors duration-200"
             :class="$store.app.activeTab === 'left-column' ? 'text-eu-orange' : 'text-gray-500 hover:text-gray-700'"
             @click="window.app.switchTab('left-column')"
           >
-            <i class="fas fa-book text-lg mb-1" :class="$store.app.activeTab === 'left-column' ? 'text-eu-orange' : 'text-gray-500 group-hover:text-gray-700'"></i>
+            <i
+              class="fas fa-book text-lg mb-1"
+              :class="$store.app.activeTab === 'left-column' ? 'text-eu-orange' : 'text-gray-500 group-hover:text-gray-700'"
+            ></i>
             <span>Guide</span>
-            <span 
+            <span
               class="absolute bottom-0 left-0 right-0 h-0.5 bg-eu-orange transition-all duration-200"
               :class="$store.app.activeTab === 'left-column' ? 'opacity-100' : 'opacity-0'"
             ></span>
@@ -382,9 +427,12 @@
             :class="$store.app.activeTab === 'middle-column' ? 'text-eu-orange' : 'text-gray-500 hover:text-gray-700'"
             @click="window.app.switchTab('middle-column')"
           >
-            <i class="fas fa-file-alt text-lg mb-1" :class="$store.app.activeTab === 'middle-column' ? 'text-eu-orange' : 'text-gray-500 group-hover:text-gray-700'"></i>
+            <i
+              class="fas fa-file-alt text-lg mb-1"
+              :class="$store.app.activeTab === 'middle-column' ? 'text-eu-orange' : 'text-gray-500 group-hover:text-gray-700'"
+            ></i>
             <span>Document</span>
-            <span 
+            <span
               class="absolute bottom-0 left-0 right-0 h-0.5 bg-eu-orange transition-all duration-200"
               :class="$store.app.activeTab === 'middle-column' ? 'opacity-100' : 'opacity-0'"
             ></span>
@@ -394,9 +442,12 @@
             :class="$store.app.activeTab === 'right-column' ? 'text-eu-orange' : 'text-gray-500 hover:text-gray-700'"
             @click="window.app.switchTab('right-column')"
           >
-            <i class="fas fa-tag text-lg mb-1" :class="$store.app.activeTab === 'right-column' ? 'text-eu-orange' : 'text-gray-500 group-hover:text-gray-700'"></i>
+            <i
+              class="fas fa-tag text-lg mb-1"
+              :class="$store.app.activeTab === 'right-column' ? 'text-eu-orange' : 'text-gray-500 group-hover:text-gray-700'"
+            ></i>
             <span>Annotation</span>
-            <span 
+            <span
               class="absolute bottom-0 left-0 right-0 h-0.5 bg-eu-orange transition-all duration-200"
               :class="$store.app.activeTab === 'right-column' ? 'opacity-100' : 'opacity-0'"
             ></span>
@@ -405,19 +456,25 @@
       </div>
 
       <!-- Main Content Columns -->
-      <div id="columns-container" x-data="{
-    isLeftCollapsed: false,
-    isRightCollapsed: false
-  }">
-        
+      <div
+        id="columns-container"
+        x-data="{
+        isLeftCollapsed: false,
+        isRightCollapsed: false
+      }"
+      >
         <!-- Left Column (Guide) -->
-        <div id="left-column" class="column" :class="{ 'collapsed': isLeftCollapsed }">
+        <div
+          id="left-column"
+          class="column"
+          :class="{ 'collapsed': isLeftCollapsed }"
+        >
           <!-- Expanded View -->
           <!-- <div class="expanded-content" style="display: flex; flex-direction: column; height: 100%; min-height: 0;"> -->
           <div class="expanded-content flex flex-col h-full min-h-0">
             <div class="column-header">
               <h2>Guide</h2>
-              <button 
+              <button
                 @click="isLeftCollapsed = true"
                 class="text-white hover:text-eu-orange active:text-eu-orange transition-colors duration-200"
                 title="Collapse panel"
@@ -425,85 +482,230 @@
                 <i class="fas fa-chevron-left"></i>
               </button>
             </div>
-            <div class="scrollable-content flex flex-col min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-eu-orange scrollbar-track-eu-gray-10 p-4" :class="{ 'mb-8': $store.app.isMobile }" id="document-guide">
+            <div
+              class="scrollable-content flex flex-col min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-eu-orange scrollbar-track-eu-gray-10 p-4"
+              :class="{ 'mb-8': $store.app.isMobile }"
+              id="document-guide"
+            >
               <!-- Document guide content -->
-               <!-- Document Info -->
-              <div class="mb-6 bg-eu-blue/5 p-4 rounded-lg border border-eu-blue/10">
-                <h2 class="text-sm text-eu-blue/90 mb-2 font-medium document-title flex items-center">AI ADOPTION IN THE PUBLIC SECTOR concepts (full static for now)</h2>
+              <!-- Document Info -->
+              <div
+                class="mb-6 bg-eu-blue/5 p-4 rounded-lg border border-eu-blue/10"
+              >
+                <h2
+                  class="text-sm text-eu-blue/90 mb-2 font-medium document-title flex items-center"
+                >
+                  AI ADOPTION IN THE PUBLIC SECTOR concepts (full static for
+                  now)
+                </h2>
                 <div class="flex items-center text-xs text-gray-600">
                   <i class="far fa-clock mr-1.5 text-eu-orange/80"></i>
-                  <span>Last updated:
-                    <span class="document-updated font-medium text-eu-orange ml-0.5">Aug 25, 2025</span></span>
+                  <span
+                    >Last updated:
+                    <span
+                      class="document-updated font-medium text-eu-orange ml-0.5"
+                      >Aug 25, 2025</span
+                    ></span
+                  >
                 </div>
               </div>
 
               <!-- Document Sections (will be populated dynamically) -->
               <div id="document-sections" class="space-y-3">
-                <h3 class="text-xs font-semibold text-eu-blue uppercase tracking-wider mb-2">
+                <h3
+                  class="text-xs font-semibold text-eu-blue uppercase tracking-wider mb-2"
+                >
                   Enrichment Summary
                 </h3>
-                <div class="document-section border border-gray-200 rounded-lg overflow-hidden transition-shadow hover:shadow-sm" data-section-id="340a57150690cf4ce81986f4a4a1ee2efaebd883" style="">
-                  <button class="section-trigger w-full text-left px-5 py-3.5 bg-gray-50 hover:bg-gray-100 font-medium flex items-center justify-between transition-colors duration-200">
-                    <span class="text-base font-medium text-eu-blue section-title">AI Adoption in Public Sector</span>
-                    <i class="fas text-xs text-gray-500 transition-transform duration-200 section-icon fa-chevron-down"></i>
+                <div
+                  class="document-section border border-gray-200 rounded-lg overflow-hidden transition-shadow hover:shadow-sm"
+                  data-section-id="340a57150690cf4ce81986f4a4a1ee2efaebd883"
+                  style=""
+                >
+                  <button
+                    class="section-trigger w-full text-left px-5 py-3.5 bg-gray-50 hover:bg-gray-100 font-medium flex items-center justify-between transition-colors duration-200"
+                  >
+                    <span
+                      class="text-base font-medium text-eu-blue section-title"
+                      >AI Adoption in Public Sector</span
+                    >
+                    <i
+                      class="fas text-xs text-gray-500 transition-transform duration-200 section-icon fa-chevron-down"
+                    ></i>
                   </button>
                   <div class="section-content px-5 pb-4 hidden">
-                    <div class="relative pl-3.5 border-l-2 border-eu-orange my-2.5">
-                      <p class="text-sm text-gray-700 section-summary font-normal leading-relaxed">Key factors for successful AI adoption include early user involvement, fast discovery, and alignment of resources, IT, and business processes.</p>
-                      <div class="absolute -left-px top-0 w-0.5 h-full bg-gradient-to-b from-eu-orange/30 to-transparent"></div>
+                    <div
+                      class="relative pl-3.5 border-l-2 border-eu-orange my-2.5"
+                    >
+                      <p
+                        class="text-sm text-gray-700 section-summary font-normal leading-relaxed"
+                      >
+                        Key factors for successful AI adoption include early
+                        user involvement, fast discovery, and alignment of
+                        resources, IT, and business processes.
+                      </p>
+                      <div
+                        class="absolute -left-px top-0 w-0.5 h-full bg-gradient-to-b from-eu-orange/30 to-transparent"
+                      ></div>
                     </div>
-                    <div class="section-keywords flex flex-wrap gap-2 mt-3"><span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">ai adoption</span><span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">public sector</span><span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">human-centred</span><span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">resources</span><span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">business processes</span></div>
+                    <div class="section-keywords flex flex-wrap gap-2 mt-3">
+                      <span
+                        class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full"
+                        >ai adoption</span
+                      ><span
+                        class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full"
+                        >public sector</span
+                      ><span
+                        class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full"
+                        >human-centred</span
+                      ><span
+                        class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full"
+                        >resources</span
+                      ><span
+                        class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full"
+                        >business processes</span
+                      >
+                    </div>
                   </div>
-                </div><div class="document-section border border-gray-200 rounded-lg overflow-hidden transition-shadow hover:shadow-sm" data-section-id="5770b37f6fea7304b606e4d0696d4384d6762739" style="">
-                  <button class="section-trigger w-full text-left px-5 py-3.5 bg-gray-50 hover:bg-gray-100 font-medium flex items-center justify-between transition-colors duration-200">
-                    <span class="text-base font-medium text-eu-blue section-title">AI Adoption in Public Sector</span>
-                    <i class="fas fa-chevron-down text-xs text-gray-500 transition-transform duration-200 section-icon"></i>
+                </div>
+                <div
+                  class="document-section border border-gray-200 rounded-lg overflow-hidden transition-shadow hover:shadow-sm"
+                  data-section-id="5770b37f6fea7304b606e4d0696d4384d6762739"
+                  style=""
+                >
+                  <button
+                    class="section-trigger w-full text-left px-5 py-3.5 bg-gray-50 hover:bg-gray-100 font-medium flex items-center justify-between transition-colors duration-200"
+                  >
+                    <span
+                      class="text-base font-medium text-eu-blue section-title"
+                      >AI Adoption in Public Sector</span
+                    >
+                    <i
+                      class="fas fa-chevron-down text-xs text-gray-500 transition-transform duration-200 section-icon"
+                    ></i>
                   </button>
                   <div class="section-content px-5 pb-4 hidden">
-                    <div class="relative pl-3.5 border-l-2 border-eu-orange my-2.5">
-                      <p class="text-sm text-gray-700 section-summary font-normal leading-relaxed">Legacy IT systems and slow process adaptation hinder optimal AI usage.</p>
-                      <div class="absolute -left-px top-0 w-0.5 h-full bg-gradient-to-b from-eu-orange/30 to-transparent"></div>
+                    <div
+                      class="relative pl-3.5 border-l-2 border-eu-orange my-2.5"
+                    >
+                      <p
+                        class="text-sm text-gray-700 section-summary font-normal leading-relaxed"
+                      >
+                        Legacy IT systems and slow process adaptation hinder
+                        optimal AI usage.
+                      </p>
+                      <div
+                        class="absolute -left-px top-0 w-0.5 h-full bg-gradient-to-b from-eu-orange/30 to-transparent"
+                      ></div>
                     </div>
-                    <div class="section-keywords flex flex-wrap gap-2 mt-3"><span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">ai</span><span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">public sector</span><span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">legacy systems</span><span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">technology</span><span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">adaptation</span></div>
+                    <div class="section-keywords flex flex-wrap gap-2 mt-3">
+                      <span
+                        class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full"
+                        >ai</span
+                      ><span
+                        class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full"
+                        >public sector</span
+                      ><span
+                        class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full"
+                        >legacy systems</span
+                      ><span
+                        class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full"
+                        >technology</span
+                      ><span
+                        class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full"
+                        >adaptation</span
+                      >
+                    </div>
                   </div>
-                </div><div class="document-section border border-gray-200 rounded-lg overflow-hidden transition-shadow hover:shadow-sm" data-section-id="8c0a826a8ed5f19ba80e6f6409a4156b95e37c59" style="">
-                  <button class="section-trigger w-full text-left px-5 py-3.5 bg-gray-50 hover:bg-gray-100 font-medium flex items-center justify-between transition-colors duration-200">
-                    <span class="text-base font-medium text-eu-blue section-title">AI Adoption in Public Sector</span>
-                    <i class="fas fa-chevron-down text-xs text-gray-500 transition-transform duration-200 section-icon"></i>
+                </div>
+                <div
+                  class="document-section border border-gray-200 rounded-lg overflow-hidden transition-shadow hover:shadow-sm"
+                  data-section-id="8c0a826a8ed5f19ba80e6f6409a4156b95e37c59"
+                  style=""
+                >
+                  <button
+                    class="section-trigger w-full text-left px-5 py-3.5 bg-gray-50 hover:bg-gray-100 font-medium flex items-center justify-between transition-colors duration-200"
+                  >
+                    <span
+                      class="text-base font-medium text-eu-blue section-title"
+                      >AI Adoption in Public Sector</span
+                    >
+                    <i
+                      class="fas fa-chevron-down text-xs text-gray-500 transition-transform duration-200 section-icon"
+                    ></i>
                   </button>
                   <div class="section-content px-5 pb-4 hidden">
-                    <div class="relative pl-3.5 border-l-2 border-eu-orange my-2.5">
-                      <p class="text-sm text-gray-700 section-summary font-normal leading-relaxed">Technology usefulness varies by task routineness and worker experience, prompting reconsideration of work division between technology, junior, and senior workers.</p>
-                      <div class="absolute -left-px top-0 w-0.5 h-full bg-gradient-to-b from-eu-orange/30 to-transparent"></div>
+                    <div
+                      class="relative pl-3.5 border-l-2 border-eu-orange my-2.5"
+                    >
+                      <p
+                        class="text-sm text-gray-700 section-summary font-normal leading-relaxed"
+                      >
+                        Technology usefulness varies by task routineness and
+                        worker experience, prompting reconsideration of work
+                        division between technology, junior, and senior workers.
+                      </p>
+                      <div
+                        class="absolute -left-px top-0 w-0.5 h-full bg-gradient-to-b from-eu-orange/30 to-transparent"
+                      ></div>
                     </div>
-                    <div class="section-keywords flex flex-wrap gap-2 mt-3"><span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">ai adoption</span><span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">public sector</span><span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">technology</span><span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">workers</span><span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">task routineness</span></div>
+                    <div class="section-keywords flex flex-wrap gap-2 mt-3">
+                      <span
+                        class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full"
+                        >ai adoption</span
+                      ><span
+                        class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full"
+                        >public sector</span
+                      ><span
+                        class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full"
+                        >technology</span
+                      ><span
+                        class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full"
+                        >workers</span
+                      ><span
+                        class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full"
+                        >task routineness</span
+                      >
+                    </div>
                   </div>
                 </div>
               </div>
 
               <!-- Document Analysis -->
-              <div class="mt-6 bg-gradient-to-br from-eu-blue/5 to-eu-blue/10 p-4 rounded-lg border border-eu-blue/20">
+              <div
+                class="mt-6 bg-gradient-to-br from-eu-blue/5 to-eu-blue/10 p-4 rounded-lg border border-eu-blue/20"
+              >
                 <div class="flex items-center mb-3">
                   <div class="bg-eu-blue/10 p-1.5 rounded-lg mr-3">
                     <i class="fas fa-chart-pie text-eu-blue/80 text-sm"></i>
                   </div>
-                  <h3 class="text-xs font-semibold text-eu-blue/90 uppercase tracking-wider">
+                  <h3
+                    class="text-xs font-semibold text-eu-blue/90 uppercase tracking-wider"
+                  >
                     Document Analysis
                   </h3>
                 </div>
                 <div class="space-y-2.5 pl-10">
                   <div class="flex items-center text-xs text-gray-700">
                     <span class="w-20 text-gray-500">Content:</span>
-                    <span class="document-length font-medium">422 characters • 62 words</span>
+                    <span class="document-length font-medium"
+                      >422 characters • 62 words</span
+                    >
                   </div>
                   <div class="flex items-center text-xs text-gray-700">
                     <span class="w-20 text-gray-500">Model:</span>
-                    <span class="document-model font-medium text-eu-blue/90">gpt-4o</span>
+                    <span class="document-model font-medium text-eu-blue/90"
+                      >gpt-4o</span
+                    >
                   </div>
                   <div class="flex items-center text-xs text-gray-700">
                     <span class="w-20 text-gray-500">Status:</span>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800"
+                    >
+                      <span
+                        class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"
+                      ></span>
                       Active
                     </span>
                   </div>
@@ -515,7 +717,7 @@
           <!-- Collapsed View -->
           <div class="collapsed-content">
             <div class="column-header flex justify-center items-center">
-              <button 
+              <button
                 @click="isLeftCollapsed = false"
                 class="text-white hover:text-eu-orange active:text-eu-orange transition-colors duration-200"
                 title="Expand panel"
@@ -531,12 +733,15 @@
           <div class="column-header hidden md:flex">
             <h2>Document</h2>
             <div class="flex items-center">
-              <button 
+              <button
                 class="text-white hover:text-eu-orange active:text-eu-orange p-1 transition-colors duration-200"
                 :title="isLeftCollapsed ? 'Show side panels' : 'Expand document view'"
                 @click="const newState = !isLeftCollapsed || !isRightCollapsed; isLeftCollapsed = newState; isRightCollapsed = newState;"
               >
-                <i :class="isLeftCollapsed ? 'fa-expand-arrows-alt' : 'fa-compress-arrows-alt'" class="fas"></i>
+                <i
+                  :class="isLeftCollapsed ? 'fa-expand-arrows-alt' : 'fa-compress-arrows-alt'"
+                  class="fas"
+                ></i>
               </button>
             </div>
           </div>
@@ -546,41 +751,73 @@
               <h2 class="text-sm text-eu-blue/90 font-medium flex items-center">
                 <i class="far fa-file-alt mr-2 text-eu-blue/70"></i>
                 <!-- <span>Loading document...</span> -->
-                 <span>AI ADOPTION IN THE PUBLIC SECTOR concepts (full static for now)</span>
+                <span
+                  >AI ADOPTION IN THE PUBLIC SECTOR concepts (full static for
+                  now)</span
+                >
               </h2>
             </div>
-            <div class="px-5 py-2.5 flex justify-between items-center bg-gray-50">
+            <div
+              class="px-5 py-2.5 flex justify-between items-center bg-gray-50"
+            >
               <div class="flex items-center text-xs text-gray-600">
                 <i class="far fa-clock mr-1.5 text-eu-orange/80"></i>
-                <span>Last updated: <span class="font-medium text-eu-orange ml-0.5">Aug 25, 2025</span></span>
+                <span
+                  >Last updated:
+                  <span class="font-medium text-eu-orange ml-0.5"
+                    >Aug 25, 2025</span
+                  ></span
+                >
               </div>
               <div class="flex items-center space-x-4">
-                <button class="text-eu-orange hover:text-eu-blue transition-colors" title="Undo" id="undo-btn" data-action="undo">
+                <button
+                  class="text-eu-orange hover:text-eu-blue transition-colors"
+                  title="Undo"
+                  id="undo-btn"
+                  data-action="undo"
+                >
                   <i class="fas fa-undo"></i>
                 </button>
-                <button class="text-eu-orange hover:text-eu-blue transition-colors" title="Redo" id="redo-btn" data-action="redo">
+                <button
+                  class="text-eu-orange hover:text-eu-blue transition-colors"
+                  title="Redo"
+                  id="redo-btn"
+                  data-action="redo"
+                >
                   <i class="fas fa-redo"></i>
                 </button>
-                <button class="text-eu-orange hover:text-green-600 transition-colors" title="Save" id="save-btn" data-action="save">
+                <button
+                  class="text-eu-orange hover:text-green-600 transition-colors"
+                  title="Save"
+                  id="save-btn"
+                  data-action="save"
+                >
                   <i class="far fa-save"></i>
                 </button>
               </div>
             </div>
           </div>
-          
-          <div class="scrollable-content flex flex-col h-full overflow-hidden" id="document-content">
+
+          <div
+            class="scrollable-content flex flex-col h-full overflow-hidden"
+            id="document-content"
+          >
             <!-- Document content will be inserted here -->
           </div>
         </div>
 
         <!-- Right Column (Annotations) -->
-        <div id="right-column" class="column" :class="{ 'collapsed': isRightCollapsed }">
+        <div
+          id="right-column"
+          class="column"
+          :class="{ 'collapsed': isRightCollapsed }"
+        >
           <!-- Expanded View -->
           <div class="expanded-content">
             <div class="column-header">
               <h2>Annotations</h2>
               <div class="flex items-center space-x-2">
-                <button 
+                <button
                   @click="isRightCollapsed = true"
                   class="text-white hover:text-eu-orange active:text-eu-orange transition-colors duration-200"
                   title="Collapse panel"
@@ -589,24 +826,45 @@
                 </button>
               </div>
             </div>
-            <div class="scrollable-content flex flex-col min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-eu-orange scrollbar-track-eu-gray-10 p-4" :class="{ 'mb-8': $store.app.isMobile }" id="document-annotation">
+            <div
+              class="scrollable-content flex flex-col min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-eu-orange scrollbar-track-eu-gray-10 p-4"
+              :class="{ 'mb-8': $store.app.isMobile }"
+              id="document-annotation"
+            >
               <!-- Annotation content -->
-               <!-- Document Info -->
-              <div class="mb-6 bg-eu-blue/5 p-4 rounded-lg border border-eu-blue/10">
-                <h2 class="text-sm text-eu-blue/90 mb-2 font-medium document-title flex items-center">AI ADOPTION IN THE PUBLIC SECTOR concepts (full static for now)</h2>
+              <!-- Document Info -->
+              <div
+                class="mb-6 bg-eu-blue/5 p-4 rounded-lg border border-eu-blue/10"
+              >
+                <h2
+                  class="text-sm text-eu-blue/90 mb-2 font-medium document-title flex items-center"
+                >
+                  AI ADOPTION IN THE PUBLIC SECTOR concepts (full static for
+                  now)
+                </h2>
                 <div class="flex items-center text-xs text-gray-600">
                   <i class="far fa-clock mr-1.5 text-eu-orange/80"></i>
-                  <span>Last updated:
-                    <span class="document-updated font-medium text-eu-orange ml-0.5">Aug 25, 2025</span></span>
+                  <span
+                    >Last updated:
+                    <span
+                      class="document-updated font-medium text-eu-orange ml-0.5"
+                      >Aug 25, 2025</span
+                    ></span
+                  >
                 </div>
               </div>
 
               <!-- Taxonomy Section -->
               <div class="mb-4">
-                <h3 class="text-xs font-semibold text-eu-blue uppercase tracking-wider mb-2">
+                <h3
+                  class="text-xs font-semibold text-eu-blue uppercase tracking-wider mb-2"
+                >
                   Taxonomies
                 </h3>
-                <p class="text-xs text-gray-500">Below are the taxonomy categories that are annotable in this document.</p>
+                <p class="text-xs text-gray-500">
+                  Below are the taxonomy categories that are annotable in this
+                  document.
+                </p>
                 <div id="taxonomy-container" class="space-y-2 mb-6">
                   <!-- Taxonomies will be dynamically inserted here by renderTaxonomies() -->
                 </div>
@@ -614,118 +872,74 @@
 
               <!-- Visualizations Section -->
               <div class="mb-4">
-                <h3 class="text-xs font-semibold text-eu-blue uppercase tracking-wider mb-6">
+                <h3
+                  class="text-xs font-semibold text-eu-blue uppercase tracking-wider mb-6"
+                >
                   Visualizations
                 </h3>
                 <div id="visualizations-container" class="space-y-2">
                   <div id="tokenUsageChart" class="w-full">
                     <div class="space-y-8">
                       <!-- Confidence Level Section -->
-                      <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+                      <div
+                        class="bg-white rounded-lg shadow-sm p-4 border border-gray-100"
+                      >
                         <div class="mb-3">
-                          <h3 class="text-sm font-medium text-gray-700 mb-1">Annotation Confidence</h3>
-                          <p class="text-xs text-gray-500">Average confidence level of your annotations based on the model's predictions.</p>
+                          <h3 class="text-sm font-medium text-gray-700 mb-1">
+                            Annotation Confidence
+                          </h3>
+                          <p class="text-xs text-gray-500">
+                            Average confidence level of your annotations based
+                            on the model's predictions.
+                          </p>
                         </div>
                         <div class="space-y-2">
                           <div class="flex justify-between items-center">
-                            <span class="text-xs font-medium text-gray-600">Confidence Score</span>
-                            <span id="confidenceValue" class="text-xs font-semibold text-gray-800">92%</span>
+                            <span class="text-xs font-medium text-gray-600"
+                              >Confidence Score</span
+                            >
+                            <span
+                              id="confidenceValue"
+                              class="text-xs font-semibold text-gray-800"
+                              >92%</span
+                            >
                           </div>
-                          <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
-                            <div id="confidenceProgress" class="h-2.5 rounded-full transition-all duration-300 bg-eu-orange" style="width: 92%; transition: width 300ms ease-out, background-color 300ms;">
-                            </div>
+                          <div
+                            class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden"
+                          >
+                            <div
+                              id="confidenceProgress"
+                              class="h-2.5 rounded-full transition-all duration-300 bg-eu-orange"
+                              style="
+                                width: 92%;
+                                transition: width 300ms ease-out,
+                                  background-color 300ms;
+                              "
+                            ></div>
                           </div>
-                          <p class="text-2xs text-gray-400 text-right">Higher is better</p>
+                          <p class="text-2xs text-gray-400 text-right">
+                            Higher is better
+                          </p>
                         </div>
                       </div>
 
                       <!-- Token Distribution Section -->
-                      <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+                      <div
+                        class="bg-white rounded-lg shadow-sm p-4 border border-gray-100"
+                      >
                         <div class="mb-3">
-                          <h3 class="text-sm font-medium text-gray-700 mb-1">Token Distribution</h3>
-                          <p class="text-xs text-gray-500">Breakdown of token usage across your annotated documents.</p>
+                          <h3 class="text-sm font-medium text-gray-700 mb-1">
+                            Token Distribution
+                          </h3>
+                          <p class="text-xs text-gray-500">
+                            Breakdown of token usage across your annotated
+                            documents.
+                          </p>
                         </div>
-                        <div class="relative w-full" style="min-height: 200px;">
-                          <div id="tokenChart" class="w-full h-full"><div id="apexchartsk1qfiow7" class="apexcharts-canvas apexchartsk1qfiow7 apexcharts-theme-light" style="width: 283px; height: 200px;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" class="apexcharts-svg" xmlns:data="ApexChartsNS" transform="translate(0, 0)" width="283" height="200"><foreignObject x="0" y="0" width="283" height="200"><style type="text/css">.apexcharts-flip-y {
-              transform: scaleY(-1) translateY(-100%);
-              transform-origin: top;
-              transform-box: fill-box;
-              }
-              .apexcharts-flip-x {
-              transform: scaleX(-1);
-              transform-origin: center;
-              transform-box: fill-box;
-              }
-              .apexcharts-legend {
-              display: flex;
-              overflow: auto;
-              padding: 0 10px;
-              }
-              .apexcharts-legend.apexcharts-legend-group-horizontal {
-              flex-direction: column;
-              }
-              .apexcharts-legend-group {
-              display: flex;
-              }
-              .apexcharts-legend-group-vertical {
-              flex-direction: column-reverse;
-              }
-              .apexcharts-legend.apx-legend-position-bottom, .apexcharts-legend.apx-legend-position-top {
-              flex-wrap: wrap
-              }
-              .apexcharts-legend.apx-legend-position-right, .apexcharts-legend.apx-legend-position-left {
-              flex-direction: column;
-              bottom: 0;
-              }
-              .apexcharts-legend.apx-legend-position-bottom.apexcharts-align-left, .apexcharts-legend.apx-legend-position-top.apexcharts-align-left, .apexcharts-legend.apx-legend-position-right, .apexcharts-legend.apx-legend-position-left {
-              justify-content: flex-start;
-              align-items: flex-start;
-              }
-              .apexcharts-legend.apx-legend-position-bottom.apexcharts-align-center, .apexcharts-legend.apx-legend-position-top.apexcharts-align-center {
-              justify-content: center;
-              align-items: center;
-              }
-              .apexcharts-legend.apx-legend-position-bottom.apexcharts-align-right, .apexcharts-legend.apx-legend-position-top.apexcharts-align-right {
-              justify-content: flex-end;
-              align-items: flex-end;
-              }
-              .apexcharts-legend-series {
-              cursor: pointer;
-              line-height: normal;
-              display: flex;
-              align-items: center;
-              }
-              .apexcharts-legend-text {
-              position: relative;
-              font-size: 14px;
-              }
-              .apexcharts-legend-text *, .apexcharts-legend-marker * {
-              pointer-events: none;
-              }
-              .apexcharts-legend-marker {
-              position: relative;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              cursor: pointer;
-              margin-right: 1px;
-              }
-
-              .apexcharts-legend-series.apexcharts-no-click {
-              cursor: auto;
-              }
-              .apexcharts-legend .apexcharts-hidden-zero-series, .apexcharts-legend .apexcharts-hidden-null-series {
-              display: none !important;
-              }
-              .apexcharts-inactive-legend {
-              opacity: 0.45;
-              } </style></foreignObject><g class="apexcharts-inner apexcharts-graphical" transform="translate(0, 0)"><defs><clipPath id="gridRectMaskk1qfiow7"><rect width="289" height="172" x="-3" y="-3" rx="0" ry="0" opacity="1" stroke-width="0" stroke="none" stroke-dasharray="0" fill="#fff"></rect></clipPath><clipPath id="gridRectBarMaskk1qfiow7"><rect width="289" height="172" x="-3" y="-3" rx="0" ry="0" opacity="1" stroke-width="0" stroke="none" stroke-dasharray="0" fill="#fff"></rect></clipPath><clipPath id="gridRectMarkerMaskk1qfiow7"><rect width="289" height="166" x="-3" y="0" rx="0" ry="0" opacity="1" stroke-width="0" stroke="none" stroke-dasharray="0" fill="#fff"></rect></clipPath><clipPath id="forecastMaskk1qfiow7"></clipPath><clipPath id="nonForecastMaskk1qfiow7"></clipPath></defs><g class="apexcharts-pie"><g transform="translate(0, 0) scale(1)"><circle r="56.23170731707318" cx="141.5" cy="83" fill="transparent"></circle><g class="apexcharts-slices"><g class="apexcharts-series apexcharts-pie-series" seriesName="PromptxTokens" rel="1" data:realIndex="0"><path d="M 141.5 8.024390243902431 A 74.97560975609757 74.97560975609757 0 1 1 67.93914313417544 68.50371097610477 L 86.32935735063157 72.12778323207858 A 56.23170731707318 56.23170731707318 0 1 0 141.5 26.76829268292682 L 141.5 8.024390243902431 z " fill="rgba(0,48,135,1)" fill-opacity="1" stroke="#ffffff" stroke-opacity="1" stroke-linecap="butt" stroke-width="2" stroke-dasharray="0" class="apexcharts-pie-area apexcharts-donut-slice-0" index="0" j="0" data:angle="281.1481603570251" data:startAngle="0" data:strokeWidth="2" data:value="277191" data:pathOrig="M 141.5 8.024390243902431 A 74.97560975609757 74.97560975609757 0 1 1 67.93914313417544 68.50371097610477 L 86.32935735063157 72.12778323207858 A 56.23170731707318 56.23170731707318 0 1 0 141.5 26.76829268292682 L 141.5 8.024390243902431 z "></path></g><g class="apexcharts-series apexcharts-pie-series" seriesName="CompletionxTokens" rel="2" data:realIndex="1"><path d="M 67.93914313417544 68.50371097610477 A 74.97560975609757 74.97560975609757 0 0 1 141.4869142875771 8.024391385846258 L 141.4901857156828 26.768293539384693 A 56.23170731707318 56.23170731707318 0 0 0 86.32935735063157 72.12778323207858 L 67.93914313417544 68.50371097610477 z " fill="rgba(255,105,0,1)" fill-opacity="1" stroke="#ffffff" stroke-opacity="1" stroke-linecap="butt" stroke-width="2" stroke-dasharray="0" class="apexcharts-pie-area apexcharts-donut-slice-1" index="0" j="1" data:angle="78.85183964297488" data:startAngle="281.1481603570251" data:strokeWidth="2" data:value="77742" data:pathOrig="M 67.93914313417544 68.50371097610477 A 74.97560975609757 74.97560975609757 0 0 1 141.4869142875771 8.024391385846258 L 141.4901857156828 26.768293539384693 A 56.23170731707318 56.23170731707318 0 0 0 86.32935735063157 72.12778323207858 L 67.93914313417544 68.50371097610477 z "></path></g></g></g><g class="apexcharts-datalabels-group" transform="translate(0, 0) scale(1)"><text x="141.5" y="73" text-anchor="middle" dominant-baseline="auto" font-size="14px" font-family="Rubik, sans-serif" font-weight="400" fill="#111827" class="apexcharts-text apexcharts-datalabel-label" style="font-family: Rubik, sans-serif;">Tokens</text><text x="141.5" y="99" text-anchor="middle" dominant-baseline="auto" font-size="16px" font-family="Rubik, sans-serif" font-weight="400" fill="#111827" class="apexcharts-text apexcharts-datalabel-value" style="font-family: Rubik, sans-serif;">354,933</text></g></g><line x1="0" y1="0" x2="283" y2="0" stroke="#b6b6b6" stroke-dasharray="0" stroke-width="1" stroke-linecap="butt" class="apexcharts-ycrosshairs"></line><line x1="0" y1="0" x2="283" y2="0" stroke="#b6b6b6" stroke-dasharray="0" stroke-width="0" stroke-linecap="butt" class="apexcharts-ycrosshairs-hidden"></line></g><g class="apexcharts-datalabels-group" transform="translate(0, 0) scale(1)"></g></svg><div class="apexcharts-legend apexcharts-align-center apx-legend-position-bottom" style="right: 0px; position: absolute; left: 0px; top: 175px; max-height: 100px;"><div class="apexcharts-legend-series" style="margin: 4px 8px;" rel="1" seriesname="PromptxTokens" data:collapsed="false"><span class="apexcharts-legend-marker" style="height: 16px; width: 16px; left: 0px; top: 0px;" rel="1" data:collapsed="false"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%"><path d="M 0, 0 
-                      m -7, 0 
-                      a 7,7 0 1,0 14,0 
-                      a 7,7 0 1,0 -14,0" fill="#003087" fill-opacity="1" stroke="#ffffff" stroke-opacity="0.9" stroke-linecap="butt" stroke-width="1" stroke-dasharray="0" cx="0" cy="0" shape="circle" class="apexcharts-legend-marker apexcharts-marker apexcharts-marker-circle" style="transform: translate(50%, 50%);"></path></svg></span><span class="apexcharts-legend-text" style="color: rgb(55, 61, 63); font-size: 12px; font-weight: 400; font-family: Rubik, sans-serif;" rel="1" i="0" data:default-text="Prompt%20Tokens" data:collapsed="false">Prompt Tokens</span></div><div class="apexcharts-legend-series" style="margin: 4px 8px;" rel="2" seriesname="CompletionxTokens" data:collapsed="false"><span class="apexcharts-legend-marker" style="height: 16px; width: 16px; left: 0px; top: 0px;" rel="2" data:collapsed="false"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%"><path d="M 0, 0 
-                      m -7, 0 
-                      a 7,7 0 1,0 14,0 
-                      a 7,7 0 1,0 -14,0" fill="#ff6900" fill-opacity="1" stroke="#ffffff" stroke-opacity="0.9" stroke-linecap="butt" stroke-width="1" stroke-dasharray="0" cx="0" cy="0" shape="circle" class="apexcharts-legend-marker apexcharts-marker apexcharts-marker-circle" style="transform: translate(50%, 50%);"></path></svg></span><span class="apexcharts-legend-text" style="color: rgb(55, 61, 63); font-size: 12px; font-weight: 400; font-family: Rubik, sans-serif;" rel="2" i="1" data:default-text="Completion%20Tokens" data:collapsed="false">Completion Tokens</span></div></div><div class="apexcharts-tooltip apexcharts-theme-dark"><div class="apexcharts-tooltip-series-group apexcharts-tooltip-series-group-0" style="order: 1;"><span class="apexcharts-tooltip-marker" style="background-color: rgb(0, 48, 135);" shape="circle"></span><div class="apexcharts-tooltip-text" style="font-family: Rubik, sans-serif; font-size: 12px;"><div class="apexcharts-tooltip-y-group"><span class="apexcharts-tooltip-text-y-label"></span><span class="apexcharts-tooltip-text-y-value"></span></div><div class="apexcharts-tooltip-goals-group"><span class="apexcharts-tooltip-text-goals-label"></span><span class="apexcharts-tooltip-text-goals-value"></span></div><div class="apexcharts-tooltip-z-group"><span class="apexcharts-tooltip-text-z-label"></span><span class="apexcharts-tooltip-text-z-value"></span></div></div></div><div class="apexcharts-tooltip-series-group apexcharts-tooltip-series-group-1" style="order: 2;"><span class="apexcharts-tooltip-marker" style="background-color: rgb(255, 105, 0);" shape="circle"></span><div class="apexcharts-tooltip-text" style="font-family: Rubik, sans-serif; font-size: 12px;"><div class="apexcharts-tooltip-y-group"><span class="apexcharts-tooltip-text-y-label"></span><span class="apexcharts-tooltip-text-y-value"></span></div><div class="apexcharts-tooltip-goals-group"><span class="apexcharts-tooltip-text-goals-label"></span><span class="apexcharts-tooltip-text-goals-value"></span></div><div class="apexcharts-tooltip-z-group"><span class="apexcharts-tooltip-text-z-label"></span><span class="apexcharts-tooltip-text-z-value"></span></div></div></div></div></div></div>
+                        <div class="relative w-full" style="min-height: 200px">
+                          <div id="tokenChart" class="w-full h-full">
+                            <!-- apex chart pie dounougnt svg comes here -->
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -738,7 +952,7 @@
           <!-- Collapsed View -->
           <div class="collapsed-content">
             <div class="column-header flex justify-center items-center">
-              <button 
+              <button
                 @click="isRightCollapsed = false"
                 class="text-white hover:text-eu-orange active:text-eu-orange transition-colors duration-200"
                 title="Expand panel"
@@ -756,19 +970,22 @@
       NotebookLM can be inaccurate; please double-check its responses.
     </p>
 
-  <!-- Taxonomy Assignment Popup -->
-  <div id="taxonomy-popup" class="fixed z-50 hidden bg-white rounded-lg shadow-xl border border-gray-200 w-64 transform transition-all duration-200 ease-in-out">
-    <div class="p-4">
-      <div class="flex justify-between items-center mb-3">
-        <h3 class="text-sm font-semibold text-eu-blue">Assign to Category</h3>
-        <button id="close-popup" class="text-gray-400 hover:text-gray-600">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <div class="space-y-2 max-h-60 overflow-y-auto pr-2">
-        <!-- Taxonomy items will be dynamically inserted here -->
+    <!-- Taxonomy Assignment Popup -->
+    <div
+      id="taxonomy-popup"
+      class="fixed z-50 hidden bg-white rounded-lg shadow-xl border border-gray-200 w-64 transform transition-all duration-200 ease-in-out"
+    >
+      <div class="p-4">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-sm font-semibold text-eu-blue">Assign to Category</h3>
+          <button id="close-popup" class="text-gray-400 hover:text-gray-600">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="space-y-2 max-h-60 overflow-y-auto pr-2">
+          <!-- Taxonomy items will be dynamically inserted here -->
+        </div>
       </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>

@@ -2130,6 +2130,8 @@
     init: init,
     exportHighlights: exportHighlights,
     handleSaveWithExport: handleSaveWithExport,
+    loadDocumentContent: loadDocumentContent,
+    getLineContent: getLineContent,
   };
 
   // Initialize when DOM is loaded
