@@ -584,8 +584,7 @@
         
         <div class="mt-3 pt-3 border-t border-gray-100">
           <button 
-            class="w-full flex items-center justify-center px-3 py-2 bg-eu-blue text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
-            onclick="window.DoccanoApp.openCuratorStudio()"
+            class="curator-studio-btn w-full flex items-center justify-center px-3 py-2 bg-eu-blue text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
           >
             <i class="fas fa-user-edit mr-2"></i>
             Curator Studio
@@ -1842,16 +1841,15 @@
 
   // Curator Studio functionality
   function openCuratorStudio() {
-    console.log('Curator button clicked');
+    console.log('Curator Studio button clicked');
     // Add your curator functionality here
-    alert('Curator functionality will be implemented here');
+    alert('Curator Studio functionality will be implemented here');
   }
-
+  
   // Make functions available globally
   window.DoccanoApp = window.DoccanoApp || {};
   window.DoccanoApp.loadDocumentContent = loadDocumentContent;
   window.DoccanoApp.getLineContent = getLineContent;
-  window.DoccanoApp.openCuratorStudio = openCuratorStudio;
 
   // Helper function to get confidence from annotation data
   function getConfidenceFromAnnotation(annotation) {
@@ -1936,7 +1934,14 @@
     // Initialize other components
     initCollapsibleSections();
     initTextSelection();
-    initTaxonomyPopup();
+    
+    // Add event delegation for Curator Studio button
+    document.addEventListener('click', function(event) {
+      if (event.target.closest('.curator-studio-btn')) {
+        event.preventDefault();
+        window.DoccanoApp.openCuratorStudio();
+      }
+    });
     setupEventListeners();
     renderTaxonomies();
 
@@ -3018,14 +3023,24 @@
     }
   }
 
-  // Assign to window
-  window.DoccanoApp = {
-    init: init,
-    exportHighlights: exportHighlights,
-    handleSaveWithExport: handleSaveWithExport,
-    loadDocumentContent: loadDocumentContent,
-    getLineContent: getLineContent,
+  // Assign to window - ensure we don't overwrite existing methods
+  window.DoccanoApp = window.DoccanoApp || {};
+  
+  // Add only the methods that aren't already defined
+  const methods = {
+    init,
+    exportHighlights,
+    loadDocumentContent,
+    getLineContent,
+    openCuratorStudio
   };
+  
+  // Only add methods that aren't already defined on DoccanoApp
+  for (const [key, value] of Object.entries(methods)) {
+    if (typeof value === 'function' && !window.DoccanoApp[key]) {
+      window.DoccanoApp[key] = value;
+    }
+  }
 
   // Initialize when DOM is loaded
   if (document.readyState === "loading") {
