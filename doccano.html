@@ -470,7 +470,6 @@
           :class="{ 'collapsed': isLeftCollapsed }"
         >
           <!-- Expanded View -->
-          <!-- <div class="expanded-content" style="display: flex; flex-direction: column; height: 100%; min-height: 0;"> -->
           <div class="expanded-content flex flex-col h-full min-h-0">
             <div class="column-header">
               <h2>Guide</h2>
@@ -487,7 +486,6 @@
               :class="{ 'mb-8': $store.app.isMobile }"
               id="document-guide"
             >
-              <!-- Document guide content -->
               <!-- Document Info -->
               <div
                 class="mb-6 bg-eu-blue/5 p-4 rounded-lg border border-eu-blue/10"
@@ -495,8 +493,8 @@
                 <h2
                   class="text-sm text-eu-blue/90 mb-2 font-medium document-title flex items-center"
                 >
-                  AI ADOPTION IN THE PUBLIC SECTOR concepts (full static for
-                  now)
+                  <i class="far fa-file-alt mr-2 text-eu-blue/70"></i>
+                  <span class="document-title">Loading document...</span>
                 </h2>
                 <div class="flex items-center text-xs text-gray-600">
                   <i class="far fa-clock mr-1.5 text-eu-orange/80"></i>
@@ -504,7 +502,7 @@
                     >Last updated:
                     <span
                       class="document-updated font-medium text-eu-orange ml-0.5"
-                      >Aug 25, 2025</span
+                      >loading...</span
                     ></span
                   >
                 </div>
@@ -601,11 +599,7 @@
             <div class="px-5 py-3 border-b border-gray-100">
               <h2 class="text-sm text-eu-blue/90 font-medium flex items-center">
                 <i class="far fa-file-alt mr-2 text-eu-blue/70"></i>
-                <!-- <span>Loading document...</span> -->
-                <span
-                  >AI ADOPTION IN THE PUBLIC SECTOR concepts (full static for
-                  now)</span
-                >
+                <span class="document-title">Loading document...</span>
               </h2>
             </div>
             <div
@@ -615,9 +609,7 @@
                 <i class="far fa-clock mr-1.5 text-eu-orange/80"></i>
                 <span
                   >Last updated:
-                  <span class="font-medium text-eu-orange ml-0.5"
-                    >Aug 25, 2025</span
-                  ></span
+                  <span class="document-updated font-medium text-eu-orange ml-0.5">Loading...</span></span
                 >
               </div>
               <div class="flex items-center space-x-4">
@@ -690,8 +682,8 @@
                 <h2
                   class="text-sm text-eu-blue/90 mb-2 font-medium document-title flex items-center"
                 >
-                  AI ADOPTION IN THE PUBLIC SECTOR concepts (full static for
-                  now)
+                  <i class="far fa-file-alt mr-2 text-eu-blue/70"></i>
+                  <span class="document-title">Loading document...</span>
                 </h2>
                 <div class="flex items-center text-xs text-gray-600">
                   <i class="far fa-clock mr-1.5 text-eu-orange/80"></i>
@@ -699,7 +691,7 @@
                     >Last updated:
                     <span
                       class="document-updated font-medium text-eu-orange ml-0.5"
-                      >Aug 25, 2025</span
+                      >Loading...</span
                     ></span
                   >
                 </div>

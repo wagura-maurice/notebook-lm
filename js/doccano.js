@@ -366,7 +366,59 @@
     loadDocumentData().catch(console.error)
   ]);
 
-  // Update Enrichment Summary with line data
+  // Generate a summary of the entire document
+  function generateDocumentSummary() {
+    if (!documentData || documentData.length === 0) {
+      return {
+        title: 'Summary Analysis',
+        summary: 'No document data available for analysis.',
+        totalSections: 0,
+        totalWords: 0,
+        keywords: [],
+        sections: []
+      };
+    }
+
+    // Collect all keywords and sections
+    const allKeywords = new Set();
+    const sections = new Set();
+    let totalWords = 0;
+
+    documentData.forEach(item => {
+      // Count words in the text
+      if (item.text) {
+        totalWords += item.text.split(/\s+/).length;
+      }
+
+      // Collect keywords
+      if (item.enrichment?.keywords) {
+        item.enrichment.keywords.forEach(keyword => allKeywords.add(keyword));
+      }
+
+      // Collect sections
+      if (item.section) {
+        sections.add(item.section);
+      } else if (item.enrichment?.title) {
+        sections.add(item.enrichment.title);
+      }
+    });
+
+    // Get top 10 most common keywords if we have too many
+    const sortedKeywords = Array.from(allKeywords).sort((a, b) => 
+      b.length - a.length  // Sort by length as a simple proxy for importance
+    ).slice(0, 10);
+
+    return {
+      title: 'Summary Analysis',
+      summary: `This document contains ${documentData.length} lines of content across ${sections.size} sections, with approximately ${totalWords} words in total.`,
+      totalSections: sections.size,
+      totalWords,
+      keywords: sortedKeywords,
+      sections: Array.from(sections).slice(0, 10) // Show first 10 sections
+    };
+  }
+
+  // Update Enrichment Summary with line data or document summary
   function updateEnrichmentSummary(lineData) {
     const summaryContainer = document.getElementById('enrichment-summary-content');
     if (!summaryContainer) return;
@@ -375,7 +427,54 @@
     summaryContainer.innerHTML = '';
 
     if (!lineData) {
-      summaryContainer.innerHTML = '<p class="text-gray-500 text-sm p-4">Click on a line in the document to see its details</p>';
+      // Show document summary when no specific line is selected
+      const docSummary = generateDocumentSummary();
+      
+      const section = document.createElement('div');
+      section.className = 'document-section border border-gray-200 rounded-lg overflow-hidden transition-shadow hover:shadow-sm';
+      
+      section.innerHTML = `
+        <div class="w-full text-left px-5 py-3.5 bg-gray-50 font-medium">
+          <h3 class="text-base font-medium text-eu-blue">${docSummary.title}</h3>
+        </div>
+        <div class="px-5 py-4">
+          <div class="relative pl-3.5 border-l-2 border-eu-orange my-1">
+            <p class="text-sm text-gray-700 font-normal leading-relaxed">${docSummary.summary}</p>
+            <div class="absolute -left-px top-0 w-0.5 h-full bg-gradient-to-b from-eu-orange/30 to-transparent"></div>
+          </div>
+          
+          ${docSummary.keywords.length > 0 ? `
+            <div class="mt-3 pt-3 border-t border-gray-100">
+              <p class="text-xs text-gray-500 mb-2">Key Topics</p>
+              <div class="flex flex-wrap gap-2">
+                ${docSummary.keywords.map(keyword => 
+                  `<span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">
+                    ${keyword}
+                  </span>`
+                ).join('')}
+              </div>
+            </div>
+          ` : ''}
+          
+          ${docSummary.sections.length > 0 ? `
+            <div class="mt-3 pt-3 border-t border-gray-100">
+              <p class="text-xs text-gray-500 mb-2">Document Sections (${docSummary.totalSections} total)</p>
+              <ul class="text-sm text-gray-700 space-y-1">
+                ${docSummary.sections.map(section => 
+                  `<li class="flex items-start">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-eu-orange/50 mt-1.5 mr-2 flex-shrink-0"></span>
+                    <span>${section}</span>
+                  </li>`
+                ).join('')}
+                ${docSummary.totalSections > docSummary.sections.length ? 
+                  `<li class="text-xs text-gray-400 italic">+ ${docSummary.totalSections - docSummary.sections.length} more sections</li>` : ''}
+              </ul>
+            </div>
+          ` : ''}
+        </div>
+      `;
+      
+      summaryContainer.appendChild(section);
       return;
     }
 
@@ -1225,6 +1324,65 @@
   }
 
   // Load document data from NDJSON file
+  // Function to update document metadata in the UI
+  function updateDocumentMetadata() {
+    if (!documentData || documentData.length === 0) return;
+    
+    // Get the first and last documents
+    const firstDoc = documentData[0];
+    const lastDoc = documentData[documentData.length - 1];
+    
+    // Extract document title from the first line's header or doc field
+    let docTitle = firstDoc.header || firstDoc.doc || 'Document';
+    
+    // Clean up the title - remove markdown formatting and extra spaces
+    docTitle = docTitle
+      .replace(/\*\*|##?|\[|\]/g, '') // Remove markdown formatting
+      .replace(/\s+/g, ' ')              // Replace multiple spaces with one
+      .trim();                           // Trim whitespace
+    
+    // Use the last line's _ts field for the last updated date
+    let lastUpdated = new Date();
+    if (lastDoc._ts) {
+      try {
+        lastUpdated = new Date(lastDoc._ts);
+      } catch (e) {
+        console.warn("Invalid date in _ts field:", lastDoc._ts);
+      }
+    }
+    
+    // Format the date as "Month Day, Year" (e.g., "Aug 25, 2025")
+    const formattedDate = lastUpdated.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+    
+    // Update all elements with the document-title class
+    const titleElements = document.querySelectorAll('.document-title');
+    titleElements.forEach(el => {
+      // Skip updating if the element is inside a template or shadow DOM
+      if (!el.closest('template') && !el.getRootNode().host) {
+        el.textContent = docTitle;
+        // Preserve any icons or other elements by only updating the text node
+        const textNode = Array.from(el.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
+        if (textNode) {
+          textNode.textContent = docTitle;
+        } else if (el.childNodes.length === 0) {
+          el.textContent = docTitle;
+        }
+      }
+    });
+    
+    // Update all elements with the document-updated class
+    const dateElements = document.querySelectorAll('.document-updated');
+    dateElements.forEach(el => {
+      if (!el.closest('template') && !el.getRootNode().host) {
+        el.textContent = formattedDate;
+      }
+    });
+  }
+
   async function loadDocumentData() {
     try {
       console.log("Loading document data from NDJSON...");
@@ -1243,6 +1401,15 @@
       
       console.log("Document data loaded successfully");
       documentDataLoaded = true;
+      
+      // Update document metadata (title and last updated date)
+      updateDocumentMetadata();
+      
+      // Update the document summary after loading
+      if (typeof updateEnrichmentSummary === 'function') {
+        updateEnrichmentSummary(null); // Pass null to show document summary
+      }
+      
       return documentData;
     } catch (error) {
       console.error("Error loading document data:", error);
