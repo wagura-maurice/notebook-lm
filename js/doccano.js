@@ -1405,6 +1405,46 @@
       return { charCount, wordCount };
     };
 
+    // Calculate average confidence from the document data
+    const calculateAverageConfidence = () => {
+      try {
+        // Check if documentData is available and has items
+        if (!window.documentData || !Array.isArray(window.documentData) || window.documentData.length === 0) {
+          console.log('No document data available');
+          return null;
+        }
+        
+        let totalConfidence = 0;
+        let count = 0;
+        window.documentData.forEach(doc => {
+          const confidence = parseFloat(doc?.enrichment?.confidence);
+          if (!isNaN(confidence)) {
+            totalConfidence += confidence;
+            count += 1;
+          }
+        });
+        if (count > 0) {
+          const averageConfidence = Math.round(totalConfidence / count * 100 * 100) / 100;
+          console.log('Calculated average confidence:', averageConfidence);
+          return averageConfidence;
+        }
+        
+        // Get confidence from enrichment.confidence
+        const confidence = parseFloat(firstDoc.enrichment.confidence);
+        if (isNaN(confidence)) {
+          console.log('Invalid confidence value in document:', firstDoc.enrichment.confidence);
+          return null;
+        }
+        
+        console.log('Using confidence from document data:', confidence);
+        return Math.round(confidence * 100 * 100) / 100;
+        
+      } catch (error) {
+        console.error('Error calculating confidence:', error);
+        return null; // Return null on error
+      }
+    };
+
     // Update document statistics display
     const updateDocumentStats = () => {
       const { charCount, wordCount } = getDocumentStats();
@@ -1416,6 +1456,32 @@
           el.textContent = `${charCount.toLocaleString()} characters • ${wordCount.toLocaleString()} words`;
         }
       });
+      
+      // Update confidence score
+      const confidence = calculateAverageConfidence();
+      const confidenceValue = document.getElementById('confidenceValue');
+      const confidenceProgress = document.getElementById('confidenceProgress');
+      
+      if (confidenceValue) {
+        confidenceValue.textContent = `${confidence}%`;
+      }
+      
+      if (confidenceProgress) {
+        // Update progress bar width and color based on confidence
+        confidenceProgress.style.width = `${confidence}%`;
+        
+        // Change color based on confidence level
+        if (confidence < 0.7) {
+          confidenceProgress.classList.remove('bg-eu-orange', 'bg-emerald-500');
+          confidenceProgress.classList.add('bg-red-500');
+        } else if (confidence < 0.9) {
+          confidenceProgress.classList.remove('bg-emerald-500', 'bg-red-500');
+          confidenceProgress.classList.add('bg-eu-orange');
+        } else {
+          confidenceProgress.classList.remove('bg-eu-orange', 'bg-red-500');
+          confidenceProgress.classList.add('bg-emerald-500');
+        }
+      }
 
       // Update model elements
       const modelElements = document.querySelectorAll('.document-model');
@@ -1489,7 +1555,9 @@
         .filter(line => line.trim() !== '')
         .map(line => JSON.parse(line));
       
-      console.log("Document data loaded successfully");
+      // Store documentData in window for global access
+      window.documentData = documentData;
+      console.log("Document data loaded successfully", documentData);
       documentDataLoaded = true;
       
       // Update document metadata (title and last updated date)
@@ -1626,6 +1694,27 @@
   window.DoccanoApp = window.DoccanoApp || {};
   window.DoccanoApp.loadDocumentContent = loadDocumentContent;
   window.DoccanoApp.getLineContent = getLineContent;
+
+  // Helper function to get confidence from annotation data
+  function getConfidenceFromAnnotation(annotation) {
+    try {
+      // Check if annotation has confidence data
+      if (annotation.confidence !== undefined) {
+        return parseFloat(annotation.confidence);
+      }
+      
+      // Check if annotation has metadata with confidence
+      if (annotation.meta && annotation.meta.confidence) {
+        return parseFloat(annotation.meta.confidence);
+      }
+      
+      // Default confidence if not specified
+      return 0.92;
+    } catch (error) {
+      console.error('Error getting confidence from annotation:', error);
+      return 0.92; // Default confidence on error
+    }
+  }
 
   // Initialize the application
   function init() {
