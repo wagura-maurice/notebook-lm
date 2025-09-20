@@ -1092,22 +1092,6 @@ header .hover\:text-eu-orange:hover {
   transition: max-height 0.3s ease-in-out;
 }
 
-.enrichment-summary.collapsed .enrichment-summary-content {
-  max-height: 0;
-  overflow: hidden;
-}
-
-.enrichment-summary-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.25rem;
-  transition: transform 0.2s ease-in-out;
-}
-
-.enrichment-summary.collapsed .enrichment-summary-toggle {
-  transform: rotate(-90deg);
-}
 
 .enrichment-summary-card {
   background: white;

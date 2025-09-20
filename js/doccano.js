@@ -1264,28 +1264,6 @@
   window.DoccanoApp.loadDocumentContent = loadDocumentContent;
   window.DoccanoApp.getLineContent = getLineContent;
 
-  // Toggle enrichment summary section
-  function initEnrichmentSummary() {
-    const toggleBtn = document.getElementById('enrichment-summary-toggle');
-    const summarySection = document.querySelector('.enrichment-summary');
-    
-    if (toggleBtn && summarySection) {
-      // Check if the section should be collapsed by default (from localStorage)
-      const isCollapsed = localStorage.getItem('enrichmentSummaryCollapsed') === 'true';
-      
-      if (isCollapsed) {
-        summarySection.classList.add('collapsed');
-      }
-      
-      toggleBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        summarySection.classList.toggle('collapsed');
-        // Save the state to localStorage
-        localStorage.setItem('enrichmentSummaryCollapsed', summarySection.classList.contains('collapsed'));
-      });
-    }
-  }
-
   // Initialize the application
   function init() {
     // Add click handler for document lines
@@ -1349,7 +1327,6 @@
     initCollapsibleSections();
     initTextSelection();
     initTaxonomyPopup();
-    initEnrichmentSummary();
     setupEventListeners();
     renderTaxonomies();
 
