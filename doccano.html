@@ -39,9 +39,103 @@
     <script type="application/javascript">
       document.addEventListener("alpine:init", () => {
         // Store for shared state
+        Alpine.store('scroll', {
+          // Track scroll state for each column
+          scrollStates: {},
+          
+          // Function to handle scroll position changes
+          handleScrollPosition(columnName, isAtBottom) {
+            const isMobile = Alpine.store('app').isMobile;
+            const screenType = isMobile ? 'mobile' : 'desktop';
+            
+            // Initialize state for this column if it doesn't exist
+            if (this.scrollStates[columnName] === undefined) {
+              this.scrollStates[columnName] = { wasAtBottom: false };
+            }
+            
+            const columnState = this.scrollStates[columnName];
+            
+            // Check if we've crossed the threshold
+            if (isAtBottom && !columnState.wasAtBottom) {
+              // Just reached the bottom
+              console.log(`[${new Date().toISOString()}] Reached bottom of ${columnName} column on ${screenType} view`);
+              
+              if (isMobile) {
+                console.log('Mobile view: Bottom reached - consider showing a "Load More" button');
+              } else {
+                console.log('Desktop view: Bottom reached - could auto-load more content');
+              }
+              
+            } else if (!isAtBottom && columnState.wasAtBottom) {
+              // Just scrolled away from bottom
+              console.log(`[${new Date().toISOString()}] Scrolled away from bottom of ${columnName} column on ${screenType} view`);
+              
+              if (isMobile) {
+                console.log('Mobile view: Scrolled up from bottom - might want to hide any bottom action buttons');
+              } else {
+                console.log('Desktop view: Scrolled up from bottom - could pause any auto-loading');
+              }
+            }
+            
+            // Update the state
+            columnState.wasAtBottom = isAtBottom;
+          }
+        });
+
+        // Custom directive to detect scroll position
+        Alpine.directive('at-bottom', (el, { expression }, { evaluateLater }) => {
+          const handleScroll = () => {
+            const isAtBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 5; // 5px threshold
+            
+            // Always call the handler with current scroll state
+            if (expression) {
+              const columnName = expression.replace(/["']/g, ''); // Clean up the column name
+              Alpine.store('scroll').handleScrollPosition(columnName, isAtBottom);
+              
+              // Also execute any additional expression
+              Alpine.evaluate(el, expression);
+            }
+          };
+          
+          // Initial check
+          handleScroll();
+          
+          // Check on scroll with debounce
+          let ticking = false;
+          el.addEventListener('scroll', () => {
+            if (!ticking) {
+              window.requestAnimationFrame(() => {
+                handleScroll();
+                ticking = false;
+              });
+              ticking = true;
+            }
+          });
+          
+          // Cleanup
+          return () => {
+            el.removeEventListener('scroll', handleScroll);
+          };
+        });
+        
+        // Store for shared state
         Alpine.store("app", {
           activeTab: Alpine.$persist("middle-column"),
           isMobile: window.innerWidth < 1024,
+          checkScreenSize() {
+            const isMobile = window.innerWidth < 1024;
+            console.log('Screen size changed:', isMobile ? 'Mobile' : 'Desktop');
+            this.isMobile = isMobile;
+            return isMobile;
+          }
+        });
+
+        // Initial check
+        Alpine.store('app').checkScreenSize();
+
+        // Add resize listener
+        window.addEventListener('resize', () => {
+          Alpine.store('app').checkScreenSize();
         });
 
         // Global app functions
@@ -406,7 +500,82 @@
       <!-- <div id="main-content" class="flex-1 flex flex-col overflow-hidden relative z-0"> -->
       <!-- Mobile Tabs -->
       <div
-        class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 shadow-sm"
+        x-data="{
+          isVisible: true,
+          lastScrollY: 0,
+          ticking: false,
+          
+          init() {
+            // Initial check
+            this.handleScroll();
+            
+            // Add scroll listener with throttling
+            window.addEventListener('scroll', this.handleScroll.bind(this));
+            
+            // Handle screen resize
+            window.addEventListener('resize', this.handleResize.bind(this));
+            
+            // Initial check
+            this.handleResize();
+          },
+          
+          handleScroll() {
+            if (this.ticking) return;
+            
+            this.ticking = true;
+            
+            requestAnimationFrame(() => {
+              this.checkScroll();
+              this.ticking = false;
+            });
+          },
+          
+          handleResize() {
+            // Always show on desktop
+            if (window.innerWidth >= 1024) {
+              this.isVisible = true;
+            }
+          },
+          
+          checkScroll() {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            const isMobile = window.innerWidth < 1024;
+            
+            // Only apply this behavior on mobile
+            if (!isMobile) {
+              this.isVisible = true;
+              return;
+            }
+            
+            // At top of page
+            if (currentScroll <= 0) {
+              this.isVisible = true;
+              this.lastScrollY = 0;
+              return;
+            }
+            
+            // Scrolling down
+            if (currentScroll > this.lastScrollY && currentScroll > 0) {
+              this.isVisible = false;
+            } 
+            // Scrolling up
+            else if (currentScroll < this.lastScrollY) {
+              this.isVisible = true;
+            }
+            
+            this.lastScrollY = currentScroll;
+          }
+        }"
+        x-cloak
+        x-transition:enter="transition-transform duration-300 ease-out"
+        x-transition:enter-start="translate-y-full"
+        x-transition:enter-end="translate-y-0"
+        x-transition:leave="transition-transform duration-300 ease-in"
+        x-transition:leave-start="translate-y-0"
+        x-transition:leave-end="translate-y-full"
+        x-show="isVisible"
+        class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 z-40 shadow-lg"
+        :class="{'translate-y-full': !isVisible, 'translate-y-0': isVisible}"
       >
         <div class="flex justify-around">
           <button
@@ -485,9 +654,8 @@
             </div>
             <div
               class="scrollable-content flex flex-col min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-eu-orange scrollbar-track-eu-gray-10 p-4"
-              :class="{ 'mb-8': $store.app.isMobile }"
               id="document-guide"
-            >
+              x-at-bottom="'Left'">
               <!-- Document Info -->
               <div
                 class="mb-6 bg-eu-blue/5 p-4 rounded-lg border border-eu-blue/10"
@@ -660,6 +828,7 @@
           <div
             class="scrollable-content flex flex-col h-full overflow-hidden"
             id="document-content"
+            x-at-bottom="'Middle'"
           >
             <!-- Document content will be inserted here -->
           </div>
@@ -687,9 +856,8 @@
             </div>
             <div 
               class="flex-1 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-eu-orange scrollbar-track-eu-gray-10"
-              :class="{ 'mb-8': $store.app.isMobile }"
               id="document-annotation"
-            >
+              x-at-bottom="'Right'">
               <!-- Annotation content -->
               <!-- Document Info -->
               <div
