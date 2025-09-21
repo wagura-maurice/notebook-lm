@@ -1850,8 +1850,171 @@
   // Curator Studio functionality
   function openCuratorStudio() {
     console.log('Curator Studio button clicked');
-    // Add your curator functionality here
-    alert('Curator Studio functionality will be implemented here');
+    
+    // Get the currently selected line content
+    const selectedLine = getCurrentSelectedLine();
+    
+    // Format the line content for display
+    const formatLineContent = (line) => {
+      if (!line) return 'No line selected';
+      if (typeof line === 'string') return line;
+      if (line.text) return line.text;
+      return JSON.stringify(line, null, 2);
+    };
+    
+    const lineContent = formatLineContent(selectedLine);
+    
+    // Create modal HTML
+    const modalHTML = `
+      <div id="curator-studio-modal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <!-- Background overlay with backdrop blur -->
+        <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm transition-all duration-300" aria-hidden="true"></div>
+        
+        <!-- Modal container -->
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-6">
+          <!-- Modal panel with smooth transition -->
+          <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all w-full max-w-6xl h-[90vh] flex flex-col border border-gray-200">
+            <!-- Header with gradient background -->
+            <div class="bg-gradient-to-r from-eu-blue to-blue-700 px-6 py-4 flex items-center justify-between rounded-t-xl">
+              <div class="flex items-center space-x-3">
+                <i class="fas fa-edit text-white/90"></i>
+                <h3 class="text-lg font-semibold text-white" id="modal-title">Curator Studio</h3>
+              </div>
+              <button type="button" id="close-curator-modal" class="text-white/80 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 rounded-full p-1">
+                <i class="fas fa-times text-xl"></i>
+              </button>
+            </div>
+            
+            <!-- Content area -->
+            <div class="flex-1 overflow-auto p-6 bg-gray-50">
+              <div class="space-y-6 max-w-5xl mx-auto w-full">
+                <!-- Selected Content Card -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                  <div class="flex items-center justify-between mb-4">
+                    <h4 class="font-medium text-gray-900 flex items-center">
+                      <i class="fas fa-align-left text-eu-blue mr-2"></i>
+                      Selected Content
+                    </h4>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      Line ${selectedLine?.lineNumber || 'N/A'}
+                    </span>
+                  </div>
+                  <div class="relative">
+                    <pre class="whitespace-pre-wrap bg-gray-50 p-4 rounded-lg border border-gray-200 text-sm font-mono overflow-x-auto max-h-60 overflow-y-auto">${lineContent}</pre>
+                    <div class="absolute bottom-2 right-2 flex space-x-2">
+                      <button class="text-gray-400 hover:text-gray-600 transition-colors p-1" onclick="navigator.clipboard.writeText('${lineContent.replace(/'/g, "\\'")}'); this.innerHTML='<i class=\'fas fa-check text-green-500\'></i>';">
+                        <i class="far fa-copy"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Line Details Card -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                  <h4 class="font-medium text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-info-circle text-eu-blue mr-2"></i>
+                    Line Details
+                  </h4>
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="space-y-1">
+                      <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Line Number</label>
+                      <div class="flex items-center p-2 bg-gray-50 rounded-lg border border-gray-200 text-sm">
+                        <i class="fas fa-hashtag text-gray-400 mr-2"></i>
+                        <span>${selectedLine?.lineNumber || 'N/A'}</span>
+                      </div>
+                    </div>
+                    <div class="space-y-1">
+                      <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Character Count</label>
+                      <div class="flex items-center p-2 bg-gray-50 rounded-lg border border-gray-200 text-sm">
+                        <i class="fas fa-text-width text-gray-400 mr-2"></i>
+                        <span>${lineContent?.length || '0'} characters</span>
+                      </div>
+                    </div>
+                    <div class="space-y-1">
+                      <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Word Count</label>
+                      <div class="flex items-center p-2 bg-gray-50 rounded-lg border border-gray-200 text-sm">
+                        <i class="fas fa-font text-gray-400 mr-2"></i>
+                        <span>${lineContent ? lineContent.trim().split(/\s+/).length : '0'} words</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            
+            <!-- Footer -->
+            <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-200">
+              <button type="button" class="inline-flex w-full justify-center rounded-md bg-eu-blue px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 sm:ml-3 sm:w-auto" id="submit-curator">
+                Submit
+              </button>
+              <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto" id="reset-curator">
+                Reset
+              </button>
+              <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto" id="cancel-curator">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Add modal to the body
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Add event listeners
+    document.getElementById('close-curator-modal').addEventListener('click', closeCuratorModal);
+    document.getElementById('cancel-curator').addEventListener('click', closeCuratorModal);
+    document.getElementById('reset-curator').addEventListener('click', resetCuratorForm);
+    document.getElementById('submit-curator').addEventListener('click', submitCuratorForm);
+    
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+    
+    // Close modal when clicking outside content
+    document.querySelector('#curator-studio-modal > div').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeCuratorModal();
+      }
+    });
+    
+    // Close on Escape key
+    document.addEventListener('keydown', handleEscapeKey);
+  }
+  
+  function getCurrentSelectedLine() {
+    // This is a placeholder - you'll need to implement the actual logic to get the selected line
+    // For now, it returns a sample object with the current timestamp as line content
+    return {
+      text: 'Sample line content from the .ndjson file. This should be replaced with the actual line content.',
+      lineNumber: 42,
+      timestamp: new Date().toISOString()
+    };
+  }
+  
+  function closeCuratorModal() {
+    const modal = document.getElementById('curator-studio-modal');
+    if (modal) {
+      modal.remove();
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleEscapeKey);
+    }
+  }
+  
+  function handleEscapeKey(e) {
+    if (e.key === 'Escape') {
+      closeCuratorModal();
+    }
+  }
+  
+  function resetCuratorForm() {
+    // Reset form logic here
+    console.log('Resetting curator form');
+  }
+  
+  function submitCuratorForm() {
+    // Submit form logic here
+    console.log('Submitting curator form');
+    // Close the modal after submission
+    closeCuratorModal();
   }
   
   // Make functions available globally
