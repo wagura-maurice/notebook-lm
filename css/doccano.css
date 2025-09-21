@@ -259,6 +259,9 @@ header .hover\:text-eu-orange:hover {
   #middle-column {
     order: 1;
     flex: 1;
+    height: auto;
+    max-height: none;
+    min-height: 50vh; /* Ensure it takes at least half the viewport height */
   }
 
   #left-column {
@@ -918,6 +921,9 @@ header .hover\:text-eu-orange:hover {
   #middle-column {
     order: 1;
     flex: 1;
+    height: auto;
+    max-height: none;
+    min-height: 50vh; /* Ensure it takes at least half the viewport height */
   }
 
   #left-column {
