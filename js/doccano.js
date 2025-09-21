@@ -1847,11 +1847,73 @@
     }
   }
 
+  // Format enrichment data for display
+  function formatEnrichmentData(enrichment) {
+    if (!enrichment) return null;
+    return {
+      title: enrichment.title || '',
+      summary: enrichment.summary || '',
+      keywords: Array.isArray(enrichment.keywords) ? enrichment.keywords.join(', ') : '',
+      entities: enrichment.entities || [],
+      taxonomy: enrichment.taxonomy || {},
+      confidence: enrichment.confidence || 0,
+      temporal: enrichment.temporal || {},
+      geography: enrichment.geography || {}
+    };
+  }
+
+  // Generate HTML for entities
+  function renderEntities(entities) {
+    if (!Array.isArray(entities) || entities.length === 0) {
+      return '<div class="text-sm text-gray-500 italic">No entities found</div>';
+    }
+    return `
+      <div class="space-y-2">
+        ${entities.map(entity => `
+          <div class="flex items-start p-2 bg-gray-50 rounded-lg border border-gray-200">
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <span class="font-medium text-sm">${entity.type}</span>
+                <span class="text-xs text-gray-500">${(entity.confidence * 100).toFixed(0)}%</span>
+              </div>
+              <div class="text-sm">${entity.text}</div>
+              ${entity.value ? `<div class="text-xs text-gray-500">${entity.value}</div>` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  // Generate HTML for taxonomy
+  function renderTaxonomy(taxonomy) {
+    if (!taxonomy) return '<div class="text-sm text-gray-500 italic">No taxonomy data</div>';
+    
+    return `
+      <div class="space-y-3">
+        ${Object.entries(taxonomy).map(([key, items]) => `
+          <div>
+            <h4 class="text-xs font-medium text-gray-700 uppercase tracking-wider mb-1">
+              ${key.replace(/_/g, ' ')}
+            </h4>
+            <div class="flex flex-wrap gap-2">
+              ${Array.isArray(items) ? items.map(item => `
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  ${item}
+                </span>
+              `).join('') : 'No items'}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
   // Curator Studio functionality
   function openCuratorStudio() {
     console.log('Curator Studio button clicked');
     
-    // Get the currently selected line content
+    // Get the actual selected line from the UI
     const selectedLine = getCurrentSelectedLine();
     
     // Format the line content for display
@@ -1862,7 +1924,25 @@
       return JSON.stringify(line, null, 2);
     };
     
-    const lineContent = formatLineContent(selectedLine);
+    // Get the actual line content
+    const lineContent = selectedLine ? 
+      formatLineContent(selectedLine.raw?.text || selectedLine.text) : 
+      'No content available';
+    
+    // Update the UI if we have a reference to the line element
+    if (selectedLine?.element) {
+      selectedLine.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      selectedLine.element.classList.add('highlighted');
+      
+      // Remove highlight after animation
+      setTimeout(() => {
+        if (selectedLine?.element) {
+          selectedLine.element.classList.remove('highlighted');
+        }
+      }, 2000);
+    }
+    
+    const enrichment = selectedLine?.enrichment ? formatEnrichmentData(selectedLine.enrichment) : null;
     
     // Create modal HTML
     const modalHTML = `
@@ -1909,35 +1989,105 @@
                   </div>
                 </div>
                 
-                <!-- Line Details Card -->
+                <!-- Enrichment Data Section -->
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
                   <h4 class="font-medium text-gray-900 mb-4 flex items-center">
-                    <i class="fas fa-info-circle text-eu-blue mr-2"></i>
-                    Line Details
+                    <i class="fas fa-magic text-eu-blue mr-2"></i>
+                    Enrichment Data
+                    ${enrichment ? `<span class="ml-2 text-xs font-normal text-gray-500">Confidence: ${(enrichment.confidence * 100).toFixed(0)}%</span>` : ''}
                   </h4>
-                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div class="space-y-1">
-                      <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Line Number</label>
-                      <div class="flex items-center p-2 bg-gray-50 rounded-lg border border-gray-200 text-sm">
-                        <i class="fas fa-hashtag text-gray-400 mr-2"></i>
-                        <span>${selectedLine?.lineNumber || 'N/A'}</span>
+                  
+                  ${enrichment ? `
+                    <div class="space-y-6">
+                      <!-- Title & Summary -->
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                          <label class="block text-xs font-medium text-gray-700 mb-1">Title</label>
+                          <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
+                            value="${enrichment.title}" data-field="title">
+                        </div>
+                        <div class="space-y-1">
+                          <label class="block text-xs font-medium text-gray-700 mb-1">Keywords</label>
+                          <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
+                            value="${enrichment.keywords}" data-field="keywords">
+                          <p class="text-xs text-gray-500 mt-1">Separate with commas</p>
+                        </div>
+                      </div>
+                      
+                      <!-- Summary -->
+                      <div class="space-y-1">
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Summary</label>
+                        <textarea rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
+                          data-field="summary">${enrichment.summary}</textarea>
+                      </div>
+                      
+                      <!-- Entities -->
+                      <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                          <label class="block text-xs font-medium text-gray-700">Entities</label>
+                          <button type="button" class="text-xs text-eu-blue hover:text-blue-700 flex items-center">
+                            <i class="fas fa-plus mr-1"></i> Add Entity
+                          </button>
+                        </div>
+                        <div class="entity-list" data-field="entities">
+                          ${renderEntities(enrichment.entities)}
+                        </div>
+                      </div>
+                      
+                      <!-- Taxonomy -->
+                      <div class="space-y-2">
+                        <label class="block text-xs font-medium text-gray-700">Taxonomy</label>
+                        <div class="taxonomy-container" data-field="taxonomy">
+                          ${renderTaxonomy(enrichment.taxonomy)}
+                        </div>
+                      </div>
+                      
+                      <!-- Temporal Information -->
+                      <div class="space-y-2">
+                        <label class="block text-xs font-medium text-gray-700">Temporal Information</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div class="space-y-1">
+                            <label class="block text-xs text-gray-500">Start Date</label>
+                            <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
+                              value="${enrichment.temporal?.start_date || ''}" data-field="temporal.start_date" placeholder="YYYY-MM-DD">
+                          </div>
+                          <div class="space-y-1">
+                            <label class="block text-xs text-gray-500">End Date</label>
+                            <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
+                              value="${enrichment.temporal?.end_date || ''}" data-field="temporal.end_date" placeholder="YYYY-MM-DD">
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <!-- Geography -->
+                      <div class="space-y-2">
+                        <label class="block text-xs font-medium text-gray-700">Geography</label>
+                        <div class="space-y-2">
+                          <div>
+                            <label class="block text-xs text-gray-500 mb-1">Countries</label>
+                            <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
+                              value="${Array.isArray(enrichment.geography?.countries) ? enrichment.geography.countries.join(', ') : ''}" 
+                              data-field="geography.countries" placeholder="e.g., US, FR, DE">
+                          </div>
+                          <div>
+                            <label class="block text-xs text-gray-500 mb-1">Regions</label>
+                            <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
+                              value="${Array.isArray(enrichment.geography?.regions) ? enrichment.geography.regions.join(', ') : ''}" 
+                              data-field="geography.regions" placeholder="e.g., Europe, Asia, North America">
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div class="space-y-1">
-                      <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Character Count</label>
-                      <div class="flex items-center p-2 bg-gray-50 rounded-lg border border-gray-200 text-sm">
-                        <i class="fas fa-text-width text-gray-400 mr-2"></i>
-                        <span>${lineContent?.length || '0'} characters</span>
-                      </div>
+                  ` : `
+                    <div class="text-center py-8">
+                      <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-2"></i>
+                      <p class="text-gray-600">No enrichment data available for this line.</p>
+                      <button type="button" class="mt-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-eu-blue hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <i class="fas fa-plus mr-2"></i> Add Enrichment Data
+                      </button>
                     </div>
-                    <div class="space-y-1">
-                      <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Word Count</label>
-                      <div class="flex items-center p-2 bg-gray-50 rounded-lg border border-gray-200 text-sm">
-                        <i class="fas fa-font text-gray-400 mr-2"></i>
-                        <span>${lineContent ? lineContent.trim().split(/\s+/).length : '0'} words</span>
-                      </div>
-                    </div>
-                  </div>
+                  `}
+                </div>
                 </div>
             
             <!-- Footer -->
@@ -1981,13 +2131,50 @@
   }
   
   function getCurrentSelectedLine() {
-    // This is a placeholder - you'll need to implement the actual logic to get the selected line
-    // For now, it returns a sample object with the current timestamp as line content
-    return {
-      text: 'Sample line content from the .ndjson file. This should be replaced with the actual line content.',
-      lineNumber: 42,
-      timestamp: new Date().toISOString()
-    };
+    try {
+      // Get the currently selected line element in the document viewer
+      const selectedLineElement = document.querySelector('.document-line.selected, .line.selected, [data-line-number]');
+      
+      if (!selectedLineElement) {
+        console.warn('No line is currently selected');
+        return null;
+      }
+      
+      // Get the line number from data attribute or DOM position
+      const lineNumber = selectedLineElement.dataset.lineNumber || 
+                        Array.from(selectedLineElement.parentNode.children).indexOf(selectedLineElement) + 1;
+      
+      // Get the actual text content
+      const text = selectedLineElement.textContent.trim();
+      
+      // Get any existing enrichment data from the element's data attributes
+      const enrichmentData = selectedLineElement.dataset.enrichment 
+        ? JSON.parse(selectedLineElement.dataset.enrichment) 
+        : null;
+      
+      // Get the full line data if it's stored in a data attribute
+      const lineData = selectedLineElement.dataset.lineData
+        ? JSON.parse(selectedLineElement.dataset.lineData)
+        : null;
+      
+      // Return the complete line data
+      return {
+        text: text,
+        lineNumber: lineNumber,
+        timestamp: new Date().toISOString(),
+        enrichment: enrichmentData,
+        raw: lineData || {},
+        element: selectedLineElement
+      };
+    } catch (error) {
+      console.error('Error getting selected line:', error);
+      return {
+        text: 'Error loading line content',
+        lineNumber: 0,
+        timestamp: new Date().toISOString(),
+        error: error.message
+      };
+    }
   }
   
   function closeCuratorModal() {
@@ -2010,11 +2197,77 @@
     console.log('Resetting curator form');
   }
   
+  function collectFormData() {
+    const formData = {
+      title: document.querySelector('[data-field="title"]')?.value || '',
+      summary: document.querySelector('[data-field="summary"]')?.value || '',
+      keywords: document.querySelector('[data-field="keywords"]')?.value
+        .split(',')
+        .map(k => k.trim())
+        .filter(k => k.length > 0),
+      temporal: {
+        start_date: document.querySelector('[data-field="temporal.start_date"]')?.value || null,
+        end_date: document.querySelector('[data-field="temporal.end_date"]')?.value || null
+      },
+      geography: {
+        countries: document.querySelector('[data-field="geography.countries"]')?.value
+          .split(',')
+          .map(c => c.trim())
+          .filter(c => c.length > 0) || [],
+        regions: document.querySelector('[data-field="geography.regions"]')?.value
+          .split(',')
+          .map(r => r.trim())
+          .filter(r => r.length > 0) || []
+      }
+    };
+    
+    // Get the selected line to update
+    const selectedLine = getCurrentSelectedLine();
+    if (selectedLine) {
+      // Update the enrichment data
+      if (!selectedLine.enrichment) selectedLine.enrichment = {};
+      Object.assign(selectedLine.enrichment, formData);
+      
+      // Update confidence timestamp
+      selectedLine.enrichment.confidence = 1.0; // Manual edit sets to 100% confidence
+      selectedLine.enrichment._last_updated = new Date().toISOString();
+      
+      console.log('Updated line data:', selectedLine);
+      
+      // Here you would typically save the updated data back to your data store
+      // saveLineData(selectedLine);
+      
+      return selectedLine;
+    }
+    
+    return null;
+  }
+
   function submitCuratorForm() {
-    // Submit form logic here
-    console.log('Submitting curator form');
-    // Close the modal after submission
-    closeCuratorModal();
+    try {
+      const updatedLine = collectFormData();
+      if (updatedLine) {
+        console.log('Form submitted with data:', updatedLine);
+        // Here you would typically make an API call to save the data
+        // await saveEnrichmentData(updatedLine);
+        
+        // Show success message
+        const submitBtn = document.getElementById('submit-curator');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Saved!';
+        submitBtn.disabled = true;
+        
+        // Reset button after 2 seconds
+        setTimeout(() => {
+          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = false;
+          closeCuratorModal();
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Failed to save changes. Please try again.');
+    }
   }
   
   // Make functions available globally
