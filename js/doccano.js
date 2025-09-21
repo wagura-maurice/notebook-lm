@@ -1912,271 +1912,306 @@
   // Curator Studio functionality
   function openCuratorStudio() {
     console.log('Curator Studio button clicked');
-    
-    // Get the actual selected line from the UI
-    const selectedLine = getCurrentSelectedLine();
-    
-    // Format the line content for display
-    const formatLineContent = (line) => {
-      if (!line) return 'No line selected';
-      if (typeof line === 'string') return line;
-      if (line.text) return line.text;
-      return JSON.stringify(line, null, 2);
-    };
-    
-    // Get the actual line content
-    const lineContent = selectedLine ? 
-      formatLineContent(selectedLine.raw?.text || selectedLine.text) : 
-      'No content available';
-    
-    // Update the UI if we have a reference to the line element
-    if (selectedLine?.element) {
-      selectedLine.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      selectedLine.element.classList.add('highlighted');
-      
-      // Remove highlight after animation
-      setTimeout(() => {
-        if (selectedLine?.element) {
-          selectedLine.element.classList.remove('highlighted');
-        }
-      }, 2000);
-    }
-    
-    const enrichment = selectedLine?.enrichment ? formatEnrichmentData(selectedLine.enrichment) : null;
-    
-    // Create modal HTML
-    const modalHTML = `
-      <div id="curator-studio-modal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <!-- Background overlay with backdrop blur -->
-        <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm transition-all duration-300" aria-hidden="true"></div>
+  
+    const lineNumberElement = document.querySelector('.document-line.active');
+    if (lineNumberElement) {
+      const lineNumber = lineNumberElement.dataset.lineNumber;
+      const lineElement = document.querySelector(`[data-line-number="${lineNumber}"]`);
+      if (lineElement) {
+        console.log('Line element found for line number: ' + lineNumber);
         
-        <!-- Modal container -->
-        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-6">
-          <!-- Modal panel with smooth transition -->
-          <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all w-full max-w-6xl h-[90vh] flex flex-col border border-gray-200">
-            <!-- Header with gradient background -->
-            <div class="bg-gradient-to-r from-eu-blue to-blue-700 px-6 py-4 flex items-center justify-between rounded-t-xl">
-              <div class="flex items-center space-x-3">
-                <i class="fas fa-edit text-white/90"></i>
-                <h3 class="text-lg font-semibold text-white" id="modal-title">Curator Studio</h3>
-              </div>
-              <button type="button" id="close-curator-modal" class="text-white/80 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 rounded-full p-1">
-                <i class="fas fa-times text-xl"></i>
-              </button>
-            </div>
-            
-            <!-- Content area -->
-            <div class="flex-1 overflow-auto p-6 bg-gray-50">
-              <div class="space-y-6 max-w-5xl mx-auto w-full">
-                <!-- Selected Content Card -->
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-                  <div class="flex items-center justify-between mb-4">
-                    <h4 class="font-medium text-gray-900 flex items-center">
-                      <i class="fas fa-align-left text-eu-blue mr-2"></i>
-                      Selected Content
-                    </h4>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      Line ${selectedLine?.lineNumber || 'N/A'}
-                    </span>
-                  </div>
-                  <div class="relative">
-                    <pre class="whitespace-pre-wrap bg-gray-50 p-4 rounded-lg border border-gray-200 text-sm font-mono overflow-x-auto max-h-60 overflow-y-auto">${lineContent}</pre>
-                    <div class="absolute bottom-2 right-2 flex space-x-2">
-                      <button class="text-gray-400 hover:text-gray-600 transition-colors p-1" onclick="navigator.clipboard.writeText('${lineContent.replace(/'/g, "\\'")}'); this.innerHTML='<i class=\'fas fa-check text-green-500\'></i>';">
-                        <i class="far fa-copy"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Enrichment Data Section -->
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-                  <h4 class="font-medium text-gray-900 mb-4 flex items-center">
-                    <i class="fas fa-magic text-eu-blue mr-2"></i>
-                    Enrichment Data
-                    ${enrichment ? `<span class="ml-2 text-xs font-normal text-gray-500">Confidence: ${(enrichment.confidence * 100).toFixed(0)}%</span>` : ''}
-                  </h4>
-                  
-                  ${enrichment ? `
-                    <div class="space-y-6">
-                      <!-- Title & Summary -->
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="space-y-1">
-                          <label class="block text-xs font-medium text-gray-700 mb-1">Title</label>
-                          <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
-                            value="${enrichment.title}" data-field="title">
-                        </div>
-                        <div class="space-y-1">
-                          <label class="block text-xs font-medium text-gray-700 mb-1">Keywords</label>
-                          <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
-                            value="${enrichment.keywords}" data-field="keywords">
-                          <p class="text-xs text-gray-500 mt-1">Separate with commas</p>
-                        </div>
-                      </div>
-                      
-                      <!-- Summary -->
-                      <div class="space-y-1">
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Summary</label>
-                        <textarea rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
-                          data-field="summary">${enrichment.summary}</textarea>
-                      </div>
-                      
-                      <!-- Entities -->
-                      <div class="space-y-2">
-                        <div class="flex justify-between items-center">
-                          <label class="block text-xs font-medium text-gray-700">Entities</label>
-                          <button type="button" class="text-xs text-eu-blue hover:text-blue-700 flex items-center">
-                            <i class="fas fa-plus mr-1"></i> Add Entity
-                          </button>
-                        </div>
-                        <div class="entity-list" data-field="entities">
-                          ${renderEntities(enrichment.entities)}
-                        </div>
-                      </div>
-                      
-                      <!-- Taxonomy -->
-                      <div class="space-y-2">
-                        <label class="block text-xs font-medium text-gray-700">Taxonomy</label>
-                        <div class="taxonomy-container" data-field="taxonomy">
-                          ${renderTaxonomy(enrichment.taxonomy)}
-                        </div>
-                      </div>
-                      
-                      <!-- Temporal Information -->
-                      <div class="space-y-2">
-                        <label class="block text-xs font-medium text-gray-700">Temporal Information</label>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div class="space-y-1">
-                            <label class="block text-xs text-gray-500">Start Date</label>
-                            <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
-                              value="${enrichment.temporal?.start_date || ''}" data-field="temporal.start_date" placeholder="YYYY-MM-DD">
-                          </div>
-                          <div class="space-y-1">
-                            <label class="block text-xs text-gray-500">End Date</label>
-                            <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
-                              value="${enrichment.temporal?.end_date || ''}" data-field="temporal.end_date" placeholder="YYYY-MM-DD">
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <!-- Geography -->
-                      <div class="space-y-2">
-                        <label class="block text-xs font-medium text-gray-700">Geography</label>
-                        <div class="space-y-2">
-                          <div>
-                            <label class="block text-xs text-gray-500 mb-1">Countries</label>
-                            <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
-                              value="${Array.isArray(enrichment.geography?.countries) ? enrichment.geography.countries.join(', ') : ''}" 
-                              data-field="geography.countries" placeholder="e.g., US, FR, DE">
-                          </div>
-                          <div>
-                            <label class="block text-xs text-gray-500 mb-1">Regions</label>
-                            <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
-                              value="${Array.isArray(enrichment.geography?.regions) ? enrichment.geography.regions.join(', ') : ''}" 
-                              data-field="geography.regions" placeholder="e.g., Europe, Asia, North America">
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ` : `
-                    <div class="text-center py-8">
-                      <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-2"></i>
-                      <p class="text-gray-600">No enrichment data available for this line.</p>
-                      <button type="button" class="mt-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-eu-blue hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        <i class="fas fa-plus mr-2"></i> Add Enrichment Data
-                      </button>
-                    </div>
-                  `}
-                </div>
-                </div>
-            
-            <!-- Footer -->
-            <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-200">
-              <button type="button" class="inline-flex w-full justify-center rounded-md bg-eu-blue px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 sm:ml-3 sm:w-auto" id="submit-curator">
-                Submit
-              </button>
-              <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto" id="reset-curator">
-                Reset
-              </button>
-              <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto" id="cancel-curator">
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-    
-    // Add modal to the body
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-    
-    // Add event listeners
-    document.getElementById('close-curator-modal').addEventListener('click', closeCuratorModal);
-    document.getElementById('cancel-curator').addEventListener('click', closeCuratorModal);
-    document.getElementById('reset-curator').addEventListener('click', resetCuratorForm);
-    document.getElementById('submit-curator').addEventListener('click', submitCuratorForm);
-    
-    // Prevent body scroll when modal is open
-    document.body.style.overflow = 'hidden';
-    
-    // Close modal when clicking outside content
-    document.querySelector('#curator-studio-modal > div').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeCuratorModal();
-      }
-    });
-    
-    // Close on Escape key
-    document.addEventListener('keydown', handleEscapeKey);
-  }
+        // Get the line content from the NDJSON file
+        fetch('assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson')
+          .then(response => response.text())
+          .then(ndjsonText => {
+            // Split the NDJSON into individual lines
+            const lines = ndjsonText.trim().split('\n');
+            // Get the specific line (assuming lineNumber is 1-based)
+            const lineContent = lines[lineNumber - 1];
+            try {
+              // Parse the JSON line
+              const data = JSON.parse(lineContent);
+              console.log('Line data:', data);
+              
+              // Format the line content for display
+              const formatLineContent = (line) => {
+                if (!line) return 'No line selected';
+                if (typeof line === 'string') return line;
+                if (line.text) return line.text;
+                return JSON.stringify(line, null, 2);
+              };
   
-  function getCurrentSelectedLine() {
-    try {
-      // Get the currently selected line element in the document viewer
-      const selectedLineElement = document.querySelector('.document-line.selected, .line.selected, [data-line-number]');
-      
-      if (!selectedLineElement) {
-        console.warn('No line is currently selected');
-        return null;
+              // Get the actual line content
+              const lineContentDisplay = data ? 
+                formatLineContent(data.text || data) : 
+                'No content available';
+  
+              // Get enrichment data or use default
+              const enrichment = data?.enrichment || {
+                title: '',
+                summary: '',
+                keywords: [],
+                entities: [],
+                taxonomy: {},
+                temporal: {},
+                geography: {},
+                confidence: 0
+              };
+  
+              // Highlight the selected line
+              if (lineElement) {
+                lineElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                lineElement.classList.add('highlighted');
+                
+                // Remove highlight after animation
+                setTimeout(() => {
+                  if (lineElement) {
+                    lineElement.classList.remove('highlighted');
+                  }
+                }, 2000);
+              }
+  
+              // Helper function to render entities
+              const renderEntities = (entities) => {
+                if (!entities || entities.length === 0) {
+                  return '<div class="text-sm text-gray-500 py-2">No entities found</div>';
+                }
+                return entities.map(entity => `
+                  <div class="flex items-center justify-between bg-gray-50 p-2 rounded mb-1">
+                    <div>
+                      <span class="text-xs font-medium text-gray-900">${entity.text}</span>
+                      <span class="ml-2 text-xs text-gray-500">(${entity.type})</span>
+                    </div>
+                    <button class="text-red-400 hover:text-red-600" data-entity="${entity.text}">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                `).join('');
+              };
+  
+              // Helper function to render taxonomy
+              const renderTaxonomy = (taxonomy) => {
+                if (!taxonomy) return '<div class="text-sm text-gray-500 py-2">No taxonomy data</div>';
+                
+                return Object.entries(taxonomy).map(([category, items]) => {
+                  const itemsList = Array.isArray(items) ? items.join(', ') : '';
+                  return `
+                    <div class="mb-2">
+                      <div class="text-xs font-medium text-gray-700">${category}</div>
+                      <div class="text-sm text-gray-600">${itemsList || 'N/A'}</div>
+                    </div>
+                  `;
+                }).join('');
+              };
+  
+              // Create modal HTML
+              const modalHTML = `
+                <div id="curator-studio-modal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                  <!-- Background overlay with backdrop blur -->
+                  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm transition-all duration-300" aria-hidden="true"></div>
+                  
+                  <!-- Modal container -->
+                  <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-6">
+                    <!-- Modal panel with smooth transition -->
+                    <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all w-full max-w-6xl h-[90vh] flex flex-col border border-gray-200">
+                      <!-- Header with gradient background -->
+                      <div class="bg-gradient-to-r from-eu-blue to-blue-700 px-6 py-4 flex items-center justify-between rounded-t-xl">
+                        <div class="flex items-center space-x-3">
+                          <i class="fas fa-edit text-white/90"></i>
+                          <h3 class="text-lg font-semibold text-white" id="modal-title">Curator Studio</h3>
+                        </div>
+                        <button type="button" id="close-curator-modal" class="text-white/80 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 rounded-full p-1">
+                          <i class="fas fa-times text-xl"></i>
+                        </button>
+                      </div>
+                      
+                      <!-- Content area -->
+                      <div class="flex-1 overflow-auto p-6 bg-gray-50">
+                        <div class="space-y-6 max-w-5xl mx-auto w-full">
+                          <!-- Selected Content Card -->
+                          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                            <div class="flex items-center justify-between mb-4">
+                              <h4 class="font-medium text-gray-900 flex items-center">
+                                <i class="fas fa-align-left text-eu-blue mr-2"></i>
+                                Selected Content
+                              </h4>
+                              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                Line ${lineNumber || 'N/A'}
+                              </span>
+                            </div>
+                            <div class="relative">
+                              <pre class="whitespace-pre-wrap bg-gray-50 p-4 rounded-lg border border-gray-200 text-sm font-mono overflow-x-auto max-h-60 overflow-y-auto">${lineContentDisplay}</pre>
+                              <div class="absolute bottom-2 right-2 flex space-x-2">
+                                <button class="text-gray-400 hover:text-gray-600 transition-colors p-1" onclick="navigator.clipboard.writeText('${lineContentDisplay.replace(/'/g, "\\'")}'); this.innerHTML='<i class=\'fas fa-check text-green-500\'></i>';">
+                                  <i class="far fa-copy"></i>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <!-- Enrichment Data Section -->
+                          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                            <h4 class="font-medium text-gray-900 mb-4 flex items-center">
+                              <i class="fas fa-magic text-eu-blue mr-2"></i>
+                              Enrichment Data
+                              ${enrichment ? `<span class="ml-2 text-xs font-normal text-gray-500">Confidence: ${(enrichment.confidence * 100).toFixed(0)}%</span>` : ''}
+                            </h4>
+                            
+                            ${enrichment ? `
+                              <div class="space-y-6">
+                                <!-- Title & Summary -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div class="space-y-1">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Title</label>
+                                    <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
+                                      value="${enrichment.title || ''}" data-field="title">
+                                  </div>
+                                  <div class="space-y-1">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Keywords</label>
+                                    <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
+                                      value="${Array.isArray(enrichment.keywords) ? enrichment.keywords.join(', ') : ''}" data-field="keywords">
+                                    <p class="text-xs text-gray-500 mt-1">Separate with commas</p>
+                                  </div>
+                                </div>
+                                
+                                <!-- Summary -->
+                                <div class="space-y-1">
+                                  <label class="block text-xs font-medium text-gray-700 mb-1">Summary</label>
+                                  <textarea rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
+                                    data-field="summary">${enrichment.summary || ''}</textarea>
+                                </div>
+                                
+                                <!-- Entities -->
+                                <div class="space-y-2">
+                                  <div class="flex justify-between items-center">
+                                    <label class="block text-xs font-medium text-gray-700">Entities</label>
+                                    <button type="button" class="text-xs text-eu-blue hover:text-blue-700 flex items-center">
+                                      <i class="fas fa-plus mr-1"></i> Add Entity
+                                    </button>
+                                  </div>
+                                  <div class="entity-list" data-field="entities">
+                                    ${renderEntities(enrichment.entities)}
+                                  </div>
+                                </div>
+                                
+                                <!-- Taxonomy -->
+                                <div class="space-y-2">
+                                  <label class="block text-xs font-medium text-gray-700">Taxonomy</label>
+                                  <div class="taxonomy-container" data-field="taxonomy">
+                                    ${renderTaxonomy(enrichment.taxonomy)}
+                                  </div>
+                                </div>
+                                
+                                <!-- Temporal Information -->
+                                <div class="space-y-2">
+                                  <label class="block text-xs font-medium text-gray-700">Temporal Information</label>
+                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="space-y-1">
+                                      <label class="block text-xs text-gray-500">Start Date</label>
+                                      <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
+                                        value="${enrichment.temporal?.start_date || ''}" data-field="temporal.start_date" placeholder="YYYY-MM-DD">
+                                    </div>
+                                    <div class="space-y-1">
+                                      <label class="block text-xs text-gray-500">End Date</label>
+                                      <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
+                                        value="${enrichment.temporal?.end_date || ''}" data-field="temporal.end_date" placeholder="YYYY-MM-DD">
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <!-- Geography -->
+                                <div class="space-y-2">
+                                  <label class="block text-xs font-medium text-gray-700">Geography</label>
+                                  <div class="space-y-2">
+                                    <div>
+                                      <label class="block text-xs text-gray-500 mb-1">Countries</label>
+                                      <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
+                                        value="${Array.isArray(enrichment.geography?.countries) ? enrichment.geography.countries.join(', ') : ''}" 
+                                        data-field="geography.countries" placeholder="e.g., US, FR, DE">
+                                    </div>
+                                    <div>
+                                      <label class="block text-xs text-gray-500 mb-1">Regions</label>
+                                      <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
+                                        value="${Array.isArray(enrichment.geography?.regions) ? enrichment.geography.regions.join(', ') : ''}" 
+                                        data-field="geography.regions" placeholder="e.g., Europe, Asia, North America">
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ` : `
+                              <div class="text-center py-8">
+                                <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-2"></i>
+                                <p class="text-gray-600">No enrichment data available for this line.</p>
+                                <button type="button" class="mt-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-eu-blue hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                  <i class="fas fa-plus mr-2"></i> Add Enrichment Data
+                                </button>
+                              </div>
+                            `}
+                          </div>
+                        </div>
+                    
+                      <!-- Footer -->
+                      <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-200">
+                        <button type="button" class="inline-flex w-full justify-center rounded-md bg-eu-blue px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 sm:ml-3 sm:w-auto" id="submit-curator">
+                          Submit
+                        </button>
+                        <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto" id="reset-curator">
+                          Reset
+                        </button>
+                        <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto" id="cancel-curator">
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `;
+  
+              // Add modal to the body
+              document.body.insertAdjacentHTML('beforeend', modalHTML);
+              
+              // Prevent body scroll when modal is open
+              document.body.style.overflow = 'hidden';
+              
+              // Add event listeners
+              document.getElementById('close-curator-modal').addEventListener('click', closeCuratorModal);
+              document.getElementById('cancel-curator').addEventListener('click', closeCuratorModal);
+              document.getElementById('reset-curator').addEventListener('click', resetCuratorForm);
+              document.getElementById('submit-curator').addEventListener('click', submitCuratorForm);
+              
+              // Close modal when clicking outside content
+              document.querySelector('#curator-studio-modal > div').addEventListener('click', function(e) {
+                if (e.target === this) {
+                  closeCuratorModal();
+                }
+              });
+              
+              // Close on Escape key
+              document.addEventListener('keydown', handleEscapeKey);
+  
+            } catch (e) {
+              console.error('Error parsing JSON line:', e);
+              // Show error to user
+              alert('Error loading document data. Please try again.');
+            }
+          })
+          .catch(error => {
+            console.error('Error loading NDJSON file:', error);
+            // Show error to user
+            alert('Error loading document. Please try again.');
+          });
       }
-      
-      // Get the line number from data attribute or DOM position
-      const lineNumber = selectedLineElement.dataset.lineNumber || 
-                        Array.from(selectedLineElement.parentNode.children).indexOf(selectedLineElement) + 1;
-      
-      // Get the actual text content
-      const text = selectedLineElement.textContent.trim();
-      
-      // Get any existing enrichment data from the element's data attributes
-      const enrichmentData = selectedLineElement.dataset.enrichment 
-        ? JSON.parse(selectedLineElement.dataset.enrichment) 
-        : null;
-      
-      // Get the full line data if it's stored in a data attribute
-      const lineData = selectedLineElement.dataset.lineData
-        ? JSON.parse(selectedLineElement.dataset.lineData)
-        : null;
-      
-      // Return the complete line data
-      return {
-        text: text,
-        lineNumber: lineNumber,
-        timestamp: new Date().toISOString(),
-        enrichment: enrichmentData,
-        raw: lineData || {},
-        element: selectedLineElement
-      };
-    } catch (error) {
-      console.error('Error getting selected line:', error);
-      return {
-        text: 'Error loading line content',
-        lineNumber: 0,
-        timestamp: new Date().toISOString(),
-        error: error.message
-      };
     }
   }
   
+  // Handle Escape key
+  function handleEscapeKey(e) {
+    if (e.key === 'Escape') {
+      closeCuratorModal();
+    }
+  }
+  
+  // Close modal and clean up
   function closeCuratorModal() {
     const modal = document.getElementById('curator-studio-modal');
     if (modal) {
@@ -2186,88 +2221,17 @@
     }
   }
   
-  function handleEscapeKey(e) {
-    if (e.key === 'Escape') {
-      closeCuratorModal();
-    }
-  }
-  
+  // Reset form
   function resetCuratorForm() {
-    // Reset form logic here
-    console.log('Resetting curator form');
+    // Implement form reset logic here
+    console.log('Reset form');
   }
   
-  function collectFormData() {
-    const formData = {
-      title: document.querySelector('[data-field="title"]')?.value || '',
-      summary: document.querySelector('[data-field="summary"]')?.value || '',
-      keywords: document.querySelector('[data-field="keywords"]')?.value
-        .split(',')
-        .map(k => k.trim())
-        .filter(k => k.length > 0),
-      temporal: {
-        start_date: document.querySelector('[data-field="temporal.start_date"]')?.value || null,
-        end_date: document.querySelector('[data-field="temporal.end_date"]')?.value || null
-      },
-      geography: {
-        countries: document.querySelector('[data-field="geography.countries"]')?.value
-          .split(',')
-          .map(c => c.trim())
-          .filter(c => c.length > 0) || [],
-        regions: document.querySelector('[data-field="geography.regions"]')?.value
-          .split(',')
-          .map(r => r.trim())
-          .filter(r => r.length > 0) || []
-      }
-    };
-    
-    // Get the selected line to update
-    const selectedLine = getCurrentSelectedLine();
-    if (selectedLine) {
-      // Update the enrichment data
-      if (!selectedLine.enrichment) selectedLine.enrichment = {};
-      Object.assign(selectedLine.enrichment, formData);
-      
-      // Update confidence timestamp
-      selectedLine.enrichment.confidence = 1.0; // Manual edit sets to 100% confidence
-      selectedLine.enrichment._last_updated = new Date().toISOString();
-      
-      console.log('Updated line data:', selectedLine);
-      
-      // Here you would typically save the updated data back to your data store
-      // saveLineData(selectedLine);
-      
-      return selectedLine;
-    }
-    
-    return null;
-  }
-
+  // Submit form
   function submitCuratorForm() {
-    try {
-      const updatedLine = collectFormData();
-      if (updatedLine) {
-        console.log('Form submitted with data:', updatedLine);
-        // Here you would typically make an API call to save the data
-        // await saveEnrichmentData(updatedLine);
-        
-        // Show success message
-        const submitBtn = document.getElementById('submit-curator');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Saved!';
-        submitBtn.disabled = true;
-        
-        // Reset button after 2 seconds
-        setTimeout(() => {
-          submitBtn.innerHTML = originalText;
-          submitBtn.disabled = false;
-          closeCuratorModal();
-        }, 2000);
-      }
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('Failed to save changes. Please try again.');
-    }
+    // Implement form submission logic here
+    console.log('Submit form');
+    closeCuratorModal();
   }
   
   // Make functions available globally
