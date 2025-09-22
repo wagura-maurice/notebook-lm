@@ -2050,90 +2050,257 @@
                           </div>
                           
                           <!-- Enrichment Data Section -->
-                          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-                            <h4 class="font-medium text-gray-900 mb-4 flex items-center">
-                              <i class="fas fa-magic text-eu-blue mr-2"></i>
-                              Enrichment Data
-                              ${enrichment ? `<span class="ml-2 text-xs font-normal text-gray-500">Confidence: ${(enrichment.confidence * 100).toFixed(0)}%</span>` : ''}
-                            </h4>
+                          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                            <div class="flex items-center justify-between mb-6">
+                              <div>
+                                <h4 class="font-medium text-gray-900 text-lg flex items-center">
+                                  <i class="fas fa-magic text-eu-blue mr-2"></i>
+                                  Enrichment Data
+                                </h4>
+                                ${enrichment ? `
+                                  <div class="flex items-center mt-1">
+                                    <span class="text-xs font-medium px-2 py-0.5 rounded-full ${enrichment.confidence > 0.8 ? 'bg-green-100 text-green-800' : enrichment.confidence > 0.5 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}">
+                                      Confidence: ${(enrichment.confidence * 100).toFixed(0)}%
+                                    </span>
+                                    <span class="ml-2 text-xs text-gray-500">
+                                      Last updated: ${new Date().toLocaleString()}
+                                    </span>
+                                  </div>
+                                ` : ''}
+                              </div>
+                            </div>
                             
                             ${enrichment ? `
-                              <div class="space-y-6">
-                                <!-- Title & Summary -->
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div class="space-y-1">
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Title</label>
-                                    <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
-                                      value="${enrichment.title || ''}" data-field="title">
+                              <div class="space-y-4">
+                                <!-- Core Information -->
+                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow transition-shadow duration-200">
+                                  <button type="button" class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-100 rounded-t-lg" 
+                                    data-toggle="collapse" data-target="#coreInfoSection" aria-expanded="true" aria-controls="coreInfoSection">
+                                    <div class="flex items-center">
+                                      <i class="fas fa-info-circle text-eu-blue mr-3"></i>
+                                      <span class="font-medium text-gray-900">Core Information</span>
+                                    </div>
+                                    <i class="fas fa-chevron-down text-gray-400 transition-transform duration-200 transform" data-chevron></i>
+                                  </button>
+                                  <div id="coreInfoSection" class="px-4 pb-4 border-t border-gray-100 transition-all duration-200" style="opacity: 1;">
+                                    <p class="text-sm text-gray-500 mb-4 mt-2">Basic information including title, summary, and key details about the content.</p>
+                                  
+                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="space-y-1">
+                                      <div class="flex items-center justify-between">
+                                        <label class="block text-sm font-medium text-gray-700">Title</label>
+                                        <span class="text-xs text-gray-500">Required</span>
+                                      </div>
+                                      <input type="text" 
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue text-sm" 
+                                        value="${enrichment.title || ''}" 
+                                        data-field="title"
+                                        placeholder="Enter a descriptive title"
+                                        required>
+                                    </div>
+                                    
+                                    <div class="space-y-1">
+                                      <div class="flex items-center justify-between">
+                                        <label class="block text-sm font-medium text-gray-700">Rhetorical Role</label>
+                                        <span class="text-xs text-gray-500">Required</span>
+                                      </div>
+                                      <select class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue text-sm" 
+                                        data-field="rhetorical_role"
+                                        required>
+                                        <option value="">Select role</option>
+                                        <option value="introduction" ${enrichment.rhetorical_role === 'introduction' ? 'selected' : ''}>Introduction</option>
+                                        <option value="methodology" ${enrichment.rhetorical_role === 'methodology' ? 'selected' : ''}>Methodology</option>
+                                        <option value="results" ${enrichment.rhetorical_role === 'results' ? 'selected' : ''}>Results</option>
+                                        <option value="discussion" ${enrichment.rhetorical_role === 'discussion' ? 'selected' : ''}>Discussion</option>
+                                        <option value="conclusion" ${enrichment.rhetorical_role === 'conclusion' ? 'selected' : ''}>Conclusion</option>
+                                      </select>
+                                    </div>
                                   </div>
-                                  <div class="space-y-1">
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Keywords</label>
-                                    <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
-                                      value="${Array.isArray(enrichment.keywords) ? enrichment.keywords.join(', ') : ''}" data-field="keywords">
-                                    <p class="text-xs text-gray-500 mt-1">Separate with commas</p>
+                                  
+                                  <div class="mt-4 space-y-1">
+                                    <div class="flex items-center justify-between">
+                                      <label class="block text-sm font-medium text-gray-700">Summary</label>
+                                      <span class="text-xs text-gray-500">${enrichment.summary ? enrichment.summary.length : 0}/500 characters</span>
+                                    </div>
+                                    <textarea rows="3" 
+                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue text-sm" 
+                                      data-field="summary"
+                                      placeholder="Provide a brief summary of this content"
+                                      maxlength="500">${enrichment.summary || ''}</textarea>
+                                    <p class="text-xs text-gray-500 mt-1">A clear, concise summary helps with quick understanding of the content.</p>
+                                  </div>
+                                  
+                                  <div class="mt-4 space-y-1">
+                                    <label class="block text-sm font-medium text-gray-700">Keywords</label>
+                                    <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-200 rounded-md min-h-10">
+                                      ${Array.isArray(enrichment.keywords) ? enrichment.keywords.map(keyword => `
+                                        <span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs px-2.5 py-0.5 rounded-full">
+                                          ${keyword.trim()}
+                                          <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600">
+                                            <i class="fas fa-times"></i>
+                                          </button>
+                                        </span>
+                                      `).join('') : ''}
+                                      <input type="text" 
+                                        class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0" 
+                                        placeholder="Add a keyword and press Enter"
+                                        data-field="keywords-input">
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add keywords. Click × to remove.</p>
                                   </div>
                                 </div>
                                 
-                                <!-- Summary -->
-                                <div class="space-y-1">
-                                  <label class="block text-xs font-medium text-gray-700 mb-1">Summary</label>
-                                  <textarea rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
-                                    data-field="summary">${enrichment.summary || ''}</textarea>
-                                </div>
-                                
-                                <!-- Entities -->
-                                <div class="space-y-2">
-                                  <div class="flex justify-between items-center">
-                                    <label class="block text-xs font-medium text-gray-700">Entities</label>
-                                    <button type="button" class="text-xs text-eu-blue hover:text-blue-700 flex items-center">
+                                <!-- Entities & References -->
+                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow transition-shadow duration-200">
+                                  <button type="button" class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-100 rounded-t-lg" 
+                                    data-toggle="collapse" data-target="#entitiesSection" aria-expanded="true" aria-controls="entitiesSection">
+                                    <div class="flex items-center">
+                                      <i class="fas fa-tag text-eu-blue mr-3"></i>
+                                      <span class="font-medium text-gray-900">Entities & References</span>
+                                    </div>
+                                    <i class="fas fa-chevron-down text-gray-400 transition-transform duration-200 transform" data-chevron></i>
+                                  </button>
+                                  <div id="entitiesSection" class="px-4 pb-4 border-t border-gray-100 transition-all duration-200" style="opacity: 1;">
+                                    <p class="text-sm text-gray-500 mb-4 mt-2">Key entities, people, organizations, and references mentioned in the content.</p>
+                                    <button type="button" 
+                                      class="text-xs bg-white border border-gray-300 text-gray-700 px-3 py-1 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-eu-blue"
+                                      data-action="add-entity">
                                       <i class="fas fa-plus mr-1"></i> Add Entity
                                     </button>
                                   </div>
-                                  <div class="entity-list" data-field="entities">
-                                    ${renderEntities(enrichment.entities)}
+                                  <div class="p-4">
+                                    <div class="entity-list space-y-3" data-field="entities">
+                                      ${renderEntities(enrichment.entities || [])}
+                                    </div>
+                                    <div class="mt-3 text-sm text-gray-500">
+                                      <i class="fas fa-info-circle mr-1"></i> Add entities like people, organizations, or concepts mentioned in the text.
+                                    </div>
                                   </div>
                                 </div>
                                 
-                                <!-- Taxonomy -->
-                                <div class="space-y-2">
-                                  <label class="block text-xs font-medium text-gray-700">Taxonomy</label>
-                                  <div class="taxonomy-container" data-field="taxonomy">
-                                    ${renderTaxonomy(enrichment.taxonomy)}
+                                <!-- Taxonomy & Classification -->
+                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow transition-shadow duration-200">
+                                  <button type="button" class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-100 rounded-t-lg" 
+                                    data-toggle="collapse" data-target="#taxonomySection" aria-expanded="true" aria-controls="taxonomySection">
+                                    <div class="flex items-center">
+                                      <i class="fas fa-tags text-eu-blue mr-3"></i>
+                                      <span class="font-medium text-gray-900">Taxonomy & Classification</span>
+                                    </div>
+                                    <i class="fas fa-chevron-down text-gray-400 transition-transform duration-200 transform" data-chevron></i>
+                                  </button>
+                                  <div id="taxonomySection" class="px-4 pb-4 border-t border-gray-100 transition-all duration-200" style="opacity: 1;">
+                                    <p class="text-sm text-gray-500 mb-4 mt-2">Categorization and classification of the content using predefined taxonomies and custom categories.</p>
+                                  <div class="p-4">
+                                    <div class="taxonomy-container space-y-4" data-field="taxonomy">
+                                      ${renderTaxonomy(enrichment.taxonomy || {})}
+                                    </div>
+                                    <div class="mt-3 text-sm text-gray-500">
+                                      <i class="fas fa-info-circle mr-1"></i> Categorize this content using the taxonomy.
+                                    </div>
                                   </div>
                                 </div>
                                 
                                 <!-- Temporal Information -->
-                                <div class="space-y-2">
-                                  <label class="block text-xs font-medium text-gray-700">Temporal Information</label>
-                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="space-y-1">
-                                      <label class="block text-xs text-gray-500">Start Date</label>
-                                      <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
-                                        value="${enrichment.temporal?.start_date || ''}" data-field="temporal.start_date" placeholder="YYYY-MM-DD">
+                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow transition-shadow duration-200">
+                                  <button type="button" class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-100 rounded-t-lg" 
+                                    data-toggle="collapse" data-target="#temporalSection" aria-expanded="true" aria-controls="temporalSection">
+                                    <div class="flex items-center">
+                                      <i class="far fa-clock text-eu-blue mr-3"></i>
+                                      <span class="font-medium text-gray-900">Temporal Information</span>
+                                    </div>
+                                    <i class="fas fa-chevron-down text-gray-400 transition-transform duration-200 transform" data-chevron></i>
+                                  </button>
+                                  <div id="temporalSection" class="px-4 pb-4 border-t border-gray-100 transition-all duration-200" style="opacity: 1;">
+                                    <p class="text-sm text-gray-500 mb-4 mt-2">Time-related information and relevance period for this content.</p>
+                                  <div class="p-4 space-y-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div class="space-y-1">
+                                        <label class="block text-sm font-medium text-gray-700">Start Date</label>
+                                        <input type="date" 
+                                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue text-sm" 
+                                          value="${enrichment.temporal?.start_date || ''}" 
+                                          data-field="temporal.start_date">
+                                      </div>
+                                      <div class="space-y-1">
+                                        <label class="block text-sm font-medium text-gray-700">End Date</label>
+                                        <input type="date" 
+                                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue text-sm" 
+                                          value="${enrichment.temporal?.end_date || ''}" 
+                                          data-field="temporal.end_date">
+                                      </div>
                                     </div>
                                     <div class="space-y-1">
-                                      <label class="block text-xs text-gray-500">End Date</label>
-                                      <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
-                                        value="${enrichment.temporal?.end_date || ''}" data-field="temporal.end_date" placeholder="YYYY-MM-DD">
+                                      <label class="block text-sm font-medium text-gray-700">Time Period</label>
+                                      <input type="text" 
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue text-sm" 
+                                        value="${enrichment.temporal?.period || ''}" 
+                                        data-field="temporal.period"
+                                        placeholder="e.g., Renaissance, Industrial Revolution">
                                     </div>
                                   </div>
                                 </div>
                                 
-                                <!-- Geography -->
-                                <div class="space-y-2">
-                                  <label class="block text-xs font-medium text-gray-700">Geography</label>
-                                  <div class="space-y-2">
-                                    <div>
-                                      <label class="block text-xs text-gray-500 mb-1">Countries</label>
-                                      <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
-                                        value="${Array.isArray(enrichment.geography?.countries) ? enrichment.geography.countries.join(', ') : ''}" 
-                                        data-field="geography.countries" placeholder="e.g., US, FR, DE">
+                                <!-- Geographic Coverage -->
+                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow transition-shadow duration-200">
+                                  <button type="button" class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-100 rounded-t-lg" 
+                                    data-toggle="collapse" data-target="#geographySection" aria-expanded="true" aria-controls="geographySection">
+                                    <div class="flex items-center">
+                                      <i class="fas fa-globe-africa text-eu-blue mr-3"></i>
+                                      <span class="font-medium text-gray-900">Geographic Coverage</span>
                                     </div>
-                                    <div>
-                                      <label class="block text-xs text-gray-500 mb-1">Regions</label>
-                                      <input type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue sm:text-sm" 
-                                        value="${Array.isArray(enrichment.geography?.regions) ? enrichment.geography.regions.join(', ') : ''}" 
-                                        data-field="geography.regions" placeholder="e.g., Europe, Asia, North America">
+                                    <i class="fas fa-chevron-down text-gray-400 transition-transform duration-200 transform" data-chevron></i>
+                                  </button>
+                                  <div id="geographySection" class="px-4 pb-4 border-t border-gray-100 transition-all duration-200" style="opacity: 1;">
+                                    <p class="text-sm text-gray-500 mb-4 mt-2">Geographic locations, regions, and areas relevant to this content.</p>
+                                  <div class="p-4 space-y-4">
+                                    <div class="space-y-1">
+                                      <label class="block text-sm font-medium text-gray-700">Countries</label>
+                                      <select multiple 
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue text-sm" 
+                                        data-field="geography.countries"
+                                        data-placeholder="Select countries...">
+                                        <option value="" disabled>Select countries...</option>
+                                        <option value="US" ${enrichment.geography?.countries?.includes('US') ? 'selected' : ''}>United States</option>
+                                        <option value="GB" ${enrichment.geography?.countries?.includes('GB') ? 'selected' : ''}>United Kingdom</option>
+                                        <option value="DE" ${enrichment.geography?.countries?.includes('DE') ? 'selected' : ''}>Germany</option>
+                                        <option value="FR" ${enrichment.geography?.countries?.includes('FR') ? 'selected' : ''}>France</option>
+                                        <option value="IT" ${enrichment.geography?.countries?.includes('IT') ? 'selected' : ''}>Italy</option>
+                                        <option value="ES" ${enrichment.geography?.countries?.includes('ES') ? 'selected' : ''}>Spain</option>
+                                      </select>
+                                    </div>
+                                    <div class="space-y-1">
+                                      <label class="block text-sm font-medium text-gray-700">Regions</label>
+                                      <select multiple 
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue text-sm" 
+                                        data-field="geography.regions"
+                                        data-placeholder="Select regions...">
+                                        <option value="" disabled>Select regions...</option>
+                                        <option value="europe" ${enrichment.geography?.regions?.includes('europe') ? 'selected' : ''}>Europe</option>
+                                        <option value="north-america" ${enrichment.geography?.regions?.includes('north-america') ? 'selected' : ''}>North America</option>
+                                        <option value="south-america" ${enrichment.geography?.regions?.includes('south-america') ? 'selected' : ''}>South America</option>
+                                        <option value="asia" ${enrichment.geography?.regions?.includes('asia') ? 'selected' : ''}>Asia</option>
+                                        <option value="africa" ${enrichment.geography?.regions?.includes('africa') ? 'selected' : ''}>Africa</option>
+                                        <option value="oceania" ${enrichment.geography?.regions?.includes('oceania') ? 'selected' : ''}>Oceania</option>
+                                        <option value="middle-east" ${enrichment.geography?.regions?.includes('middle-east') ? 'selected' : ''}>Middle East</option>
+                                      </select>
+                                    </div>
+                                    <div class="space-y-1">
+                                      <label class="block text-sm font-medium text-gray-700">Custom Locations</label>
+                                      <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-200 rounded-md min-h-10">
+                                        ${Array.isArray(enrichment.geography?.custom) ? enrichment.geography.custom.map(loc => `
+                                          <span class="inline-flex items-center bg-gray-100 text-gray-800 text-xs px-2.5 py-0.5 rounded-full">
+                                            ${loc.trim()}
+                                            <button type="button" class="ml-1.5 text-gray-400 hover:text-gray-600">
+                                              <i class="fas fa-times"></i>
+                                            </button>
+                                          </span>
+                                        `).join('') : ''}
+                                        <input type="text" 
+                                          class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0" 
+                                          placeholder="Add a location and press Enter"
+                                          data-field="geography.custom-input">
+                                      </div>
+                                      <p class="text-xs text-gray-500 mt-1">Add specific cities, areas, or custom locations</p>
                                     </div>
                                   </div>
                                 </div>
@@ -2188,6 +2355,9 @@
               
               // Close on Escape key
               document.addEventListener('keydown', handleEscapeKey);
+              
+              // Initialize collapsible sections
+              initCollapsibleSections();
   
             } catch (e) {
               console.error('Error parsing JSON line:', e);
@@ -2211,10 +2381,102 @@
     }
   }
   
+  // Toggle collapsible sections
+  function toggleCollapse(button) {
+    const targetId = button.getAttribute('data-target');
+    const target = document.querySelector(targetId);
+    const chevron = button.querySelector('[data-chevron]');
+    const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+    // Toggle aria-expanded
+    button.setAttribute('aria-expanded', !isExpanded);
+    
+    // Toggle chevron rotation
+    if (chevron) {
+      chevron.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
+      chevron.style.transition = 'transform 0.2s ease-in-out';
+    }
+
+    // Toggle content visibility with animation
+    if (target) {
+      if (isExpanded) {
+        // Collapse
+        target.style.maxHeight = target.scrollHeight + 'px';
+        // Force reflow
+        target.offsetHeight;
+        target.style.maxHeight = '0';
+        target.style.overflow = 'hidden';
+        target.style.opacity = '0';
+        target.style.transition = 'max-height 0.25s ease-out, opacity 0.15s ease-out';
+      } else {
+        // Expand
+        target.style.display = 'block';
+        target.style.maxHeight = '0';
+        target.style.opacity = '0';
+        // Force reflow
+        target.offsetHeight;
+        target.style.maxHeight = target.scrollHeight + 'px';
+        target.style.opacity = '1';
+        target.style.overflow = 'visible';
+        target.style.transition = 'max-height 0.25s ease-in, opacity 0.15s ease-in';
+      }
+    }
+  }
+
+  // Initialize collapsible sections
+  function initCollapsibleSections() {
+    const toggles = document.querySelectorAll('[data-toggle="collapse"]');
+    
+    toggles.forEach(toggle => {
+      const targetId = toggle.getAttribute('data-target');
+      const target = document.querySelector(targetId);
+      const chevron = toggle.querySelector('[data-chevron]');
+      
+      if (target) {
+        // Set initial state
+        const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+        
+        // Add initial styles
+        target.style.transition = 'max-height 0.25s ease-in-out, opacity 0.15s ease-in-out';
+        target.style.overflow = 'hidden';
+        
+        if (isExpanded) {
+          target.style.maxHeight = 'none';
+          target.style.opacity = '1';
+          if (chevron) {
+            chevron.style.transform = 'rotate(180deg)';
+            chevron.style.transition = 'transform 0.2s ease-in-out';
+          }
+        } else {
+          target.style.maxHeight = '0';
+          target.style.opacity = '0';
+          if (chevron) {
+            chevron.style.transform = 'rotate(0deg)';
+            chevron.style.transition = 'transform 0.2s ease-in-out';
+          }
+        }
+        
+        // Add click handler
+        toggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleCollapse(toggle);
+        });
+      }
+    });
+  }
+  
   // Close modal and clean up
   function closeCuratorModal() {
     const modal = document.getElementById('curator-studio-modal');
     if (modal) {
+      // Clean up event listeners
+      const toggles = modal.querySelectorAll('[data-toggle="collapse"]');
+      toggles.forEach(toggle => {
+        toggle.removeEventListener('click', toggleCollapse);
+      });
+      
+      // Remove modal
       modal.remove();
       document.body.style.overflow = '';
       document.removeEventListener('keydown', handleEscapeKey);
