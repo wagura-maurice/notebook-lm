@@ -2498,11 +2498,13 @@
                                               )
                                               .join("")}
                                             <input type="text" 
-                                              class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0 bg-transparent placeholder-gray-400" 
+                                              class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0 bg-transparent placeholder-gray-400 focus:outline-none" 
                                               placeholder="Add a keyword and press Enter or comma"
                                               data-taxonomy-category="${category}"
-                                              data-field="taxonomy-keyword-input">
+                                              data-field="taxonomy-keyword-input"
+                                              autocomplete="off">
                                           </div>
+                                          <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add keywords. Click × to remove.</p>
                                         </div>
                                       `
                                         )
@@ -3389,6 +3391,286 @@
         if (content) {
           content.classList.toggle("hidden");
         }
+      }
+    });
+
+    // Handle input events for both taxonomy keywords and dates mentioned
+    function handleKeywordInput(e, isDateInput = false) {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        const target = e.target;
+        const value = target.value.trim();
+        
+        if (!value) return;
+        
+        if (isDateInput) {
+          // Handle dates mentioned input
+          const dateMentionElement = document.createElement('span');
+          dateMentionElement.className = 'inline-flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full transition-colors mr-1 mb-1';
+          dateMentionElement.setAttribute('data-date-mention', value);
+          dateMentionElement.innerHTML = `
+            ${value}
+            <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none" 
+              data-action="remove-date-mention" 
+              data-value="${value}">
+              <i class="fas fa-times"></i>
+            </button>
+          `;
+          target.parentNode.insertBefore(dateMentionElement, target);
+        } else {
+          // Handle taxonomy keyword input
+          const category = target.dataset.taxonomyCategory;
+          const keywordElement = document.createElement('span');
+          keywordElement.className = 'inline-flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full transition-colors mr-1 mb-1';
+          keywordElement.innerHTML = `
+            ${value}
+            <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none" 
+              data-action="remove-taxonomy-keyword" 
+              data-category="${category}" 
+              data-keyword="${value}">
+              <i class="fas fa-times"></i>
+            </button>
+          `;
+          target.parentNode.insertBefore(keywordElement, target);
+        }
+        
+        target.value = '';
+      }
+    }
+
+    // Handle paste events for both taxonomy keywords and dates mentioned
+    function handlePaste(e, isDateInput = false) {
+      const target = e.target;
+      e.preventDefault();
+      const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+      const items = pastedText.split(/[,\n\r]+/).map(item => item.trim()).filter(item => item);
+      
+      if (items.length === 0) return;
+      
+      if (isDateInput) {
+        // Handle dates mentioned paste
+        items.forEach(date => {
+          const dateMentionElement = document.createElement('span');
+          dateMentionElement.className = 'inline-flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full transition-colors mr-1 mb-1';
+          dateMentionElement.setAttribute('data-date-mention', date);
+          dateMentionElement.innerHTML = `
+            ${date}
+            <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none" 
+              data-action="remove-date-mention" 
+              data-value="${date}">
+              <i class="fas fa-times"></i>
+            </button>
+          `;
+          target.parentNode.insertBefore(dateMentionElement, target);
+        });
+      } else {
+        // Handle taxonomy keywords paste
+        const category = target.dataset.taxonomyCategory;
+        items.forEach(keyword => {
+          const keywordElement = document.createElement('span');
+          keywordElement.className = 'inline-flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full transition-colors mr-1 mb-1';
+          keywordElement.innerHTML = `
+            ${keyword}
+            <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none" 
+              data-action="remove-taxonomy-keyword" 
+              data-category="${category}" 
+              data-keyword="${keyword}">
+              <i class="fas fa-times"></i>
+            </button>
+          `;
+          target.parentNode.insertBefore(keywordElement, target);
+        });
+      }
+      
+      target.value = '';
+    }
+
+    // Add event listeners for taxonomy keyword input
+    document.addEventListener('keydown', function(e) {
+      const target = e.target;
+      if (target.matches('[data-field="taxonomy-keyword-input"]')) {
+        handleKeywordInput(e, false);
+      } else if (target.matches('[data-field="dates-mentioned-input"]')) {
+        handleKeywordInput(e, true);
+      }
+    });
+
+    // Add paste event listeners
+    document.addEventListener('paste', function(e) {
+      const target = e.target;
+      if (target.matches('[data-field="taxonomy-keyword-input"]')) {
+        handlePaste(e, false);
+      } else if (target.matches('[data-field="dates-mentioned-input"]')) {
+        handlePaste(e, true);
+      }
+    });
+
+    // Handle remove button clicks and add category button
+    document.addEventListener('click', function(e) {
+      // Handle taxonomy keyword removal
+      if (e.target.closest('[data-action="remove-taxonomy-keyword"]')) {
+        const button = e.target.closest('[data-action="remove-taxonomy-keyword"]');
+        const keywordElement = button.closest('span');
+        if (keywordElement) {
+          keywordElement.remove();
+        }
+      }
+      // Handle date mention removal
+      else if (e.target.closest('[data-action="remove-date-mention"]')) {
+        const button = e.target.closest('[data-action="remove-date-mention"]');
+        const dateElement = button.closest('span[data-date-mention]');
+        if (dateElement) {
+          dateElement.remove();
+        }
+      }
+      // Handle add new taxonomy category
+      else if (e.target.closest('[data-action="add-taxonomy-category"]') || 
+               e.target.matches('[data-action="add-taxonomy-category"]')) {
+        e.preventDefault();
+        const button = e.target.closest('[data-action="add-taxonomy-category"]') || e.target;
+        const input = document.getElementById('new-category-input');
+        const categoryName = input.value.trim();
+        
+        if (categoryName) {
+          // Get the add-category section and its parent
+          const addCategorySection = document.getElementById('add-category-section');
+          const parentContainer = addCategorySection.parentNode;
+          
+          // Create new category HTML
+          const categoryId = `category-${Date.now()}`;
+          const newCategoryHtml = `
+            <div class="space-y-2 taxonomy-category" data-category="${categoryName}">
+              <div class="flex items-center justify-between">
+                <h4 class="text-sm font-medium text-gray-900 flex items-center">
+                  <span class="mr-2">${categoryName}</span>
+                </h4>
+                <button type="button" class="text-xs text-red-500 hover:text-red-700 focus:outline-none" 
+                  data-action="remove-taxonomy-category" data-category="${categoryName}">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-300 rounded-md min-h-10 bg-white">
+                <input type="text" 
+                  class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0 bg-transparent placeholder-gray-400 focus:outline-none" 
+                  placeholder="Add a keyword and press Enter or comma"
+                  data-taxonomy-category="${categoryName}"
+                  data-field="taxonomy-keyword-input"
+                  autocomplete="off">
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add keywords. Click × to remove.</p>
+            </div>
+          `;
+          
+          // Insert the new category before the add-category section
+          parentContainer.insertBefore(document.createRange().createContextualFragment(newCategoryHtml), addCategorySection);
+          
+          // Clear the input
+          input.value = '';
+          
+          // Focus the new input field
+          const newInput = parentContainer.querySelector(`[data-category="${categoryName}"] [data-field="taxonomy-keyword-input"]`);
+          if (newInput) {
+            newInput.focus();
+          }
+        }
+      }
+      // Handle remove taxonomy category
+      if (e.target.closest('[data-action="remove-taxonomy-category"]')) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const button = e.target.closest('[data-action="remove-taxonomy-category"]');
+        const category = button.getAttribute('data-category');
+        const categoryElement = document.querySelector(`.taxonomy-category[data-category="${category}"]`);
+        
+        if (!categoryElement) {
+          console.error('Category element not found for:', category);
+          return;
+        }
+        
+        // Handle category removal with confirmation
+        Swal.fire({
+          title: 'Remove Category',
+          text: `Are you sure you want to remove the category "${category}"?`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, remove it!',
+          customClass: {
+            confirmButton: 'px-4 py-2 text-sm font-medium rounded-md',
+            cancelButton: 'px-4 py-2 text-sm font-medium rounded-md',
+            actions: 'gap-3',
+            popup: 'rounded-lg',
+            title: 'text-lg font-semibold',
+            container: 'text-sm',
+            icon: '!w-12 !h-12 !mt-4',
+            htmlContainer: 'mt-2 mb-4 text-gray-700'
+          },
+          buttonsStyling: false,
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Add removal animation
+            categoryElement.style.overflow = 'hidden';
+            categoryElement.style.transition = 'opacity 0.3s, transform 0.3s, height 0.3s, margin 0.3s, padding 0.3s';
+            
+            // Store the original height and spacing
+            const originalHeight = categoryElement.offsetHeight + 'px';
+            const originalMargin = window.getComputedStyle(categoryElement).margin;
+            const originalPadding = window.getComputedStyle(categoryElement).padding;
+            
+            // Apply initial styles
+            categoryElement.style.opacity = '1';
+            categoryElement.style.height = originalHeight;
+            categoryElement.style.margin = originalMargin;
+            categoryElement.style.padding = originalPadding;
+            
+            // Force repaint
+            void categoryElement.offsetHeight;
+            
+            // Start the animation
+            requestAnimationFrame(() => {
+              categoryElement.style.opacity = '0';
+              categoryElement.style.transform = 'translateX(-20px)';
+              categoryElement.style.height = '0';
+              categoryElement.style.marginTop = '0';
+              categoryElement.style.marginBottom = '0';
+              categoryElement.style.paddingTop = '0';
+              categoryElement.style.paddingBottom = '0';
+              categoryElement.style.border = 'none';
+              categoryElement.style.visibility = 'hidden';
+            });
+            
+            // Remove after animation completes
+            setTimeout(() => {
+              categoryElement.remove();
+              
+              // Show success message
+              Swal.fire({
+                title: 'Removed!',
+                text: `The category "${category}" has been removed.`,
+                icon: 'success',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                customClass: {
+                  popup: '!p-3 !text-sm',
+                  title: '!text-base !font-medium',
+                  icon: '!w-5 !h-5 !mt-0 !mr-2',
+                  timerProgressBar: '!bg-blue-500',
+                  container: '!w-auto !max-w-xs'
+                },
+                didOpen: (toast) => {
+                  toast.style.display = 'flex';
+                  toast.style.alignItems = 'center';
+                }
+              });
+            }, 300);
+          }
+        });
       }
     });
   }
