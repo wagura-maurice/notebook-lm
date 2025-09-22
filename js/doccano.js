@@ -306,7 +306,7 @@
   // Document data - will be loaded asynchronously
   let taxonomies = [];
   let taxonomiesLoaded = false;
-  
+
   // Store the loaded document data
   let documentData = [];
   let documentDataLoaded = false;
@@ -363,19 +363,19 @@
   // Start loading taxonomies and document data when the script loads
   Promise.all([
     loadTaxonomies().catch(console.error),
-    loadDocumentData().catch(console.error)
+    loadDocumentData().catch(console.error),
   ]);
 
   // Generate a summary of the entire document
   function generateDocumentSummary() {
     if (!documentData || documentData.length === 0) {
       return {
-        title: 'Summary Analysis',
-        summary: 'No document data available for analysis.',
+        title: "Summary Analysis",
+        summary: "No document data available for analysis.",
         totalSections: 0,
         totalWords: 0,
         keywords: [],
-        sections: []
+        sections: [],
       };
     }
 
@@ -384,7 +384,7 @@
     const sections = new Set();
     let totalWords = 0;
 
-    documentData.forEach(item => {
+    documentData.forEach((item) => {
       // Count words in the text
       if (item.text) {
         totalWords += item.text.split(/\s+/).length;
@@ -392,7 +392,7 @@
 
       // Collect keywords
       if (item.enrichment?.keywords) {
-        item.enrichment.keywords.forEach(keyword => allKeywords.add(keyword));
+        item.enrichment.keywords.forEach((keyword) => allKeywords.add(keyword));
       }
 
       // Collect sections
@@ -404,99 +404,133 @@
     });
 
     // Get top 10 most common keywords if we have too many
-    const sortedKeywords = Array.from(allKeywords).sort((a, b) => 
-      b.length - a.length  // Sort by length as a simple proxy for importance
-    ).slice(0, 10);
+    const sortedKeywords = Array.from(allKeywords)
+      .sort(
+        (a, b) => b.length - a.length // Sort by length as a simple proxy for importance
+      )
+      .slice(0, 10);
 
     return {
-      title: 'Summary Analysis',
+      title: "Summary Analysis",
       summary: `This document contains ${documentData.length} lines of content across ${sections.size} sections, with approximately ${totalWords} words in total.`,
       totalSections: sections.size,
       totalWords,
       keywords: sortedKeywords,
-      sections: Array.from(sections).slice(0, 10) // Show first 10 sections
+      sections: Array.from(sections).slice(0, 10), // Show first 10 sections
     };
   }
 
   // Update Enrichment Summary with line data or document summary
   function updateEnrichmentSummary(lineData) {
-    const summaryContainer = document.getElementById('enrichment-summary-content');
+    const summaryContainer = document.getElementById(
+      "enrichment-summary-content"
+    );
     if (!summaryContainer) return;
 
     // Clear existing content
-    summaryContainer.innerHTML = '';
+    summaryContainer.innerHTML = "";
 
     if (!lineData) {
       // Show document summary when no specific line is selected
       const docSummary = generateDocumentSummary();
-      
-      const section = document.createElement('div');
-      section.className = 'document-section border border-gray-200 rounded-lg overflow-hidden transition-shadow hover:shadow-sm';
-      
+
+      const section = document.createElement("div");
+      section.className =
+        "document-section border border-gray-200 rounded-lg overflow-hidden transition-shadow hover:shadow-sm";
+
       section.innerHTML = `
         <div class="w-full text-left px-5 py-3.5 bg-gray-50 font-medium">
-          <h3 class="text-base font-medium text-eu-blue">${docSummary.title}</h3>
+          <h3 class="text-base font-medium text-eu-blue">${
+            docSummary.title
+          }</h3>
         </div>
         <div class="px-5 py-4">
           <div class="relative pl-3.5 border-l-2 border-eu-orange my-1">
-            <p class="text-sm text-gray-700 font-normal leading-relaxed">${docSummary.summary}</p>
+            <p class="text-sm text-gray-700 font-normal leading-relaxed">${
+              docSummary.summary
+            }</p>
             <div class="absolute -left-px top-0 w-0.5 h-full bg-gradient-to-b from-eu-orange/30 to-transparent"></div>
           </div>
           
-          ${docSummary.keywords.length > 0 ? `
+          ${
+            docSummary.keywords.length > 0
+              ? `
             <div class="mt-3 pt-3 border-t border-gray-100">
               <p class="text-xs text-gray-500 mb-2">Key Topics</p>
               <div class="flex flex-wrap gap-2">
-                ${docSummary.keywords.map(keyword => 
-                  `<span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">
+                ${docSummary.keywords
+                  .map(
+                    (keyword) =>
+                      `<span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">
                     ${keyword}
                   </span>`
-                ).join('')}
+                  )
+                  .join("")}
               </div>
             </div>
-          ` : ''}
+          `
+              : ""
+          }
           
-          ${docSummary.sections.length > 0 ? `
+          ${
+            docSummary.sections.length > 0
+              ? `
             <div class="mt-3 pt-3 border-t border-gray-100">
-              <p class="text-xs text-gray-500 mb-2">Document Sections (${docSummary.totalSections} total)</p>
+              <p class="text-xs text-gray-500 mb-2">Document Sections (${
+                docSummary.totalSections
+              } total)</p>
               <ul class="text-sm text-gray-700 space-y-1">
-                ${docSummary.sections.map(section => 
-                  `<li class="flex items-start">
+                ${docSummary.sections
+                  .map(
+                    (section) =>
+                      `<li class="flex items-start">
                     <span class="inline-block w-1.5 h-1.5 rounded-full bg-eu-orange/50 mt-1.5 mr-2 flex-shrink-0"></span>
                     <span>${section}</span>
                   </li>`
-                ).join('')}
-                ${docSummary.totalSections > docSummary.sections.length ? 
-                  `<li class="text-xs text-gray-400 italic">+ ${docSummary.totalSections - docSummary.sections.length} more sections</li>` : ''}
+                  )
+                  .join("")}
+                ${
+                  docSummary.totalSections > docSummary.sections.length
+                    ? `<li class="text-xs text-gray-400 italic">+ ${
+                        docSummary.totalSections - docSummary.sections.length
+                      } more sections</li>`
+                    : ""
+                }
               </ul>
             </div>
-          ` : ''}
+          `
+              : ""
+          }
         </div>
       `;
-      
+
       summaryContainer.appendChild(section);
       return;
     }
 
     // Get enrichment data with defaults
     const enrichment = lineData.enrichment || {};
-    const title = enrichment.title || 'Document Details';
-    const summary = enrichment.summary || lineData.text || 'No content available';
+    const title = enrichment.title || "Document Details";
+    const summary =
+      enrichment.summary || lineData.text || "No content available";
     const keywords = enrichment.keywords || [];
     const rhetoricalRole = enrichment.rhetorical_role;
-    
+
     // Handle temporal data with new structure
     const temporalData = lineData.temporal || {};
-    const hasTemporalData = temporalData.start_date || temporalData.end_date || 
-                          (temporalData.dates_mentioned && temporalData.dates_mentioned.length > 0);
-    
+    const hasTemporalData =
+      temporalData.start_date ||
+      temporalData.end_date ||
+      (temporalData.dates_mentioned && temporalData.dates_mentioned.length > 0);
+
     // Handle annotations with new structure
     const annotations = lineData.annotations || {};
 
     // Create section wrapper
-    const section = document.createElement('div');
-    section.className = 'document-section border border-gray-200 rounded-lg overflow-hidden transition-shadow hover:shadow-sm';
-    
+    const section = document.createElement("div");
+    section.className =
+      "document-section border border-gray-200 rounded-lg overflow-hidden transition-shadow hover:shadow-sm";
+
     // Create section header
     section.innerHTML = `
       <div class="w-full text-left px-5 py-3.5 bg-gray-50 font-medium">
@@ -507,80 +541,124 @@
           <p class="text-sm text-gray-700 font-normal leading-relaxed">${summary}</p>
           <div class="absolute -left-px top-0 w-0.5 h-full bg-gradient-to-b from-eu-orange/30 to-transparent"></div>
         </div>
-        ${keywords.length > 0 ? `
+        ${
+          keywords.length > 0
+            ? `
           <div class="flex flex-wrap gap-2 mt-3">
-            ${keywords.map(keyword => 
-              `<span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">
+            ${keywords
+              .map(
+                (keyword) =>
+                  `<span class="px-2 py-0.5 bg-eu-orange/20 text-eu-blue text-xs rounded-full">
                 ${keyword}
               </span>`
-            ).join('')}
+              )
+              .join("")}
           </div>
-        ` : ''}
+        `
+            : ""
+        }
         
         <!-- Temporal Data Section -->
         <div class="mt-3 pt-3 border-t border-gray-100">
           <p class="text-xs text-gray-500 mb-2">Temporal Data</p>
-          ${hasTemporalData ? `
+          ${
+            hasTemporalData
+              ? `
             <ul class="space-y-1.5 text-sm text-gray-700">
-              ${temporalData.start_date ? `
+              ${
+                temporalData.start_date
+                  ? `
                 <li class="flex items-start">
                   <span class="inline-block w-1.5 h-1.5 rounded-full bg-eu-orange mt-1.5 mr-2 flex-shrink-0"></span>
                   <span>Start Date: <span class="font-medium">${temporalData.start_date}</span></span>
                 </li>
-              ` : ''}
-              ${temporalData.end_date ? `
+              `
+                  : ""
+              }
+              ${
+                temporalData.end_date
+                  ? `
                 <li class="flex items-start">
                   <span class="inline-block w-1.5 h-1.5 rounded-full bg-eu-orange mt-1.5 mr-2 flex-shrink-0"></span>
                   <span>End Date: <span class="font-medium">${temporalData.end_date}</span></span>
                 </li>
-              ` : ''}
-              ${temporalData.dates_mentioned && temporalData.dates_mentioned.length > 0 ? `
-                ${temporalData.dates_mentioned.map(date => `
+              `
+                  : ""
+              }
+              ${
+                temporalData.dates_mentioned &&
+                temporalData.dates_mentioned.length > 0
+                  ? `
+                ${temporalData.dates_mentioned
+                  .map(
+                    (date) => `
                   <li class="flex items-start">
                     <span class="inline-block w-1.5 h-1.5 rounded-full bg-eu-orange/50 mt-1.5 mr-2 flex-shrink-0"></span>
                     <span>Mentioned: <span class="font-medium">${date}</span></span>
                   </li>
-                `).join('')}
-              ` : ''}
+                `
+                  )
+                  .join("")}
+              `
+                  : ""
+              }
             </ul>
-          ` : `
+          `
+              : `
             <p class="text-sm text-gray-400 italic">No temporal data available</p>
-          `}
+          `
+          }
         </div>
         
         <!-- Annotations Section -->
         <div class="mt-3 pt-3 border-t border-gray-100">
           <p class="text-xs text-gray-500 mb-2">Annotation Analysis</p>
-          ${annotations.length || annotations.words ? `
+          ${
+            annotations.length || annotations.words
+              ? `
             <ul class="space-y-2 text-sm">
-              ${annotations.length ? `
+              ${
+                annotations.length
+                  ? `
                 <li class="p-2 bg-gray-50 rounded border border-gray-100">
                   <div class="flex justify-between items-center">
                     <span class="font-medium text-eu-blue">Annotation Length</span>
                     <span class="text-sm font-medium">${annotations.length} characters</span>
                   </div>
                 </li>
-              ` : ''}
-              ${annotations.words ? `
+              `
+                  : ""
+              }
+              ${
+                annotations.words
+                  ? `
                 <li class="p-2 bg-gray-50 rounded border border-gray-100">
                   <div class="flex justify-between items-center">
                     <span class="font-medium text-eu-blue">Word Count</span>
                     <span class="text-sm font-medium">${annotations.words} words</span>
                   </div>
                 </li>
-              ` : ''}
+              `
+                  : ""
+              }
             </ul>
-          ` : `
+          `
+              : `
             <p class="text-sm text-gray-400 italic">No annotation analysis available</p>
-          `}
+          `
+          }
         </div>
         
-        ${rhetoricalRole ? `
+        ${
+          rhetoricalRole
+            ? `
           <div class="mt-3 pt-3 border-t border-gray-100">
             <p class="text-xs text-gray-500">Rhetorical Role</p>
             <p class="text-sm font-medium text-gray-700">${rhetoricalRole}</p>
           </div>
-        ` : ''}
+        `
+            : ""
+        }
         
         <div class="mt-3 pt-3 border-t border-gray-100">
           <button 
@@ -594,77 +672,83 @@
         <div class="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500 space-y-1.5">
           <div class="flex items-center">
             <span class="font-medium mr-2 text-gray-600">ID:</span>
-            <span class="font-mono">${lineData.id?.substring(0, 8) || 'N/A'}</span>
+            <span class="font-mono">${
+              lineData.id?.substring(0, 8) || "N/A"
+            }</span>
           </div>
           <div class="flex items-center">
             <span class="font-medium mr-2 text-gray-600">Created:</span>
-            <span>${new Date(lineData._ts || new Date()).toLocaleString()}</span>
+            <span>${new Date(
+              lineData._ts || new Date()
+            ).toLocaleString()}</span>
           </div>
         </div>
       </div>
     `;
-    
+
     summaryContainer.appendChild(section);
   }
 
   // Handle line click in the document
   function handleLineClick(lineElement) {
-    console.log('Line element clicked:', lineElement);
-    
+    console.log("Line element clicked:", lineElement);
+
     // Remove active class from all document lines
-    document.querySelectorAll('.document-line').forEach(el => {
-      el.classList.remove('active');
+    document.querySelectorAll(".document-line").forEach((el) => {
+      el.classList.remove("active");
     });
-    
+
     // Add active class to clicked line
-    lineElement.classList.add('active');
-    
+    lineElement.classList.add("active");
+
     // Get the line number from the element
     const lineNumber = getLineNumber(lineElement);
     if (!lineNumber) {
-      console.error('No line number found for element:', lineElement);
+      console.error("No line number found for element:", lineElement);
       return;
     }
 
     // Try to get the line data from the element's dataset first
     let lineData = null;
-    
+
     // Check if the line element has a data-line-data attribute with the full data
     if (lineElement.dataset.lineData) {
       try {
         lineData = JSON.parse(lineElement.dataset.lineData);
-        console.log('Found line data in dataset:', lineData);
+        console.log("Found line data in dataset:", lineData);
       } catch (e) {
-        console.error('Error parsing line data from dataset:', e);
+        console.error("Error parsing line data from dataset:", e);
       }
     }
-    
+
     // If no data in dataset, try to find it in documentData
     if (!lineData) {
-      lineData = documentData.find(item => 
-        item.lineNumber === lineNumber || 
-        (item.id && item.id === lineElement.dataset.id) ||
-        (item._hash && item._hash === lineElement.dataset.hash)
+      lineData = documentData.find(
+        (item) =>
+          item.lineNumber === lineNumber ||
+          (item.id && item.id === lineElement.dataset.id) ||
+          (item._hash && item._hash === lineElement.dataset.hash)
       );
-      
+
       if (lineData) {
-        console.log('Found line data in documentData:', lineData);
+        console.log("Found line data in documentData:", lineData);
       }
     }
 
     // If still no data, create a basic one
     if (!lineData) {
-      console.log('Creating basic line data');
+      console.log("Creating basic line data");
       lineData = {
         lineNumber: lineNumber,
         text: lineElement.textContent.trim(),
-        type: lineElement.dataset.type || 'text',
-        id: lineElement.dataset.id || '',
-        section: lineElement.closest('[data-section]')?.dataset.section || 'Document',
+        type: lineElement.dataset.type || "text",
+        id: lineElement.dataset.id || "",
+        section:
+          lineElement.closest("[data-section]")?.dataset.section || "Document",
         metadata: {
           length: lineElement.textContent.length,
-          words: lineElement.textContent.trim().split(/\s+/).length
-        }
+          words: lineElement.textContent.trim().split(/\s+/).length,
+        },
       };
     } else {
       // Ensure lineNumber is set
@@ -675,14 +759,14 @@
     try {
       lineElement.dataset.lineData = JSON.stringify(lineData);
     } catch (e) {
-      console.error('Error saving line data to dataset:', e);
+      console.error("Error saving line data to dataset:", e);
     }
 
     // Update the URL with the line number
-    window.history.pushState({ lineNumber }, '', `#L${lineNumber}`);
-    
+    window.history.pushState({ lineNumber }, "", `#L${lineNumber}`);
+
     // Log the line data for debugging
-    console.log('Final line data:', lineData);
+    console.log("Final line data:", lineData);
 
     // Update the enrichment summary
     updateEnrichmentSummary(lineData);
@@ -822,40 +906,49 @@
 
     // Create a snapshot of the current state with line numbers
     const currentHighlights = [];
-    const currentHighlightElements = document.querySelectorAll(".taxonomy-highlight");
-    
+    const currentHighlightElements = document.querySelectorAll(
+      ".taxonomy-highlight"
+    );
+
     // Track current highlights
     currentHighlightElements.forEach((hl) => {
       // Get the text content of just the highlight, excluding any tooltip content
-      let text = '';
-      
+      let text = "";
+
       // Find the first text node within the highlight
-      const textNode = Array.from(hl.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
+      const textNode = Array.from(hl.childNodes).find(
+        (node) => node.nodeType === Node.TEXT_NODE
+      );
       if (textNode) {
         text = textNode.textContent.trim();
       } else {
         // Fallback to textContent if no direct text node is found
-        text = hl.textContent.trim()
-          .replace(/\s+/g, ' ')  // Replace multiple whitespace with single space
-          .replace(/\n+/g, ' ')  // Replace newlines with space
+        text = hl.textContent
+          .trim()
+          .replace(/\s+/g, " ") // Replace multiple whitespace with single space
+          .replace(/\n+/g, " ") // Replace newlines with space
           .trim();
-        
+
         // Remove any taxonomy category name that might be at the end
-        const taxonomy = taxonomies.find(t => t.id === (hl.dataset.taxonomyId || ''));
+        const taxonomy = taxonomies.find(
+          (t) => t.id === (hl.dataset.taxonomyId || "")
+        );
         if (taxonomy) {
-          text = text.replace(new RegExp(`\\s*${taxonomy.name}\\s*$`, 'i'), '').trim();
+          text = text
+            .replace(new RegExp(`\\s*${taxonomy.name}\\s*$`, "i"), "")
+            .trim();
         }
       }
-      
+
       // Ensure line number is captured from the closest parent with data-line-number
       let lineNumber = hl.dataset.lineNumber || "";
       if (!lineNumber) {
-        const lineElement = hl.closest('[data-line-number]');
+        const lineElement = hl.closest("[data-line-number]");
         if (lineElement) {
           lineNumber = lineElement.dataset.lineNumber || "";
         }
       }
-      
+
       currentHighlights.push({
         id: hl.id,
         text: text,
@@ -864,26 +957,31 @@
         isActive: true, // If element exists in DOM, it's active
       });
     });
-    
+
     // If we have a previous state, mark any missing highlights as inactive
-    if (stateHistory.currentIndex >= 0 && stateHistory.stack[stateHistory.currentIndex]) {
+    if (
+      stateHistory.currentIndex >= 0 &&
+      stateHistory.stack[stateHistory.currentIndex]
+    ) {
       try {
-        const prevState = JSON.parse(stateHistory.stack[stateHistory.currentIndex]);
+        const prevState = JSON.parse(
+          stateHistory.stack[stateHistory.currentIndex]
+        );
         const prevHighlights = prevState.highlights || [];
-        
+
         // Find highlights that were in previous state but not in current
-        const currentIds = new Set(currentHighlights.map(h => h.id));
-        prevHighlights.forEach(prevHl => {
+        const currentIds = new Set(currentHighlights.map((h) => h.id));
+        prevHighlights.forEach((prevHl) => {
           if (!currentIds.has(prevHl.id)) {
             // This highlight was removed
             currentHighlights.push({
               ...prevHl,
-              isActive: false
+              isActive: false,
             });
           }
         });
       } catch (e) {
-        console.error('Error processing previous state:', e);
+        console.error("Error processing previous state:", e);
       }
     }
 
@@ -893,38 +991,45 @@
     let hasChanges = false;
 
     // Only compare if we have a previous state
-    if (stateHistory.currentIndex >= 0 && stateHistory.stack[stateHistory.currentIndex]) {
+    if (
+      stateHistory.currentIndex >= 0 &&
+      stateHistory.stack[stateHistory.currentIndex]
+    ) {
       try {
-        const prevState = JSON.parse(stateHistory.stack[stateHistory.currentIndex]);
+        const prevState = JSON.parse(
+          stateHistory.stack[stateHistory.currentIndex]
+        );
         const prevHighlights = prevState.highlights || [];
-        
+
         // Create maps for easier comparison
-        const currentMap = new Map(currentHighlights.map(h => [h.id, h]));
-        const prevMap = new Map(prevHighlights.map(h => [h.id, h]));
-        
+        const currentMap = new Map(currentHighlights.map((h) => [h.id, h]));
+        const prevMap = new Map(prevHighlights.map((h) => [h.id, h]));
+
         // Find added highlights (in current but not in previous)
-        added = currentHighlights.filter(h => !prevMap.has(h.id)).length;
-        
+        added = currentHighlights.filter((h) => !prevMap.has(h.id)).length;
+
         // Find removed highlights (in previous but not in current)
-        removed = prevHighlights.filter(h => !currentMap.has(h.id)).length;
-        
+        removed = prevHighlights.filter((h) => !currentMap.has(h.id)).length;
+
         // Check for modified highlights (same ID but different content)
         let modified = 0;
-        currentHighlights.forEach(ch => {
+        currentHighlights.forEach((ch) => {
           const ph = prevMap.get(ch.id);
-          if (ph && 
-              (ch.text !== ph.text || 
-               ch.taxonomyId !== ph.taxonomyId || 
-               ch.isActive !== ph.isActive)) {
+          if (
+            ph &&
+            (ch.text !== ph.text ||
+              ch.taxonomyId !== ph.taxonomyId ||
+              ch.isActive !== ph.isActive)
+          ) {
             modified++;
           }
         });
-        
+
         hasChanges = added > 0 || removed > 0 || modified > 0;
-        
-        console.log('Changes detected:', { added, removed, modified });
+
+        console.log("Changes detected:", { added, removed, modified });
       } catch (e) {
-        console.error('Error comparing states:', e);
+        console.error("Error comparing states:", e);
         // If we can't compare, assume there are changes to be safe
         hasChanges = currentHighlights.length > 0;
       }
@@ -951,14 +1056,14 @@
       highlights: currentHighlights.length,
       added,
       removed,
-      hasChanges
+      hasChanges,
     });
 
     return {
       snapshot,
       added,
       removed,
-      hasChanges
+      hasChanges,
     };
   }
 
@@ -1019,11 +1124,11 @@
       items.forEach((item, index) => {
         // Clean up header by removing page spans and markdown formatting
         const sectionHeader = item.header
-        ? item.header
-            .replace(/<span[^>]*>[^<]*<\/span>/g, '') // Remove page spans
-            .replace(/\*\*/g, '') // Remove markdown bold
-            .trim()
-        : '';
+          ? item.header
+              .replace(/<span[^>]*>[^<]*<\/span>/g, "") // Remove page spans
+              .replace(/\*\*/g, "") // Remove markdown bold
+              .trim()
+          : "";
 
         const sectionTitle =
           item.enrichment?.title || `Section ${sections.length + 1}`;
@@ -1232,18 +1337,21 @@
             const tocLineId = `line-${lineNumber}`;
             const tocLineData = JSON.stringify({
               lineNumber: lineNumber,
-              text: left + (right ? ` | ${right}` : ''),
+              text: left + (right ? ` | ${right}` : ""),
               id: tocLineId,
-              type: 'table_of_contents',
+              type: "table_of_contents",
               section: section.title,
               enrichment: item.enrichment || null,
               _ts: item._ts || new Date().toISOString(),
-              doc: item.doc || 'Document',
-              header: item.header || ''
+              doc: item.doc || "Document",
+              header: item.header || "",
             });
 
             html += `
-                    <div class="document-line flex items-start group mb-1" data-line-number="${lineNumber}" data-line-data='${tocLineData.replace(/'/g, '&#39;')}'>
+                    <div class="document-line flex items-start group mb-1" data-line-number="${lineNumber}" data-line-data='${tocLineData.replace(
+              /'/g,
+              "&#39;"
+            )}'>
                         <span class="line-number text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5 cursor-pointer hover:text-gray-600">${lineStr}</span>
                         <div class="line-content flex-1">
                             <div class="flex border-b border-gray-100 py-1">
@@ -1262,18 +1370,21 @@
             const lineId = `line-${lineNumber}`;
             const lineData = JSON.stringify({
               lineNumber: lineNumber,
-              text: text.replace(/<[^>]*>/g, ''), // Remove HTML tags for plain text
+              text: text.replace(/<[^>]*>/g, ""), // Remove HTML tags for plain text
               id: lineId,
-              type: 'text',
+              type: "text",
               section: section.title,
               enrichment: item.enrichment || null,
               _ts: item._ts || new Date().toISOString(),
-              doc: item.doc || 'Document',
-              header: item.header || ''
+              doc: item.doc || "Document",
+              header: item.header || "",
             });
 
             html += `
-                    <div class="document-line flex items-start group mb-1" data-line-number="${lineNumber}" data-line-data='${lineData.replace(/'/g, '&#39;')}'>
+                    <div class="document-line flex items-start group mb-1" data-line-number="${lineNumber}" data-line-data='${lineData.replace(
+              /'/g,
+              "&#39;"
+            )}'>
                         <span class="line-number text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5 cursor-pointer hover:text-gray-600">${lineStr}</span>
                         <div class="line-content flex-1">
                             <p class="text-sm text-gray-800 mb-2">${text}</p>
@@ -1344,20 +1455,20 @@
   // Function to update document metadata in the UI
   function updateDocumentMetadata() {
     if (!documentData || documentData.length === 0) return;
-    
+
     // Get the first and last documents
     const firstDoc = documentData[0];
     const lastDoc = documentData[documentData.length - 1];
-    
+
     // Extract document title from the first line's header or doc field
-    let docTitle = firstDoc.header || firstDoc.doc || 'Document';
-    
+    let docTitle = firstDoc.header || firstDoc.doc || "Document";
+
     // Clean up the title - remove markdown formatting and extra spaces
     docTitle = docTitle
-      .replace(/\*\*|##?|\[|\]/g, '') // Remove markdown formatting
-      .replace(/\s+/g, ' ')              // Replace multiple spaces with one
-      .trim();                           // Trim whitespace
-    
+      .replace(/\*\*|##?|\[|\]/g, "") // Remove markdown formatting
+      .replace(/\s+/g, " ") // Replace multiple spaces with one
+      .trim(); // Trim whitespace
+
     // Use the last line's _ts field for the last updated date
     let lastUpdated = new Date();
     if (lastDoc._ts) {
@@ -1367,22 +1478,24 @@
         console.warn("Invalid date in _ts field:", lastDoc._ts);
       }
     }
-    
+
     // Format the date as "Month Day, Year" (e.g., "Aug 25, 2025")
-    const formattedDate = lastUpdated.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    const formattedDate = lastUpdated.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
-    
+
     // Update all elements with the document-title class
-    const titleElements = document.querySelectorAll('.document-title');
-    titleElements.forEach(el => {
+    const titleElements = document.querySelectorAll(".document-title");
+    titleElements.forEach((el) => {
       // Skip updating if the element is inside a template or shadow DOM
-      if (!el.closest('template') && !el.getRootNode().host) {
+      if (!el.closest("template") && !el.getRootNode().host) {
         el.textContent = docTitle;
         // Preserve any icons or other elements by only updating the text node
-        const textNode = Array.from(el.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
+        const textNode = Array.from(el.childNodes).find(
+          (node) => node.nodeType === Node.TEXT_NODE
+        );
         if (textNode) {
           textNode.textContent = docTitle;
         } else if (el.childNodes.length === 0) {
@@ -1393,7 +1506,7 @@
 
     // Function to get document statistics
     const getDocumentStats = () => {
-      const documentContent = document.querySelector('#document-content');
+      const documentContent = document.querySelector("#document-content");
       if (!documentContent) return { charCount: 0, wordCount: 0 };
 
       // Get all text nodes within the document content
@@ -1404,21 +1517,26 @@
         false
       );
 
-      let fullText = '';
+      let fullText = "";
       let node;
-      while (node = walker.nextNode()) {
+      while ((node = walker.nextNode())) {
         // Skip script and style elements
-        if (node.parentNode.nodeName === 'SCRIPT' || node.parentNode.nodeName === 'STYLE') {
+        if (
+          node.parentNode.nodeName === "SCRIPT" ||
+          node.parentNode.nodeName === "STYLE"
+        ) {
           continue;
         }
-        fullText += ' ' + node.textContent;
+        fullText += " " + node.textContent;
       }
 
       // Count characters (excluding whitespace)
-      const charCount = fullText.replace(/\s+/g, '').length;
+      const charCount = fullText.replace(/\s+/g, "").length;
       // Count words (split by whitespace and filter out empty strings)
-      const wordCount = fullText.split(/\s+/).filter(word => word.length > 0).length;
-      
+      const wordCount = fullText
+        .split(/\s+/)
+        .filter((word) => word.length > 0).length;
+
       return { charCount, wordCount };
     };
 
@@ -1426,14 +1544,18 @@
     const calculateAverageConfidence = () => {
       try {
         // Check if documentData is available and has items
-        if (!window.documentData || !Array.isArray(window.documentData) || window.documentData.length === 0) {
-          console.log('No document data available');
+        if (
+          !window.documentData ||
+          !Array.isArray(window.documentData) ||
+          window.documentData.length === 0
+        ) {
+          console.log("No document data available");
           return null;
         }
-        
+
         let totalConfidence = 0;
         let count = 0;
-        window.documentData.forEach(doc => {
+        window.documentData.forEach((doc) => {
           const confidence = parseFloat(doc?.enrichment?.confidence);
           if (!isNaN(confidence)) {
             totalConfidence += confidence;
@@ -1441,23 +1563,26 @@
           }
         });
         if (count > 0) {
-          const averageConfidence = Math.round(totalConfidence / count * 100 * 100) / 100;
-          console.log('Calculated average confidence:', averageConfidence);
+          const averageConfidence =
+            Math.round((totalConfidence / count) * 100 * 100) / 100;
+          console.log("Calculated average confidence:", averageConfidence);
           return averageConfidence;
         }
-        
+
         // Get confidence from enrichment.confidence
         const confidence = parseFloat(firstDoc.enrichment.confidence);
         if (isNaN(confidence)) {
-          console.log('Invalid confidence value in document:', firstDoc.enrichment.confidence);
+          console.log(
+            "Invalid confidence value in document:",
+            firstDoc.enrichment.confidence
+          );
           return null;
         }
-        
-        console.log('Using confidence from document data:', confidence);
+
+        console.log("Using confidence from document data:", confidence);
         return Math.round(confidence * 100 * 100) / 100;
-        
       } catch (error) {
-        console.error('Error calculating confidence:', error);
+        console.error("Error calculating confidence:", error);
         return null; // Return null on error
       }
     };
@@ -1472,7 +1597,7 @@
       let completionTokens = 0;
       let totalTokens = 0;
 
-      window.documentData.forEach(doc => {
+      window.documentData.forEach((doc) => {
         if (doc?.enrichment?._usage) {
           const usage = doc.enrichment._usage;
           promptTokens += parseInt(usage.prompt_tokens) || 0;
@@ -1484,117 +1609,121 @@
       return {
         prompt: promptTokens,
         completion: completionTokens,
-        total: totalTokens
+        total: totalTokens,
       };
     };
 
     // Initialize token usage chart
     const initTokenChart = () => {
       const usage = processTokenUsage();
-      
+
       // Only initialize if we have data
       if (usage.total === 0) return;
 
       const options = {
         series: [usage.prompt, usage.completion],
         chart: {
-          type: 'donut',
+          type: "donut",
           height: 250,
-          fontFamily: 'Inter, sans-serif',
+          fontFamily: "Inter, sans-serif",
           toolbar: {
-            show: false
+            show: false,
           },
         },
-        labels: ['Prompt Tokens', 'Completion Tokens'],
-        colors: ['#3B82F6', '#10B981'], // Blue for prompt, Green for completion
-        responsive: [{
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 200
+        labels: ["Prompt Tokens", "Completion Tokens"],
+        colors: ["#3B82F6", "#10B981"], // Blue for prompt, Green for completion
+        responsive: [
+          {
+            breakpoint: 480,
+            options: {
+              chart: {
+                width: 200,
+              },
+              legend: {
+                position: "bottom",
+              },
             },
-            legend: {
-              position: 'bottom'
-            }
-          }
-        }],
+          },
+        ],
         plotOptions: {
           pie: {
             donut: {
-              size: '75%',  // Increase center space by making the donut thinner
-              offsetY: 0,   // Center the donut vertically
+              size: "75%", // Increase center space by making the donut thinner
+              offsetY: 0, // Center the donut vertically
               labels: {
                 show: true,
                 total: {
                   show: true,
-                  label: 'Total Tokens',
-                  fontSize: '14px',
+                  label: "Total Tokens",
+                  fontSize: "14px",
                   fontWeight: 600,
-                  color: '#4B5563',
+                  color: "#4B5563",
                   formatter: function (w) {
                     return usage.total.toLocaleString();
-                  }
+                  },
                 },
                 value: {
-                  formatter: function(val) {
+                  formatter: function (val) {
                     return parseInt(val).toLocaleString();
-                  }
+                  },
                 },
                 percentage: {
-                  formatter: function(val) {
-                    return Math.round(parseFloat(val)) + '%';
-                  }
-                }
-              }
-            }
-          }
+                  formatter: function (val) {
+                    return Math.round(parseFloat(val)) + "%";
+                  },
+                },
+              },
+            },
+          },
         },
         dataLabels: {
-          enabled: false
+          enabled: false,
         },
         legend: {
-          position: 'bottom',
-          horizontalAlign: 'center',
-          fontSize: '13px',
+          position: "bottom",
+          horizontalAlign: "center",
+          fontSize: "13px",
           itemMargin: {
             horizontal: 8,
-            vertical: 8
-          }
+            vertical: 8,
+          },
         },
         tooltip: {
           y: {
-            formatter: function(val) {
-              return `${val.toLocaleString()} tokens (${Math.round((val / usage.total) * 100)}%)`;
-            }
-          }
-        }
+            formatter: function (val) {
+              return `${val.toLocaleString()} tokens (${Math.round(
+                (val / usage.total) * 100
+              )}%)`;
+            },
+          },
+        },
       };
 
       // Get chart element
-      const chartElement = document.querySelector('#tokenChart');
+      const chartElement = document.querySelector("#tokenChart");
       if (!chartElement) return;
-      
+
       // Clear any existing content
-      chartElement.innerHTML = '';
-      
+      chartElement.innerHTML = "";
+
       // Create new chart
-      if (typeof ApexCharts !== 'undefined') {
+      if (typeof ApexCharts !== "undefined") {
         // Store the chart instance in a local variable first
         const chart = new ApexCharts(chartElement, options);
-        
+
         // Store reference to the chart instance
         if (!window.tokenCharts) {
           window.tokenCharts = new Map();
         }
-        
+
         // Remove existing chart if it exists
-        if (window.tokenCharts.has('main')) {
-          window.tokenCharts.get('main').destroy();
-          window.tokenCharts.delete('main');
+        if (window.tokenCharts.has("main")) {
+          window.tokenCharts.get("main").destroy();
+          window.tokenCharts.delete("main");
         }
-        
+
         // Store and render the new chart
-        window.tokenCharts.set('main', chart);
+        window.tokenCharts.set("main", chart);
         chart.render();
       }
     };
@@ -1602,11 +1731,11 @@
     // Update document statistics display
     const updateDocumentStats = () => {
       const { charCount, wordCount } = getDocumentStats();
-      
+
       // Update length elements
-      const lengthElements = document.querySelectorAll('.document-length');
-      lengthElements.forEach(el => {
-        if (!el.closest('template') && !el.getRootNode().host) {
+      const lengthElements = document.querySelectorAll(".document-length");
+      lengthElements.forEach((el) => {
+        if (!el.closest("template") && !el.getRootNode().host) {
           el.textContent = `${charCount.toLocaleString()} characters • ${wordCount.toLocaleString()} words`;
         }
       });
@@ -1616,51 +1745,53 @@
 
       // Update confidence score
       const confidence = calculateAverageConfidence();
-      const confidenceValue = document.getElementById('confidenceValue');
-      const confidenceProgress = document.getElementById('confidenceProgress');
-      
+      const confidenceValue = document.getElementById("confidenceValue");
+      const confidenceProgress = document.getElementById("confidenceProgress");
+
       if (confidenceValue) {
         confidenceValue.textContent = `${confidence}%`;
       }
-      
+
       if (confidenceProgress) {
         // Update progress bar width and color based on confidence
         confidenceProgress.style.width = `${confidence}%`;
-        
+
         // Change color based on confidence level
         if (confidence < 0.7) {
-          confidenceProgress.classList.remove('bg-eu-orange', 'bg-emerald-500');
-          confidenceProgress.classList.add('bg-red-500');
+          confidenceProgress.classList.remove("bg-eu-orange", "bg-emerald-500");
+          confidenceProgress.classList.add("bg-red-500");
         } else if (confidence < 0.9) {
-          confidenceProgress.classList.remove('bg-emerald-500', 'bg-red-500');
-          confidenceProgress.classList.add('bg-eu-orange');
+          confidenceProgress.classList.remove("bg-emerald-500", "bg-red-500");
+          confidenceProgress.classList.add("bg-eu-orange");
         } else {
-          confidenceProgress.classList.remove('bg-eu-orange', 'bg-red-500');
-          confidenceProgress.classList.add('bg-emerald-500');
+          confidenceProgress.classList.remove("bg-eu-orange", "bg-red-500");
+          confidenceProgress.classList.add("bg-emerald-500");
         }
       }
 
       // Update model elements
-      const modelElements = document.querySelectorAll('.document-model');
-      modelElements.forEach(el => {
-        if (!el.closest('template') && !el.getRootNode().host) {
+      const modelElements = document.querySelectorAll(".document-model");
+      modelElements.forEach((el) => {
+        if (!el.closest("template") && !el.getRootNode().host) {
           // You can update this to show the actual model being used
-          const modelName = 'gpt-4o';
+          const modelName = "gpt-4o";
           el.textContent = modelName;
-          el.className = 'document-model font-medium text-eu-blue/90';
+          el.className = "document-model font-medium text-eu-blue/90";
         }
       });
 
       // Update status elements
-      const statusElements = document.querySelectorAll('.document-status');
-      statusElements.forEach(el => {
-        if (!el.closest('template') && !el.getRootNode().host) {
+      const statusElements = document.querySelectorAll(".document-status");
+      statusElements.forEach((el) => {
+        if (!el.closest("template") && !el.getRootNode().host) {
           // You can update this to show the actual status
           const isActive = true; // Set based on your logic
-          const statusText = isActive ? 'Active' : 'Inactive';
-          const statusClass = isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-800';
-          const dotClass = isActive ? 'bg-emerald-500' : 'bg-gray-500';
-          
+          const statusText = isActive ? "Active" : "Inactive";
+          const statusClass = isActive
+            ? "bg-emerald-100 text-emerald-800"
+            : "bg-gray-100 text-gray-800";
+          const dotClass = isActive ? "bg-emerald-500" : "bg-gray-500";
+
           el.innerHTML = `
             <span class="w-1.5 h-1.5 rounded-full ${dotClass} mr-1.5"></span>
             ${statusText}
@@ -1672,25 +1803,25 @@
 
     // Run the update and also set up a mutation observer to update when content changes
     updateDocumentStats();
-    
+
     // Set up a mutation observer to update stats when content changes
     const observer = new MutationObserver(() => {
       updateDocumentStats();
     });
-    
-    const documentContent = document.querySelector('#document-content');
+
+    const documentContent = document.querySelector("#document-content");
     if (documentContent) {
       observer.observe(documentContent, {
         childList: true,
         subtree: true,
-        characterData: true
+        characterData: true,
       });
     }
-    
+
     // Update all elements with the document-updated class
-    const dateElements = document.querySelectorAll('.document-updated');
-    dateElements.forEach(el => {
-      if (!el.closest('template') && !el.getRootNode().host) {
+    const dateElements = document.querySelectorAll(".document-updated");
+    dateElements.forEach((el) => {
+      if (!el.closest("template") && !el.getRootNode().host) {
         el.textContent = formattedDate;
       }
     });
@@ -1702,32 +1833,33 @@
       const response = await fetch(
         "./assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson"
       );
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const text = await response.text();
-      documentData = text.split('\n')
-        .filter(line => line.trim() !== '')
-        .map(line => JSON.parse(line));
-      
+      documentData = text
+        .split("\n")
+        .filter((line) => line.trim() !== "")
+        .map((line) => JSON.parse(line));
+
       // Store documentData in window for global access
       window.documentData = documentData;
       console.log("Document data loaded successfully", documentData);
       documentDataLoaded = true;
-      
+
       // Update document metadata (title and last updated date)
       updateDocumentMetadata();
-      
+
       // Update the document summary after loading
-      if (typeof updateEnrichmentSummary === 'function') {
+      if (typeof updateEnrichmentSummary === "function") {
         updateEnrichmentSummary(null); // Pass null to show document summary
       }
-      
+
       // Update the document analysis section with dynamic data
       updateDocumentAnalysis();
-      
+
       return documentData;
     } catch (error) {
       console.error("Error loading document data:", error);
@@ -1738,24 +1870,24 @@
   // Function to get line content by line number
   function getLineContent(lineNumber) {
     if (!documentData || !Array.isArray(documentData)) {
-      console.error('Document data not loaded or invalid');
-      return '';
+      console.error("Document data not loaded or invalid");
+      return "";
     }
-    
+
     const line = documentData[lineNumber - 1];
-    return line ? line.text || '' : '';
+    return line ? line.text || "" : "";
   }
 
   // Function to update the Document Analysis section with dynamic data
   function updateDocumentAnalysis() {
     if (!documentData || documentData.length === 0) {
-      console.warn('No document data available for analysis');
+      console.warn("No document data available for analysis");
       return;
     }
 
     // Generate document summary
     const summary = generateDocumentSummary();
-    
+
     // Calculate total characters
     const totalChars = documentData.reduce((acc, item) => {
       return acc + (item.text ? item.text.length : 0);
@@ -1763,25 +1895,27 @@
 
     // Count unique entities
     const entities = new Set();
-    documentData.forEach(item => {
+    documentData.forEach((item) => {
       if (item.enrichment?.entities) {
-        item.enrichment.entities.forEach(entity => entities.add(entity.type));
+        item.enrichment.entities.forEach((entity) => entities.add(entity.type));
       }
     });
 
     // Count unique categories
     const categories = new Set();
-    documentData.forEach(item => {
+    documentData.forEach((item) => {
       if (item.enrichment?.categories) {
-        item.enrichment.categories.forEach(cat => categories.add(cat));
+        item.enrichment.categories.forEach((cat) => categories.add(cat));
       }
     });
 
     // Update the Document Analysis section while preserving the header
-    const analysisSection = document.querySelector('.document-analysis-section');
+    const analysisSection = document.querySelector(
+      ".document-analysis-section"
+    );
     if (analysisSection) {
       // Keep the existing header
-      const header = analysisSection.querySelector('.flex.items-center.mb-3');
+      const header = analysisSection.querySelector(".flex.items-center.mb-3");
       const content = `
         <div class="space-y-2.5">
           <div class="flex items-center text-xs text-gray-700">
@@ -1804,7 +1938,9 @@
           </div>
           <div class="flex items-center text-xs text-gray-700">
             <span class="w-20 text-gray-500">Keywords:</span>
-            <span class="font-medium">${summary.keywords.length} key terms</span>
+            <span class="font-medium">${
+              summary.keywords.length
+            } key terms</span>
           </div>
           <div class="flex items-center text-xs text-gray-700">
             <span class="w-20 text-gray-500">Model:</span>
@@ -1822,14 +1958,14 @@
           </div>
         </div>
       `;
-      
+
       // Only replace the content after the header
-      const contentDiv = analysisSection.querySelector('.space-y-2.5');
+      const contentDiv = analysisSection.querySelector(".space-y-2.5");
       if (contentDiv) {
         contentDiv.outerHTML = content;
       } else if (header) {
         // If no content div found, insert after header
-        header.insertAdjacentHTML('afterend', content);
+        header.insertAdjacentHTML("afterend", content);
       } else {
         // Fallback: replace entire content
         analysisSection.innerHTML = `
@@ -1851,14 +1987,16 @@
   function formatEnrichmentData(enrichment) {
     if (!enrichment) return null;
     return {
-      title: enrichment.title || '',
-      summary: enrichment.summary || '',
-      keywords: Array.isArray(enrichment.keywords) ? enrichment.keywords.join(', ') : '',
+      title: enrichment.title || "",
+      summary: enrichment.summary || "",
+      keywords: Array.isArray(enrichment.keywords)
+        ? enrichment.keywords.join(", ")
+        : "",
       entities: enrichment.entities || [],
       taxonomy: enrichment.taxonomy || {},
       confidence: enrichment.confidence || 0,
       temporal: enrichment.temporal || {},
-      geography: enrichment.geography || {}
+      geography: enrichment.geography || {},
     };
   }
 
@@ -1869,114 +2007,146 @@
     }
     return `
       <div class="space-y-2">
-        ${entities.map(entity => `
+        ${entities
+          .map(
+            (entity) => `
           <div class="flex items-start p-2 bg-gray-50 rounded-lg border border-gray-200">
             <div class="flex-1">
               <div class="flex items-center justify-between">
                 <span class="font-medium text-sm">${entity.type}</span>
-                <span class="text-xs text-gray-500">${(entity.confidence * 100).toFixed(0)}%</span>
+                <span class="text-xs text-gray-500">${(
+                  entity.confidence * 100
+                ).toFixed(0)}%</span>
               </div>
               <div class="text-sm">${entity.text}</div>
-              ${entity.value ? `<div class="text-xs text-gray-500">${entity.value}</div>` : ''}
+              ${
+                entity.value
+                  ? `<div class="text-xs text-gray-500">${entity.value}</div>`
+                  : ""
+              }
             </div>
           </div>
-        `).join('')}
+        `
+          )
+          .join("")}
       </div>
     `;
   }
 
   // Generate HTML for taxonomy
   function renderTaxonomy(taxonomy) {
-    if (!taxonomy) return '<div class="text-sm text-gray-500 italic">No taxonomy data</div>';
-    
+    if (!taxonomy)
+      return '<div class="text-sm text-gray-500 italic">No taxonomy data</div>';
+
     return `
       <div class="space-y-3">
-        ${Object.entries(taxonomy).map(([key, items]) => `
+        ${Object.entries(taxonomy)
+          .map(
+            ([key, items]) => `
           <div>
             <h4 class="text-xs font-medium text-gray-700 uppercase tracking-wider mb-1">
-              ${key.replace(/_/g, ' ')}
+              ${key.replace(/_/g, " ")}
             </h4>
             <div class="flex flex-wrap gap-2">
-              ${Array.isArray(items) ? items.map(item => `
+              ${
+                Array.isArray(items)
+                  ? items
+                      .map(
+                        (item) => `
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                   ${item}
                 </span>
-              `).join('') : 'No items'}
+              `
+                      )
+                      .join("")
+                  : "No items"
+              }
             </div>
           </div>
-        `).join('')}
+        `
+          )
+          .join("")}
       </div>
     `;
   }
 
   // Curator Studio functionality
   function openCuratorStudio() {
-    console.log('Curator Studio button clicked');
-  
-    const lineNumberElement = document.querySelector('.document-line.active');
+    console.log("Curator Studio button clicked");
+
+    const lineNumberElement = document.querySelector(".document-line.active");
     if (lineNumberElement) {
       const lineNumber = lineNumberElement.dataset.lineNumber;
-      const lineElement = document.querySelector(`[data-line-number="${lineNumber}"]`);
+      const lineElement = document.querySelector(
+        `[data-line-number="${lineNumber}"]`
+      );
       if (lineElement) {
-        console.log('Line element found for line number: ' + lineNumber);
-        
+        console.log("Line element found for line number: " + lineNumber);
+
         // Get the line content from the NDJSON file
-        fetch('assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson')
-          .then(response => response.text())
-          .then(ndjsonText => {
+        fetch(
+          "assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson"
+        )
+          .then((response) => response.text())
+          .then((ndjsonText) => {
             // Split the NDJSON into individual lines
-            const lines = ndjsonText.trim().split('\n');
+            const lines = ndjsonText.trim().split("\n");
             // Get the specific line (assuming lineNumber is 1-based)
             const lineContent = lines[lineNumber - 1];
             try {
               // Parse the JSON line
               const data = JSON.parse(lineContent);
-              console.log('Line data:', data);
-              
+              console.log("Line data:", data);
+
               // Format the line content for display
               const formatLineContent = (line) => {
-                if (!line) return 'No line selected';
-                if (typeof line === 'string') return line;
+                if (!line) return "No line selected";
+                if (typeof line === "string") return line;
                 if (line.text) return line.text;
                 return JSON.stringify(line, null, 2);
               };
-  
+
               // Get the actual line content
-              const lineContentDisplay = data ? 
-                formatLineContent(data.text || data) : 
-                'No content available';
-  
+              const lineContentDisplay = data
+                ? formatLineContent(data.text || data)
+                : "No content available";
+
               // Get enrichment data or use default
               const enrichment = data?.enrichment || {
-                title: '',
-                summary: '',
+                title: "",
+                summary: "",
                 keywords: [],
                 entities: [],
                 taxonomy: {},
                 temporal: {},
                 geography: {},
-                confidence: 0
+                confidence: 0,
               };
-  
+
               // Highlight the selected line
               if (lineElement) {
-                lineElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                lineElement.classList.add('highlighted');
-                
+                lineElement.scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+                lineElement.classList.add("highlighted");
+
                 // Remove highlight after animation
                 setTimeout(() => {
                   if (lineElement) {
-                    lineElement.classList.remove('highlighted');
+                    lineElement.classList.remove("highlighted");
                   }
                 }, 2000);
               }
-  
+
               // Helper function to render entities
               const renderEntities = (entities) => {
                 if (!entities || entities.length === 0) {
                   return '<div class="text-sm text-gray-500 py-2">No entities found</div>';
                 }
-                return entities.map(entity => `
+                return entities
+                  .map(
+                    (entity) => `
                   <div class="flex items-center justify-between bg-gray-50 p-2 rounded mb-1">
                     <div>
                       <span class="text-xs font-medium text-gray-900">${entity.text}</span>
@@ -1986,24 +2156,33 @@
                       <i class="fas fa-times"></i>
                     </button>
                   </div>
-                `).join('');
+                `
+                  )
+                  .join("");
               };
-  
+
               // Helper function to render taxonomy
               const renderTaxonomy = (taxonomy) => {
-                if (!taxonomy) return '<div class="text-sm text-gray-500 py-2">No taxonomy data</div>';
-                
-                return Object.entries(taxonomy).map(([category, items]) => {
-                  const itemsList = Array.isArray(items) ? items.join(', ') : '';
-                  return `
+                if (!taxonomy)
+                  return '<div class="text-sm text-gray-500 py-2">No taxonomy data</div>';
+
+                return Object.entries(taxonomy)
+                  .map(([category, items]) => {
+                    const itemsList = Array.isArray(items)
+                      ? items.join(", ")
+                      : "";
+                    return `
                     <div class="mb-2">
                       <div class="text-xs font-medium text-gray-700">${category}</div>
-                      <div class="text-sm text-gray-600">${itemsList || 'N/A'}</div>
+                      <div class="text-sm text-gray-600">${
+                        itemsList || "N/A"
+                      }</div>
                     </div>
                   `;
-                }).join('');
+                  })
+                  .join("");
               };
-  
+
               // Create modal HTML
               const modalHTML = `
                 <div id="curator-studio-modal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -2027,7 +2206,7 @@
                       
                       <!-- Content area -->
                       <div class="flex-1 overflow-auto p-6 bg-gray-50">
-                        <div class="space-y-6 max-w-5xl mx-auto w-full">
+                        <div class="space-y-6 mx-auto w-full">
                           <!-- Selected Content Card -->
                           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
                             <div class="flex items-center justify-between mb-4">
@@ -2036,13 +2215,16 @@
                                 Selected Content
                               </h4>
                               <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                Line ${lineNumber || 'N/A'}
+                                Line ${lineNumber || "N/A"}
                               </span>
                             </div>
                             <div class="relative">
                               <pre class="whitespace-pre-wrap bg-gray-50 p-4 rounded-lg border border-gray-200 text-sm font-mono overflow-x-auto max-h-60 overflow-y-auto">${lineContentDisplay}</pre>
                               <div class="absolute bottom-2 right-2 flex space-x-2">
-                                <button class="text-gray-400 hover:text-gray-600 transition-colors p-1" onclick="navigator.clipboard.writeText('${lineContentDisplay.replace(/'/g, "\\'")}'); this.innerHTML='<i class=\'fas fa-check text-green-500\'></i>';">
+                                <button class="text-gray-400 hover:text-gray-600 transition-colors p-1" onclick="navigator.clipboard.writeText('${lineContentDisplay.replace(
+                                  /'/g,
+                                  "\\'"
+                                )}'); this.innerHTML='<i class=\'fas fa-check text-green-500\'></i>';">
                                   <i class="far fa-copy"></i>
                                 </button>
                               </div>
@@ -2057,20 +2239,34 @@
                                   <i class="fas fa-magic text-blue-600 mr-2"></i>
                                   Enrichment Data
                                 </h4>
-                                ${enrichment ? `
+                                ${
+                                  enrichment
+                                    ? `
                                   <div class="flex items-center mt-1">
-                                    <span class="text-xs font-medium px-2 py-0.5 rounded-full ${enrichment.confidence > 0.8 ? 'bg-green-100 text-green-800' : enrichment.confidence > 0.5 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}">
-                                      Confidence: ${(enrichment.confidence * 100).toFixed(0)}%
+                                    <span class="text-xs font-medium px-2 py-0.5 rounded-full ${
+                                      enrichment.confidence > 0.8
+                                        ? "bg-green-100 text-green-800"
+                                        : enrichment.confidence > 0.5
+                                        ? "bg-yellow-100 text-yellow-800"
+                                        : "bg-red-100 text-red-800"
+                                    }">
+                                      Confidence: ${(
+                                        enrichment.confidence * 100
+                                      ).toFixed(0)}%
                                     </span>
                                     <span class="ml-2 text-xs text-gray-500">
                                       Last updated: ${new Date().toLocaleString()}
                                     </span>
                                   </div>
-                                ` : ''}
+                                `
+                                    : ""
+                                }
                               </div>
                             </div>
                             
-                            ${enrichment ? `
+                            ${
+                              enrichment
+                                ? `
                               <div class="space-y-6">
                                 <!-- Core Information -->
                                 <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow transition-shadow duration-200">
@@ -2093,7 +2289,7 @@
                                         </div>
                                         <input type="text" 
                                           class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2 placeholder-gray-400" 
-                                          value="${enrichment.title || ''}" 
+                                          value="${enrichment.title || ""}" 
                                           data-field="title"
                                           placeholder="Enter a descriptive title"
                                           required>
@@ -2108,11 +2304,36 @@
                                           data-field="rhetorical_role"
                                           required>
                                           <option value="">Select role</option>
-                                          <option value="introduction" ${enrichment.rhetorical_role === 'introduction' ? 'selected' : ''}>Introduction</option>
-                                          <option value="methodology" ${enrichment.rhetorical_role === 'methodology' ? 'selected' : ''}>Methodology</option>
-                                          <option value="results" ${enrichment.rhetorical_role === 'results' ? 'selected' : ''}>Results</option>
-                                          <option value="discussion" ${enrichment.rhetorical_role === 'discussion' ? 'selected' : ''}>Discussion</option>
-                                          <option value="conclusion" ${enrichment.rhetorical_role === 'conclusion' ? 'selected' : ''}>Conclusion</option>
+                                          <option value="introduction" ${
+                                            enrichment.rhetorical_role ===
+                                            "introduction"
+                                              ? "selected"
+                                              : ""
+                                          }>Introduction</option>
+                                          <option value="methodology" ${
+                                            enrichment.rhetorical_role ===
+                                            "methodology"
+                                              ? "selected"
+                                              : ""
+                                          }>Methodology</option>
+                                          <option value="results" ${
+                                            enrichment.rhetorical_role ===
+                                            "results"
+                                              ? "selected"
+                                              : ""
+                                          }>Results</option>
+                                          <option value="discussion" ${
+                                            enrichment.rhetorical_role ===
+                                            "discussion"
+                                              ? "selected"
+                                              : ""
+                                          }>Discussion</option>
+                                          <option value="conclusion" ${
+                                            enrichment.rhetorical_role ===
+                                            "conclusion"
+                                              ? "selected"
+                                              : ""
+                                          }>Conclusion</option>
                                         </select>
                                       </div>
                                     </div>
@@ -2120,27 +2341,41 @@
                                     <div class="mt-4 space-y-1">
                                       <div class="flex items-center justify-between">
                                         <label class="block text-sm font-medium text-gray-700">Summary</label>
-                                        <span class="text-xs text-gray-500">${enrichment.summary ? enrichment.summary.length : 0}/500 characters</span>
+                                        <span class="text-xs text-gray-500">${
+                                          enrichment.summary
+                                            ? enrichment.summary.length
+                                            : 0
+                                        }/500 characters</span>
                                       </div>
                                       <textarea rows="3" 
                                         class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2 placeholder-gray-400" 
                                         data-field="summary"
                                         placeholder="Provide a brief summary of this content"
-                                        maxlength="500">${enrichment.summary || ''}</textarea>
+                                        maxlength="500">${
+                                          enrichment.summary || ""
+                                        }</textarea>
                                       <p class="text-xs text-gray-500 mt-1">A clear, concise summary helps with quick understanding of the content.</p>
                                     </div>
                                     
                                     <div class="mt-4 space-y-1">
                                       <label class="block text-sm font-medium text-gray-700">Keywords</label>
                                       <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-300 rounded-md min-h-10 bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all duration-200" id="keywords-container">
-                                        ${Array.isArray(enrichment.keywords) ? enrichment.keywords.map(keyword => `
+                                        ${
+                                          Array.isArray(enrichment.keywords)
+                                            ? enrichment.keywords
+                                                .map(
+                                                  (keyword) => `
                                           <span class="inline-flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full transition-colors duration-150 ease-in-out" data-keyword="${keyword.trim()}">
                                             ${keyword.trim()}
                                             <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none focus:text-blue-700 transition-colors" aria-label="Remove keyword">
                                               <i class="fas fa-times"></i>
                                             </button>
                                           </span>
-                                        `).join('') : ''}
+                                        `
+                                                )
+                                                .join("")
+                                            : ""
+                                        }
                                         <input type="text" 
                                           class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0 bg-transparent placeholder-gray-400 focus:outline-none" 
                                           placeholder="Add a keyword and press Enter or comma"
@@ -2198,7 +2433,9 @@
                                   </div>
                                   <div class="p-4">
                                     <div class="entity-list space-y-3" data-field="entities">
-                                      ${renderEntities(enrichment.entities || [])}
+                                      ${renderEntities(
+                                        enrichment.entities || []
+                                      )}
                                     </div>
                                     <div class="mt-3 text-sm text-gray-500">
                                       <i class="fas fa-info-circle mr-1"></i> Add entities like people, organizations, or concepts mentioned in the text.
@@ -2219,50 +2456,70 @@
                                   </button>
                                   <div id="taxonomySection" class="px-4 pb-4 border-t border-gray-100 transition-all duration-200" style="opacity: 1;">
                                     <p class="text-sm text-gray-500 mb-4 mt-2">Categorization and classification of the content using predefined taxonomies and custom categories.</p>
-                                  <div class="p-4">
-                                    <div class="space-y-4" data-field="taxonomy">
-                                      ${Object.entries(enrichment.taxonomy || {}).map(([category, keywords]) => `
-                                        <div class="space-y-2">
+                                  <div>
+                                    <div class="space-y-4" id="taxonomy-container" data-field="taxonomy">
+                                      ${Object.entries(
+                                        enrichment.taxonomy || {}
+                                      )
+                                        .map(
+                                          ([category, keywords]) => `
+                                        <div class="space-y-2 taxonomy-category" data-category="${category}">
                                           <div class="flex items-center justify-between">
                                             <h4 class="text-sm font-medium text-gray-900">
                                               ${category
-                                                .split('_')
-                                                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                                                .join(' ')
-                                              }
+                                                .split("_")
+                                                .map(
+                                                  (word) =>
+                                                    word
+                                                      .charAt(0)
+                                                      .toUpperCase() +
+                                                    word.slice(1)
+                                                )
+                                                .join(" ")}
                                             </h4>
                                             <button type="button" class="text-xs text-red-500 hover:text-red-700 focus:outline-none" data-action="remove-taxonomy-category" data-category="${category}">
-                                              <i class="fas fa-trash-alt"></i>
+                                              <i class="fas fa-times"></i>
                                             </button>
                                           </div>
                                           <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-300 rounded-md min-h-10 bg-white">
-                                            ${(Array.isArray(keywords) ? keywords : []).map(keyword => `
+                                            ${(Array.isArray(keywords)
+                                              ? keywords
+                                              : []
+                                            )
+                                              .map(
+                                                (keyword) => `
                                               <span class="inline-flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full transition-colors">
                                                 ${keyword.trim()}
-                                                <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none" data-action="remove-taxonomy-keyword" data-category="${category}">
+                                                <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none" data-action="remove-taxonomy-keyword" data-category="${category}" data-keyword="${keyword.trim()}">
                                                   <i class="fas fa-times"></i>
                                                 </button>
                                               </span>
-                                            `).join('')}
+                                            `
+                                              )
+                                              .join("")}
                                             <input type="text" 
                                               class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0 bg-transparent placeholder-gray-400" 
-                                              placeholder="Add keyword and press Enter"
+                                              placeholder="Add a keyword and press Enter or comma"
                                               data-taxonomy-category="${category}"
                                               data-field="taxonomy-keyword-input">
                                           </div>
                                         </div>
-                                      `).join('')}
+                                      `
+                                        )
+                                        .join("")}
                                       
                                       <!-- Add new taxonomy category -->
-                                      <div class="space-y-2 mt-6 pt-4 border-t border-gray-200">
-                                        <label class="block text-sm font-medium text-gray-700">Add New Category</label>
+                                      <div class="space-y-2 mt-6 pt-4 border-t border-gray-200" id="add-category-section">
+                                        <label class="block text-sm font-medium text-gray-700">Add New Taxonomy Category</label>
                                         <div class="flex gap-2">
                                           <input type="text" 
+                                            id="new-category-input"
                                             class="flex-1 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2" 
                                             placeholder="Category name"
                                             data-field="new-taxonomy-category">
                                           <button type="button" 
-                                            class="px-3 py-2 bg-blue-50 text-blue-700 text-sm font-medium rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                            id="add-category-btn"
+                                            class="px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
                                             data-action="add-taxonomy-category">
                                             Add Category
                                           </button>
@@ -2270,7 +2527,7 @@
                                       </div>
                                     </div>
                                     <div class="mt-3 text-sm text-gray-500">
-                                      <i class="fas fa-info-circle mr-1"></i> Categorize this content using the taxonomy.
+                                      <i class="fas fa-info-circle mr-1"></i> Categorize this content using the <span class="underlined underline-off-set-4">taxonomy classification</span>.
                                     </div>
                                   </div>
                                 </div>
@@ -2288,30 +2545,57 @@
                                   </button>
                                   <div id="temporalSection" class="px-4 pb-4 border-t border-gray-100 transition-all duration-200" style="opacity: 1;">
                                     <p class="text-sm text-gray-500 mb-4 mt-2">Time-related information and relevance period for this content.</p>
-                                  <div class="p-4 space-y-4">
+                                  <div class="space-y-4">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                       <div class="space-y-1">
                                         <label class="block text-sm font-medium text-gray-700">Start Date</label>
                                         <input type="date" 
                                           class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2" 
-                                          value="${enrichment.temporal?.start_date || ''}" 
+                                          value="${
+                                            enrichment.temporal?.start_date ||
+                                            ""
+                                          }" 
                                           data-field="temporal.start_date">
                                       </div>
                                       <div class="space-y-1">
                                         <label class="block text-sm font-medium text-gray-700">End Date</label>
                                         <input type="date" 
                                           class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2" 
-                                          value="${enrichment.temporal?.end_date || ''}" 
+                                          value="${
+                                            enrichment.temporal?.end_date || ""
+                                          }" 
                                           data-field="temporal.end_date">
                                       </div>
                                     </div>
                                     <div class="space-y-1">
-                                      <label class="block text-sm font-medium text-gray-700">Time Period</label>
-                                      <input type="text" 
-                                        class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2 placeholder-gray-400" 
-                                        value="${enrichment.temporal?.period || ''}" 
-                                        data-field="temporal.period"
-                                        placeholder="e.g., Renaissance, Industrial Revolution">
+                                      <label class="block text-sm font-medium text-gray-700">Dates Mentioned</label>
+                                      <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-300 rounded-md min-h-10 bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all duration-200" id="dates-mentioned-container">
+                                        ${
+                                          Array.isArray(
+                                            enrichment.temporal?.dates_mentioned
+                                          )
+                                            ? enrichment.temporal.dates_mentioned
+                                                .map(
+                                                  (mention) => `
+                                          <span class="inline-flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full transition-colors duration-150 ease-in-out" data-date-mention="${mention.trim()}">
+                                            ${mention.trim()}
+                                            <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none focus:text-blue-700 transition-colors" aria-label="Remove date mention">
+                                              <i class="fas fa-times"></i>
+                                            </button>
+                                          </span>
+                                        `
+                                                )
+                                                .join("")
+                                            : ""
+                                        }
+                                        <input type="text" 
+                                          class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0 bg-transparent placeholder-gray-400 focus:outline-none" 
+                                          placeholder="Add a date mention and press Enter or comma"
+                                          data-field="dates-mentioned-input"
+                                          id="dates-mentioned-input"
+                                          autocomplete="off">
+                                      </div>
+                                      <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add dates mentioned. Click × to remove.</p>
                                     </div>
                                   </div>
                                 </div>
@@ -2329,7 +2613,7 @@
                                   </button>
                                   <div id="geographySection" class="px-4 pb-4 border-t border-gray-100 transition-all duration-200" style="opacity: 1;">
                                     <p class="text-sm text-gray-500 mb-4 mt-2">Geographic locations, regions, and areas relevant to this content.</p>
-                                  <div class="p-4 space-y-4">
+                                  <div class="space-y-4">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                       <div class="space-y-1">
                                         <label class="block text-sm font-medium text-gray-700">Regions</label>
@@ -2338,13 +2622,55 @@
                                           data-field="geography.regions"
                                           data-placeholder="Select regions...">
                                           <option value="" disabled>Select regions...</option>
-                                          <option value="europe" ${enrichment.geography?.regions?.includes('europe') ? 'selected' : ''}>Europe</option>
-                                          <option value="north-america" ${enrichment.geography?.regions?.includes('north-america') ? 'selected' : ''}>North America</option>
-                                          <option value="south-america" ${enrichment.geography?.regions?.includes('south-america') ? 'selected' : ''}>South America</option>
-                                          <option value="asia" ${enrichment.geography?.regions?.includes('asia') ? 'selected' : ''}>Asia</option>
-                                          <option value="africa" ${enrichment.geography?.regions?.includes('africa') ? 'selected' : ''}>Africa</option>
-                                          <option value="oceania" ${enrichment.geography?.regions?.includes('oceania') ? 'selected' : ''}>Oceania</option>
-                                          <option value="middle-east" ${enrichment.geography?.regions?.includes('middle-east') ? 'selected' : ''}>Middle East</option>
+                                          <option value="europe" ${
+                                            enrichment.geography?.regions?.includes(
+                                              "europe"
+                                            )
+                                              ? "selected"
+                                              : ""
+                                          }>Europe</option>
+                                          <option value="north-america" ${
+                                            enrichment.geography?.regions?.includes(
+                                              "north-america"
+                                            )
+                                              ? "selected"
+                                              : ""
+                                          }>North America</option>
+                                          <option value="south-america" ${
+                                            enrichment.geography?.regions?.includes(
+                                              "south-america"
+                                            )
+                                              ? "selected"
+                                              : ""
+                                          }>South America</option>
+                                          <option value="asia" ${
+                                            enrichment.geography?.regions?.includes(
+                                              "asia"
+                                            )
+                                              ? "selected"
+                                              : ""
+                                          }>Asia</option>
+                                          <option value="africa" ${
+                                            enrichment.geography?.regions?.includes(
+                                              "africa"
+                                            )
+                                              ? "selected"
+                                              : ""
+                                          }>Africa</option>
+                                          <option value="oceania" ${
+                                            enrichment.geography?.regions?.includes(
+                                              "oceania"
+                                            )
+                                              ? "selected"
+                                              : ""
+                                          }>Oceania</option>
+                                          <option value="middle-east" ${
+                                            enrichment.geography?.regions?.includes(
+                                              "middle-east"
+                                            )
+                                              ? "selected"
+                                              : ""
+                                          }>Middle East</option>
                                         </select>
                                       </div>
                                       <div class="space-y-1">
@@ -2354,26 +2680,72 @@
                                           data-field="geography.countries"
                                           data-placeholder="Select countries...">
                                           <option value="" disabled>Select countries...</option>
-                                          <option value="US" ${enrichment.geography?.countries?.includes('US') ? 'selected' : ''}>United States</option>
-                                          <option value="GB" ${enrichment.geography?.countries?.includes('GB') ? 'selected' : ''}>United Kingdom</option>
-                                          <option value="DE" ${enrichment.geography?.countries?.includes('DE') ? 'selected' : ''}>Germany</option>
-                                          <option value="FR" ${enrichment.geography?.countries?.includes('FR') ? 'selected' : ''}>France</option>
-                                          <option value="IT" ${enrichment.geography?.countries?.includes('IT') ? 'selected' : ''}>Italy</option>
-                                          <option value="ES" ${enrichment.geography?.countries?.includes('ES') ? 'selected' : ''}>Spain</option>
+                                          <option value="US" ${
+                                            enrichment.geography?.countries?.includes(
+                                              "US"
+                                            )
+                                              ? "selected"
+                                              : ""
+                                          }>United States</option>
+                                          <option value="GB" ${
+                                            enrichment.geography?.countries?.includes(
+                                              "GB"
+                                            )
+                                              ? "selected"
+                                              : ""
+                                          }>United Kingdom</option>
+                                          <option value="DE" ${
+                                            enrichment.geography?.countries?.includes(
+                                              "DE"
+                                            )
+                                              ? "selected"
+                                              : ""
+                                          }>Germany</option>
+                                          <option value="FR" ${
+                                            enrichment.geography?.countries?.includes(
+                                              "FR"
+                                            )
+                                              ? "selected"
+                                              : ""
+                                          }>France</option>
+                                          <option value="IT" ${
+                                            enrichment.geography?.countries?.includes(
+                                              "IT"
+                                            )
+                                              ? "selected"
+                                              : ""
+                                          }>Italy</option>
+                                          <option value="ES" ${
+                                            enrichment.geography?.countries?.includes(
+                                              "ES"
+                                            )
+                                              ? "selected"
+                                              : ""
+                                          }>Spain</option>
                                         </select>
                                       </div>
                                     </div>
                                     <div class="space-y-1">
                                       <label class="block text-sm font-medium text-gray-700">Country Codes</label>
                                       <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-300 rounded-md min-h-10 bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all duration-200" id="country-codes-container">
-                                        ${Array.isArray(enrichment.geography?.country_codes) ? enrichment.geography.country_codes.map(code => `
+                                        ${
+                                          Array.isArray(
+                                            enrichment.geography?.country_codes
+                                          )
+                                            ? enrichment.geography.country_codes
+                                                .map(
+                                                  (code) => `
                                           <span class="inline-flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full transition-colors duration-150 ease-in-out" data-country-code="${code.trim()}">
                                             ${code.trim()}
                                             <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none focus:text-blue-700 transition-colors" aria-label="Remove country code">
                                               <i class="fas fa-times"></i>
                                             </button>
                                           </span>
-                                        `).join('') : ''}
+                                        `
+                                                )
+                                                .join("")
+                                            : ""
+                                        }
                                         <input type="text" 
                                           class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0 bg-transparent placeholder-gray-400 focus:outline-none" 
                                           placeholder="Add a country code and press Enter or comma"
@@ -2385,7 +2757,8 @@
                                     </div>
                                   </div>
                                 </div>
-                              ` : `
+                              `
+                                : `
                                 <div class="text-center py-8">
                                   <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-2"></i>
                                   <p class="text-gray-600">No enrichment data available for this line.</p>
@@ -2393,7 +2766,8 @@
                                     <i class="fas fa-plus mr-2"></i> Add Enrichment Data
                                   </button>
                                 </div>
-                              `}
+                              `
+                            }
                             </div>
                           </div>
                         </div>
@@ -2414,110 +2788,131 @@
                   </div>
                 </div>
               `;
-  
+
               // Add modal to the body
-              document.body.insertAdjacentHTML('beforeend', modalHTML);
-              
+              document.body.insertAdjacentHTML("beforeend", modalHTML);
+
               // Prevent body scroll when modal is open
-              document.body.style.overflow = 'hidden';
-              
+              document.body.style.overflow = "hidden";
+
               // Add event listeners
-              document.getElementById('close-curator-modal').addEventListener('click', closeCuratorModal);
-              document.getElementById('cancel-curator').addEventListener('click', closeCuratorModal);
-              document.getElementById('reset-curator').addEventListener('click', resetCuratorForm);
-              document.getElementById('submit-curator').addEventListener('click', submitCuratorForm);
-              
+              document
+                .getElementById("close-curator-modal")
+                .addEventListener("click", closeCuratorModal);
+              document
+                .getElementById("cancel-curator")
+                .addEventListener("click", closeCuratorModal);
+              document
+                .getElementById("reset-curator")
+                .addEventListener("click", resetCuratorForm);
+              document
+                .getElementById("submit-curator")
+                .addEventListener("click", submitCuratorForm);
+
               // Add comma-separated keywords functionality
-              const keywordsInput = document.getElementById('keywords-input');
-              const keywordsContainer = document.getElementById('keywords-container');
-              
+              const keywordsInput = document.getElementById("keywords-input");
+              const keywordsContainer =
+                document.getElementById("keywords-container");
+
               // Function to handle keyword removal
               const removeKeyword = (keywordElement) => {
-                keywordElement.classList.add('opacity-0', 'scale-95', 'transition-all', 'duration-200');
+                keywordElement.classList.add(
+                  "opacity-0",
+                  "scale-95",
+                  "transition-all",
+                  "duration-200"
+                );
                 setTimeout(() => {
                   keywordElement.remove();
                 }, 200);
               };
-              
+
               if (keywordsInput && keywordsContainer) {
                 // Handle all remove button clicks through delegation
-                keywordsContainer.addEventListener('click', (e) => {
-                  const removeBtn = e.target.closest('button');
+                keywordsContainer.addEventListener("click", (e) => {
+                  const removeBtn = e.target.closest("button");
                   if (removeBtn) {
                     e.preventDefault();
                     e.stopPropagation();
-                    const keywordElement = removeBtn.closest('[data-keyword]');
+                    const keywordElement = removeBtn.closest("[data-keyword]");
                     if (keywordElement) {
                       removeKeyword(keywordElement);
                     }
                   }
                 });
-                
+
                 // Add hover effect for all keyword elements
-                keywordsContainer.addEventListener('mouseover', (e) => {
-                  const keywordElement = e.target.closest('[data-keyword]');
+                keywordsContainer.addEventListener("mouseover", (e) => {
+                  const keywordElement = e.target.closest("[data-keyword]");
                   if (keywordElement) {
-                    keywordElement.classList.add('bg-blue-100');
+                    keywordElement.classList.add("bg-blue-100");
                   }
                 });
-                
-                keywordsContainer.addEventListener('mouseout', (e) => {
-                  const keywordElement = e.target.closest('[data-keyword]');
+
+                keywordsContainer.addEventListener("mouseout", (e) => {
+                  const keywordElement = e.target.closest("[data-keyword]");
                   if (keywordElement) {
-                    keywordElement.classList.remove('bg-blue-100');
+                    keywordElement.classList.remove("bg-blue-100");
                   }
                 });
-                
+
                 const addKeyword = (keyword) => {
                   keyword = keyword.trim();
                   if (!keyword) return;
-                  
+
                   // Check if keyword already exists
-                  const existingKeywords = Array.from(keywordsContainer.querySelectorAll('[data-keyword]'));
-                  const keywordExists = existingKeywords.some(el => 
-                    el.getAttribute('data-keyword')?.toLowerCase() === keyword.toLowerCase()
+                  const existingKeywords = Array.from(
+                    keywordsContainer.querySelectorAll("[data-keyword]")
                   );
-                  
+                  const keywordExists = existingKeywords.some(
+                    (el) =>
+                      el.getAttribute("data-keyword")?.toLowerCase() ===
+                      keyword.toLowerCase()
+                  );
+
                   if (keywordExists) {
                     // Highlight existing keyword briefly
-                    const existingEl = existingKeywords.find(el => 
-                      el.getAttribute('data-keyword')?.toLowerCase() === keyword.toLowerCase()
+                    const existingEl = existingKeywords.find(
+                      (el) =>
+                        el.getAttribute("data-keyword")?.toLowerCase() ===
+                        keyword.toLowerCase()
                     );
                     if (existingEl) {
-                      existingEl.classList.add('ring-2', 'ring-blue-500');
+                      existingEl.classList.add("ring-2", "ring-blue-500");
                       setTimeout(() => {
-                        existingEl.classList.remove('ring-2', 'ring-blue-500');
+                        existingEl.classList.remove("ring-2", "ring-blue-500");
                       }, 1000);
                     }
                     return;
                   }
-                  
+
                   // Create keyword element
-                  const keywordElement = document.createElement('span');
-                  keywordElement.className = 'inline-flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full transition-all duration-200 ease-out';
-                  keywordElement.setAttribute('data-keyword', keyword);
+                  const keywordElement = document.createElement("span");
+                  keywordElement.className =
+                    "inline-flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full transition-all duration-200 ease-out";
+                  keywordElement.setAttribute("data-keyword", keyword);
                   keywordElement.innerHTML = `
                     ${keyword}
                     <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none focus:text-blue-700 transition-colors" aria-label="Remove keyword">
                       <i class="fas fa-times"></i>
                     </button>
                   `;
-                  
+
                   // Insert before the input
                   keywordsContainer.insertBefore(keywordElement, keywordsInput);
-                  
+
                   // Animate in
                   setTimeout(() => {
-                    keywordElement.classList.add('opacity-100', 'scale-100');
+                    keywordElement.classList.add("opacity-100", "scale-100");
                   }, 10);
-                  
+
                   // Clear input
-                  keywordsInput.value = '';
+                  keywordsInput.value = "";
                 };
-                
+
                 // Handle both Enter and Comma keys
-                keywordsInput.addEventListener('keydown', (e) => {
-                  if (e.key === 'Enter' || e.key === ',') {
+                keywordsInput.addEventListener("keydown", (e) => {
+                  if (e.key === "Enter" || e.key === ",") {
                     e.preventDefault();
                     const keyword = keywordsInput.value.trim();
                     if (keyword) {
@@ -2525,21 +2920,21 @@
                     }
                   }
                 });
-                
+
                 // Also handle input for comma separation
-                keywordsInput.addEventListener('input', (e) => {
+                keywordsInput.addEventListener("input", (e) => {
                   const value = e.target.value;
-                  if (value.includes(',')) {
-                    const keyword = value.replace(/,/g, '').trim();
+                  if (value.includes(",")) {
+                    const keyword = value.replace(/,/g, "").trim();
                     if (keyword) {
                       addKeyword(keyword);
                     }
                   }
                 });
-                
+
                 // Handle Enter key and comma
-                keywordsInput.addEventListener('keydown', (e) => {
-                  if (e.key === 'Enter' || e.key === ',') {
+                keywordsInput.addEventListener("keydown", (e) => {
+                  if (e.key === "Enter" || e.key === ",") {
                     e.preventDefault();
                     const keyword = keywordsInput.value.trim();
                     if (keyword) {
@@ -2547,109 +2942,135 @@
                     }
                   }
                 });
-                
+
                 // Handle pasting text with commas
-                keywordsInput.addEventListener('paste', (e) => {
+                keywordsInput.addEventListener("paste", (e) => {
                   e.preventDefault();
-                  const pastedText = (e.clipboardData || window.clipboardData).getData('text');
-                  const keywords = pastedText.split(',').map(k => k.trim()).filter(k => k);
-                  keywords.forEach(keyword => addKeyword(keyword));
+                  const pastedText = (
+                    e.clipboardData || window.clipboardData
+                  ).getData("text");
+                  const keywords = pastedText
+                    .split(",")
+                    .map((k) => k.trim())
+                    .filter((k) => k);
+                  keywords.forEach((keyword) => addKeyword(keyword));
                 });
               }
-              
+
               // Close modal when clicking outside content
-              document.querySelector('#curator-studio-modal > div').addEventListener('click', function(e) {
-                if (e.target === this) {
-                  closeCuratorModal();
-                }
-              });
-              
+              document
+                .querySelector("#curator-studio-modal > div")
+                .addEventListener("click", function (e) {
+                  if (e.target === this) {
+                    closeCuratorModal();
+                  }
+                });
+
               // Initialize country codes functionality (same as keywords)
-              const countryCodesInput = document.getElementById('country-codes-input');
-              const countryCodesContainer = document.getElementById('country-codes-container');
-              
+              const countryCodesInput = document.getElementById(
+                "country-codes-input"
+              );
+              const countryCodesContainer = document.getElementById(
+                "country-codes-container"
+              );
+
               if (countryCodesInput && countryCodesContainer) {
                 // Handle all remove button clicks through delegation
-                countryCodesContainer.addEventListener('click', (e) => {
-                  const removeBtn = e.target.closest('button');
+                countryCodesContainer.addEventListener("click", (e) => {
+                  const removeBtn = e.target.closest("button");
                   if (removeBtn) {
                     e.preventDefault();
                     e.stopPropagation();
-                    const codeElement = removeBtn.closest('[data-country-code]');
+                    const codeElement = removeBtn.closest(
+                      "[data-country-code]"
+                    );
                     if (codeElement) {
-                      codeElement.classList.add('opacity-0', 'scale-95', 'transition-all', 'duration-200');
+                      codeElement.classList.add(
+                        "opacity-0",
+                        "scale-95",
+                        "transition-all",
+                        "duration-200"
+                      );
                       setTimeout(() => {
                         codeElement.remove();
                       }, 200);
                     }
                   }
                 });
-                
+
                 // Add hover effect for all country code elements
-                countryCodesContainer.addEventListener('mouseover', (e) => {
-                  const codeElement = e.target.closest('[data-country-code]');
+                countryCodesContainer.addEventListener("mouseover", (e) => {
+                  const codeElement = e.target.closest("[data-country-code]");
                   if (codeElement) {
-                    codeElement.classList.add('bg-blue-100');
+                    codeElement.classList.add("bg-blue-100");
                   }
                 });
-                
-                countryCodesContainer.addEventListener('mouseout', (e) => {
-                  const codeElement = e.target.closest('[data-country-code]');
+
+                countryCodesContainer.addEventListener("mouseout", (e) => {
+                  const codeElement = e.target.closest("[data-country-code]");
                   if (codeElement) {
-                    codeElement.classList.remove('bg-blue-100');
+                    codeElement.classList.remove("bg-blue-100");
                   }
                 });
-                
+
                 const addCountryCode = (code) => {
                   code = code.trim().toUpperCase();
                   if (!code) return;
-                  
+
                   // Check if code already exists
-                  const existingCodes = Array.from(countryCodesContainer.querySelectorAll('[data-country-code]'));
-                  const codeExists = existingCodes.some(el => 
-                    el.getAttribute('data-country-code') === code
+                  const existingCodes = Array.from(
+                    countryCodesContainer.querySelectorAll(
+                      "[data-country-code]"
+                    )
                   );
-                  
+                  const codeExists = existingCodes.some(
+                    (el) => el.getAttribute("data-country-code") === code
+                  );
+
                   if (codeExists) {
                     // Highlight existing code briefly
-                    const existingEl = existingCodes.find(el => 
-                      el.getAttribute('data-country-code') === code
+                    const existingEl = existingCodes.find(
+                      (el) => el.getAttribute("data-country-code") === code
                     );
                     if (existingEl) {
-                      existingEl.classList.add('ring-2', 'ring-blue-500');
+                      existingEl.classList.add("ring-2", "ring-blue-500");
                       setTimeout(() => {
-                        existingEl.classList.remove('ring-2', 'ring-blue-500');
+                        existingEl.classList.remove("ring-2", "ring-blue-500");
                       }, 1000);
                     }
                     return;
                   }
-                  
+
                   // Create code element
-                  const codeElement = document.createElement('span');
-                  codeElement.className = 'inline-flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full transition-all duration-200 ease-out';
-                  codeElement.setAttribute('data-country-code', code);
+                  const codeElement = document.createElement("span");
+                  codeElement.className =
+                    "inline-flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full transition-all duration-200 ease-out";
+                  codeElement.setAttribute("data-country-code", code);
                   codeElement.innerHTML = `
                     ${code}
                     <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none focus:text-blue-700 transition-colors" aria-label="Remove country code">
                       <i class="fas fa-times"></i>
                     </button>
                   `;
-                  
+
                   // Insert before the input
-                  countryCodesContainer.insertBefore(codeElement, countryCodesInput);
-                  
+                  countryCodesContainer.insertBefore(
+                    codeElement,
+                    countryCodesInput
+                  );
+
                   // Animate in
                   setTimeout(() => {
-                    codeElement.classList.add('opacity-100', 'scale-100');
+                    codeElement.classList.add("opacity-100", "scale-100");
                   }, 10);
-                  
+
                   // Clear input
-                  countryCodesInput.value = '';
+                  countryCodesInput.value = "";
                 };
-                
+
                 // Handle both Enter and Comma keys
-                countryCodesInput.addEventListener('keydown', (e) => {
-                  if (e.key === 'Enter' || e.key === ',') {
+                countryCodesInput.addEventListener("keydown", (e) => {
+                  if (e.key === "Enter" || e.key === ",") {
                     e.preventDefault();
                     const code = countryCodesInput.value.trim();
                     if (code) {
@@ -2657,85 +3078,86 @@
                     }
                   }
                 });
-                
+
                 // Also handle input for comma separation
-                countryCodesInput.addEventListener('input', (e) => {
+                countryCodesInput.addEventListener("input", (e) => {
                   const value = e.target.value;
-                  if (value.includes(',')) {
-                    const code = value.replace(/,/g, '').trim();
+                  if (value.includes(",")) {
+                    const code = value.replace(/,/g, "").trim();
                     if (code) {
                       addCountryCode(code);
                     }
                   }
                 });
               }
-              
+
               // Close on Escape key
-              document.addEventListener('keydown', handleEscapeKey);
-              
+              document.addEventListener("keydown", handleEscapeKey);
+
               // Initialize collapsible sections
               initCollapsibleSections();
-  
             } catch (e) {
-              console.error('Error parsing JSON line:', e);
+              console.error("Error parsing JSON line:", e);
               // Show error to user
-              alert('Error loading document data. Please try again.');
+              alert("Error loading document data. Please try again.");
             }
           })
-          .catch(error => {
-            console.error('Error loading NDJSON file:', error);
+          .catch((error) => {
+            console.error("Error loading NDJSON file:", error);
             // Show error to user
-            alert('Error loading document. Please try again.');
+            alert("Error loading document. Please try again.");
           });
       }
     }
   }
-  
+
   // Handle Escape key
   function handleEscapeKey(e) {
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       closeCuratorModal();
     }
   }
-  
+
   // Toggle collapsible sections
   function toggleCollapse(button) {
-    const targetId = button.getAttribute('data-target');
+    const targetId = button.getAttribute("data-target");
     const target = document.querySelector(targetId);
-    const chevron = button.querySelector('[data-chevron]');
-    const isExpanded = button.getAttribute('aria-expanded') === 'true';
+    const chevron = button.querySelector("[data-chevron]");
+    const isExpanded = button.getAttribute("aria-expanded") === "true";
 
     // Toggle aria-expanded
-    button.setAttribute('aria-expanded', !isExpanded);
-    
+    button.setAttribute("aria-expanded", !isExpanded);
+
     // Toggle chevron rotation
     if (chevron) {
-      chevron.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
-      chevron.style.transition = 'transform 0.2s ease-in-out';
+      chevron.style.transform = isExpanded ? "rotate(0deg)" : "rotate(180deg)";
+      chevron.style.transition = "transform 0.2s ease-in-out";
     }
 
     // Toggle content visibility with animation
     if (target) {
       if (isExpanded) {
         // Collapse
-        target.style.maxHeight = target.scrollHeight + 'px';
+        target.style.maxHeight = target.scrollHeight + "px";
         // Force reflow
         target.offsetHeight;
-        target.style.maxHeight = '0';
-        target.style.overflow = 'hidden';
-        target.style.opacity = '0';
-        target.style.transition = 'max-height 0.25s ease-out, opacity 0.15s ease-out';
+        target.style.maxHeight = "0";
+        target.style.overflow = "hidden";
+        target.style.opacity = "0";
+        target.style.transition =
+          "max-height 0.25s ease-out, opacity 0.15s ease-out";
       } else {
         // Expand
-        target.style.display = 'block';
-        target.style.maxHeight = '0';
-        target.style.opacity = '0';
+        target.style.display = "block";
+        target.style.maxHeight = "0";
+        target.style.opacity = "0";
         // Force reflow
         target.offsetHeight;
-        target.style.maxHeight = target.scrollHeight + 'px';
-        target.style.opacity = '1';
-        target.style.overflow = 'visible';
-        target.style.transition = 'max-height 0.25s ease-in, opacity 0.15s ease-in';
+        target.style.maxHeight = target.scrollHeight + "px";
+        target.style.opacity = "1";
+        target.style.overflow = "visible";
+        target.style.transition =
+          "max-height 0.25s ease-in, opacity 0.15s ease-in";
       }
     }
   }
@@ -2743,38 +3165,39 @@
   // Initialize collapsible sections
   function initCollapsibleSections() {
     const toggles = document.querySelectorAll('[data-toggle="collapse"]');
-    
-    toggles.forEach(toggle => {
-      const targetId = toggle.getAttribute('data-target');
+
+    toggles.forEach((toggle) => {
+      const targetId = toggle.getAttribute("data-target");
       const target = document.querySelector(targetId);
-      const chevron = toggle.querySelector('[data-chevron]');
-      
+      const chevron = toggle.querySelector("[data-chevron]");
+
       if (target) {
         // Set initial state
-        const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
-        
+        const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+
         // Add initial styles
-        target.style.transition = 'max-height 0.25s ease-in-out, opacity 0.15s ease-in-out';
-        target.style.overflow = 'hidden';
-        
+        target.style.transition =
+          "max-height 0.25s ease-in-out, opacity 0.15s ease-in-out";
+        target.style.overflow = "hidden";
+
         if (isExpanded) {
-          target.style.maxHeight = 'none';
-          target.style.opacity = '1';
+          target.style.maxHeight = "none";
+          target.style.opacity = "1";
           if (chevron) {
-            chevron.style.transform = 'rotate(180deg)';
-            chevron.style.transition = 'transform 0.2s ease-in-out';
+            chevron.style.transform = "rotate(180deg)";
+            chevron.style.transition = "transform 0.2s ease-in-out";
           }
         } else {
-          target.style.maxHeight = '0';
-          target.style.opacity = '0';
+          target.style.maxHeight = "0";
+          target.style.opacity = "0";
           if (chevron) {
-            chevron.style.transform = 'rotate(0deg)';
-            chevron.style.transition = 'transform 0.2s ease-in-out';
+            chevron.style.transform = "rotate(0deg)";
+            chevron.style.transition = "transform 0.2s ease-in-out";
           }
         }
-        
+
         // Add click handler
-        toggle.addEventListener('click', (e) => {
+        toggle.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
           toggleCollapse(toggle);
@@ -2782,37 +3205,37 @@
       }
     });
   }
-  
+
   // Close modal and clean up
   function closeCuratorModal() {
-    const modal = document.getElementById('curator-studio-modal');
+    const modal = document.getElementById("curator-studio-modal");
     if (modal) {
       // Clean up event listeners
       const toggles = modal.querySelectorAll('[data-toggle="collapse"]');
-      toggles.forEach(toggle => {
-        toggle.removeEventListener('click', toggleCollapse);
+      toggles.forEach((toggle) => {
+        toggle.removeEventListener("click", toggleCollapse);
       });
-      
+
       // Remove modal
       modal.remove();
-      document.body.style.overflow = '';
-      document.removeEventListener('keydown', handleEscapeKey);
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", handleEscapeKey);
     }
   }
-  
+
   // Reset form
   function resetCuratorForm() {
     // Implement form reset logic here
-    console.log('Reset form');
+    console.log("Reset form");
   }
-  
+
   // Submit form
   function submitCuratorForm() {
     // Implement form submission logic here
-    console.log('Submit form');
+    console.log("Submit form");
     closeCuratorModal();
   }
-  
+
   // Make functions available globally
   window.DoccanoApp = window.DoccanoApp || {};
   window.DoccanoApp.loadDocumentContent = loadDocumentContent;
@@ -2825,16 +3248,16 @@
       if (annotation.confidence !== undefined) {
         return parseFloat(annotation.confidence);
       }
-      
+
       // Check if annotation has metadata with confidence
       if (annotation.meta && annotation.meta.confidence) {
         return parseFloat(annotation.meta.confidence);
       }
-      
+
       // Default confidence if not specified
       return 0.92;
     } catch (error) {
-      console.error('Error getting confidence from annotation:', error);
+      console.error("Error getting confidence from annotation:", error);
       return 0.92; // Default confidence on error
     }
   }
@@ -2842,40 +3265,42 @@
   // Initialize the application
   function init() {
     // Add click handler for document lines
-    document.addEventListener('click', (e) => {
+    document.addEventListener("click", (e) => {
       // Check if the click is on a line number or line content
-      const lineNumberElement = e.target.closest('.line-number');
-      const lineContentElement = e.target.closest('.line-content');
+      const lineNumberElement = e.target.closest(".line-number");
+      const lineContentElement = e.target.closest(".line-content");
       let lineElement = null;
 
       if (lineNumberElement) {
         // If clicking on a line number, get the parent line element
-        lineElement = lineNumberElement.closest('[data-line-number]');
+        lineElement = lineNumberElement.closest("[data-line-number]");
       } else if (lineContentElement) {
         // If clicking on line content, get the parent line element
-        lineElement = lineContentElement.closest('[data-line-number]');
+        lineElement = lineContentElement.closest("[data-line-number]");
       } else {
         // Try to find any line element
-        lineElement = e.target.closest('[data-line-number]');
+        lineElement = e.target.closest("[data-line-number]");
       }
 
       if (lineElement) {
-        console.log('Line element found:', lineElement);
+        console.log("Line element found:", lineElement);
         handleLineClick(lineElement);
       } else {
-        console.log('No line element found for click target:', e.target);
+        console.log("No line element found for click target:", e.target);
       }
     });
 
     // Handle back/forward navigation
-    window.addEventListener('popstate', (e) => {
+    window.addEventListener("popstate", (e) => {
       if (e.state && e.state.lineNumber) {
         // Find and highlight the line
-        const lineElement = document.querySelector(`[data-line-number="${e.state.lineNumber}"]`);
+        const lineElement = document.querySelector(
+          `[data-line-number="${e.state.lineNumber}"]`
+        );
         if (lineElement) {
           handleLineClick(lineElement);
           // Scroll to the line
-          lineElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          lineElement.scrollIntoView({ behavior: "smooth", block: "center" });
         }
       } else {
         // Clear the summary if no line is selected
@@ -2885,14 +3310,16 @@
     // Initialize the document content
     loadDocumentContent().then(() => {
       // Check for line hash in URL on initial load
-      if (window.location.hash.startsWith('#L')) {
+      if (window.location.hash.startsWith("#L")) {
         const lineNumber = window.location.hash.substring(2);
-        const lineElement = document.querySelector(`[data-line-number="${lineNumber}"]`);
+        const lineElement = document.querySelector(
+          `[data-line-number="${lineNumber}"]`
+        );
         if (lineElement) {
           handleLineClick(lineElement);
           // Small delay to ensure the document is fully rendered
           setTimeout(() => {
-            lineElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            lineElement.scrollIntoView({ behavior: "smooth", block: "center" });
           }, 100);
         }
       }
@@ -2901,10 +3328,10 @@
     // Initialize other components
     initCollapsibleSections();
     initTextSelection();
-    
+
     // Add event delegation for Curator Studio button
-    document.addEventListener('click', function(event) {
-      if (event.target.closest('.curator-studio-btn')) {
+    document.addEventListener("click", function (event) {
+      if (event.target.closest(".curator-studio-btn")) {
         event.preventDefault();
         window.DoccanoApp.openCuratorStudio();
       }
@@ -3370,54 +3797,60 @@
   function removeHighlight(highlightElement) {
     // Get the taxonomy ID from the data attribute instead of the element ID
     const taxonomyId = highlightElement.dataset.taxonomyId;
-    
+
     // Get the highlight info before removing it
     const highlightInfo = {
       id: highlightElement.id,
       text: highlightElement.textContent.trim(),
       taxonomyId: taxonomyId,
-      lineNumber: highlightElement.dataset.lineNumber || ""
+      lineNumber: highlightElement.dataset.lineNumber || "",
     };
-    
+
     // Remove the highlight from the DOM first
-    const originalText = highlightElement.firstChild.textContent || highlightElement.textContent;
+    const originalText =
+      highlightElement.firstChild.textContent || highlightElement.textContent;
     const textNode = document.createTextNode(originalText);
     highlightElement.parentNode.replaceChild(textNode, highlightElement);
-    
+
     // Update the taxonomy count
     if (taxonomyId) {
       const taxonomy = taxonomies.find((t) => t.id === taxonomyId);
-      if (taxonomy && (taxonomy.count > 0 || typeof taxonomy.count === 'undefined')) {
+      if (
+        taxonomy &&
+        (taxonomy.count > 0 || typeof taxonomy.count === "undefined")
+      ) {
         taxonomy.count = Math.max(0, (taxonomy.count || 0) - 1);
         renderTaxonomies();
       }
     }
-    
+
     // Create a new state that reflects this removal
     const newState = saveState();
-    
+
     // If saveState didn't detect the change (which can happen with direct DOM manipulation),
     // force a new state with the removal
     if (newState && !newState.hasChanges) {
-      console.log('Forcing state update after highlight removal');
+      console.log("Forcing state update after highlight removal");
       // Push a new state manually
       const docContent = document.getElementById("document-content");
       if (docContent) {
         const snapshot = {
           html: docContent.innerHTML,
-          highlights: Array.from(document.querySelectorAll(".taxonomy-highlight")).map(hl => ({
+          highlights: Array.from(
+            document.querySelectorAll(".taxonomy-highlight")
+          ).map((hl) => ({
             id: hl.id,
             text: hl.textContent.trim(),
             lineNumber: hl.dataset.lineNumber || "",
             taxonomyId: hl.dataset.taxonomyId || "",
-            isActive: hl.classList.contains("highlight-active")
+            isActive: hl.classList.contains("highlight-active"),
           })),
           timestamp: new Date().toISOString(),
-          currentHighlightId: null
+          currentHighlightId: null,
         };
-        
+
         stateHistory.pushState(JSON.stringify(snapshot));
-        console.log('Manual state update after highlight removal');
+        console.log("Manual state update after highlight removal");
       }
     }
 
@@ -3440,24 +3873,30 @@
 
     // This will be called when taxonomies are loaded
     onTaxonomiesLoaded((taxonomyList) => {
-      const taxonomiesHeading = container.closest('.mb-4')?.querySelector('h3');
-      
+      const taxonomiesHeading = container.closest(".mb-4")?.querySelector("h3");
+
       if (!taxonomyList || taxonomyList.length === 0) {
         container.innerHTML =
           '<div class="text-sm text-red-500 py-4">No taxonomies available</div>';
         if (taxonomiesHeading) {
-          taxonomiesHeading.innerHTML = 'Taxonomies <span class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-normal rounded-full">0 items</span>';
+          taxonomiesHeading.innerHTML =
+            'Taxonomies <span class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-normal rounded-full">0 items</span>';
         }
         return;
       }
 
       // Calculate total count of all taxonomy items
-      const totalCount = taxonomyList.reduce((sum, taxonomy) => sum + (taxonomy.count || 0), 0);
+      const totalCount = taxonomyList.reduce(
+        (sum, taxonomy) => sum + (taxonomy.count || 0),
+        0
+      );
       const formattedCount = totalCount.toLocaleString(); // Format number with thousand separators
-      
+
       // Update the taxonomies heading with the total count
       if (taxonomiesHeading) {
-        taxonomiesHeading.innerHTML = `Taxonomies <span class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-normal rounded-full">${formattedCount} item${totalCount !== 1 ? 's' : ''}</span>`;
+        taxonomiesHeading.innerHTML = `Taxonomies <span class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-normal rounded-full">${formattedCount} item${
+          totalCount !== 1 ? "s" : ""
+        }</span>`;
       }
 
       container.innerHTML = "";
@@ -3640,27 +4079,29 @@
   function downloadJSON(data, filename) {
     try {
       // Create a blob with the JSON data
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
+        type: "application/json",
+      });
       const url = URL.createObjectURL(blob);
-      
+
       // Create a temporary anchor element
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = filename || 'highlights-export.json';
-      
+      a.download = filename || "highlights-export.json";
+
       // Trigger the download
       document.body.appendChild(a);
       a.click();
-      
+
       // Clean up
       setTimeout(() => {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
       }, 0);
-      
+
       return true;
     } catch (error) {
-      console.error('Error downloading JSON:', error);
+      console.error("Error downloading JSON:", error);
       return false;
     }
   }
@@ -3668,13 +4109,13 @@
   // Handle save action with export functionality
   async function handleSaveWithExport(event) {
     event.preventDefault();
-    
+
     // Get the save button and add loading state
     const saveBtn = document.getElementById("save-btn");
     const saveIcon = saveBtn ? saveBtn.querySelector("i, svg") : null;
     const originalHtml = saveBtn ? saveBtn.innerHTML : "";
     let exportData = null;
-    
+
     try {
       // Add loading state to button
       if (saveBtn) {
@@ -3691,78 +4132,92 @@
       // First save the current state
       const changes = saveState();
       if (!changes) {
-        throw new Error('Failed to save document state');
+        throw new Error("Failed to save document state");
       }
-      
+
       const addedCount = changes.added || 0;
       const removedCount = changes.removed || 0;
       const hasChanges = changes.hasChanges || false;
-      
+
       // Get all current highlight elements from the DOM
-      const currentHighlightElements = Array.from(document.querySelectorAll('.taxonomy-highlight'));
-      
+      const currentHighlightElements = Array.from(
+        document.querySelectorAll(".taxonomy-highlight")
+      );
+
       // Get the current document's line number from the document content wrapper
-      const documentWrapper = document.querySelector('.document-content-wrapper');
-      
+      const documentWrapper = document.querySelector(
+        ".document-content-wrapper"
+      );
+
       // Process only the active highlights from the DOM
-      const activeHighlights = currentHighlightElements.map(hl => {
+      const activeHighlights = currentHighlightElements.map((hl) => {
         // Get text content
-        let text = '';
-        const textNode = Array.from(hl.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
+        let text = "";
+        const textNode = Array.from(hl.childNodes).find(
+          (node) => node.nodeType === Node.TEXT_NODE
+        );
         if (textNode) {
           text = textNode.textContent.trim();
         } else {
-          text = hl.textContent.trim()
-            .replace(/\s+/g, ' ')
-            .replace(/\n+/g, ' ')
+          text = hl.textContent
+            .trim()
+            .replace(/\s+/g, " ")
+            .replace(/\n+/g, " ")
             .trim();
-          
-          const taxonomy = taxonomies.find(t => t.id === (hl.dataset.taxonomyId || ''));
+
+          const taxonomy = taxonomies.find(
+            (t) => t.id === (hl.dataset.taxonomyId || "")
+          );
           if (taxonomy) {
-            text = text.replace(new RegExp(`\\s*${taxonomy.name}\\s*$`, 'i'), '').trim();
+            text = text
+              .replace(new RegExp(`\\s*${taxonomy.name}\\s*$`, "i"), "")
+              .trim();
           }
         }
-        
+
         // Get highlight's line number within the document
-        let lineNumber = hl.dataset.lineNumber || '';
+        let lineNumber = hl.dataset.lineNumber || "";
         if (!lineNumber) {
           // Try to get line number from the closest line element
-          const lineElement = hl.closest('.flex.items-start.group');
+          const lineElement = hl.closest(".flex.items-start.group");
           if (lineElement) {
-            const lineNumberSpan = lineElement.querySelector('span.text-xs.text-gray-400');
+            const lineNumberSpan = lineElement.querySelector(
+              "span.text-xs.text-gray-400"
+            );
             if (lineNumberSpan) {
               lineNumber = lineNumberSpan.textContent.trim();
             }
           }
-          
+
           // If still no line number, try to get from data attributes
           if (!lineNumber) {
-            const lineElement = hl.closest('[data-line-number]');
+            const lineElement = hl.closest("[data-line-number]");
             if (lineElement) {
-              lineNumber = lineElement.dataset.lineNumber || '';
+              lineNumber = lineElement.dataset.lineNumber || "";
             }
           }
         }
-        
+
         // Get taxonomy info
-        const taxonomy = taxonomies.find(t => t.id === (hl.dataset.taxonomyId || '')) || {};
-        
+        const taxonomy =
+          taxonomies.find((t) => t.id === (hl.dataset.taxonomyId || "")) || {};
+
         return {
           text: text,
           line_number: lineNumber,
-          taxonomy_category: taxonomy.name || '',
-          taxonomy_id: hl.dataset.taxonomyId || ''
+          taxonomy_category: taxonomy.name || "",
+          taxonomy_id: hl.dataset.taxonomyId || "",
         };
       });
-      
+
       // Prepare export data with only active highlights
       exportData = {
         metadata: {
           exported_at: new Date().toISOString(),
           document_title: document.title,
-          highlights_count: activeHighlights.length
+          highlights_count: activeHighlights.length,
         },
-        highlights: activeHighlights
+        highlights: activeHighlights,
       };
 
       // Simulate API call delay (replace with actual save/export logic)
@@ -3770,31 +4225,37 @@
         setTimeout(() => {
           try {
             // Download the highlights as JSON file
-            const filename = `highlights-${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+            const filename = `highlights-${new Date()
+              .toISOString()
+              .replace(/[:.]/g, "-")}.json`;
             const downloadSuccess = downloadJSON(exportData, filename);
-            
+
             if (!downloadSuccess) {
-              throw new Error('Failed to generate download');
+              throw new Error("Failed to generate download");
             }
-            
+
             // Simulate random errors (10% chance)
             if (Math.random() < 0.1) {
-              reject(new Error("Failed to connect to the server. Your highlights were saved locally, but could not be synced to the server."));
+              reject(
+                new Error(
+                  "Failed to connect to the server. Your highlights were saved locally, but could not be synced to the server."
+                )
+              );
             } else {
               resolve();
             }
           } catch (error) {
-            console.error('Error during export:', error);
+            console.error("Error during export:", error);
             reject(error);
           }
         }, 500); // Reduced delay for better UX
       });
 
       // Prepare success message
-      const successMessage = hasChanges 
+      const successMessage = hasChanges
         ? `Successfully exported ${addedCount} added and ${removedCount} removed highlights.`
-        : 'No changes to export.';
-      
+        : "No changes to export.";
+
       // Show success message with SweetAlert2
       const Toast = Swal.mixin({
         toast: true,
@@ -3818,23 +4279,25 @@
 
       if (hasChanges) {
         // Create badges for added/removed counts
-        const addedBadge = addedCount > 0
-          ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2">
+        const addedBadge =
+          addedCount > 0
+            ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2">
               <svg class="-ml-0.5 mr-1 h-2 w-2 text-green-500" fill="currentColor" viewBox="0 0 8 8">
                 <circle cx="4" cy="4" r="3" />
               </svg>
               ${addedCount} added
             </span>`
-          : "";
+            : "";
 
-        const removedBadge = removedCount > 0
-          ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+        const removedBadge =
+          removedCount > 0
+            ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
               <svg class="-ml-0.5 mr-1 h-2 w-2 text-red-500" fill="currentColor" viewBox="0 0 8 8">
                 <circle cx="4" cy="4" r="3" />
               </svg>
               ${removedCount} removed
             </span>`
-          : "";
+            : "";
 
         // Show success toast with changes summary
         await Toast.fire({
@@ -3867,11 +4330,11 @@
           background: "#fff",
           backdrop: false,
           showClass: {
-            popup: "animate-fade-in-up"
+            popup: "animate-fade-in-up",
           },
           hideClass: {
-            popup: "animate-fade-out-down"
-          }
+            popup: "animate-fade-out-down",
+          },
         });
       } else {
         // Show info message if no changes
@@ -3902,19 +4365,19 @@
           background: "#fff",
           backdrop: false,
           showClass: {
-            popup: "animate-fade-in-up"
+            popup: "animate-fade-in-up",
           },
           hideClass: {
-            popup: "animate-fade-out-down"
+            popup: "animate-fade-out-down",
           },
-          timer: 3000
+          timer: 3000,
         });
       }
 
       return changes;
     } catch (error) {
       console.error("Error saving changes:", error);
-      
+
       // Show error toast
       await Swal.fire({
         toast: true,
@@ -3930,7 +4393,10 @@
             </div>
             <div class="ml-3 flex-1">
               <p class="text-sm font-medium text-gray-900">Failed to save changes</p>
-              <p class="mt-0.5 text-xs text-gray-600">${error.message || 'An unexpected error occurred. Please try again.'}</p>
+              <p class="mt-0.5 text-xs text-gray-600">${
+                error.message ||
+                "An unexpected error occurred. Please try again."
+              }</p>
             </div>
             <button type="button" class="ml-4 flex-shrink-0 text-gray-400 hover:text-gray-500 focus:outline-none">
               <span class="sr-only">Close</span>
@@ -3945,28 +4411,28 @@
         background: "#fff",
         backdrop: false,
         showClass: {
-          popup: "animate-fade-in-up"
+          popup: "animate-fade-in-up",
         },
         hideClass: {
-          popup: "animate-fade-out-down"
+          popup: "animate-fade-out-down",
         },
-        timer: 5000
+        timer: 5000,
       });
-      
+
       return null;
     } finally {
       // Always reset the button state
       if (saveBtn) {
         saveBtn.disabled = false;
         saveBtn.classList.remove("opacity-75", "cursor-not-allowed");
-        
+
         if (saveIcon) {
           saveIcon.classList.remove("fa-spinner", "animate-spin");
           saveIcon.classList.add("fa-save");
         } else {
           saveBtn.innerHTML = originalHtml;
         }
-        
+
         // Add success checkmark briefly if save was successful
         if (!saveBtn.classList.contains("error")) {
           saveBtn.classList.add("text-green-500");
@@ -3974,7 +4440,7 @@
             saveIcon.classList.remove("fa-save");
             saveIcon.classList.add("fa-check");
           }
-          
+
           // Reset to original state after delay
           setTimeout(() => {
             if (saveBtn) {
@@ -3992,19 +4458,19 @@
 
   // Assign to window - ensure we don't overwrite existing methods
   window.DoccanoApp = window.DoccanoApp || {};
-  
+
   // Add only the methods that aren't already defined
   const methods = {
     init,
     exportHighlights,
     loadDocumentContent,
     getLineContent,
-    openCuratorStudio
+    openCuratorStudio,
   };
-  
+
   // Only add methods that aren't already defined on DoccanoApp
   for (const [key, value] of Object.entries(methods)) {
-    if (typeof value === 'function' && !window.DoccanoApp[key]) {
+    if (typeof value === "function" && !window.DoccanoApp[key]) {
       window.DoccanoApp[key] = value;
     }
   }
