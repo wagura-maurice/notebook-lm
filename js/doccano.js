@@ -2132,19 +2132,21 @@
                                     
                                     <div class="mt-4 space-y-1">
                                       <label class="block text-sm font-medium text-gray-700">Keywords</label>
-                                      <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-300 rounded-md min-h-10 bg-white">
+                                      <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-300 rounded-md min-h-10 bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all duration-200" id="keywords-container">
                                         ${Array.isArray(enrichment.keywords) ? enrichment.keywords.map(keyword => `
-                                          <span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs px-2.5 py-0.5 rounded-full">
+                                          <span class="inline-flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full transition-colors duration-150 ease-in-out" data-keyword="${keyword.trim()}">
                                             ${keyword.trim()}
-                                            <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none">
+                                            <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none focus:text-blue-700 transition-colors" aria-label="Remove keyword">
                                               <i class="fas fa-times"></i>
                                             </button>
                                           </span>
                                         `).join('') : ''}
                                         <input type="text" 
-                                          class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0 bg-transparent placeholder-gray-400" 
-                                          placeholder="Add a keyword and press Enter"
-                                          data-field="keywords-input">
+                                          class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0 bg-transparent placeholder-gray-400 focus:outline-none" 
+                                          placeholder="Add a keyword and press Enter or comma"
+                                          data-field="keywords-input"
+                                          id="keywords-input"
+                                          autocomplete="off">
                                       </div>
                                       <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add keywords. Click × to remove.</p>
                                     </div>
@@ -2219,23 +2221,52 @@
                                     <p class="text-sm text-gray-500 mb-4 mt-2">Categorization and classification of the content using predefined taxonomies and custom categories.</p>
                                   <div class="p-4">
                                     <div class="space-y-4" data-field="taxonomy">
-                                      <div class="space-y-1">
-                                        <label class="block text-sm font-medium text-gray-700">Taxonomy Items</label>
-                                        <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-300 rounded-md min-h-10 bg-white">
-                                          ${Object.keys(enrichment.taxonomy || {}).map(key => `
-                                            <span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs px-2.5 py-0.5 rounded-full">
-                                              ${key.trim()}
-                                              <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none">
-                                                <i class="fas fa-times"></i>
-                                              </button>
-                                            </span>
-                                          `).join('')}
-                                          <input type="text" 
-                                            class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0 bg-transparent placeholder-gray-400" 
-                                            placeholder="Add a taxonomy item and press Enter"
-                                            data-field="taxonomy-input">
+                                      ${Object.entries(enrichment.taxonomy || {}).map(([category, keywords]) => `
+                                        <div class="space-y-2">
+                                          <div class="flex items-center justify-between">
+                                            <h4 class="text-sm font-medium text-gray-900">
+                                              ${category
+                                                .split('_')
+                                                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                                .join(' ')
+                                              }
+                                            </h4>
+                                            <button type="button" class="text-xs text-red-500 hover:text-red-700 focus:outline-none" data-action="remove-taxonomy-category" data-category="${category}">
+                                              <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                          </div>
+                                          <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-300 rounded-md min-h-10 bg-white">
+                                            ${(Array.isArray(keywords) ? keywords : []).map(keyword => `
+                                              <span class="inline-flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full transition-colors">
+                                                ${keyword.trim()}
+                                                <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none" data-action="remove-taxonomy-keyword" data-category="${category}">
+                                                  <i class="fas fa-times"></i>
+                                                </button>
+                                              </span>
+                                            `).join('')}
+                                            <input type="text" 
+                                              class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0 bg-transparent placeholder-gray-400" 
+                                              placeholder="Add keyword and press Enter"
+                                              data-taxonomy-category="${category}"
+                                              data-field="taxonomy-keyword-input">
+                                          </div>
                                         </div>
-                                        <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add items. Click × to remove.</p>
+                                      `).join('')}
+                                      
+                                      <!-- Add new taxonomy category -->
+                                      <div class="space-y-2 mt-6 pt-4 border-t border-gray-200">
+                                        <label class="block text-sm font-medium text-gray-700">Add New Category</label>
+                                        <div class="flex gap-2">
+                                          <input type="text" 
+                                            class="flex-1 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2" 
+                                            placeholder="Category name"
+                                            data-field="new-taxonomy-category">
+                                          <button type="button" 
+                                            class="px-3 py-2 bg-blue-50 text-blue-700 text-sm font-medium rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                            data-action="add-taxonomy-category">
+                                            Add Category
+                                          </button>
+                                        </div>
                                       </div>
                                     </div>
                                     <div class="mt-3 text-sm text-gray-500">
@@ -2333,22 +2364,24 @@
                                       </div>
                                     </div>
                                     <div class="space-y-1">
-                                      <label class="block text-sm font-medium text-gray-700">Country Code</label>
-                                      <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-300 rounded-md min-h-10 bg-white">
-                                        ${Array.isArray(enrichment.geography?.custom) ? enrichment.geography.custom.map(loc => `
-                                          <span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs px-2.5 py-0.5 rounded-full">
-                                            ${loc.trim()}
-                                            <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none">
+                                      <label class="block text-sm font-medium text-gray-700">Country Codes</label>
+                                      <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-300 rounded-md min-h-10 bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all duration-200" id="country-codes-container">
+                                        ${Array.isArray(enrichment.geography?.country_codes) ? enrichment.geography.country_codes.map(code => `
+                                          <span class="inline-flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full transition-colors duration-150 ease-in-out" data-country-code="${code.trim()}">
+                                            ${code.trim()}
+                                            <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none focus:text-blue-700 transition-colors" aria-label="Remove country code">
                                               <i class="fas fa-times"></i>
                                             </button>
                                           </span>
                                         `).join('') : ''}
                                         <input type="text" 
-                                          class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0 bg-transparent placeholder-gray-400" 
-                                          placeholder="Add a country code and press Enter"
-                                          data-field="geography.custom-input">
+                                          class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0 bg-transparent placeholder-gray-400 focus:outline-none" 
+                                          placeholder="Add a country code and press Enter or comma"
+                                          data-field="country-codes-input"
+                                          id="country-codes-input"
+                                          autocomplete="off">
                                       </div>
-                                      <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add codes. Click × to remove.</p>
+                                      <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add country codes. Click × to remove.</p>
                                     </div>
                                   </div>
                                 </div>
@@ -2394,12 +2427,248 @@
               document.getElementById('reset-curator').addEventListener('click', resetCuratorForm);
               document.getElementById('submit-curator').addEventListener('click', submitCuratorForm);
               
+              // Add comma-separated keywords functionality
+              const keywordsInput = document.getElementById('keywords-input');
+              const keywordsContainer = document.getElementById('keywords-container');
+              
+              // Function to handle keyword removal
+              const removeKeyword = (keywordElement) => {
+                keywordElement.classList.add('opacity-0', 'scale-95', 'transition-all', 'duration-200');
+                setTimeout(() => {
+                  keywordElement.remove();
+                }, 200);
+              };
+              
+              if (keywordsInput && keywordsContainer) {
+                // Handle all remove button clicks through delegation
+                keywordsContainer.addEventListener('click', (e) => {
+                  const removeBtn = e.target.closest('button');
+                  if (removeBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const keywordElement = removeBtn.closest('[data-keyword]');
+                    if (keywordElement) {
+                      removeKeyword(keywordElement);
+                    }
+                  }
+                });
+                
+                // Add hover effect for all keyword elements
+                keywordsContainer.addEventListener('mouseover', (e) => {
+                  const keywordElement = e.target.closest('[data-keyword]');
+                  if (keywordElement) {
+                    keywordElement.classList.add('bg-blue-100');
+                  }
+                });
+                
+                keywordsContainer.addEventListener('mouseout', (e) => {
+                  const keywordElement = e.target.closest('[data-keyword]');
+                  if (keywordElement) {
+                    keywordElement.classList.remove('bg-blue-100');
+                  }
+                });
+                
+                const addKeyword = (keyword) => {
+                  keyword = keyword.trim();
+                  if (!keyword) return;
+                  
+                  // Check if keyword already exists
+                  const existingKeywords = Array.from(keywordsContainer.querySelectorAll('[data-keyword]'));
+                  const keywordExists = existingKeywords.some(el => 
+                    el.getAttribute('data-keyword')?.toLowerCase() === keyword.toLowerCase()
+                  );
+                  
+                  if (keywordExists) {
+                    // Highlight existing keyword briefly
+                    const existingEl = existingKeywords.find(el => 
+                      el.getAttribute('data-keyword')?.toLowerCase() === keyword.toLowerCase()
+                    );
+                    if (existingEl) {
+                      existingEl.classList.add('ring-2', 'ring-blue-500');
+                      setTimeout(() => {
+                        existingEl.classList.remove('ring-2', 'ring-blue-500');
+                      }, 1000);
+                    }
+                    return;
+                  }
+                  
+                  // Create keyword element
+                  const keywordElement = document.createElement('span');
+                  keywordElement.className = 'inline-flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full transition-all duration-200 ease-out';
+                  keywordElement.setAttribute('data-keyword', keyword);
+                  keywordElement.innerHTML = `
+                    ${keyword}
+                    <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none focus:text-blue-700 transition-colors" aria-label="Remove keyword">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  `;
+                  
+                  // Insert before the input
+                  keywordsContainer.insertBefore(keywordElement, keywordsInput);
+                  
+                  // Animate in
+                  setTimeout(() => {
+                    keywordElement.classList.add('opacity-100', 'scale-100');
+                  }, 10);
+                  
+                  // Clear input
+                  keywordsInput.value = '';
+                };
+                
+                // Handle both Enter and Comma keys
+                keywordsInput.addEventListener('keydown', (e) => {
+                  if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const keyword = keywordsInput.value.trim();
+                    if (keyword) {
+                      addKeyword(keyword);
+                    }
+                  }
+                });
+                
+                // Also handle input for comma separation
+                keywordsInput.addEventListener('input', (e) => {
+                  const value = e.target.value;
+                  if (value.includes(',')) {
+                    const keyword = value.replace(/,/g, '').trim();
+                    if (keyword) {
+                      addKeyword(keyword);
+                    }
+                  }
+                });
+                
+                // Handle Enter key and comma
+                keywordsInput.addEventListener('keydown', (e) => {
+                  if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const keyword = keywordsInput.value.trim();
+                    if (keyword) {
+                      addKeyword(keyword);
+                    }
+                  }
+                });
+                
+                // Handle pasting text with commas
+                keywordsInput.addEventListener('paste', (e) => {
+                  e.preventDefault();
+                  const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                  const keywords = pastedText.split(',').map(k => k.trim()).filter(k => k);
+                  keywords.forEach(keyword => addKeyword(keyword));
+                });
+              }
+              
               // Close modal when clicking outside content
               document.querySelector('#curator-studio-modal > div').addEventListener('click', function(e) {
                 if (e.target === this) {
                   closeCuratorModal();
                 }
               });
+              
+              // Initialize country codes functionality (same as keywords)
+              const countryCodesInput = document.getElementById('country-codes-input');
+              const countryCodesContainer = document.getElementById('country-codes-container');
+              
+              if (countryCodesInput && countryCodesContainer) {
+                // Handle all remove button clicks through delegation
+                countryCodesContainer.addEventListener('click', (e) => {
+                  const removeBtn = e.target.closest('button');
+                  if (removeBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const codeElement = removeBtn.closest('[data-country-code]');
+                    if (codeElement) {
+                      codeElement.classList.add('opacity-0', 'scale-95', 'transition-all', 'duration-200');
+                      setTimeout(() => {
+                        codeElement.remove();
+                      }, 200);
+                    }
+                  }
+                });
+                
+                // Add hover effect for all country code elements
+                countryCodesContainer.addEventListener('mouseover', (e) => {
+                  const codeElement = e.target.closest('[data-country-code]');
+                  if (codeElement) {
+                    codeElement.classList.add('bg-blue-100');
+                  }
+                });
+                
+                countryCodesContainer.addEventListener('mouseout', (e) => {
+                  const codeElement = e.target.closest('[data-country-code]');
+                  if (codeElement) {
+                    codeElement.classList.remove('bg-blue-100');
+                  }
+                });
+                
+                const addCountryCode = (code) => {
+                  code = code.trim().toUpperCase();
+                  if (!code) return;
+                  
+                  // Check if code already exists
+                  const existingCodes = Array.from(countryCodesContainer.querySelectorAll('[data-country-code]'));
+                  const codeExists = existingCodes.some(el => 
+                    el.getAttribute('data-country-code') === code
+                  );
+                  
+                  if (codeExists) {
+                    // Highlight existing code briefly
+                    const existingEl = existingCodes.find(el => 
+                      el.getAttribute('data-country-code') === code
+                    );
+                    if (existingEl) {
+                      existingEl.classList.add('ring-2', 'ring-blue-500');
+                      setTimeout(() => {
+                        existingEl.classList.remove('ring-2', 'ring-blue-500');
+                      }, 1000);
+                    }
+                    return;
+                  }
+                  
+                  // Create code element
+                  const codeElement = document.createElement('span');
+                  codeElement.className = 'inline-flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full transition-all duration-200 ease-out';
+                  codeElement.setAttribute('data-country-code', code);
+                  codeElement.innerHTML = `
+                    ${code}
+                    <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none focus:text-blue-700 transition-colors" aria-label="Remove country code">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  `;
+                  
+                  // Insert before the input
+                  countryCodesContainer.insertBefore(codeElement, countryCodesInput);
+                  
+                  // Animate in
+                  setTimeout(() => {
+                    codeElement.classList.add('opacity-100', 'scale-100');
+                  }, 10);
+                  
+                  // Clear input
+                  countryCodesInput.value = '';
+                };
+                
+                // Handle both Enter and Comma keys
+                countryCodesInput.addEventListener('keydown', (e) => {
+                  if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const code = countryCodesInput.value.trim();
+                    if (code) {
+                      addCountryCode(code);
+                    }
+                  }
+                });
+                
+                // Also handle input for comma separation
+                countryCodesInput.addEventListener('input', (e) => {
+                  const value = e.target.value;
+                  if (value.includes(',')) {
+                    const code = value.replace(/,/g, '').trim();
+                    if (code) {
+                      addCountryCode(code);
+                    }
+                  }
+                });
+              }
               
               // Close on Escape key
               document.addEventListener('keydown', handleEscapeKey);
