@@ -2015,7 +2015,7 @@
                     <!-- Modal panel with smooth transition -->
                     <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all w-full max-w-6xl h-[90vh] flex flex-col border border-gray-200">
                       <!-- Header with gradient background -->
-                      <div class="bg-gradient-to-r from-eu-blue to-blue-700 px-6 py-4 flex items-center justify-between rounded-t-xl">
+                      <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-4 flex items-center justify-between rounded-t-xl">
                         <div class="flex items-center space-x-3">
                           <i class="fas fa-edit text-white/90"></i>
                           <h3 class="text-lg font-semibold text-white" id="modal-title">Curator Studio</h3>
@@ -2032,7 +2032,7 @@
                           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
                             <div class="flex items-center justify-between mb-4">
                               <h4 class="font-medium text-gray-900 flex items-center">
-                                <i class="fas fa-align-left text-eu-blue mr-2"></i>
+                                <i class="fas fa-align-left text-blue-600 mr-2"></i>
                                 Selected Content
                               </h4>
                               <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -2054,7 +2054,7 @@
                             <div class="flex items-center justify-between mb-6">
                               <div>
                                 <h4 class="font-medium text-gray-900 text-lg flex items-center">
-                                  <i class="fas fa-magic text-eu-blue mr-2"></i>
+                                  <i class="fas fa-magic text-blue-600 mr-2"></i>
                                   Enrichment Data
                                 </h4>
                                 ${enrichment ? `
@@ -2071,13 +2071,13 @@
                             </div>
                             
                             ${enrichment ? `
-                              <div class="space-y-4">
+                              <div class="space-y-6">
                                 <!-- Core Information -->
                                 <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow transition-shadow duration-200">
                                   <button type="button" class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-100 rounded-t-lg" 
                                     data-toggle="collapse" data-target="#coreInfoSection" aria-expanded="true" aria-controls="coreInfoSection">
                                     <div class="flex items-center">
-                                      <i class="fas fa-info-circle text-eu-blue mr-3"></i>
+                                      <i class="fas fa-info-circle text-blue-600 mr-3"></i>
                                       <span class="font-medium text-gray-900">Core Information</span>
                                     </div>
                                     <i class="fas fa-chevron-down text-gray-400 transition-transform duration-200 transform" data-chevron></i>
@@ -2085,77 +2085,78 @@
                                   <div id="coreInfoSection" class="px-4 pb-4 border-t border-gray-100 transition-all duration-200" style="opacity: 1;">
                                     <p class="text-sm text-gray-500 mb-4 mt-2">Basic information including title, summary, and key details about the content.</p>
                                   
-                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="space-y-1">
-                                      <div class="flex items-center justify-between">
-                                        <label class="block text-sm font-medium text-gray-700">Title</label>
-                                        <span class="text-xs text-gray-500">Required</span>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div class="space-y-1">
+                                        <div class="flex items-center justify-between">
+                                          <label class="block text-sm font-medium text-gray-700">Title</label>
+                                          <span class="text-xs text-gray-500">Required</span>
+                                        </div>
+                                        <input type="text" 
+                                          class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2 placeholder-gray-400" 
+                                          value="${enrichment.title || ''}" 
+                                          data-field="title"
+                                          placeholder="Enter a descriptive title"
+                                          required>
                                       </div>
-                                      <input type="text" 
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue text-sm" 
-                                        value="${enrichment.title || ''}" 
-                                        data-field="title"
-                                        placeholder="Enter a descriptive title"
-                                        required>
+                                      
+                                      <div class="space-y-1">
+                                        <div class="flex items-center justify-between">
+                                          <label class="block text-sm font-medium text-gray-700">Rhetorical Role</label>
+                                          <span class="text-xs text-gray-500">Required</span>
+                                        </div>
+                                        <select class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2" 
+                                          data-field="rhetorical_role"
+                                          required>
+                                          <option value="">Select role</option>
+                                          <option value="introduction" ${enrichment.rhetorical_role === 'introduction' ? 'selected' : ''}>Introduction</option>
+                                          <option value="methodology" ${enrichment.rhetorical_role === 'methodology' ? 'selected' : ''}>Methodology</option>
+                                          <option value="results" ${enrichment.rhetorical_role === 'results' ? 'selected' : ''}>Results</option>
+                                          <option value="discussion" ${enrichment.rhetorical_role === 'discussion' ? 'selected' : ''}>Discussion</option>
+                                          <option value="conclusion" ${enrichment.rhetorical_role === 'conclusion' ? 'selected' : ''}>Conclusion</option>
+                                        </select>
+                                      </div>
                                     </div>
                                     
-                                    <div class="space-y-1">
+                                    <div class="mt-4 space-y-1">
                                       <div class="flex items-center justify-between">
-                                        <label class="block text-sm font-medium text-gray-700">Rhetorical Role</label>
-                                        <span class="text-xs text-gray-500">Required</span>
+                                        <label class="block text-sm font-medium text-gray-700">Summary</label>
+                                        <span class="text-xs text-gray-500">${enrichment.summary ? enrichment.summary.length : 0}/500 characters</span>
                                       </div>
-                                      <select class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue text-sm" 
-                                        data-field="rhetorical_role"
-                                        required>
-                                        <option value="">Select role</option>
-                                        <option value="introduction" ${enrichment.rhetorical_role === 'introduction' ? 'selected' : ''}>Introduction</option>
-                                        <option value="methodology" ${enrichment.rhetorical_role === 'methodology' ? 'selected' : ''}>Methodology</option>
-                                        <option value="results" ${enrichment.rhetorical_role === 'results' ? 'selected' : ''}>Results</option>
-                                        <option value="discussion" ${enrichment.rhetorical_role === 'discussion' ? 'selected' : ''}>Discussion</option>
-                                        <option value="conclusion" ${enrichment.rhetorical_role === 'conclusion' ? 'selected' : ''}>Conclusion</option>
-                                      </select>
+                                      <textarea rows="3" 
+                                        class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2 placeholder-gray-400" 
+                                        data-field="summary"
+                                        placeholder="Provide a brief summary of this content"
+                                        maxlength="500">${enrichment.summary || ''}</textarea>
+                                      <p class="text-xs text-gray-500 mt-1">A clear, concise summary helps with quick understanding of the content.</p>
                                     </div>
-                                  </div>
-                                  
-                                  <div class="mt-4 space-y-1">
-                                    <div class="flex items-center justify-between">
-                                      <label class="block text-sm font-medium text-gray-700">Summary</label>
-                                      <span class="text-xs text-gray-500">${enrichment.summary ? enrichment.summary.length : 0}/500 characters</span>
+                                    
+                                    <div class="mt-4 space-y-1">
+                                      <label class="block text-sm font-medium text-gray-700">Keywords</label>
+                                      <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-300 rounded-md min-h-10 bg-white">
+                                        ${Array.isArray(enrichment.keywords) ? enrichment.keywords.map(keyword => `
+                                          <span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs px-2.5 py-0.5 rounded-full">
+                                            ${keyword.trim()}
+                                            <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none">
+                                              <i class="fas fa-times"></i>
+                                            </button>
+                                          </span>
+                                        `).join('') : ''}
+                                        <input type="text" 
+                                          class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0 bg-transparent placeholder-gray-400" 
+                                          placeholder="Add a keyword and press Enter"
+                                          data-field="keywords-input">
+                                      </div>
+                                      <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add keywords. Click × to remove.</p>
                                     </div>
-                                    <textarea rows="3" 
-                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue text-sm" 
-                                      data-field="summary"
-                                      placeholder="Provide a brief summary of this content"
-                                      maxlength="500">${enrichment.summary || ''}</textarea>
-                                    <p class="text-xs text-gray-500 mt-1">A clear, concise summary helps with quick understanding of the content.</p>
-                                  </div>
-                                  
-                                  <div class="mt-4 space-y-1">
-                                    <label class="block text-sm font-medium text-gray-700">Keywords</label>
-                                    <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-200 rounded-md min-h-10">
-                                      ${Array.isArray(enrichment.keywords) ? enrichment.keywords.map(keyword => `
-                                        <span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs px-2.5 py-0.5 rounded-full">
-                                          ${keyword.trim()}
-                                          <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600">
-                                            <i class="fas fa-times"></i>
-                                          </button>
-                                        </span>
-                                      `).join('') : ''}
-                                      <input type="text" 
-                                        class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0" 
-                                        placeholder="Add a keyword and press Enter"
-                                        data-field="keywords-input">
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add keywords. Click × to remove.</p>
                                   </div>
                                 </div>
-                                
+
                                 <!-- Entities & References -->
                                 <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow transition-shadow duration-200">
                                   <button type="button" class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-100 rounded-t-lg" 
                                     data-toggle="collapse" data-target="#entitiesSection" aria-expanded="true" aria-controls="entitiesSection">
                                     <div class="flex items-center">
-                                      <i class="fas fa-tag text-eu-blue mr-3"></i>
+                                      <i class="fas fa-tag text-blue-600 mr-3"></i>
                                       <span class="font-medium text-gray-900">Entities & References</span>
                                     </div>
                                     <i class="fas fa-chevron-down text-gray-400 transition-transform duration-200 transform" data-chevron></i>
@@ -2163,10 +2164,35 @@
                                   <div id="entitiesSection" class="px-4 pb-4 border-t border-gray-100 transition-all duration-200" style="opacity: 1;">
                                     <p class="text-sm text-gray-500 mb-4 mt-2">Key entities, people, organizations, and references mentioned in the content.</p>
                                     <button type="button" 
-                                      class="text-xs bg-white border border-gray-300 text-gray-700 px-3 py-1 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-eu-blue"
+                                      class="text-xs bg-white border border-gray-300 text-gray-700 px-3 py-1 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                       data-action="add-entity">
                                       <i class="fas fa-plus mr-1"></i> Add Entity
                                     </button>
+                                    <!-- Collapsible form for adding entity -->
+                                    <div id="add-entity-form" class="hidden mt-4 space-y-4 border border-gray-200 p-4 rounded-md bg-gray-50 transition-all duration-200">
+                                      <div class="space-y-1">
+                                        <label class="block text-sm font-medium text-gray-700">Entity Name</label>
+                                        <input type="text" class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2 placeholder-gray-400" placeholder="Enter entity name" data-entity="name">
+                                      </div>
+                                      <div class="space-y-1">
+                                        <label class="block text-sm font-medium text-gray-700">Entity Type</label>
+                                        <select class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2">
+                                          <option value="">Select type</option>
+                                          <option value="person">Person</option>
+                                          <option value="organization">Organization</option>
+                                          <option value="location">Location</option>
+                                          <option value="concept">Concept</option>
+                                        </select>
+                                      </div>
+                                      <div class="space-y-1">
+                                        <label class="block text-sm font-medium text-gray-700">Description</label>
+                                        <textarea rows="2" class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2 placeholder-gray-400" placeholder="Brief description"></textarea>
+                                      </div>
+                                      <div class="flex justify-end space-x-2">
+                                        <button type="button" class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500" data-action="cancel-add-entity">Cancel</button>
+                                        <button type="button" class="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500" data-action="submit-entity">Add</button>
+                                      </div>
+                                    </div>
                                   </div>
                                   <div class="p-4">
                                     <div class="entity-list space-y-3" data-field="entities">
@@ -2177,13 +2203,14 @@
                                     </div>
                                   </div>
                                 </div>
-                                
+                                </div>
+
                                 <!-- Taxonomy & Classification -->
-                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow transition-shadow duration-200">
+                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow transition-shadow duration-200 mt-6">
                                   <button type="button" class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-100 rounded-t-lg" 
                                     data-toggle="collapse" data-target="#taxonomySection" aria-expanded="true" aria-controls="taxonomySection">
                                     <div class="flex items-center">
-                                      <i class="fas fa-tags text-eu-blue mr-3"></i>
+                                      <i class="fas fa-tags text-blue-600 mr-3"></i>
                                       <span class="font-medium text-gray-900">Taxonomy & Classification</span>
                                     </div>
                                     <i class="fas fa-chevron-down text-gray-400 transition-transform duration-200 transform" data-chevron></i>
@@ -2191,21 +2218,39 @@
                                   <div id="taxonomySection" class="px-4 pb-4 border-t border-gray-100 transition-all duration-200" style="opacity: 1;">
                                     <p class="text-sm text-gray-500 mb-4 mt-2">Categorization and classification of the content using predefined taxonomies and custom categories.</p>
                                   <div class="p-4">
-                                    <div class="taxonomy-container space-y-4" data-field="taxonomy">
-                                      ${renderTaxonomy(enrichment.taxonomy || {})}
+                                    <div class="space-y-4" data-field="taxonomy">
+                                      <div class="space-y-1">
+                                        <label class="block text-sm font-medium text-gray-700">Taxonomy Items</label>
+                                        <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-300 rounded-md min-h-10 bg-white">
+                                          ${Object.keys(enrichment.taxonomy || {}).map(key => `
+                                            <span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs px-2.5 py-0.5 rounded-full">
+                                              ${key.trim()}
+                                              <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none">
+                                                <i class="fas fa-times"></i>
+                                              </button>
+                                            </span>
+                                          `).join('')}
+                                          <input type="text" 
+                                            class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0 bg-transparent placeholder-gray-400" 
+                                            placeholder="Add a taxonomy item and press Enter"
+                                            data-field="taxonomy-input">
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add items. Click × to remove.</p>
+                                      </div>
                                     </div>
                                     <div class="mt-3 text-sm text-gray-500">
                                       <i class="fas fa-info-circle mr-1"></i> Categorize this content using the taxonomy.
                                     </div>
                                   </div>
                                 </div>
-                                
+                                </div>
+
                                 <!-- Temporal Information -->
-                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow transition-shadow duration-200">
+                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow transition-shadow duration-200 mt-6">
                                   <button type="button" class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-100 rounded-t-lg" 
                                     data-toggle="collapse" data-target="#temporalSection" aria-expanded="true" aria-controls="temporalSection">
                                     <div class="flex items-center">
-                                      <i class="far fa-clock text-eu-blue mr-3"></i>
+                                      <i class="far fa-clock text-blue-600 mr-3"></i>
                                       <span class="font-medium text-gray-900">Temporal Information</span>
                                     </div>
                                     <i class="fas fa-chevron-down text-gray-400 transition-transform duration-200 transform" data-chevron></i>
@@ -2217,14 +2262,14 @@
                                       <div class="space-y-1">
                                         <label class="block text-sm font-medium text-gray-700">Start Date</label>
                                         <input type="date" 
-                                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue text-sm" 
+                                          class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2" 
                                           value="${enrichment.temporal?.start_date || ''}" 
                                           data-field="temporal.start_date">
                                       </div>
                                       <div class="space-y-1">
                                         <label class="block text-sm font-medium text-gray-700">End Date</label>
                                         <input type="date" 
-                                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue text-sm" 
+                                          class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2" 
                                           value="${enrichment.temporal?.end_date || ''}" 
                                           data-field="temporal.end_date">
                                       </div>
@@ -2232,20 +2277,21 @@
                                     <div class="space-y-1">
                                       <label class="block text-sm font-medium text-gray-700">Time Period</label>
                                       <input type="text" 
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue text-sm" 
+                                        class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2 placeholder-gray-400" 
                                         value="${enrichment.temporal?.period || ''}" 
                                         data-field="temporal.period"
                                         placeholder="e.g., Renaissance, Industrial Revolution">
                                     </div>
                                   </div>
                                 </div>
-                                
+                                </div>
+
                                 <!-- Geographic Coverage -->
-                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow transition-shadow duration-200">
+                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow transition-shadow duration-200 mt-6">
                                   <button type="button" class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-100 rounded-t-lg" 
                                     data-toggle="collapse" data-target="#geographySection" aria-expanded="true" aria-controls="geographySection">
                                     <div class="flex items-center">
-                                      <i class="fas fa-globe-africa text-eu-blue mr-3"></i>
+                                      <i class="fas fa-globe-africa text-blue-600 mr-3"></i>
                                       <span class="font-medium text-gray-900">Geographic Coverage</span>
                                     </div>
                                     <i class="fas fa-chevron-down text-gray-400 transition-transform duration-200 transform" data-chevron></i>
@@ -2253,73 +2299,75 @@
                                   <div id="geographySection" class="px-4 pb-4 border-t border-gray-100 transition-all duration-200" style="opacity: 1;">
                                     <p class="text-sm text-gray-500 mb-4 mt-2">Geographic locations, regions, and areas relevant to this content.</p>
                                   <div class="p-4 space-y-4">
-                                    <div class="space-y-1">
-                                      <label class="block text-sm font-medium text-gray-700">Countries</label>
-                                      <select multiple 
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue text-sm" 
-                                        data-field="geography.countries"
-                                        data-placeholder="Select countries...">
-                                        <option value="" disabled>Select countries...</option>
-                                        <option value="US" ${enrichment.geography?.countries?.includes('US') ? 'selected' : ''}>United States</option>
-                                        <option value="GB" ${enrichment.geography?.countries?.includes('GB') ? 'selected' : ''}>United Kingdom</option>
-                                        <option value="DE" ${enrichment.geography?.countries?.includes('DE') ? 'selected' : ''}>Germany</option>
-                                        <option value="FR" ${enrichment.geography?.countries?.includes('FR') ? 'selected' : ''}>France</option>
-                                        <option value="IT" ${enrichment.geography?.countries?.includes('IT') ? 'selected' : ''}>Italy</option>
-                                        <option value="ES" ${enrichment.geography?.countries?.includes('ES') ? 'selected' : ''}>Spain</option>
-                                      </select>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div class="space-y-1">
+                                        <label class="block text-sm font-medium text-gray-700">Regions</label>
+                                        <select multiple 
+                                          class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2" 
+                                          data-field="geography.regions"
+                                          data-placeholder="Select regions...">
+                                          <option value="" disabled>Select regions...</option>
+                                          <option value="europe" ${enrichment.geography?.regions?.includes('europe') ? 'selected' : ''}>Europe</option>
+                                          <option value="north-america" ${enrichment.geography?.regions?.includes('north-america') ? 'selected' : ''}>North America</option>
+                                          <option value="south-america" ${enrichment.geography?.regions?.includes('south-america') ? 'selected' : ''}>South America</option>
+                                          <option value="asia" ${enrichment.geography?.regions?.includes('asia') ? 'selected' : ''}>Asia</option>
+                                          <option value="africa" ${enrichment.geography?.regions?.includes('africa') ? 'selected' : ''}>Africa</option>
+                                          <option value="oceania" ${enrichment.geography?.regions?.includes('oceania') ? 'selected' : ''}>Oceania</option>
+                                          <option value="middle-east" ${enrichment.geography?.regions?.includes('middle-east') ? 'selected' : ''}>Middle East</option>
+                                        </select>
+                                      </div>
+                                      <div class="space-y-1">
+                                        <label class="block text-sm font-medium text-gray-700">Countries</label>
+                                        <select multiple 
+                                          class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2" 
+                                          data-field="geography.countries"
+                                          data-placeholder="Select countries...">
+                                          <option value="" disabled>Select countries...</option>
+                                          <option value="US" ${enrichment.geography?.countries?.includes('US') ? 'selected' : ''}>United States</option>
+                                          <option value="GB" ${enrichment.geography?.countries?.includes('GB') ? 'selected' : ''}>United Kingdom</option>
+                                          <option value="DE" ${enrichment.geography?.countries?.includes('DE') ? 'selected' : ''}>Germany</option>
+                                          <option value="FR" ${enrichment.geography?.countries?.includes('FR') ? 'selected' : ''}>France</option>
+                                          <option value="IT" ${enrichment.geography?.countries?.includes('IT') ? 'selected' : ''}>Italy</option>
+                                          <option value="ES" ${enrichment.geography?.countries?.includes('ES') ? 'selected' : ''}>Spain</option>
+                                        </select>
+                                      </div>
                                     </div>
                                     <div class="space-y-1">
-                                      <label class="block text-sm font-medium text-gray-700">Regions</label>
-                                      <select multiple 
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-eu-blue focus:ring-eu-blue text-sm" 
-                                        data-field="geography.regions"
-                                        data-placeholder="Select regions...">
-                                        <option value="" disabled>Select regions...</option>
-                                        <option value="europe" ${enrichment.geography?.regions?.includes('europe') ? 'selected' : ''}>Europe</option>
-                                        <option value="north-america" ${enrichment.geography?.regions?.includes('north-america') ? 'selected' : ''}>North America</option>
-                                        <option value="south-america" ${enrichment.geography?.regions?.includes('south-america') ? 'selected' : ''}>South America</option>
-                                        <option value="asia" ${enrichment.geography?.regions?.includes('asia') ? 'selected' : ''}>Asia</option>
-                                        <option value="africa" ${enrichment.geography?.regions?.includes('africa') ? 'selected' : ''}>Africa</option>
-                                        <option value="oceania" ${enrichment.geography?.regions?.includes('oceania') ? 'selected' : ''}>Oceania</option>
-                                        <option value="middle-east" ${enrichment.geography?.regions?.includes('middle-east') ? 'selected' : ''}>Middle East</option>
-                                      </select>
-                                    </div>
-                                    <div class="space-y-1">
-                                      <label class="block text-sm font-medium text-gray-700">Custom Locations</label>
-                                      <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-200 rounded-md min-h-10">
+                                      <label class="block text-sm font-medium text-gray-700">Country Code</label>
+                                      <div class="flex items-center flex-wrap gap-2 p-2 border border-gray-300 rounded-md min-h-10 bg-white">
                                         ${Array.isArray(enrichment.geography?.custom) ? enrichment.geography.custom.map(loc => `
-                                          <span class="inline-flex items-center bg-gray-100 text-gray-800 text-xs px-2.5 py-0.5 rounded-full">
+                                          <span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs px-2.5 py-0.5 rounded-full">
                                             ${loc.trim()}
-                                            <button type="button" class="ml-1.5 text-gray-400 hover:text-gray-600">
+                                            <button type="button" class="ml-1.5 text-blue-400 hover:text-blue-600 focus:outline-none">
                                               <i class="fas fa-times"></i>
                                             </button>
                                           </span>
                                         `).join('') : ''}
                                         <input type="text" 
-                                          class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0" 
-                                          placeholder="Add a location and press Enter"
+                                          class="flex-1 min-w-[100px] border-0 p-0 text-sm focus:ring-0 bg-transparent placeholder-gray-400" 
+                                          placeholder="Add a country code and press Enter"
                                           data-field="geography.custom-input">
                                       </div>
-                                      <p class="text-xs text-gray-500 mt-1">Add specific cities, areas, or custom locations</p>
+                                      <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add codes. Click × to remove.</p>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                            ` : `
-                              <div class="text-center py-8">
-                                <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-2"></i>
-                                <p class="text-gray-600">No enrichment data available for this line.</p>
-                                <button type="button" class="mt-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-eu-blue hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                  <i class="fas fa-plus mr-2"></i> Add Enrichment Data
-                                </button>
-                              </div>
-                            `}
+                              ` : `
+                                <div class="text-center py-8">
+                                  <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-2"></i>
+                                  <p class="text-gray-600">No enrichment data available for this line.</p>
+                                  <button type="button" class="mt-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <i class="fas fa-plus mr-2"></i> Add Enrichment Data
+                                  </button>
+                                </div>
+                              `}
+                            </div>
                           </div>
                         </div>
-                    
+                      </div>          
                       <!-- Footer -->
                       <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-200">
-                        <button type="button" class="inline-flex w-full justify-center rounded-md bg-eu-blue px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 sm:ml-3 sm:w-auto" id="submit-curator">
+                        <button type="button" class="inline-flex w-full justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 sm:ml-3 sm:w-auto" id="submit-curator">
                           Submit
                         </button>
                         <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto" id="reset-curator">
