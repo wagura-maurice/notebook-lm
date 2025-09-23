@@ -2000,39 +2000,6 @@
     };
   }
 
-  // Generate HTML for entities
-  function renderEntities(entities) {
-    if (!Array.isArray(entities) || entities.length === 0) {
-      return '<div class="text-sm text-gray-500 italic">No entities found</div>';
-    }
-    return `
-      <div class="space-y-2">
-        ${entities
-          .map(
-            (entity) => `
-          <div class="flex items-start p-2 bg-gray-50 rounded-lg border border-gray-200">
-            <div class="flex-1">
-              <div class="flex items-center justify-between">
-                <span class="font-medium text-sm">${entity.type}</span>
-                <span class="text-xs text-gray-500">${(
-                  entity.confidence * 100
-                ).toFixed(0)}%</span>
-              </div>
-              <div class="text-sm">${entity.text}</div>
-              ${
-                entity.value
-                  ? `<div class="text-xs text-gray-500">${entity.value}</div>`
-                  : ""
-              }
-            </div>
-          </div>
-        `
-          )
-          .join("")}
-      </div>
-    `;
-  }
-
   // Generate HTML for taxonomy
   function renderTaxonomy(taxonomy) {
     if (!taxonomy)
@@ -2400,7 +2367,7 @@
                                   </button>
                                   <div id="entitiesSection" class="px-4 pb-4 border-t border-gray-100 transition-all duration-200" style="opacity: 1;">
                                     <p class="text-sm text-gray-500 mb-4 mt-2">Key entities, people, organizations, and references mentioned in the content.</p>
-                                    <button type="button" 
+                                    <button type="button" id="add-entity-trigger-button"
                                       class="text-xs bg-white border border-gray-300 text-gray-700 px-3 py-1 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                       data-action="add-entity">
                                       <i class="fas fa-plus mr-1"></i> Add Entity
@@ -2413,7 +2380,7 @@
                                       </div>
                                       <div class="space-y-1">
                                         <label class="block text-sm font-medium text-gray-700">Entity Type</label>
-                                        <select class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2">
+                                        <select class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2" data-entity="type">
                                           <option value="">Select type</option>
                                           <option value="person">Person</option>
                                           <option value="organization">Organization</option>
@@ -2423,7 +2390,7 @@
                                       </div>
                                       <div class="space-y-1">
                                         <label class="block text-sm font-medium text-gray-700">Description</label>
-                                        <textarea rows="2" class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2 placeholder-gray-400" placeholder="Brief description"></textarea>
+                                        <textarea rows="2" class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2 placeholder-gray-400" placeholder="Brief description" data-entity="description"></textarea>
                                       </div>
                                       <div class="flex justify-end space-x-2">
                                         <button type="button" class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500" data-action="cancel-add-entity">Cancel</button>
@@ -3264,8 +3231,221 @@
     }
   }
 
+  // Toggle entity form visibility (legacy, will be removed)
+  function toggleEntityForm(event) {
+    console.warn('toggleEntityForm is deprecated, use the new form handler');
+    if (event) event.preventDefault();
+    const form = document.getElementById('add-entity-form');
+    const button = document.getElementById('add-entity-trigger-button');
+    
+    if (form && button) {
+      if (form.classList.contains('hidden')) {
+        // Show the form
+        form.classList.remove('hidden');
+        form.style.display = 'block';
+        form.style.maxHeight = form.scrollHeight + 'px';
+        button.disabled = true;
+        button.classList.add('opacity-50', 'cursor-not-allowed');
+        // Focus on the first input field when showing the form
+        const firstInput = form.querySelector('input, select, textarea');
+        if (firstInput) setTimeout(() => firstInput.focus(), 50);
+      } else {
+        // Hide the form
+        form.classList.add('hidden');
+        form.style.maxHeight = '0';
+        form.style.display = 'none';
+        button.disabled = false;
+        button.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    } else {
+      console.error('Could not find form or button:', { form, button });
+    }
+  }
+
+  // Handle entity form submission
+  function handleEntitySubmit(event) {
+    event.preventDefault();
+    // Get form values
+    const nameInput = document.querySelector('[data-entity="name"]');
+    const typeSelect = document.querySelector('select[data-entity="type"]');
+    const descriptionInput = document.querySelector('[data-entity="description"]');
+    
+    if (nameInput && typeSelect && descriptionInput) {
+      const newEntity = {
+        type: typeSelect.value,
+        text: nameInput.value,
+        description: descriptionInput.value,
+        confidence: 1.0, // Default confidence for manually added entities
+        timestamp: new Date().toISOString()
+      };
+      
+      // Here you would typically add the entity to your data model
+      console.log('New entity added:', newEntity);
+      
+      // Reset form
+      nameInput.value = '';
+      typeSelect.value = '';
+      descriptionInput.value = '';
+      
+      // Hide the form
+      toggleEntityForm();
+      
+      // Refresh the entities display
+      // You would call your render function here
+    }
+  }
+
+  // Initialize event listeners for entity forms
+  function initEntityFormListeners() {
+    console.log('Initializing entity form listeners...');
+    
+    // Remove any existing listeners to prevent duplicates
+    const oldAddButton = document.getElementById('add-entity-trigger-button');
+    if (oldAddButton) {
+      const newAddButton = oldAddButton.cloneNode(true);
+      oldAddButton.parentNode.replaceChild(newAddButton, oldAddButton);
+    }
+    
+    // Add click handler for the add entity button
+    const addButton = document.getElementById('add-entity-trigger-button');
+    if (addButton) {
+      console.log('Found add entity button, adding click handler');
+      addButton.onclick = function(e) {
+        console.log('Add entity button clicked');
+        e.preventDefault();
+        e.stopPropagation();
+        toggleEntityForm(e);
+        return false;
+      };
+    } else {
+      console.warn('Add entity button not found');
+    }
+    
+    // Add click handler for cancel button
+    const cancelButton = document.querySelector('[data-action="cancel-add-entity"]');
+    if (cancelButton) {
+      cancelButton.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleEntityForm(e);
+        return false;
+      };
+    }
+    
+    // Add click handler for submit button
+    const submitButton = document.querySelector('[data-action="submit-entity"]');
+    if (submitButton) {
+      submitButton.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        handleEntitySubmit(e);
+        return false;
+      };
+    }
+    
+    console.log('Entity form listeners initialized');
+  }
+
   // Initialize the application
   function init() {
+    console.log('Initializing application...');
+    
+    // Initialize entity form
+    function initEntityForm() {
+      console.log('Initializing entity form...');
+      const addButton = document.getElementById('add-entity-trigger-button');
+      const form = document.getElementById('add-entity-form');
+      
+      if (!addButton || !form) {
+        console.warn('Entity form elements not found, retrying...');
+        setTimeout(initEntityForm, 500);
+        return;
+      }
+      
+      console.log('Found entity form elements');
+      
+      // Toggle form visibility
+      function toggleForm(e) {
+        if (e) e.preventDefault();
+        console.log('Toggle form called');
+        
+        if (form.classList.contains('hidden')) {
+          console.log('Showing form');
+          form.classList.remove('hidden');
+          form.style.display = 'block';
+          form.style.maxHeight = form.scrollHeight + 'px';
+          addButton.disabled = true;
+          addButton.classList.add('opacity-50', 'cursor-not-allowed');
+          
+          // Focus on first input
+          const firstInput = form.querySelector('input, select, textarea');
+          if (firstInput) {
+            setTimeout(() => firstInput.focus(), 50);
+          }
+        } else {
+          console.log('Hiding form');
+          form.classList.add('hidden');
+          form.style.maxHeight = '0';
+          form.style.display = 'none';
+          addButton.disabled = false;
+          addButton.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+      }
+      
+      // Handle form submission
+      function handleSubmit(e) {
+        e.preventDefault();
+        console.log('Form submitted');
+        
+        // Get form values
+        const typeInput = form.querySelector('[name="entity-type"]');
+        const textInput = form.querySelector('[name="entity-text"]');
+        
+        if (!typeInput || !textInput) {
+          console.error('Required form fields not found');
+          return;
+        }
+        
+        const entity = {
+          type: typeInput.value,
+          text: textInput.value,
+          timestamp: new Date().toISOString()
+        };
+        
+        console.log('New entity:', entity);
+        
+        // Reset form
+        form.reset();
+        toggleForm();
+        
+        // TODO: Add entity to the UI
+      }
+      
+      // Add event listeners
+      addButton.removeEventListener('click', toggleForm);
+      addButton.addEventListener('click', toggleForm);
+      
+      const cancelButton = form.querySelector('[data-action="cancel-add-entity"]');
+      if (cancelButton) {
+        cancelButton.removeEventListener('click', toggleForm);
+        cancelButton.addEventListener('click', toggleForm);
+      }
+      
+      form.removeEventListener('submit', handleSubmit);
+      form.addEventListener('submit', handleSubmit);
+      
+      console.log('Entity form initialized');
+    }
+    
+    // Initialize entity form when modal is shown
+    document.addEventListener('shown.bs.modal', function() {
+      console.log('Modal shown, initializing entity form');
+      setTimeout(initEntityForm, 100);
+    });
+    
+    // Also try to initialize immediately in case modal is already open
+    setTimeout(initEntityForm, 500);
+    
     // Add click handler for document lines
     document.addEventListener("click", (e) => {
       // Check if the click is on a line number or line content
@@ -3330,6 +3510,12 @@
     // Initialize other components
     initCollapsibleSections();
     initTextSelection();
+    
+    // Initialize entity form
+    if (document.getElementById('add-entity-form')) {
+      console.log('Initializing entity form...');
+      initEntityFormListeners();
+    }
 
     // Add event delegation for Curator Studio button
     document.addEventListener("click", function (event) {
