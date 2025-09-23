@@ -103,6 +103,7 @@
     try {
       const data = JSON.parse(line);
 
+      // Process taxonomy data if it exists
       if (data.enrichment?.taxonomy) {
         const { taxonomy } = data.enrichment;
 
@@ -126,6 +127,30 @@
             taxonomyMap[key].count++;
           }
         }
+      }
+
+      // Process entities if they exist
+      if (data.enrichment?.entities && Array.isArray(data.enrichment.entities)) {
+        if (!taxonomyMap.entities) {
+          taxonomyMap.entities = [];
+        }
+        
+        // Add entities with proper formatting
+        data.enrichment.entities.forEach(entity => {
+          if (entity && entity.text) {
+            taxonomyMap.entities.push({
+              type: entity.type || 'unknown',
+              text: entity.text,
+              value: entity.value || '',
+              unit: entity.unit || '',
+              confidence: entity.confidence !== undefined ? parseFloat(entity.confidence) : 0.6,
+              description: entity.description || '',
+              start_offset: entity.start_offset || 0,
+              end_offset: entity.end_offset || 0,
+              source: 'ndjson'
+            });
+          }
+        });
       }
     } catch (e) {
       console.warn("Failed to parse line:", line, e);
@@ -1105,17 +1130,29 @@
       const text = await response.text();
       const lines = text.trim().split("\n");
 
+      // Initialize taxonomy map to store all entities
+      const taxonomyMap = {};
+      
       // Process each line as a separate JSON object
       const items = lines
         .map((line) => {
           try {
-            return JSON.parse(line);
+            const item = JSON.parse(line);
+            // Process the line to extract entities into taxonomyMap
+            processLine(line, taxonomyMap);
+            return item;
           } catch (e) {
             console.error("Error parsing NDJSON line:", e);
             return null;
           }
         })
         .filter((item) => item !== null);
+        
+      // Store the extracted entities in a global variable for later use
+      if (taxonomyMap.entities) {
+        window.ndjsonEntities = taxonomyMap.entities;
+        console.log(`Loaded ${taxonomyMap.entities.length} entities from NDJSON`);
+      }
 
       // Group items by their section title
       const sections = [];
@@ -2115,14 +2152,45 @@
                 const fragment = document.createDocumentFragment();
                 
                 entities.forEach(entity => {
+                  // Ensure all fields have default values
+                  const entityData = {
+                    type: entity.type || '',
+                    text: entity.text || '',
+                    value: entity.value || '',
+                    unit: entity.unit || '',
+                    confidence: entity.confidence !== undefined ? parseFloat(entity.confidence) : 0.6,
+                    description: entity.description || ''
+                  };
+
+                  // Create the entity element
                   const entityElement = document.createElement('div');
                   entityElement.className = 'flex items-center justify-between bg-gray-50 p-2 rounded mb-1';
+                  
+                  // Store all entity data as data attributes
+                  Object.entries(entityData).forEach(([key, value]) => {
+                    if (value !== undefined && value !== null) {
+                      entityElement.setAttribute(`data-entity-${key}`, String(value));
+                    }
+                  });
+                  
+                  // Format the display text
+                  const displayText = [
+                    entityData.text,
+                    entityData.value ? `: ${entityData.value}` : '',
+                    entityData.unit ? ` ${entityData.unit}` : ''
+                  ].join('');
+                  
                   entityElement.innerHTML = `
-                    <div>
-                      <span class="text-xs font-medium text-gray-900">${entity.text}</span>
-                      <span class="ml-2 text-xs text-gray-500">(${entity.type})</span>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center">
+                        <span class="text-xs font-medium text-gray-900 truncate">${entityData.text}</span>
+                        <span class="ml-1 text-xs text-gray-500 whitespace-nowrap">
+                          (${entityData.type}${entityData.value ? `: ${entityData.value}` : ''}${entityData.unit ? ` ${entityData.unit}` : ''}${entityData.confidence !== undefined ? ` · ${entityData.confidence.toFixed(2)}` : ''})
+                        </span>
+                      </div>
+                      ${entityData.description ? `<div class="text-xs text-gray-500 mt-1 truncate">${entityData.description}</div>` : ''}
                     </div>
-                    <button class="text-red-400 hover:text-red-600" data-entity="${entity.text}">
+                    <button class="ml-2 text-red-400 hover:text-red-600 flex-shrink-0" data-entity="${entityData.text}">
                       <i class="fas fa-times"></i>
                     </button>
                   `;
@@ -2190,10 +2258,10 @@
                       </div>
                       
                       <!-- Content area -->
-                      <div class="flex-1 overflow-auto p-6 bg-gray-50">
+                      <div class="flex-1 overflow-auto p-1 bg-gray-50">
                         <div class="space-y-6 mx-auto w-full">
                           <!-- Selected Content Card -->
-                          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                          <div class="p-6">
                             <div class="flex items-center justify-between mb-4">
                               <h4 class="font-medium text-gray-900 flex items-center">
                                 <i class="fas fa-align-left text-blue-600 mr-2"></i>
@@ -2217,7 +2285,7 @@
                           </div>
                           
                           <!-- Enrichment Data Section -->
-                          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                          <div class="p-6">
                             <div class="flex items-center justify-between mb-6">
                               <div>
                                 <h4 class="font-medium text-gray-900 text-lg flex items-center">
@@ -2407,6 +2475,36 @@
                                         </select>
                                       </div>
                                       <div class="space-y-1">
+                                        <label class="block text-sm font-medium text-gray-700">Entity Value</label>
+                                        <input type="text" class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2 placeholder-gray-400" placeholder="Enter entity value" data-entity="value">
+                                      </div>
+                                      <div class="space-y-1">
+                                        <label class="block text-sm font-medium text-gray-700">Entity Unit</label>
+                                        <input type="text" class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2 placeholder-gray-400" placeholder="Enter unit (e.g., kg, $, %)" data-entity="unit">
+                                      </div>
+                                      <div class="space-y-2">
+                                        <div class="flex justify-between items-center">
+                                          <label class="block text-sm font-medium text-gray-700">Confidence</label>
+                                          <span id="confidence-value" class="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded">0.60</span>
+                                        </div>
+                                        <div class="relative pt-1">
+                                          <input 
+                                            type="range" 
+                                            min="0" 
+                                            max="1" 
+                                            step="0.01" 
+                                            value="0.6" 
+                                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                            data-entity="confidence"
+                                            oninput="document.getElementById('confidence-value').textContent = parseFloat(this.value).toFixed(2)"
+                                          >
+                                          <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                            <span>0.00</span>
+                                            <span>1.00</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="space-y-1">
                                         <label class="block text-sm font-medium text-gray-700">Description</label>
                                         <textarea rows="2" class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2 placeholder-gray-400" placeholder="Brief description" data-entity="description"></textarea>
                                       </div>
@@ -2419,7 +2517,14 @@
                                   <div class="p-4">
                                     <div class="entity-list space-y-3" data-field="entities">
                                       ${renderEntities(
-                                        enrichment.entities || []
+                                        (enrichment.entities || []).map(e => ({
+                                          type: e.type || '',
+                                          text: e.text || '',
+                                          value: e.value || '',
+                                          unit: e.unit || '',
+                                          confidence: e.confidence !== undefined ? parseFloat(e.confidence) : 0.6,
+                                          description: e.description || ''
+                                        }))
                                       )}
                                     </div>
                                     <div class="mt-3 text-sm text-gray-500">
@@ -3255,14 +3360,33 @@
       keywords: Array.from(document.querySelectorAll('#keywords-container [data-keyword]'))
         .map(el => el.getAttribute('data-keyword')),
       
-      // Entities
-      entities: Array.from(document.querySelectorAll('.entity-list [data-entity]')).map(el => {
+      // Entities - extract all available fields from the model
+      entities: Array.from(document.querySelectorAll('.entity-list [data-entity-text]')).map(el => {
+        // Get all data attributes from the element
+        const getDataAttr = (name, defaultValue = '') => {
+          const value = el.getAttribute(`data-entity-${name}`);
+          return value !== null ? value : defaultValue;
+        };
+        
+        // Get numeric attributes with proper parsing
+        const getNumericAttr = (name, defaultValue = 0) => {
+          const value = el.getAttribute(`data-entity-${name}`);
+          return value !== null ? parseFloat(value) || defaultValue : defaultValue;
+        };
+        
+        // Build the entity object with all available fields
         return {
-          type: el.querySelector('.entity-type')?.textContent?.replace(/[()]/g, '') || '',
-          text: el.getAttribute('data-entity') || '',
-          value: null,
-          unit: null,
-          confidence: parseFloat(el.getAttribute('data-confidence') || '0.9')
+          // Core fields
+          type: getDataAttr('type', 'unknown'),
+          text: getDataAttr('text', ''),
+          
+          // Optional fields with proper type conversion
+          value: getDataAttr('value', ''),
+          unit: getDataAttr('unit', ''),
+          description: getDataAttr('description', ''),
+          
+          // Numeric fields with proper parsing
+          confidence: getNumericAttr('confidence', 0.9),
         };
       }),
       
@@ -3300,7 +3424,7 @@
     console.log("Form data:", JSON.stringify(formData, null, 2));
     
     // Close the modal
-    closeCuratorModal();
+    // closeCuratorModal();
   }
 
   // Make functions available globally
@@ -3536,11 +3660,18 @@
       return;
     }
     
+    // Get additional field values
+    const entityValueInput = document.querySelector('[data-entity="value"]');
+    const entityUnitInput = document.querySelector('[data-entity="unit"]');
+    const entityConfidenceInput = document.querySelector('input[type="range"][data-entity="confidence"]');
+    
     const newEntity = {
       type: typeSelect.value,
       text: nameInput.value.trim(),
+      value: entityValueInput ? entityValueInput.value.trim() : '',
+      unit: entityUnitInput ? entityUnitInput.value.trim() : '',
       description: descriptionInput ? descriptionInput.value.trim() : '',
-      confidence: 1.0, // Default confidence for manually added entities
+      confidence: entityConfidenceInput ? parseFloat(entityConfidenceInput.value) : 0.6,
       timestamp: new Date().toISOString()
     };
     
@@ -3577,7 +3708,7 @@
     entityElement.innerHTML = `
       <div>
         <span class="text-xs font-medium text-gray-900">${newEntity.text}</span>
-        <span class="ml-2 text-xs text-gray-500">(${newEntity.type})</span>
+        <span class="ml-2 text-xs text-gray-500">${newEntity.type}${newEntity.value ? ': ' + newEntity.value : ''}${newEntity.unit ? ' ' + newEntity.unit : ''}${newEntity.confidence ? ' (' + newEntity.confidence.toFixed(1) + ')' : ''}</span>
       </div>
       <button class="text-red-400 hover:text-red-600" data-entity="${newEntity.text}">
         <i class="fas fa-times"></i>
@@ -3618,6 +3749,14 @@
     // Reset form
     if (nameInput) nameInput.value = '';
     if (typeSelect) typeSelect.value = '';
+    if (entityValueInput) entityValueInput.value = '';
+    if (entityUnitInput) entityUnitInput.value = '';
+    if (entityConfidenceInput) {
+      entityConfidenceInput.value = '0.6';
+      // Update the displayed confidence value
+      const confidenceValue = document.getElementById('confidence-value');
+      if (confidenceValue) confidenceValue.textContent = '0.60';
+    }
     if (descriptionInput) descriptionInput.value = '';
     
     // Focus back on the name input for quick addition
@@ -4518,24 +4657,44 @@
     if (!currentSelection || !currentSelectionRange) return;
 
     // Save state before making changes
-    saveState();
-
-    // Get the line number for this selection
-    const lineNumber = getLineNumber(currentSelectionRange.startContainer);
-
-    // Check if the selection is already highlighted
-    const selectionContainer = currentSelectionRange.commonAncestorContainer;
-    const existingHighlight = selectionContainer.parentElement.closest(
-      ".taxonomy-highlight"
-    );
-
-    if (existingHighlight) {
-      // If the same taxonomy, remove the highlight
-      if (existingHighlight.id === `taxonomy-${taxonomy.id}`) {
-        removeHighlight(existingHighlight);
-        return;
+    const saveStateBeforeChange = () => {
+      // Get the line number from the selected text or current position
+      const lineNumber = getLineNumber(window.getSelection().anchorNode);
+      const lineContent = getLineContent(lineNumber);
+      
+      // Get enrichment data for the current line or document
+      const enrichment = documentData[lineNumber - 1]?.enrichment || {};
+      
+      // Add entities from NDJSON if available
+      if (window.ndjsonEntities) {
+        if (!enrichment.entities) {
+          enrichment.entities = [];
+        }
+        // Only add entities that aren't already in the enrichment
+        const existingEntityTexts = new Set(enrichment.entities.map(e => e.text));
+        window.ndjsonEntities.forEach(entity => {
+          if (!existingEntityTexts.has(entity.text)) {
+            enrichment.entities.push({
+              ...entity,
+              source: entity.source || 'ndjson'
+            });
+          }
+        });
       }
-      // If different taxonomy, replace it
+      
+      return { lineNumber, lineContent, enrichment };
+    };
+    
+    const { lineNumber, lineContent, enrichment } = saveStateBeforeChange();
+    
+    // If the same taxonomy, remove the highlight
+    if (existingHighlight && existingHighlight.id === `taxonomy-${taxonomy.id}`) {
+      removeHighlight(existingHighlight);
+      return;
+    }
+    
+    // If different taxonomy, replace it
+    if (existingHighlight) {
       const range = document.createRange();
       range.selectNode(existingHighlight);
       currentSelectionRange = range;
