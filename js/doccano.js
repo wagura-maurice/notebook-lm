@@ -2394,7 +2394,7 @@
                                       </div>
                                       <div class="flex justify-end space-x-2">
                                         <button type="button" class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500" data-action="cancel-add-entity">Cancel</button>
-                                        <button type="button" class="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500" data-action="submit-entity">Add</button>
+                                        <button type="button" id="add-entity-button" class="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500" data-action="add-entity">Add</button>
                                       </div>
                                     </div>
                                   </div>
@@ -3262,8 +3262,8 @@
     }
   }
 
-  // Handle entity form submission
-  function handleEntitySubmit(event) {
+  // Handle entity record addition
+  function handleEntityAddition(event) {
     event.preventDefault();
     // Get form values
     const nameInput = document.querySelector('[data-entity="name"]');
@@ -3333,12 +3333,12 @@
     }
     
     // Add click handler for submit button
-    const submitButton = document.querySelector('[data-action="submit-entity"]');
-    if (submitButton) {
-      submitButton.onclick = function(e) {
+    const addEntityButton = document.querySelector('[data-action="add-entity"]');
+    if (addEntityButton) {
+      addEntityButton.onclick = function(e) {
         e.preventDefault();
         e.stopPropagation();
-        handleEntitySubmit(e);
+        handleEntityAddition(e);
         return false;
       };
     }
