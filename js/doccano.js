@@ -3264,83 +3264,309 @@
 
   // Handle entity record addition
   function handleEntityAddition(event) {
-    event.preventDefault();
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    } else {
+      console.warn('handleEntityAddition called without event object');
+    }
+    
+    console.log('=== Add Button Clicked ===');
+    console.log('Event:', event);
+    
+    // Log the target that was clicked
+    if (event && event.target) {
+      console.log('Clicked element:', {
+        tag: event.target.tagName,
+        id: event.target.id,
+        class: event.target.className,
+        html: event.target.outerHTML
+      });
+    }
+    
     // Get form values
     const nameInput = document.querySelector('[data-entity="name"]');
     const typeSelect = document.querySelector('select[data-entity="type"]');
     const descriptionInput = document.querySelector('[data-entity="description"]');
     
-    if (nameInput && typeSelect && descriptionInput) {
-      const newEntity = {
-        type: typeSelect.value,
-        text: nameInput.value,
-        description: descriptionInput.value,
-        confidence: 1.0, // Default confidence for manually added entities
-        timestamp: new Date().toISOString()
-      };
-      
-      // Here you would typically add the entity to your data model
-      console.log('New entity added:', newEntity);
-      
-      // Reset form
-      nameInput.value = '';
-      typeSelect.value = '';
-      descriptionInput.value = '';
-      
-      // Hide the form
-      toggleEntityForm();
-      
-      // Refresh the entities display
-      // You would call your render function here
+    // Log all form inputs and their values
+    console.log('--- Form Inputs ---');
+    console.log('Name input:', nameInput ? {
+      value: nameInput.value,
+      required: nameInput.required,
+      disabled: nameInput.disabled
+    } : 'Not found');
+    
+    console.log('Type select:', typeSelect ? {
+      value: typeSelect.value,
+      options: Array.from(typeSelect.options).map(opt => ({
+        value: opt.value,
+        text: opt.text,
+        selected: opt.selected
+      })),
+      required: typeSelect.required,
+      disabled: typeSelect.disabled
+    } : 'Not found');
+    
+    console.log('Description input:', descriptionInput ? {
+      value: descriptionInput.value,
+      required: descriptionInput.required,
+      disabled: descriptionInput.disabled
+    } : 'Not found');
+    
+    // Log the form element itself
+    const form = event && event.target && event.target.closest('form');
+    console.log('Form element:', form ? {
+      id: form.id,
+      class: form.className,
+      method: form.method,
+      action: form.action,
+      elements: Array.from(form.elements).map(el => ({
+        name: el.name,
+        type: el.type,
+        value: el.value,
+        checked: el.checked,
+        selected: el.selected
+      }))
+    } : 'No form element found');
+    
+    if (!nameInput || !typeSelect) {
+      console.error('Required form elements not found');
+      return;
+    }
+    
+    // Validate required fields
+    let isValid = true;
+    if (!nameInput.value.trim()) {
+      nameInput.classList.add('border-red-500');
+      nameInput.focus();
+      isValid = false;
+    } else {
+      nameInput.classList.remove('border-red-500');
+    }
+    
+    if (!typeSelect.value) {
+      typeSelect.classList.add('border-red-500');
+      if (isValid) typeSelect.focus();
+      isValid = false;
+    } else {
+      typeSelect.classList.remove('border-red-500');
+    }
+    
+    if (!isValid) {
+      console.log('Form validation failed');
+      return;
+    }
+    
+    const newEntity = {
+      type: typeSelect.value,
+      text: nameInput.value.trim(),
+      description: descriptionInput ? descriptionInput.value.trim() : '',
+      confidence: 1.0, // Default confidence for manually added entities
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('Creating new entity:', newEntity);
+    
+    // Get the entities container - try multiple selectors
+    let entitiesContainer = document.querySelector('.entity-list[data-field="entities"]');
+    if (!entitiesContainer) {
+      // Try alternative selectors if the first one doesn't work
+      entitiesContainer = document.querySelector('.space-y-3');
+      if (!entitiesContainer) {
+        entitiesContainer = document.querySelector('.entity-list');
+        if (!entitiesContainer) {
+          // Create a container if none exists
+          console.warn('No entities container found, creating one');
+          const rightColumn = document.querySelector('#right-column');
+          if (rightColumn) {
+            entitiesContainer = document.createElement('div');
+            entitiesContainer.className = 'entity-list space-y-3';
+            rightColumn.appendChild(entitiesContainer);
+          } else {
+            console.error('Could not find or create entities container');
+            return;
+          }
+        }
+      }
+    }
+    
+    console.log('Using container:', entitiesContainer);
+    
+    // Create the new entity element with the exact structure you want
+    const entityElement = document.createElement('div');
+    entityElement.className = 'flex items-center justify-between bg-gray-50 p-2 rounded mb-1';
+    entityElement.innerHTML = `
+      <div>
+        <span class="text-xs font-medium text-gray-900">${newEntity.text}</span>
+        <span class="ml-2 text-xs text-gray-500">(${newEntity.type})</span>
+      </div>
+      <button class="text-red-400 hover:text-red-600" data-entity="${newEntity.text}">
+        <i class="fas fa-times"></i>
+      </button>
+    `;
+    
+    console.log('Created entity element:', entityElement);
+    
+    // Check if we need to replace the "No entities found" message
+    const noEntitiesMsg = entitiesContainer.querySelector('.text-gray-500');
+    if (noEntitiesMsg && noEntitiesMsg.textContent && noEntitiesMsg.textContent.includes('No entities found')) {
+      console.log('Replacing "No entities found" message');
+      entitiesContainer.innerHTML = '';
+    }
+    
+    // Add the new entity to the top of the container
+    if (entitiesContainer.firstChild) {
+      console.log('Adding entity to top of container');
+      entitiesContainer.insertBefore(entityElement, entitiesContainer.firstChild);
+    } else {
+      console.log('Adding first entity to container');
+      entitiesContainer.appendChild(entityElement);
+    }
+    
+    // Add click handler for the remove button
+    const removeButton = entityElement.querySelector('button[data-entity]');
+    if (removeButton) {
+      removeButton.addEventListener('click', (e) => {
+        console.log('Remove button clicked for entity:', newEntity.text);
+        e.preventDefault();
+        e.stopPropagation();
+        entityElement.remove();
+        
+        // If no entities left, show the "No entities found" message
+        if (entitiesContainer.children.length === 0) {
+          console.log('No entities left, showing empty state');
+          const emptyState = document.createElement('div');
+          emptyState.className = 'text-sm text-gray-500 py-4 text-center';
+          emptyState.textContent = 'No entities found';
+          entitiesContainer.appendChild(emptyState);
+        }
+      });
+    } else {
+      console.warn('Remove button not found in entity element');
+    }
+    
+    // Reset form
+    if (nameInput) nameInput.value = '';
+    if (typeSelect) typeSelect.value = '';
+    if (descriptionInput) descriptionInput.value = '';
+    
+    // Focus back on the name input for quick addition
+    if (nameInput) nameInput.focus();
+    
+    // Log for debugging
+    console.log('Entity added to DOM:', { entityId, entity: newEntity, container: entitiesContainer });
+    
+    // Dispatch a custom event that the entity was added
+    try {
+      const entityAddedEvent = new CustomEvent('entityAdded', { 
+        detail: { ...newEntity, elementId: entityId } 
+      });
+      document.dispatchEvent(entityAddedEvent);
+      console.log('Dispatched entityAdded event');
+    } catch (error) {
+      console.error('Error dispatching entityAdded event:', error);
     }
   }
-
+  
   // Initialize event listeners for entity forms
   function initEntityFormListeners() {
     console.log('Initializing entity form listeners...');
     
-    // Remove any existing listeners to prevent duplicates
-    const oldAddButton = document.getElementById('add-entity-trigger-button');
-    if (oldAddButton) {
-      const newAddButton = oldAddButton.cloneNode(true);
-      oldAddButton.parentNode.replaceChild(newAddButton, oldAddButton);
+    // Function to set up all form listeners
+    function setupFormListeners() {
+      // Toggle form button
+      const addTriggerButton = document.getElementById('add-entity-trigger-button');
+      if (addTriggerButton) {
+        // Remove existing click handlers
+        const newButton = addTriggerButton.cloneNode(true);
+        addTriggerButton.parentNode.replaceChild(newButton, addTriggerButton);
+        
+        // Add new click handler
+        newButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleEntityForm(e);
+          return false;
+        });
+        console.log('Add entity trigger button initialized');
+      } else {
+        console.warn('Add entity trigger button not found');
+      }
+      
+      // Add entity button (submit button in the form)
+      const addEntityButton = document.getElementById('add-entity-button');
+      if (addEntityButton) {
+        // First, try to find the form
+        const form = addEntityButton.closest('form');
+        
+        // If we found a form, handle submission there
+        if (form) {
+          form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('Form submission prevented, handling with handleEntityAddition');
+            handleEntityAddition(e);
+            return false;
+          });
+          console.log('Form submit handler attached');
+        }
+        
+        // Also handle button click directly as a fallback
+        const newSubmitButton = addEntityButton.cloneNode(true);
+        addEntityButton.parentNode.replaceChild(newSubmitButton, addEntityButton);
+        
+        newSubmitButton.addEventListener('click', function(e) {
+          console.log('Add entity button clicked directly');
+          handleEntityAddition(e);
+          return false;
+        });
+        
+        console.log('Add entity button handlers initialized');
+      } else {
+        console.warn('Add entity submit button not found');
+      }
+      
+      // Cancel button
+      const cancelButton = document.querySelector('[data-action="cancel-add-entity"]');
+      if (cancelButton) {
+        // Remove existing click handlers
+        const newCancelButton = cancelButton.cloneNode(true);
+        cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
+        
+        // Add new click handler
+        newCancelButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          toggleEntityForm(e);
+          return false;
+        });
+        console.log('Cancel button initialized');
+      }
+      
+      // Add click handler for submit button using data-action
+      const addEntityActionButton = document.querySelector('[data-action="add-entity"]');
+      if (addEntityActionButton) {
+        // Remove existing click handlers
+        const newActionButton = addEntityActionButton.cloneNode(true);
+        addEntityActionButton.parentNode.replaceChild(newActionButton, addEntityActionButton);
+        
+        // Add new click handler
+        newActionButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          handleEntityAddition(e);
+          return false;
+        });
+        console.log('Add entity action button initialized');
+      }
     }
     
-    // Add click handler for the add entity button
-    const addButton = document.getElementById('add-entity-trigger-button');
-    if (addButton) {
-      console.log('Found add entity button, adding click handler');
-      addButton.onclick = function(e) {
-        console.log('Add entity button clicked');
-        e.preventDefault();
-        e.stopPropagation();
-        toggleEntityForm(e);
-        return false;
-      };
-    } else {
-      console.warn('Add entity button not found');
-    }
+    // Try to set up listeners immediately
+    setupFormListeners();
     
-    // Add click handler for cancel button
-    const cancelButton = document.querySelector('[data-action="cancel-add-entity"]');
-    if (cancelButton) {
-      cancelButton.onclick = function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleEntityForm(e);
-        return false;
-      };
-    }
-    
-    // Add click handler for submit button
-    const addEntityButton = document.querySelector('[data-action="add-entity"]');
-    if (addEntityButton) {
-      addEntityButton.onclick = function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        handleEntityAddition(e);
-        return false;
-      };
+    // If form elements aren't found, try again after a short delay
+    if (!document.getElementById('add-entity-button') || !document.getElementById('add-entity-trigger-button')) {
+      console.log('Form elements not found, retrying...');
+      setTimeout(setupFormListeners, 500);
     }
     
     console.log('Entity form listeners initialized');
@@ -3349,6 +3575,13 @@
   // Initialize the application
   function init() {
     console.log('Initializing application...');
+    
+    // Add input event listeners to remove error states
+    document.addEventListener('input', function(e) {
+      if (e.target && e.target.matches && e.target.matches('[data-entity]')) {
+        e.target.classList.remove('border-red-500');
+      }
+    });
     
     // Initialize entity form
     function initEntityForm() {
@@ -4942,6 +5175,23 @@
       window.DoccanoApp[key] = value;
     }
   }
+
+  // Add a direct event listener for the add entity button
+  document.addEventListener('click', function(e) {
+    const addButton = e.target.closest && e.target.closest('#add-entity-button');
+    if (addButton) {
+      console.log('=== Direct click on add entity button ===');
+      console.log('Button element:', addButton);
+      console.log('Form values:', {
+        name: document.querySelector('[data-entity="name"]')?.value,
+        type: document.querySelector('select[data-entity="type"]')?.value,
+        description: document.querySelector('[data-entity="description"]')?.value
+      });
+      
+      // Call handleEntityAddition directly
+      handleEntityAddition(e);
+    }
+  });
 
   // Initialize when DOM is loaded
   if (document.readyState === "loading") {
