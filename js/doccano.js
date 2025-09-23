@@ -2111,10 +2111,13 @@
                 if (!entities || entities.length === 0) {
                   return '<div class="text-sm text-gray-500 py-2">No entities found</div>';
                 }
-                return entities
-                  .map(
-                    (entity) => `
-                  <div class="flex items-center justify-between bg-gray-50 p-2 rounded mb-1">
+                // Create a document fragment to hold the HTML
+                const fragment = document.createDocumentFragment();
+                
+                entities.forEach(entity => {
+                  const entityElement = document.createElement('div');
+                  entityElement.className = 'flex items-center justify-between bg-gray-50 p-2 rounded mb-1';
+                  entityElement.innerHTML = `
                     <div>
                       <span class="text-xs font-medium text-gray-900">${entity.text}</span>
                       <span class="ml-2 text-xs text-gray-500">(${entity.type})</span>
@@ -2122,10 +2125,25 @@
                     <button class="text-red-400 hover:text-red-600" data-entity="${entity.text}">
                       <i class="fas fa-times"></i>
                     </button>
-                  </div>
-                `
-                  )
-                  .join("");
+                  `;
+                  
+                  // Add click handler for the remove button
+                  const removeButton = entityElement.querySelector('button[data-entity]');
+                  if (removeButton) {
+                    removeButton.addEventListener('click', (e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      removeEntity(e.target.closest('button'));
+                    });
+                  }
+                  
+                  fragment.appendChild(entityElement);
+                });
+                
+                // Convert the fragment to a string for the template literal
+                const tempDiv = document.createElement('div');
+                tempDiv.appendChild(fragment.cloneNode(true));
+                return tempDiv.innerHTML;
               };
 
               // Helper function to render taxonomy
@@ -2393,7 +2411,7 @@
                                         <textarea rows="2" class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2 placeholder-gray-400" placeholder="Brief description" data-entity="description"></textarea>
                                       </div>
                                       <div class="flex justify-end space-x-2">
-                                        <button type="button" class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500" data-action="cancel-add-entity">Cancel</button>
+                                        <button type="button" class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500" data-action="cancel-add-entity">Close</button>
                                         <button type="button" id="add-entity-button" class="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500" data-action="add-entity">Add</button>
                                       </div>
                                     </div>
@@ -2480,15 +2498,15 @@
                                       <!-- Add new taxonomy category -->
                                       <div class="space-y-2 mt-6 pt-4 border-t border-gray-200" id="add-category-section">
                                         <label class="block text-sm font-medium text-gray-700">Add New Taxonomy Category</label>
-                                        <div class="flex gap-2">
+                                        <div class="flex flex-col sm:flex-row gap-2 w-full">
                                           <input type="text" 
                                             id="new-category-input"
-                                            class="flex-1 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2" 
+                                            class="w-full sm:flex-1 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2 sm:py-2" 
                                             placeholder="Category name"
                                             data-field="new-taxonomy-category">
                                           <button type="button" 
                                             id="add-category-btn"
-                                            class="px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                                            class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors whitespace-nowrap"
                                             data-action="add-taxonomy-category">
                                             Add Category
                                           </button>
@@ -2746,9 +2764,6 @@
                         <button type="button" class="inline-flex w-full justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 sm:ml-3 sm:w-auto" id="submit-curator">
                           Submit
                         </button>
-                        <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto" id="reset-curator">
-                          Reset
-                        </button>
                         <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto" id="cancel-curator">
                           Cancel
                         </button>
@@ -2771,9 +2786,6 @@
               document
                 .getElementById("cancel-curator")
                 .addEventListener("click", closeCuratorModal);
-              document
-                .getElementById("reset-curator")
-                .addEventListener("click", resetCuratorForm);
               document
                 .getElementById("submit-curator")
                 .addEventListener("click", submitCuratorForm);
@@ -2945,24 +2957,64 @@
 
               if (countryCodesInput && countryCodesContainer) {
                 // Handle all remove button clicks through delegation
-                countryCodesContainer.addEventListener("click", (e) => {
-                  const removeBtn = e.target.closest("button");
-                  if (removeBtn) {
+                document.addEventListener('click', function(e) {
+                  const removeButton = e.target.closest('button[data-entity]');
+                  if (removeButton) {
                     e.preventDefault();
                     e.stopPropagation();
-                    const codeElement = removeBtn.closest(
-                      "[data-country-code]"
-                    );
-                    if (codeElement) {
-                      codeElement.classList.add(
-                        "opacity-0",
-                        "scale-95",
-                        "transition-all",
-                        "duration-200"
-                      );
-                      setTimeout(() => {
-                        codeElement.remove();
-                      }, 200);
+                    
+                    const entityText = removeButton.getAttribute('data-entity');
+                    const entityElement = removeButton.closest('.flex.items-center.justify-between');
+                    
+                    if (entityElement) {
+                      // Show confirmation dialog
+                      Swal.fire({
+                        title: 'Remove Entity',
+                        text: `Are you sure you want to remove the entity "${entityText}"?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, remove it!',
+                        reverseButtons: true,
+                        focusConfirm: false,
+                        customClass: {
+                          confirmButton: 'px-4 py-2 text-sm font-medium rounded-md',
+                          cancelButton: 'px-4 py-2 text-sm font-medium rounded-md mr-2'
+                        }
+                      }).then((result) => {
+                        if (result.isConfirmed) {
+                          // Remove the entity element
+                          entityElement.remove();
+                          
+                          // Show success message
+                          const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                              toast.addEventListener('mouseenter', Swal.stopTimer);
+                              toast.addEventListener('mouseleave', Swal.resumeTimer);
+                            }
+                          });
+                          
+                          Toast.fire({
+                            icon: 'success',
+                            title: `Entity "${entityText}" removed`
+                          });
+                          
+                          // If no entities left, show the empty state
+                          const entitiesContainer = document.querySelector('.entity-list.space-y-3');
+                          if (entitiesContainer && entitiesContainer.children.length === 0) {
+                            const emptyState = document.createElement('div');
+                            emptyState.className = 'text-sm text-gray-500 py-4 text-center';
+                            emptyState.textContent = 'No entities found';
+                            entitiesContainer.appendChild(emptyState);
+                          }
+                        }
+                      });
                     }
                   }
                 });
@@ -3192,16 +3244,62 @@
     }
   }
 
-  // Reset form
-  function resetCuratorForm() {
-    // Implement form reset logic here
-    console.log("Reset form");
-  }
-
   // Submit form
   function submitCuratorForm() {
-    // Implement form submission logic here
-    console.log("Submit form");
+    // Get the form data
+    const formData = {
+      // Core Information
+      title: document.querySelector('input[data-field="title"]')?.value,
+      rhetorical_role: document.querySelector('select[data-field="rhetorical_role"]')?.value,
+      summary: document.querySelector('textarea[data-field="summary"]')?.value,
+      keywords: Array.from(document.querySelectorAll('#keywords-container [data-keyword]'))
+        .map(el => el.getAttribute('data-keyword')),
+      
+      // Entities
+      entities: Array.from(document.querySelectorAll('.entity-list [data-entity]')).map(el => {
+        return {
+          type: el.querySelector('.entity-type')?.textContent?.replace(/[()]/g, '') || '',
+          text: el.getAttribute('data-entity') || '',
+          value: null,
+          unit: null,
+          confidence: parseFloat(el.getAttribute('data-confidence') || '0.9')
+        };
+      }),
+      
+      // Taxonomy
+      taxonomy: Array.from(document.querySelectorAll('.taxonomy-category')).reduce((acc, el) => {
+        const category = el.getAttribute('data-category');
+        const keywords = Array.from(el.querySelectorAll('[data-keyword]'))
+          .map(k => k.getAttribute('data-keyword'));
+        acc[category] = keywords;
+        return acc;
+      }, {}),
+      
+      // Temporal Information
+      temporal: {
+        start_date: document.querySelector('input[data-field="temporal.start_date"]')?.value,
+        end_date: document.querySelector('input[data-field="temporal.end_date"]')?.value,
+        dates_mentioned: Array.from(document.querySelectorAll('#dates-mentioned-container [data-date-mention]'))
+          .map(el => el.getAttribute('data-date-mention'))
+      },
+      
+      // Geographic Information
+      geography: {
+        regions: Array.from(document.querySelectorAll('select[data-field="geography.regions"] option:checked'))
+          .map(opt => opt.value)
+          .filter(Boolean),
+        countries: Array.from(document.querySelectorAll('select[data-field="geography.countries"] option:checked'))
+          .map(opt => opt.value)
+          .filter(Boolean),
+        country_codes: Array.from(document.querySelectorAll('#country-codes-container [data-country-code]'))
+          .map(el => el.getAttribute('data-country-code'))
+      }
+    };
+
+    // Log the form data
+    console.log("Form data:", JSON.stringify(formData, null, 2));
+    
+    // Close the modal
     closeCuratorModal();
   }
 
@@ -3231,35 +3329,115 @@
     }
   }
 
-  // Toggle entity form visibility (legacy, will be removed)
+  // Toggle entity form visibility
   function toggleEntityForm(event) {
-    console.warn('toggleEntityForm is deprecated, use the new form handler');
-    if (event) event.preventDefault();
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      console.log('Toggle form called from:', event.target);
+    } else {
+      console.log('Toggle form called programmatically');
+    }
+    
     const form = document.getElementById('add-entity-form');
     const button = document.getElementById('add-entity-trigger-button');
     
-    if (form && button) {
-      if (form.classList.contains('hidden')) {
-        // Show the form
-        form.classList.remove('hidden');
-        form.style.display = 'block';
-        form.style.maxHeight = form.scrollHeight + 'px';
-        button.disabled = true;
-        button.classList.add('opacity-50', 'cursor-not-allowed');
-        // Focus on the first input field when showing the form
-        const firstInput = form.querySelector('input, select, textarea');
-        if (firstInput) setTimeout(() => firstInput.focus(), 50);
-      } else {
-        // Hide the form
-        form.classList.add('hidden');
-        form.style.maxHeight = '0';
-        form.style.display = 'none';
-        button.disabled = false;
-        button.classList.remove('opacity-50', 'cursor-not-allowed');
+    if (!form || !button) {
+      console.error('Could not find form or button:', { form, button });
+      return;
+    }
+    
+    const isHidden = form.classList.contains('hidden');
+    
+    console.log('Form is currently:', isHidden ? 'hidden' : 'visible');
+    
+    if (isHidden) {
+      // Show the form
+      console.log('Showing form');
+      form.classList.remove('hidden');
+      form.style.display = 'block';
+      form.style.maxHeight = form.scrollHeight + 'px';
+      button.disabled = true;
+      button.classList.add('opacity-50', 'cursor-not-allowed');
+      
+      // Focus on the first input field when showing the form
+      const firstInput = form.querySelector('input, select, textarea');
+      if (firstInput) {
+        setTimeout(() => {
+          firstInput.focus();
+          firstInput.select();
+        }, 50);
       }
     } else {
-      console.error('Could not find form or button:', { form, button });
+      // Hide the form
+      console.log('Hiding form');
+      form.classList.add('hidden');
+      form.style.maxHeight = '0';
+      form.style.display = 'none';
+      button.disabled = false;
+      button.classList.remove('opacity-50', 'cursor-not-allowed');
     }
+  }
+
+  // Handle entity removal
+  function removeEntity(button) {
+    const entityElement = button.closest('.flex.items-center.justify-between.bg-gray-50.p-2.rounded.mb-1');
+    const entityName = button.getAttribute('data-entity');
+    
+    if (!entityElement || !entityName) {
+      console.error('Could not find entity element or name');
+      return;
+    }
+    
+    // Show confirmation dialog
+    Swal.fire({
+      title: 'Remove Entity',
+      text: `Are you sure you want to remove the entity "${entityName}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, remove it!',
+      reverseButtons: true,
+      focusConfirm: false,
+      customClass: {
+        confirmButton: 'px-4 py-2 text-sm font-medium rounded-md',
+        cancelButton: 'px-4 py-2 text-sm font-medium rounded-md mr-2'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Remove the entity element
+        entityElement.remove();
+        
+        // Show success message
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+          }
+        });
+        
+        Toast.fire({
+          icon: 'success',
+          title: `Entity "${entityName}" removed`
+        });
+        
+        // If no entities left, show the empty state
+        const entitiesContainer = document.querySelector('.entity-list.space-y-3');
+        if (entitiesContainer && entitiesContainer.children.length === 0) {
+          console.log('No entities left, showing empty state');
+          const emptyState = document.createElement('div');
+          emptyState.className = 'text-sm text-gray-500 py-4 text-center';
+          emptyState.textContent = 'No entities found';
+          entitiesContainer.appendChild(emptyState);
+        }
+      }
+    });
   }
 
   // Handle entity record addition
@@ -3431,16 +3609,7 @@
         console.log('Remove button clicked for entity:', newEntity.text);
         e.preventDefault();
         e.stopPropagation();
-        entityElement.remove();
-        
-        // If no entities left, show the "No entities found" message
-        if (entitiesContainer.children.length === 0) {
-          console.log('No entities left, showing empty state');
-          const emptyState = document.createElement('div');
-          emptyState.className = 'text-sm text-gray-500 py-4 text-center';
-          emptyState.textContent = 'No entities found';
-          entitiesContainer.appendChild(emptyState);
-        }
+        removeEntity(e.target.closest('button'));
       });
     } else {
       console.warn('Remove button not found in entity element');
@@ -3455,12 +3624,12 @@
     if (nameInput) nameInput.focus();
     
     // Log for debugging
-    console.log('Entity added to DOM:', { entityId, entity: newEntity, container: entitiesContainer });
+    console.log('Entity added to DOM:', { entity: newEntity, container: entitiesContainer });
     
     // Dispatch a custom event that the entity was added
     try {
       const entityAddedEvent = new CustomEvent('entityAdded', { 
-        detail: { ...newEntity, elementId: entityId } 
+        detail: { ...newEntity } 
       });
       document.dispatchEvent(entityAddedEvent);
       console.log('Dispatched entityAdded event');
@@ -3473,103 +3642,76 @@
   function initEntityFormListeners() {
     console.log('Initializing entity form listeners...');
     
+    // Keep track of whether we've already set up the listeners
+    if (window.entityFormInitialized) {
+      console.log('Entity form listeners already initialized');
+      return;
+    }
+    
+    // Mark as initialized
+    window.entityFormInitialized = true;
+    
     // Function to set up all form listeners
     function setupFormListeners() {
-      // Toggle form button
-      const addTriggerButton = document.getElementById('add-entity-trigger-button');
-      if (addTriggerButton) {
-        // Remove existing click handlers
-        const newButton = addTriggerButton.cloneNode(true);
-        addTriggerButton.parentNode.replaceChild(newButton, addTriggerButton);
-        
-        // Add new click handler
-        newButton.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          toggleEntityForm(e);
-          return false;
-        });
-        console.log('Add entity trigger button initialized');
-      } else {
-        console.warn('Add entity trigger button not found');
-      }
-      
-      // Add entity button (submit button in the form)
-      const addEntityButton = document.getElementById('add-entity-button');
-      if (addEntityButton) {
-        // First, try to find the form
-        const form = addEntityButton.closest('form');
-        
-        // If we found a form, handle submission there
-        if (form) {
-          form.addEventListener('submit', function(e) {
+      // Toggle form button - use event delegation to handle dynamically added elements
+      document.body.addEventListener('click', function(e) {
+        // Handle add entity trigger button
+        if (e.target.matches('#add-entity-trigger-button, #add-entity-trigger-button *')) {
+          const button = e.target.closest('#add-entity-trigger-button');
+          if (button) {
             e.preventDefault();
-            console.log('Form submission prevented, handling with handleEntityAddition');
-            handleEntityAddition(e);
+            e.stopPropagation();
+            toggleEntityForm(e);
             return false;
-          });
-          console.log('Form submit handler attached');
+          }
         }
         
-        // Also handle button click directly as a fallback
-        const newSubmitButton = addEntityButton.cloneNode(true);
-        addEntityButton.parentNode.replaceChild(newSubmitButton, addEntityButton);
+        // Handle cancel button
+        if (e.target.matches('[data-action="cancel-add-entity"], [data-action="cancel-add-entity"] *')) {
+          const button = e.target.closest('[data-action="cancel-add-entity"]');
+          if (button) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleEntityForm(e);
+            return false;
+          }
+        }
         
-        newSubmitButton.addEventListener('click', function(e) {
-          console.log('Add entity button clicked directly');
+        // Handle add entity button
+        if (e.target.matches('#add-entity-button, #add-entity-button *')) {
+          const button = e.target.closest('#add-entity-button');
+          if (button) {
+            e.preventDefault();
+            e.stopPropagation();
+            handleEntityAddition(e);
+            return false;
+          }
+        }
+      });
+      
+      // Handle form submission
+      const form = document.getElementById('add-entity-form');
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          console.log('Form submission prevented, handling with handleEntityAddition');
           handleEntityAddition(e);
           return false;
         });
-        
-        console.log('Add entity button handlers initialized');
-      } else {
-        console.warn('Add entity submit button not found');
+        console.log('Form submit handler attached');
       }
       
-      // Cancel button
-      const cancelButton = document.querySelector('[data-action="cancel-add-entity"]');
-      if (cancelButton) {
-        // Remove existing click handlers
-        const newCancelButton = cancelButton.cloneNode(true);
-        cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
-        
-        // Add new click handler
-        newCancelButton.addEventListener('click', function(e) {
-          e.preventDefault();
-          toggleEntityForm(e);
-          return false;
-        });
-        console.log('Cancel button initialized');
-      }
-      
-      // Add click handler for submit button using data-action
-      const addEntityActionButton = document.querySelector('[data-action="add-entity"]');
-      if (addEntityActionButton) {
-        // Remove existing click handlers
-        const newActionButton = addEntityActionButton.cloneNode(true);
-        addEntityActionButton.parentNode.replaceChild(newActionButton, addEntityActionButton);
-        
-        // Add new click handler
-        newActionButton.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          handleEntityAddition(e);
-          return false;
-        });
-        console.log('Add entity action button initialized');
-      }
+      console.log('Entity form listeners initialized');
     }
     
     // Try to set up listeners immediately
     setupFormListeners();
     
     // If form elements aren't found, try again after a short delay
-    if (!document.getElementById('add-entity-button') || !document.getElementById('add-entity-trigger-button')) {
+    if (!document.getElementById('add-entity-form') || !document.getElementById('add-entity-trigger-button')) {
       console.log('Form elements not found, retrying...');
       setTimeout(setupFormListeners, 500);
     }
-    
-    console.log('Entity form listeners initialized');
   }
 
   // Initialize the application
@@ -3591,13 +3733,47 @@
       
       if (!addButton || !form) {
         console.warn('Entity form elements not found, retrying...');
+        // Try to find the elements again after a short delay
         setTimeout(initEntityForm, 500);
         return;
       }
       
       console.log('Found entity form elements');
       
-      // Toggle form visibility
+      // Set initial state
+      form.classList.add('hidden');
+      form.style.display = 'none';
+      
+      // Add click event to the add button
+      addButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleEntityForm(e);
+        return false;
+      });
+      
+      // Add click event to cancel button if it exists
+      const entityCancelBtn = form.querySelector('[data-action="cancel-entity"]');
+      if (entityCancelBtn) {
+        entityCancelBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleEntityForm(e);
+          return false;
+        });
+      }
+      
+      console.log('Entity form initialization complete');
+      
+      // Focus on first input when form is shown
+      const firstInput = form.querySelector('input, select, textarea');
+      if (firstInput) {
+        firstInput.addEventListener('focus', function() {
+          this.select();
+        });
+      }
+      
+      // Toggle form function
       function toggleForm(e) {
         if (e) e.preventDefault();
         console.log('Toggle form called');
@@ -3626,46 +3802,12 @@
       }
       
       // Handle form submission
-      function handleSubmit(e) {
+      form.addEventListener('submit', function(e) {
         e.preventDefault();
-        console.log('Form submitted');
-        
-        // Get form values
-        const typeInput = form.querySelector('[name="entity-type"]');
-        const textInput = form.querySelector('[name="entity-text"]');
-        
-        if (!typeInput || !textInput) {
-          console.error('Required form fields not found');
-          return;
-        }
-        
-        const entity = {
-          type: typeInput.value,
-          text: textInput.value,
-          timestamp: new Date().toISOString()
-        };
-        
-        console.log('New entity:', entity);
-        
-        // Reset form
-        form.reset();
-        toggleForm();
-        
-        // TODO: Add entity to the UI
-      }
-      
-      // Add event listeners
-      addButton.removeEventListener('click', toggleForm);
-      addButton.addEventListener('click', toggleForm);
-      
-      const cancelButton = form.querySelector('[data-action="cancel-add-entity"]');
-      if (cancelButton) {
-        cancelButton.removeEventListener('click', toggleForm);
-        cancelButton.addEventListener('click', toggleForm);
-      }
-      
-      form.removeEventListener('submit', handleSubmit);
-      form.addEventListener('submit', handleSubmit);
+        console.log('Form submission prevented, handling with handleEntityAddition');
+        handleEntityAddition(e);
+        return false;
+      });
       
       console.log('Entity form initialized');
     }
@@ -4495,68 +4637,117 @@
     clearSelection();
   }
 
-  function removeHighlight(highlightElement) {
+  function removeHighlight(highlightElement, skipConfirmation = false) {
     // Get the taxonomy ID from the data attribute instead of the element ID
     const taxonomyId = highlightElement.dataset.taxonomyId;
+    const highlightText = highlightElement.textContent.trim();
 
-    // Get the highlight info before removing it
-    const highlightInfo = {
-      id: highlightElement.id,
-      text: highlightElement.textContent.trim(),
-      taxonomyId: taxonomyId,
-      lineNumber: highlightElement.dataset.lineNumber || "",
+    // Function to perform the actual removal
+    const performRemoval = () => {
+      // Get the highlight info before removing it
+      const highlightInfo = {
+        id: highlightElement.id,
+        text: highlightText,
+        taxonomyId: taxonomyId,
+        lineNumber: highlightElement.dataset.lineNumber || "",
+      };
+
+      // Remove the highlight from the DOM first
+      const originalText =
+        highlightElement.firstChild?.textContent || highlightElement.textContent;
+      const textNode = document.createTextNode(originalText);
+      highlightElement.parentNode.replaceChild(textNode, highlightElement);
+
+      // Update the taxonomy count
+      if (taxonomyId) {
+        const taxonomy = taxonomies.find((t) => t.id === taxonomyId);
+        if (
+          taxonomy &&
+          (taxonomy.count > 0 || typeof taxonomy.count === "undefined")
+        ) {
+          taxonomy.count = Math.max(0, (taxonomy.count || 0) - 1);
+          renderTaxonomies();
+        }
+      }
+
+      // Create a new state that reflects this removal
+      const newState = saveState();
+
+      // If saveState didn't detect the change (which can happen with direct DOM manipulation),
+      // force a new state with the removal
+      if (newState && !newState.hasChanges) {
+        console.log("Forcing state update after highlight removal");
+        // Push a new state manually
+        const docContent = document.getElementById("document-content");
+        if (docContent) {
+          const snapshot = {
+            html: docContent.innerHTML,
+            highlights: Array.from(
+              document.querySelectorAll(".taxonomy-highlight")
+            ).map((hl) => ({
+              id: hl.id,
+              text: hl.textContent.trim(),
+              lineNumber: hl.dataset.lineNumber || "",
+              taxonomyId: hl.dataset.taxonomyId || "",
+              isActive: hl.classList.contains("highlight-active"),
+            })),
+            timestamp: new Date().toISOString(),
+            currentHighlightId: null,
+          };
+
+          stateHistory.pushState(JSON.stringify(snapshot));
+          console.log("Manual state update after highlight removal");
+        }
+      }
+
+      // Show success message
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer);
+          toast.addEventListener('mouseleave', Swal.resumeTimer);
+        }
+      });
+      
+      Toast.fire({
+        icon: 'success',
+        title: `Taxonomy highlight removed`
+      });
+
+      // Clear any existing selection
+      clearSelection();
     };
 
-    // Remove the highlight from the DOM first
-    const originalText =
-      highlightElement.firstChild.textContent || highlightElement.textContent;
-    const textNode = document.createTextNode(originalText);
-    highlightElement.parentNode.replaceChild(textNode, highlightElement);
-
-    // Update the taxonomy count
-    if (taxonomyId) {
-      const taxonomy = taxonomies.find((t) => t.id === taxonomyId);
-      if (
-        taxonomy &&
-        (taxonomy.count > 0 || typeof taxonomy.count === "undefined")
-      ) {
-        taxonomy.count = Math.max(0, (taxonomy.count || 0) - 1);
-        renderTaxonomies();
-      }
+    // Skip confirmation if explicitly requested (for programmatic removal)
+    if (skipConfirmation) {
+      performRemoval();
+      return;
     }
 
-    // Create a new state that reflects this removal
-    const newState = saveState();
-
-    // If saveState didn't detect the change (which can happen with direct DOM manipulation),
-    // force a new state with the removal
-    if (newState && !newState.hasChanges) {
-      console.log("Forcing state update after highlight removal");
-      // Push a new state manually
-      const docContent = document.getElementById("document-content");
-      if (docContent) {
-        const snapshot = {
-          html: docContent.innerHTML,
-          highlights: Array.from(
-            document.querySelectorAll(".taxonomy-highlight")
-          ).map((hl) => ({
-            id: hl.id,
-            text: hl.textContent.trim(),
-            lineNumber: hl.dataset.lineNumber || "",
-            taxonomyId: hl.dataset.taxonomyId || "",
-            isActive: hl.classList.contains("highlight-active"),
-          })),
-          timestamp: new Date().toISOString(),
-          currentHighlightId: null,
-        };
-
-        stateHistory.pushState(JSON.stringify(snapshot));
-        console.log("Manual state update after highlight removal");
+    // Show confirmation dialog
+    Swal.fire({
+      title: 'Remove Taxonomy Highlight',
+      text: `Are you sure you want to remove the highlighted text "${highlightText}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, remove it!',
+      reverseButtons: true,
+      focusConfirm: false,
+      customClass: {
+        confirmButton: 'px-4 py-2 text-sm font-medium rounded-md',
+        cancelButton: 'px-4 py-2 text-sm font-medium rounded-md mr-2'
       }
-    }
-
-    // Clear any existing selection
-    clearSelection();
+    }).then((result) => {
+      if (result.isConfirmed) {
+        performRemoval();
+      }
+    });
   }
 
   function renderTaxonomies() {
