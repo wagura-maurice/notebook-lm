@@ -8,7 +8,7 @@
     <!-- Meta Tags -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https: data:; img-src 'self' https: data:; connect-src 'self' https:;"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https: data:; img-src 'self' https: data: blob:; connect-src 'self' https: blob:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self' blob:;"
     />
 
     <!-- Google Fonts -->
@@ -34,6 +34,18 @@
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"
       defer
     ></script>
+
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js" id="pdfjs-script"></script>
+    <script>
+      // Set worker path after the script loads
+      document.addEventListener('DOMContentLoaded', function() {
+        if (window.pdfjsLib) {
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+        }
+      });
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf_viewer.min.css" />
 
     <!-- App Initialization -->
     <script type="application/javascript">
@@ -992,6 +1004,37 @@
         </div>
         <div class="space-y-2 max-h-60 overflow-y-auto pr-2">
           <!-- Taxonomy items will be dynamically inserted here -->
+        </div>
+      </div>
+    </div>
+    <!-- PDF Viewer Modal -->
+    <div id="pdfViewerModal" class="hidden fixed inset-0 z-[100] overflow-auto bg-black bg-opacity-75">
+      <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-6xl h-[90vh] flex flex-col">
+          <div class="flex justify-between items-center p-4 border-b">
+            <h2 class="text-xl font-semibold">PDF Viewer</h2>
+            <button id="closePdfViewer" class="text-gray-500 hover:text-gray-700">
+              <i class="fas fa-times text-2xl"></i>
+            </button>
+          </div>
+          <div class="flex-1 overflow-auto flex flex-col items-center p-4">
+            <div id="pdfViewerContainer" class="w-full max-w-4xl flex flex-col items-center">
+              <div id="pdfViewer" class="w-full flex justify-center"></div>
+              <div class="flex items-center justify-center mt-6 space-x-2 bg-gray-50 rounded-lg p-2 shadow-sm">
+                <button id="prevPage" class="flex items-center justify-center w-10 h-10 rounded-full text-gray-600 hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50" aria-label="Previous page">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                <div id="pageInfo" class="flex items-center px-4 py-2 text-sm font-medium text-gray-700">
+                  <span id="currentPage" class="font-semibold text-blue-600">1</span>
+                  <span class="mx-1">/</span>
+                  <span id="totalPages" class="text-gray-500">1</span>
+                </div>
+                <button id="nextPage" class="flex items-center justify-center w-10 h-10 rounded-full text-gray-600 hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50" aria-label="Next page">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
