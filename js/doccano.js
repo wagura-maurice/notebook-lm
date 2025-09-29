@@ -3443,6 +3443,7 @@
   window.DoccanoApp.loadDocumentContent = loadDocumentContent;
   window.DoccanoApp.getLineContent = getLineContent;
   window.DoccanoApp.openPdfViewer = openPdfViewer;
+  window.DoccanoApp.openPdfViewer = openPdfViewer;
 
   // Helper function to get confidence from annotation data
   function getConfidenceFromAnnotation(annotation) {
@@ -3872,18 +3873,17 @@
   let pageRendering = false;
   let pageIsRendering = false;
   const scale = 1.5;
-
+  
   // Open PDF Viewer
   async function openPdfViewer() {
-    const pdfUrl = 'assets/WP 03.pdf';
+    // Use absolute path to ensure the PDF loads correctly
+    const pdfUrl = new URL('assets/WP 03.pdf', window.location.origin + window.location.pathname).href;
     const modal = document.getElementById('pdfViewerModal');
     const pdfViewer = document.getElementById('pdfViewer');
     
-    if (!window.pdfjsLib) {
-      console.error('PDF.js library not loaded');
-      alert('Error: PDF viewer library not loaded. Please try refreshing the page.');
-      return;
-    }
+    // Extract filename from URL
+    const filename = pdfUrl.split('/').pop().replace(/\.pdf$/i, '').replace(/[-_]/g, ' ');
+    document.getElementById('pdfViewerTitle').textContent = `PDF Viewer: ${filename}`;
     
     // Show loading state
     pdfViewer.innerHTML = `
