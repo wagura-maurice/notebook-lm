@@ -3881,9 +3881,10 @@
     const modal = document.getElementById('pdfViewerModal');
     const pdfViewer = document.getElementById('pdfViewer');
     
-    // Extract filename from URL
-    const filename = pdfUrl.split('/').pop().replace(/\.pdf$/i, '').replace(/[-_]/g, ' ');
-    document.getElementById('pdfViewerTitle').textContent = `PDF Viewer: ${filename}`;
+    // Get the document title from the page
+    const docTitleElement = document.querySelector('.document-title:not(.document-title .document-title)');
+    const docTitle = docTitleElement ? docTitleElement.textContent.trim() : 'Document';
+    document.getElementById('pdfViewerTitle').textContent = `PDF Viewer: ${docTitle}`;
     
     // Show loading state
     pdfViewer.innerHTML = `
