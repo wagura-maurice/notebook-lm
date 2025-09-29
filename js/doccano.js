@@ -530,6 +530,7 @@
           <div class="mt-3 pt-3 border-t border-gray-100">
             <button 
               class="view-pdf-btn w-full flex items-center justify-center px-3 py-2 bg-eu-blue text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+              onclick="DoccanoApp.openPdfViewer()"
             >
               <i class="fas fa-file-pdf mr-2"></i>
               View PDF
@@ -3441,6 +3442,7 @@
   window.DoccanoApp = window.DoccanoApp || {};
   window.DoccanoApp.loadDocumentContent = loadDocumentContent;
   window.DoccanoApp.getLineContent = getLineContent;
+  window.DoccanoApp.openPdfViewer = openPdfViewer;
 
   // Helper function to get confidence from annotation data
   function getConfidenceFromAnnotation(annotation) {
@@ -3863,8 +3865,212 @@
     }
   }
 
+  // PDF Viewer functionality
+  let pdfDoc = null;
+  let pageNum = 1;
+  let pageNumPending = null;
+  let pageRendering = false;
+  let pageIsRendering = false;
+  const scale = 1.5;
+
+  // Open PDF Viewer
+  async function openPdfViewer() {
+    const pdfUrl = 'assets/WP 03.pdf';
+    const modal = document.getElementById('pdfViewerModal');
+    const pdfViewer = document.getElementById('pdfViewer');
+    
+    if (!window.pdfjsLib) {
+      console.error('PDF.js library not loaded');
+      alert('Error: PDF viewer library not loaded. Please try refreshing the page.');
+      return;
+    }
+    
+    // Show loading state
+    pdfViewer.innerHTML = `
+      <div class="flex flex-col items-center justify-center h-full p-8 text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+        <p class="text-gray-700">Loading PDF document...</p>
+      </div>`;
+    
+    // Show modal
+    modal.classList.remove('hidden');
+    
+    try {
+      // Load the PDF
+      const loadingTask = window.pdfjsLib.getDocument({
+        url: pdfUrl,
+        cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/cmaps/',
+        cMapPacked: true,
+        withCredentials: false
+      });
+      pdfDoc = await loadingTask.promise;
+      
+      // Reset page number
+      pageNum = 1;
+      
+      // Update pagination
+      updatePaginationInfo();
+      updatePaginationButtons();
+      
+      // Render the first page
+      await renderPage(pageNum);
+      
+      // Add event listeners for navigation
+      document.getElementById('prevPage').addEventListener('click', onPrevPage);
+      document.getElementById('nextPage').addEventListener('click', onNextPage);
+      document.getElementById('closePdfViewer').addEventListener('click', closePdfViewer);
+      
+      // Add keyboard navigation
+      document.addEventListener('keydown', handleKeyDown);
+      
+    } catch (error) {
+      console.error('Error loading PDF:', error);
+      document.getElementById('pdfViewer').innerHTML = `
+        <div class="text-center p-8">
+          <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl mb-4"></i>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Error Loading PDF</h3>
+          <p class="text-sm text-gray-600 mb-4">The PDF could not be loaded. Please check if the file exists and try again.</p>
+          <p class="text-xs text-gray-500">${error.message}</p>
+        </div>
+      `;
+    }
+  }
+  
+  // Close PDF Viewer
+  function closePdfViewer() {
+    const modal = document.getElementById('pdfViewerModal');
+    modal.classList.add('hidden');
+    
+    // Clean up
+    document.removeEventListener('keydown', handleKeyDown);
+    pdfDoc = null;
+    pageNum = 1;
+    document.getElementById('pdfViewer').innerHTML = '';
+  }
+  
+  // Handle keyboard navigation
+  function handleKeyDown(e) {
+    if (e.key === 'Escape') {
+      closePdfViewer();
+    } else if (e.key === 'ArrowLeft') {
+      onPrevPage();
+    } else if (e.key === 'ArrowRight') {
+      onNextPage();
+    }
+  }
+  
+  // Update pagination buttons state
+  function updatePaginationButtons() {
+    const prevBtn = document.getElementById('prevPage');
+    const nextBtn = document.getElementById('nextPage');
+    
+    // Disable/enable previous button
+    if (pageNum <= 1) {
+      prevBtn.disabled = true;
+      prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      prevBtn.classList.remove('hover:bg-gray-200', 'text-gray-600');
+    } else {
+      prevBtn.disabled = false;
+      prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      prevBtn.classList.add('hover:bg-gray-200', 'text-gray-600');
+    }
+    
+    // Disable/enable next button
+    if (pageNum >= pdfDoc.numPages) {
+      nextBtn.disabled = true;
+      nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      nextBtn.classList.remove('hover:bg-gray-200', 'text-gray-600');
+    } else {
+      nextBtn.disabled = false;
+      nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      nextBtn.classList.add('hover:bg-gray-200', 'text-gray-600');
+    }
+  }
+  
+  // Go to previous page
+  function onPrevPage() {
+    if (pageNum <= 1) return;
+    pageNum--;
+    queueRenderPage(pageNum);
+    updatePaginationButtons();
+  }
+  
+  // Go to next page
+  function onNextPage() {
+    if (pageNum >= pdfDoc.numPages) return;
+    pageNum++;
+    queueRenderPage(pageNum);
+    updatePaginationButtons();
+  }
+  
+  // Update pagination info
+  function updatePaginationInfo() {
+    document.getElementById('currentPage').textContent = pageNum;
+    document.getElementById('totalPages').textContent = pdfDoc.numPages;
+  }
+  
+  // Queue a page for rendering
+  function queueRenderPage(num) {
+    if (pageRendering) {
+      pageNumPending = num;
+    } else {
+      renderPage(num);
+    }
+  }
+  
+  // Render a page
+  async function renderPage(num) {
+    pageRendering = true;
+    
+    // Update page info
+    updatePaginationInfo();
+    
+    // Get the page
+    const page = await pdfDoc.getPage(num);
+    
+    // Get the container and calculate available width
+    const container = document.getElementById('pdfViewer');
+    const containerWidth = container.clientWidth;
+    
+    // Calculate the scale to fit the container width
+    const viewport = page.getViewport({ scale: 1.0 });
+    const scale = Math.min((containerWidth - 40) / viewport.width, 1.5); // Max scale 1.5
+    const scaledViewport = page.getViewport({ scale });
+    
+    // Prepare canvas
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.height = scaledViewport.height;
+    canvas.width = scaledViewport.width;
+    canvas.style.maxWidth = '100%';
+    canvas.style.height = 'auto';
+    
+    // Clear the container and center the canvas
+    container.innerHTML = '';
+    container.appendChild(canvas);
+    
+    // Render the page
+    const renderContext = {
+      canvasContext: context,
+      viewport: scaledViewport
+    };
+    
+    const renderTask = page.render(renderContext);
+    
+    // Wait for rendering to finish
+    await renderTask.promise;
+    
+    pageRendering = false;
+    
+    // Check if there's a pending page to render
+    if (pageNumPending !== null) {
+      renderPage(pageNumPending);
+      pageNumPending = null;
+    }
+  }
+
   // Initialize the application
-  function init() {
+  async function init() {
     console.log('Initializing application...');
     
     // Add input event listeners to remove error states
