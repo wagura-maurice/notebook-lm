@@ -526,6 +526,16 @@
           `
               : ""
           }
+
+          <div class="mt-3 pt-3 border-t border-gray-100">
+            <button 
+              class="view-pdf-btn w-full flex items-center justify-center px-3 py-2 bg-eu-blue text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+            >
+              <i class="fas fa-file-pdf mr-2"></i>
+              View PDF
+            </button>
+          </div>
+
         </div>
       `;
 
