@@ -3915,13 +3915,20 @@
       // Render the first page
       await renderPage(pageNum);
       
-      // Add event listeners for navigation
+      // Add event listeners
       document.getElementById('prevPage').addEventListener('click', onPrevPage);
       document.getElementById('nextPage').addEventListener('click', onNextPage);
       document.getElementById('closePdfViewer').addEventListener('click', closePdfViewer);
+      document.getElementById('closePdfViewerBottom').addEventListener('click', closePdfViewer);
+      document.getElementById('pdfViewerBackdrop').addEventListener('click', closePdfViewer);
       
       // Add keyboard navigation
       document.addEventListener('keydown', handleKeyDown);
+      
+      // Prevent modal close when clicking inside content
+      document.getElementById('pdfViewerContainer').addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
       
     } catch (error) {
       console.error('Error loading PDF:', error);
@@ -3943,6 +3950,9 @@
     
     // Clean up
     document.removeEventListener('keydown', handleKeyDown);
+    document.getElementById('pdfViewerBackdrop').removeEventListener('click', closePdfViewer);
+    document.getElementById('closePdfViewerBottom').removeEventListener('click', closePdfViewer);
+    
     pdfDoc = null;
     pageNum = 1;
     document.getElementById('pdfViewer').innerHTML = '';
