@@ -1305,7 +1305,7 @@ li {
 
 /* PDF Viewer Styles */
 #pdfViewer {
-  background-color: #525659;
+  background-color: var(--eu-orange);
   overflow: auto;
   width: 100%;
   min-height: 500px;
