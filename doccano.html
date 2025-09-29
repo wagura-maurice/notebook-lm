@@ -1008,29 +1008,45 @@
       </div>
     </div>
     <!-- PDF Viewer Modal -->
-    <div id="pdfViewerModal" class="hidden fixed inset-0 z-[100] overflow-auto bg-black bg-opacity-75">
-      <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-6xl h-[90vh] flex flex-col">
-          <div class="flex justify-between items-center p-4 border-b">
-            <h2 class="text-xl font-semibold">PDF Viewer</h2>
-            <button id="closePdfViewer" class="text-gray-500 hover:text-gray-700">
+    <div id="pdfViewerModal" class="hidden fixed inset-0 z-[100] overflow-hidden">
+      <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" id="pdfViewerBackdrop"></div>
+      <div class="fixed inset-0 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden">
+          <!-- Header -->
+          <div class="bg-eu-blue px-6 py-4 rounded-t-lg flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-white">PDF Viewer</h2>
+            <button id="closePdfViewer" class="text-white hover:text-gray-200 focus:outline-none">
               <i class="fas fa-times text-2xl"></i>
             </button>
           </div>
-          <div class="flex-1 overflow-auto flex flex-col items-center p-4">
-            <div id="pdfViewerContainer" class="w-full max-w-4xl flex flex-col items-center">
-              <div id="pdfViewer" class="w-full flex justify-center"></div>
-              <div class="flex items-center justify-center mt-6 space-x-2 bg-gray-50 rounded-lg p-2 shadow-sm">
+          
+          <!-- Content Area -->
+          <div class="flex-1 overflow-auto bg-gray-50 p-6">
+            <div id="pdfViewerContainer" class="w-full max-w-4xl mx-auto">
+              <div id="pdfViewer" class="bg-white p-6 rounded-lg shadow-sm border border-gray-200"></div>
+            </div>
+          </div>
+          
+          <!-- Footer -->
+          <div class="bg-gray-50 border-t border-gray-200 px-6 py-4 rounded-b-lg">
+            <div class="flex items-center justify-between">
+              <div class="flex-1"></div>
+              <div class="flex items-center space-x-4">
                 <button id="prevPage" class="flex items-center justify-center w-10 h-10 rounded-full text-gray-600 hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50" aria-label="Previous page">
                   <i class="fas fa-chevron-left"></i>
                 </button>
-                <div id="pageInfo" class="flex items-center px-4 py-2 text-sm font-medium text-gray-700">
+                <div id="pageInfo" class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-lg border border-gray-200">
                   <span id="currentPage" class="font-semibold text-blue-600">1</span>
-                  <span class="mx-1">/</span>
+                  <span class="mx-1 text-gray-400">/</span>
                   <span id="totalPages" class="text-gray-500">1</span>
                 </div>
                 <button id="nextPage" class="flex items-center justify-center w-10 h-10 rounded-full text-gray-600 hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50" aria-label="Next page">
                   <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+              <div class="flex-1 flex justify-end">
+                <button id="closePdfViewerBottom" class="px-4 py-2 bg-eu-blue text-white rounded-md hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                  Close
                 </button>
               </div>
             </div>
