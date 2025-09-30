@@ -4239,16 +4239,48 @@
     
     // Initialize entity form
     function initEntityForm() {
-      console.log('Initializing entity form...');
+      // Track retry attempts to prevent infinite loop
+      if (typeof initEntityForm.retryCount === 'undefined') {
+        initEntityForm.retryCount = 0;
+      }
+      
+      // Check if we're in the curator studio modal context
+      const curatorModal = document.getElementById('curator-studio-modal');
       const addButton = document.getElementById('add-entity-trigger-button');
       const form = document.getElementById('add-entity-form');
       
-      if (!addButton || !form) {
-        console.warn('Entity form elements not found, retrying...');
-        // Try to find the elements again after a short delay
-        setTimeout(initEntityForm, 500);
+      // Only initialize if we're in the context where the form should exist
+      if (curatorModal && curatorModal.classList.contains('hidden')) {
+        // If modal is hidden, reset counter and don't try to initialize
+        initEntityForm.retryCount = 0;
         return;
       }
+      
+      console.log('Initializing entity form... (attempt ' + (initEntityForm.retryCount + 1) + ')');
+      
+      if (!addButton || !form) {
+        initEntityForm.retryCount++;
+        
+        // Only retry up to 5 times (about 2.5 seconds total) but only if the modal is visible
+        if (initEntityForm.retryCount < 5 && (!curatorModal || !curatorModal.classList.contains('hidden'))) {
+          console.warn('Entity form elements not found, retrying... (attempt ' + initEntityForm.retryCount + ')');
+          // Try to find the elements again after a short delay
+          setTimeout(initEntityForm, 500);
+        } else {
+          // Reduce logging - only log error if we've genuinely tried multiple times
+          if (initEntityForm.retryCount >= 5) {
+            console.log('Entity form elements not found after maximum retry attempts.');
+          }
+          // Reset the counter in case the elements appear later
+          initEntityForm.retryCount = 0;
+        }
+        return;
+      }
+      
+      // Reset retry count on successful initialization
+      initEntityForm.retryCount = 0;
+      
+      console.log('Entity form initialized successfully');
       
       console.log('Found entity form elements');
       
@@ -4330,8 +4362,69 @@
       setTimeout(initEntityForm, 100);
     });
     
-    // Also try to initialize immediately in case modal is already open
-    setTimeout(initEntityForm, 500);
+    // Only try to initialize when the curator studio modal is available and visible
+    // Check if the modal exists in the DOM and initialize appropriately
+    const checkAndInitEntityForm = function() {
+      const curatorModal = document.getElementById('curator-studio-modal');
+      // Only initialize if the modal exists in the DOM (meaning it could be opened)
+      if (curatorModal) {
+        // Don't call initEntityForm here since it will be called when modal opens
+        // The event listener for modal open will handle initialization
+        console.log('Curator studio modal found, entity form will initialize when modal opens');
+        return;
+      } else {
+        // If modal doesn't exist yet, try again after a delay
+        // But limit total attempts to prevent infinite loop
+        if (typeof initEntityForm.globalRetryCount === 'undefined') {
+          initEntityForm.globalRetryCount = 0;
+        }
+        
+        initEntityForm.globalRetryCount++;
+        
+        if (initEntityForm.globalRetryCount < 5) { // Limit to 5 attempts
+          setTimeout(checkAndInitEntityForm, 1000);
+        } else {
+          console.log('Curator studio modal not found after maximum attempts, will initialize when modal is created');
+        }
+      }
+    };
+    
+    // Start checking for the modal
+    setTimeout(checkAndInitEntityForm, 500);
+    
+    // Add event listener for when curator studio modal is opened to initialize entity form
+    // Since the modal is dynamically created, we'll use a MutationObserver to detect when it's added to the DOM
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        mutation.addedNodes.forEach(function(node) {
+          if (node.nodeType === 1 && node.id === 'curator-studio-modal') {
+            // When the modal is added to the DOM, set up the entity form when it's displayed
+            console.log('Curator studio modal detected, setting up event listener');
+            
+            // Create a smaller observer to watch for when the modal becomes visible
+            const modalObserver = new MutationObserver(function() {
+              if (!node.classList.contains('hidden')) {
+                console.log('Curator studio modal opened, initializing entity form');
+                // Give a small delay to ensure all modal content is rendered
+                setTimeout(initEntityForm, 100);
+              }
+            });
+            
+            // Start observing the modal for class changes
+            modalObserver.observe(node, {
+              attributes: true,
+              attributeFilter: ['class']
+            });
+          }
+        });
+      });
+    });
+    
+    // Start observing for the addition of the curator studio modal
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
     
     // Add click handler for document lines
     document.addEventListener("click", (e) => {
@@ -4356,6 +4449,20 @@
         handleLineClick(lineElement);
       } else {
         console.log("No line element found for click target:", e.target);
+      }
+    });
+    
+    // Add event listener specifically for curator studio button clicks to ensure form initialization
+    document.addEventListener("click", function (event) {
+      if (event.target.closest(".curator-studio-btn")) {
+        event.preventDefault();
+        // Open the curator studio first
+        window.DoccanoApp.openCuratorStudio();
+        // Give a small delay to ensure modal is created and visible before initializing form
+        setTimeout(() => {
+          console.log('Curator Studio button clicked, initializing entity form');
+          initEntityForm();
+        }, 20);
       }
     });
 
@@ -4404,13 +4511,6 @@
       initEntityFormListeners();
     }
 
-    // Add event delegation for Curator Studio button
-    document.addEventListener("click", function (event) {
-      if (event.target.closest(".curator-studio-btn")) {
-        event.preventDefault();
-        window.DoccanoApp.openCuratorStudio();
-      }
-    });
     setupEventListeners();
     renderTaxonomies();
 
