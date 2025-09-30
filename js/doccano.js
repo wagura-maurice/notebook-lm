@@ -335,8 +335,12 @@
       processLine(line, taxonomyMap);
     });
 
+    // Filter out entities (which is an array) and only keep taxonomy categories (which have count property)
     // Convert the map to an array and sort by count (descending)
-    return Object.values(taxonomyMap).sort((a, b) => b.count - a.count);
+    return Object.entries(taxonomyMap)
+      .filter(([key, value]) => key !== 'entities' && value.count !== undefined)
+      .map(([key, value]) => value)
+      .sort((a, b) => b.count - a.count);
   }
 
   async function fetchAndProcessTaxonomies(filePath) {
@@ -5409,17 +5413,21 @@
         return;
       }
 
-      // Calculate total count of all taxonomy items
-      const totalCount = taxonomyList.reduce(
+      // Calculate the count of unique taxonomy categories
+      const taxonomyCategoryCount = taxonomyList.length;
+      const formattedCategoryCount = taxonomyCategoryCount.toLocaleString();
+      
+      // Calculate total count of all taxonomy items (sum of all counts)
+      const totalItemsCount = taxonomyList.reduce(
         (sum, taxonomy) => sum + (taxonomy.count || 0),
         0
       );
-      const formattedCount = totalCount.toLocaleString(); // Format number with thousand separators
+      const formattedItemsCount = totalItemsCount.toLocaleString();
 
-      // Update the taxonomies heading with the total count
+      // Update the taxonomies heading with both counts
       if (taxonomiesHeading) {
-        taxonomiesHeading.innerHTML = `Taxonomies <span class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-normal rounded-full">${formattedCount} item${
-          totalCount !== 1 ? "s" : ""
+        taxonomiesHeading.innerHTML = `<span class="mr-2 px-2 py-0.5 bg-eu-blue text-white text-xs font-normal rounded-full">${formattedCategoryCount}</span>Taxonomies <span class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-normal rounded-full">${formattedItemsCount} item${
+          totalItemsCount !== 1 ? "s" : ""
         }</span>`;
       }
 
