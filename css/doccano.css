@@ -1741,6 +1741,11 @@ body.dragging-active * {
 
 /* Make document lines draggable with better cursor feedback */
 .document-line[draggable="true"] {
+  cursor: default; /* Changed from grab to allow text selection */
+}
+
+/* Only show grab cursor on the line number, not the content */
+.document-line[draggable="true"] .line-number {
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
@@ -1748,7 +1753,16 @@ body.dragging-active * {
   -ms-user-select: none;
 }
 
-.document-line[draggable="true"]:active {
+/* Allow text selection in line content */
+.document-line[draggable="true"] .line-content {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  cursor: text;
+}
+
+.document-line[draggable="true"] .line-number:active {
   cursor: grabbing;
 }
 
