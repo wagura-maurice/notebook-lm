@@ -1577,7 +1577,14 @@
             )
             .join(" ");
 
-          // Create a highlight with consistent styling and dynamic color application
+          // Get the taxonomy prefix (first 2 letters of each word)
+          const taxonomyPrefix = category
+            .split("_")
+            .map((word) => word[0]?.toUpperCase() || "")
+            .join("")
+            .substring(0, 2);
+
+          // Create a highlight with consistent styling matching manual highlights
           const rgbaColor = hexToRgba(highlightColor, 0.125);
           const borderColor = hexToRgba(highlightColor, 0.5);
 
@@ -1586,19 +1593,56 @@
               class="taxonomy-highlight"
               id="${highlightId}"
               data-taxonomy-id="${category.toLowerCase().replace(/\s+/g, "_")}"
+              data-taxonomy-name="${formattedDisplayName}"
               data-original-text="${match}"
+              data-timestamp="${new Date().toISOString()}"
               style="
                 background-color: ${rgbaColor};
                 color: ${highlightColor};
                 border-bottom: 2px solid ${borderColor};
+                padding: 0 0.25rem;
+                border-radius: 0.25rem;
+                cursor: pointer;
+                position: relative;
               "
             >
               ${match}
-              <span class="taxonomy-tooltip">
-                <span 
-                  class="taxonomy-tooltip-dot" 
-                  style="background-color: ${highlightColor}">
-                </span>
+              <span class="taxonomy-badge" style="
+                display: inline-flex;
+                align-items: center;
+                background-color: ${highlightColor};
+                color: white;
+                font-size: 0.65rem;
+                font-weight: 600;
+                padding: 0.125rem 0.375rem;
+                border-radius: 0.25rem;
+                margin-left: 0.25rem;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 0.025em;
+                white-space: nowrap;
+              ">${taxonomyPrefix}</span>
+              <span class="taxonomy-tooltip" style="
+                background-color: white;
+                border: 1px solid #e5e7eb;
+                border-radius: 0.375rem;
+                padding: 0.25rem 0.5rem;
+                position: absolute;
+                z-index: 50;
+                bottom: 100%;
+                left: 50%;
+                transform: translateX(-50%) translateY(-5px);
+                white-space: nowrap;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                opacity: 0;
+                visibility: hidden;
+                color: #374151;
+                font-size: 0.75rem;
+                font-weight: 500;
+                transition: all 0.2s ease-in-out;
+                pointer-events: none;
+              ">
+                <span class="inline-block w-2 h-2 rounded-full mr-1" style="background-color: ${highlightColor}"></span>
                 ${formattedDisplayName}
               </span>
             </span>`;
@@ -4973,6 +5017,29 @@
     // Only add event listeners to the document content area
     docContent.addEventListener("mouseup", handleTextSelection, true);
     docContent.addEventListener("mousedown", clearSelectionIfOutside, true);
+    
+    // Add event delegation for taxonomy highlight tooltips
+    docContent.addEventListener("mouseenter", (e) => {
+      if (e.target.classList.contains("taxonomy-highlight")) {
+        const tooltip = e.target.querySelector(".taxonomy-tooltip");
+        if (tooltip) {
+          tooltip.style.opacity = "1";
+          tooltip.style.visibility = "visible";
+          tooltip.style.transform = "translateX(-50%) translateY(-10px)";
+        }
+      }
+    }, true);
+    
+    docContent.addEventListener("mouseleave", (e) => {
+      if (e.target.classList.contains("taxonomy-highlight")) {
+        const tooltip = e.target.querySelector(".taxonomy-tooltip");
+        if (tooltip) {
+          tooltip.style.opacity = "0";
+          tooltip.style.visibility = "hidden";
+          tooltip.style.transform = "translateX(-50%) translateY(-5px)";
+        }
+      }
+    }, true);
   }
 
   function isSelectionInParagraph(selection) {
