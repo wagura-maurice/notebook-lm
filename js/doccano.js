@@ -5256,8 +5256,16 @@
     
     const { lineNumber, lineContent, enrichment } = saveStateBeforeChange();
     
+    // Check if there's an existing highlight in the selection
+    let existingHighlight = null;
+    if (currentSelectionRange) {
+      const container = currentSelectionRange.commonAncestorContainer;
+      const element = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
+      existingHighlight = element.closest('.taxonomy-highlight');
+    }
+    
     // If the same taxonomy, remove the highlight
-    if (existingHighlight && existingHighlight.id === `taxonomy-${taxonomy.id}`) {
+    if (existingHighlight && existingHighlight.dataset.taxonomyId === taxonomy.id) {
       removeHighlight(existingHighlight);
       return;
     }
@@ -5267,7 +5275,7 @@
       const range = document.createRange();
       range.selectNode(existingHighlight);
       currentSelectionRange = range;
-      currentSelection = existingHighlight.textContent;
+      currentSelection = existingHighlight.dataset.originalText || existingHighlight.textContent;
       existingHighlight.remove();
     }
 
@@ -5290,12 +5298,29 @@
     span.className = "taxonomy-highlight";
     span.id = `taxonomy-${taxonomy.id}-${Date.now()}`; // Add timestamp for unique ID
     span.dataset.taxonomyId = taxonomy.id;
+    span.dataset.taxonomyName = taxonomy.name;
     span.dataset.lineNumber = lineNumber || "";
     span.dataset.originalText = currentSelection; // Store original text separately
+    span.dataset.timestamp = new Date().toISOString(); // Add timestamp for tracking
 
-    // Add tooltip with matching color and hover effects
+    // Add visible badge and tooltip with matching color and hover effects
     span.innerHTML = `
                 ${currentSelection}
+                <span class="taxonomy-badge" style="
+                    display: inline-flex;
+                    align-items: center;
+                    background-color: ${bgColor};
+                    color: white;
+                    font-size: 0.65rem;
+                    font-weight: 600;
+                    padding: 0.125rem 0.375rem;
+                    border-radius: 0.25rem;
+                    margin-left: 0.25rem;
+                    vertical-align: middle;
+                    text-transform: uppercase;
+                    letter-spacing: 0.025em;
+                    white-space: nowrap;
+                ">${taxonomy.prefix || taxonomy.name.substring(0, 2).toUpperCase()}</span>
                 <span class="taxonomy-tooltip" style="
                     background-color: white;
                     border: 1px solid #e5e7eb;
@@ -5805,27 +5830,42 @@
 
       // Process only the active highlights from the DOM
       const activeHighlights = currentHighlightElements.map((hl) => {
-        // Get text content
+        // Get text content - exclude badge and tooltip
         let text = "";
-        const textNode = Array.from(hl.childNodes).find(
-          (node) => node.nodeType === Node.TEXT_NODE
-        );
-        if (textNode) {
-          text = textNode.textContent.trim();
+        
+        // First try to get from dataset if available
+        if (hl.dataset.originalText) {
+          text = hl.dataset.originalText.trim();
         } else {
-          text = hl.textContent
-            .trim()
-            .replace(/\s+/g, " ")
-            .replace(/\n+/g, " ")
-            .trim();
-
-          const taxonomy = taxonomies.find(
-            (t) => t.id === (hl.dataset.taxonomyId || "")
+          // Get only the text node, excluding badge and tooltip
+          const textNode = Array.from(hl.childNodes).find(
+            (node) => node.nodeType === Node.TEXT_NODE
           );
-          if (taxonomy) {
-            text = text
-              .replace(new RegExp(`\\s*${taxonomy.name}\\s*$`, "i"), "")
+          if (textNode) {
+            text = textNode.textContent.trim();
+          } else {
+            // Clone the element and remove badge and tooltip
+            const clone = hl.cloneNode(true);
+            const badge = clone.querySelector('.taxonomy-badge');
+            const tooltip = clone.querySelector('.taxonomy-tooltip');
+            if (badge) badge.remove();
+            if (tooltip) tooltip.remove();
+            
+            text = clone.textContent
+              .trim()
+              .replace(/\s+/g, " ")
+              .replace(/\n+/g, " ")
               .trim();
+
+            const taxonomy = taxonomies.find(
+              (t) => t.id === (hl.dataset.taxonomyId || "")
+            );
+            if (taxonomy) {
+              text = text
+                .replace(new RegExp(`\\s*${taxonomy.name}\\s*$`, "i"), "")
+                .replace(new RegExp(`\\s*${taxonomy.prefix}\\s*$`, "i"), "")
+                .trim();
+            }
           }
         }
 
