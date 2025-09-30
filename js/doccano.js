@@ -5684,14 +5684,47 @@
       const docTitle =
         document.querySelector("h1")?.textContent || "Untitled Document";
 
-      // Create export data structure
+      // Collect merged lines information - only line numbers
+      const mergedLines = [];
+      const mergedTargetLines = document.querySelectorAll('.document-line.has-merged-content');
+      
+      // Process merged target lines (lines that received merged content)
+      mergedTargetLines.forEach(targetLine => {
+        const targetLineNumber = targetLine.dataset.lineNumber;
+        const lineData = targetLine.dataset.lineData;
+        
+        try {
+          const parsedData = JSON.parse(lineData);
+          const mergedFromLine = parsedData.mergedFrom;
+          
+          if (targetLineNumber && mergedFromLine) {
+            mergedLines.push({
+              lineNumber: parseInt(targetLineNumber),
+              mergedFromLine: parseInt(mergedFromLine)
+            });
+          }
+        } catch (e) {
+          console.warn('Could not parse line data for merged line:', e);
+        }
+      });
+
+      // Create export data structure with merged lines information
       const exportData = {
         document: docTitle.trim(),
         timestamp: new Date().toISOString(),
         highlights: highlights,
+        mergedLines: {
+          count: mergedLines.length,
+          items: mergedLines.sort((a, b) => a.lineNumber - b.lineNumber)
+        },
+        metadata: {
+          totalLines: document.querySelectorAll('.document-line').length,
+          mergedSourceCount: mergedSourceLines.length,
+          mergedTargetCount: mergedTargetLines.length
+        }
       };
 
-      console.log("Exporting highlights:", exportData);
+      console.log("Exporting highlights with merged lines:", exportData);
       return exportData;
     } catch (error) {
       console.error("Error exporting highlights:", error);
@@ -5834,15 +5867,50 @@
         };
       });
 
-      // Prepare export data with only active highlights
+      // Collect merged lines information - only line numbers
+      const mergedLines = [];
+      const mergedTargetLines = document.querySelectorAll('.document-line.has-merged-content');
+      
+      // Process merged target lines (lines that received merged content)
+      mergedTargetLines.forEach(targetLine => {
+        const targetLineNumber = targetLine.dataset.lineNumber;
+        const lineData = targetLine.dataset.lineData;
+        
+        try {
+          const parsedData = JSON.parse(lineData);
+          const mergedFromLine = parsedData.mergedFrom;
+          
+          if (targetLineNumber && mergedFromLine) {
+            mergedLines.push({
+              lineNumber: parseInt(targetLineNumber),
+              mergedFromLine: parseInt(mergedFromLine)
+            });
+          }
+        } catch (e) {
+          console.warn('Could not parse line data for merged line:', e);
+        }
+      });
+
+      // Prepare export data with highlights and merged lines information
       exportData = {
+        document: document.title,
+        timestamp: new Date().toISOString(),
+        highlights: activeHighlights,
+        mergedLines: mergedLines.sort((a, b) => a.lineNumber - b.lineNumber),
         metadata: {
           exported_at: new Date().toISOString(),
           document_title: document.title,
           highlights_count: activeHighlights.length,
-        },
-        highlights: activeHighlights,
+          merged_lines_count: mergedLines.length
+        }
       };
+      
+      // Log merged lines information
+      if (mergedLines.length > 0) {
+        console.log(`📋 Exporting ${mergedLines.length} merged line(s):`, mergedLines);
+      } else {
+        console.log('📋 No merged lines to export');
+      }
 
       // Simulate API call delay (replace with actual save/export logic)
       await new Promise((resolve, reject) => {
