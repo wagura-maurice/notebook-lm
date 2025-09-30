@@ -1,8 +1,177 @@
 // js/doccano.js
 
 // Create a namespace for our application
-(function () {
+(function (global) {
   "use strict";
+  
+  // Wait for DoccanoApp to be defined
+  function initDragAndDrop() {
+    if (typeof global.DoccanoApp === 'undefined') {
+      // If DoccanoApp isn't defined yet, wait and try again
+      setTimeout(initDragAndDrop, 100);
+      return;
+    }
+    
+    const DoccanoApp = global.DoccanoApp;
+    
+    // Add drag and drop functionality for line merging
+    DoccanoApp.draggedLineIndex = null;
+    DoccanoApp.isDragging = false;
+
+    // Initialize drag and drop functionality
+    DoccanoApp.initializeDragAndDrop = function() {
+      document.addEventListener('dragover', function(e) {
+        e.preventDefault();
+      });
+    };
+
+      // Handle drag start event
+    DoccanoApp.handleDragStart = function(event, index) {
+      event.stopPropagation();
+      this.draggedLineIndex = index;
+      this.isDragging = true;
+      
+      // Add dragging class to the dragged element
+      const lineElement = event.target.closest('.document-line');
+      lineElement.classList.add('dragging');
+      
+      // Set drag data
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', index);
+      
+      // Add a small delay for better visual feedback
+      setTimeout(() => {
+        document.body.classList.add('dragging-active');
+      }, 0);
+    };
+
+    // Handle drag over event
+    DoccanoApp.handleDragOver = function(event, index) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = 'move';
+      }
+      
+      const targetLine = event.target.closest('.document-line');
+      if (!targetLine) return;
+      
+      // Remove all drag-over classes first
+      document.querySelectorAll('.document-line').forEach(el => {
+        el.classList.remove('drag-over', 'drop-indicator');
+      });
+      
+      // Calculate if we're in the top or bottom half of the target line
+      const rect = targetLine.getBoundingClientRect();
+      const relativeY = event.clientY - rect.top;
+      const isAfter = relativeY > rect.height / 2;
+      
+      // Add appropriate class based on position
+      if (isAfter) {
+        targetLine.classList.add('drop-indicator');
+      } else {
+        targetLine.classList.add('drag-over');
+      }
+    };
+
+    // Handle drop event
+    DoccanoApp.handleDrop = function(event, targetIndex) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      if (this.draggedLineIndex === null || this.draggedLineIndex === targetIndex) {
+        return;
+      }
+
+      // Get the lines from the current document
+      const lines = this.currentDocument?.lines || [];
+      if (!lines.length) return;
+
+      const draggedLine = lines[this.draggedLineIndex];
+      const targetLine = lines[targetIndex];
+      
+      // Don't merge if it's the same line or invalid indices
+      if (this.draggedLineIndex === targetIndex || 
+          this.draggedLineIndex < 0 || 
+          this.draggedLineIndex >= lines.length ||
+          targetIndex < 0 || 
+          targetIndex >= lines.length ||
+          !draggedLine ||
+          !targetLine) {
+        return;
+      }
+      
+      // Mark the dragged line as merged
+      draggedLine.mergedInto = targetIndex;
+      
+      // Update the target line's text
+      targetLine.text = `${targetLine.text} ${draggedLine.text.trim()}`;
+      
+      // Update the UI if renderDocumentLines exists
+      if (typeof this.renderDocumentLines === 'function') {
+        this.renderDocumentLines();
+      }
+      
+      // Get the DOM elements
+      const draggedElement = document.querySelector(`[data-line-index="${this.draggedLineIndex}"]`);
+      const targetElement = document.querySelector(`[data-line-index="${targetIndex}"]`);
+      
+      if (draggedElement) {
+        // Add merged class for visual indication
+        draggedElement.classList.add('merged-line');
+        // Make it non-interactive
+        draggedElement.style.pointerEvents = 'none';
+      }
+      
+      if (targetElement) {
+        // Add a class to show it's been merged into
+        targetElement.classList.add('has-merged-content');
+      }
+      
+      // Clear drag state
+      this.handleDragEnd();
+    };
+
+    // Handle drag end event
+    DoccanoApp.handleDragEnd = function() {
+      // Clean up all drag-related classes
+      document.querySelectorAll('.document-line').forEach(el => {
+        el.classList.remove('drag-over', 'dragging', 'drop-indicator');
+      });
+      
+      // Reset drag state
+      this.draggedLineIndex = null;
+      this.isDragging = false;
+      
+      // Remove any active drag states from body
+      document.body.classList.remove('dragging-active');
+      
+      // Re-enable pointer events on all lines except merged ones
+      document.querySelectorAll('.document-line:not(.merged-line)').forEach(el => {
+        el.style.pointerEvents = 'auto';
+      });
+    };
+
+      // Initialize drag and drop when the app loads
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof DoccanoApp.initializeDragAndDrop === 'function') {
+          DoccanoApp.initializeDragAndDrop();
+        }
+      });
+    } else {
+      // DOMContentLoaded has already fired
+      if (typeof DoccanoApp.initializeDragAndDrop === 'function') {
+        DoccanoApp.initializeDragAndDrop();
+      }
+    }
+    
+    console.log('Drag and drop functionality initialized');
+  } // End of initDragAndDrop
+  
+  // Start initialization
+  initDragAndDrop();
 
   // Enhanced color palette with maximum perceptual difference
   // Colors are organized by hue for maximum distinction
@@ -1386,10 +1555,14 @@
             });
 
             html += `
-                    <div class="document-line flex items-start group mb-1" data-line-number="${lineNumber}" data-line-data='${tocLineData.replace(
-              /'/g,
-              "&#39;"
-            )}'>
+                    <div class="document-line flex items-start group mb-1" 
+                         data-line-number="${lineNumber}" 
+                         data-line-data='${tocLineData.replace(/'/g, "&#39;")}'
+                         draggable="true"
+                         ondragstart="DoccanoApp.handleDragStart(event, ${lineNumber - 1})"
+                         ondragover="DoccanoApp.handleDragOver(event, ${lineNumber - 1})"
+                         ondrop="DoccanoApp.handleDrop(event, ${lineNumber - 1})"
+                         ondragend="DoccanoApp.handleDragEnd()">
                         <span class="line-number text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5 cursor-pointer hover:text-gray-600">${lineStr}</span>
                         <div class="line-content flex-1">
                             <div class="flex border-b border-gray-100 py-1">
@@ -1419,10 +1592,14 @@
             });
 
             html += `
-                    <div class="document-line flex items-start group mb-1" data-line-number="${lineNumber}" data-line-data='${lineData.replace(
-              /'/g,
-              "&#39;"
-            )}'>
+                    <div class="document-line flex items-start group mb-1" 
+                         data-line-number="${lineNumber}" 
+                         data-line-data='${lineData.replace(/'/g, "&#39;")}'
+                         draggable="true"
+                         ondragstart="DoccanoApp.handleDragStart(event, ${lineNumber - 1})"
+                         ondragover="DoccanoApp.handleDragOver(event, ${lineNumber - 1})"
+                         ondrop="DoccanoApp.handleDrop(event, ${lineNumber - 1})"
+                         ondragend="DoccanoApp.handleDragEnd()">
                         <span class="line-number text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5 cursor-pointer hover:text-gray-600">${lineStr}</span>
                         <div class="line-content flex-1">
                             <p class="text-sm text-gray-800 mb-2">${text}</p>
@@ -3434,27 +3611,6 @@
   window.DoccanoApp.getLineContent = getLineContent;
   window.DoccanoApp.openPdfViewer = openPdfViewer;
   window.DoccanoApp.openPdfViewer = openPdfViewer;
-
-  // Helper function to get confidence from annotation data
-  function getConfidenceFromAnnotation(annotation) {
-    try {
-      // Check if annotation has confidence data
-      if (annotation.confidence !== undefined) {
-        return parseFloat(annotation.confidence);
-      }
-
-      // Check if annotation has metadata with confidence
-      if (annotation.meta && annotation.meta.confidence) {
-        return parseFloat(annotation.meta.confidence);
-      }
-
-      // Default confidence if not specified
-      return 0.92;
-    } catch (error) {
-      console.error("Error getting confidence from annotation:", error);
-      return 0.92; // Default confidence on error
-    }
-  }
 
   // Toggle entity form visibility
   function toggleEntityForm(event) {
@@ -5769,4 +5925,4 @@
     // DOMContentLoaded has already fired
     if (typeof init === "function") init();
   }
-})();
+})(this);
