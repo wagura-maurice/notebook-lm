@@ -5699,8 +5699,8 @@
           
           if (targetLineNumber && mergedFromLine) {
             mergedLines.push({
-              lineNumber: parseInt(targetLineNumber),
-              mergedFromLine: parseInt(mergedFromLine)
+              target_line: parseInt(targetLineNumber),
+              source_line: parseInt(mergedFromLine)
             });
           }
         } catch (e) {
@@ -5713,10 +5713,7 @@
         document: docTitle.trim(),
         timestamp: new Date().toISOString(),
         highlights: highlights,
-        mergedLines: {
-          count: mergedLines.length,
-          items: mergedLines.sort((a, b) => a.lineNumber - b.lineNumber)
-        },
+        mergedLines: mergedLines.sort((a, b) => a.target_line - b.target_line),
         metadata: {
           totalLines: document.querySelectorAll('.document-line').length,
           mergedSourceCount: mergedSourceLines.length,
@@ -5882,8 +5879,8 @@
           
           if (targetLineNumber && mergedFromLine) {
             mergedLines.push({
-              lineNumber: parseInt(targetLineNumber),
-              mergedFromLine: parseInt(mergedFromLine)
+              target_line: parseInt(targetLineNumber),
+              source_line: parseInt(mergedFromLine)
             });
           }
         } catch (e) {
@@ -5893,13 +5890,11 @@
 
       // Prepare export data with highlights and merged lines information
       exportData = {
-        document: document.title,
-        timestamp: new Date().toISOString(),
         highlights: activeHighlights,
-        mergedLines: mergedLines.sort((a, b) => a.lineNumber - b.lineNumber),
+        mergedLines: mergedLines.sort((a, b) => a.target_line - b.target_line),
         metadata: {
-          exported_at: new Date().toISOString(),
-          document_title: document.title,
+          document: document.title,
+          timestamp: new Date().toISOString(),
           highlights_count: activeHighlights.length,
           merged_lines_count: mergedLines.length
         }
