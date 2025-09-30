@@ -57,21 +57,55 @@
       const targetLine = event.target.closest('.document-line');
       if (!targetLine) return;
       
+      // Don't allow dropping on itself
+      if (this.draggedLineIndex === index) {
+        targetLine.classList.remove('drag-over', 'drop-indicator', 'merge-preview');
+        return;
+      }
+      
       // Remove all drag-over classes first
       document.querySelectorAll('.document-line').forEach(el => {
-        el.classList.remove('drag-over', 'drop-indicator');
+        el.classList.remove('drag-over', 'drop-indicator', 'merge-preview');
       });
       
-      // Calculate if we're in the top or bottom half of the target line
-      const rect = targetLine.getBoundingClientRect();
-      const relativeY = event.clientY - rect.top;
-      const isAfter = relativeY > rect.height / 2;
+      // STRICT RULE: Only allow merging with the previous line (line above)
+      const draggedLineNumber = this.draggedLineIndex;
+      const targetLineNumber = index;
       
-      // Add appropriate class based on position
-      if (isAfter) {
-        targetLine.classList.add('drop-indicator');
+      // Check if target is EXACTLY the previous line (one line above the dragged line)
+      if (targetLineNumber === draggedLineNumber - 1) {
+        targetLine.classList.add('merge-preview');
+        
+        // Show real-time preview of merged content
+        const draggedElement = document.querySelector(`[data-line-number="${draggedLineNumber + 1}"]`);
+        if (draggedElement) {
+          const draggedContent = draggedElement.querySelector('.line-content');
+          const targetContent = targetLine.querySelector('.line-content');
+          
+          if (draggedContent && targetContent && !targetLine.dataset.previewShown) {
+            // Store original content if not already stored
+            if (!targetLine.dataset.originalContent) {
+              targetLine.dataset.originalContent = targetContent.innerHTML;
+            }
+            
+            // Get text content from both lines
+            const draggedText = draggedContent.textContent.trim();
+            const targetText = targetContent.textContent.trim();
+            
+            // Show preview of merged content with visual indicator
+            targetContent.innerHTML = `
+              <p class="text-sm text-gray-800 mb-2">
+                ${targetText} 
+                <span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded ml-1 animate-pulse">+ merging</span>
+                <span class="text-blue-600">${draggedText}</span>
+              </p>
+            `;
+            targetLine.dataset.previewShown = 'true';
+          }
+        }
       } else {
-        targetLine.classList.add('drag-over');
+        // Visual feedback that drop is not allowed here
+        targetLine.classList.add('drop-not-allowed');
       }
     };
 
@@ -81,53 +115,101 @@
       event.stopPropagation();
       
       if (this.draggedLineIndex === null || this.draggedLineIndex === targetIndex) {
+        this.handleDragEnd();
         return;
       }
 
-      // Get the lines from the current document
-      const lines = this.currentDocument?.lines || [];
-      if (!lines.length) return;
-
-      const draggedLine = lines[this.draggedLineIndex];
-      const targetLine = lines[targetIndex];
+      const draggedLineNumber = this.draggedLineIndex;
+      const targetLineNumber = targetIndex;
       
-      // Don't merge if it's the same line or invalid indices
-      if (this.draggedLineIndex === targetIndex || 
-          this.draggedLineIndex < 0 || 
-          this.draggedLineIndex >= lines.length ||
-          targetIndex < 0 || 
-          targetIndex >= lines.length ||
-          !draggedLine ||
-          !targetLine) {
+      // STRICT RULE: Only allow merging with the previous line (line above)
+      if (targetLineNumber !== draggedLineNumber - 1) {
+        console.log('❌ Can only merge with the previous line (line directly above)');
+        this.handleDragEnd();
         return;
       }
       
-      // Mark the dragged line as merged
-      draggedLine.mergedInto = targetIndex;
+      // Get the DOM elements using data-line-number attribute
+      const draggedElement = document.querySelector(`[data-line-number="${draggedLineNumber + 1}"]`);
+      const targetElement = document.querySelector(`[data-line-number="${targetLineNumber + 1}"]`);
       
-      // Update the target line's text
-      targetLine.text = `${targetLine.text} ${draggedLine.text.trim()}`;
-      
-      // Update the UI if renderDocumentLines exists
-      if (typeof this.renderDocumentLines === 'function') {
-        this.renderDocumentLines();
+      if (!draggedElement || !targetElement) {
+        console.error('Could not find dragged or target elements');
+        this.handleDragEnd();
+        return;
       }
       
-      // Get the DOM elements
-      const draggedElement = document.querySelector(`[data-line-index="${this.draggedLineIndex}"]`);
-      const targetElement = document.querySelector(`[data-line-index="${targetIndex}"]`);
+      // Get content from both lines
+      const draggedContent = draggedElement.querySelector('.line-content');
+      const targetContent = targetElement.querySelector('.line-content');
       
-      if (draggedElement) {
-        // Add merged class for visual indication
-        draggedElement.classList.add('merged-line');
-        // Make it non-interactive
-        draggedElement.style.pointerEvents = 'none';
+      if (!draggedContent || !targetContent) {
+        console.error('Could not find line content elements');
+        this.handleDragEnd();
+        return;
       }
       
-      if (targetElement) {
-        // Add a class to show it's been merged into
-        targetElement.classList.add('has-merged-content');
+      // Get the text content (strip HTML tags but preserve structure)
+      const draggedText = draggedContent.textContent.trim();
+      const targetText = targetContent.textContent.trim();
+      
+      // Store original text in the target element for reference
+      if (!targetElement.dataset.originalText) {
+        targetElement.dataset.originalText = targetText;
       }
+      
+      // Merge the content with blue styling for merged portion
+      // The merged text stays permanently visible in blue
+      targetContent.innerHTML = `
+        <p class="text-sm text-gray-800 mb-2">
+          ${targetText}
+          <span class="merged-text-indicator" style="color: #2563eb; font-weight: 500;" title="Merged from line ${draggedLineNumber + 1}">
+            ${draggedText}
+          </span>
+        </p>
+      `;
+      
+      // Update the data attribute with merged content
+      try {
+        const targetData = JSON.parse(targetElement.dataset.lineData);
+        targetData.text = `${targetText} ${draggedText}`;
+        targetData.mergedFrom = draggedLineNumber + 1;
+        targetData.hasMergedContent = true;
+        targetElement.dataset.lineData = JSON.stringify(targetData);
+      } catch (e) {
+        console.warn('Could not update line data:', e);
+      }
+      
+      // Mark the target as having merged content (permanent)
+      targetElement.classList.add('has-merged-content');
+      targetElement.dataset.hasMerged = 'true';
+      
+      // Fade the dragged line but KEEP IT VISIBLE
+      // Mark it as merged source so user knows where the content came from
+      draggedElement.classList.add('merged-source-line');
+      draggedElement.style.opacity = '0.4';
+      draggedElement.style.pointerEvents = 'none';
+      draggedElement.dataset.mergedInto = targetLineNumber + 1;
+      
+      // Add a visual indicator to the source line
+      const lineContent = draggedElement.querySelector('.line-content');
+      if (lineContent && !draggedElement.dataset.mergeIndicatorAdded) {
+        const indicator = document.createElement('div');
+        indicator.className = 'text-xs text-gray-500 italic mt-1';
+        indicator.innerHTML = `<i class="fas fa-arrow-up mr-1"></i>Merged into line ${targetLineNumber + 1}`;
+        lineContent.appendChild(indicator);
+        draggedElement.dataset.mergeIndicatorAdded = 'true';
+      }
+      
+      // Make the dragged line non-draggable after merge
+      draggedElement.setAttribute('draggable', 'false');
+      
+      // Save state for undo/redo
+      if (typeof saveState === 'function') {
+        setTimeout(() => saveState(), 100);
+      }
+      
+      console.log(`✅ Successfully merged line ${draggedLineNumber + 1} into line ${targetLineNumber + 1}`);
       
       // Clear drag state
       this.handleDragEnd();
@@ -137,7 +219,17 @@
     DoccanoApp.handleDragEnd = function() {
       // Clean up all drag-related classes
       document.querySelectorAll('.document-line').forEach(el => {
-        el.classList.remove('drag-over', 'dragging', 'drop-indicator');
+        el.classList.remove('drag-over', 'dragging', 'drop-indicator', 'merge-preview', 'drop-not-allowed');
+        
+        // Restore original content if preview was shown
+        if (el.dataset.previewShown === 'true' && el.dataset.originalContent) {
+          const targetContent = el.querySelector('.line-content');
+          if (targetContent) {
+            targetContent.innerHTML = el.dataset.originalContent;
+          }
+          delete el.dataset.previewShown;
+          delete el.dataset.originalContent;
+        }
       });
       
       // Reset drag state
