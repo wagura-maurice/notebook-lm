@@ -646,9 +646,9 @@ header .hover\:text-eu-orange:hover {
     background: linear-gradient(to right, #1a365d, #2c5282);
   }
 
-  #middle-column .scrollable-content {
+  /* #middle-column .scrollable-content {
     background-color: #1a202c;
-  }
+  } */
 }
 
 #columns-container {
