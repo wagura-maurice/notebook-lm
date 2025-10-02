@@ -1790,6 +1790,10 @@
                         <div class="line-content flex-1">
                             <p class="text-sm text-gray-800 mb-2">${text}</p>
                         </div>
+                    </div>
+                    // Collapasable line taxonmies details  
+                    <div class="taxonomy-details w-full hidden mt-1 border-t border-gray-100 pt-2">
+                        <div class="text-xs text-gray-500 italic">Loading taxonomies...</div>
                     </div>`;
           }
 
@@ -1797,7 +1801,6 @@
         });
 
         html += `
-// Collapasable line taxonmies details  
                 </div>
             </div>`;
       });
