@@ -1787,13 +1787,19 @@
                          ondrop="DoccanoApp.handleDrop(event, ${lineNumber - 1})"
                          ondragend="DoccanoApp.handleDragEnd()">
                         <span class="line-number text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5 cursor-pointer hover:text-gray-600">${lineStr}</span>
-                        <div class="line-content flex-1">
-                            <p class="text-sm text-gray-800 mb-2">${text}</p>
+                        <div class="line-content flex-1 w-full">
+                            <p class="text-sm text-gray-800 mb-1">${text}</p>
+                            <div class="w-full flex justify-end">
+                                <button class="taxonomy-toggle text-xs text-gray-500 hover:text-gray-700 flex items-center px-2 py-1 rounded hover:bg-gray-100 transition-colors" 
+                                        data-line-id="${lineId}">
+                                    <span class="mr-1">Show Taxonomies</span>
+                                    <i class="fas fa-chevron-down text-xs transition-transform"></i>
+                                </button>
+                            </div>
+                            <div class="taxonomy-details w-full hidden mt-1 pt-2">
+                                <div class="text-xs text-gray-500 italic">Loading taxonomies...</div>
+                            </div>
                         </div>
-                    </div>
-                    // Collapasable line taxonmies details  
-                    <div class="taxonomy-details w-full hidden mt-1 border-t border-gray-100 pt-2">
-                        <div class="text-xs text-gray-500 italic">Loading taxonomies...</div>
                     </div>`;
           }
 
@@ -1832,6 +1838,9 @@
 
       // Re-initialize text selection for the new content
       initTextSelection();
+      
+      // Initialize taxonomy toggle handlers
+      initTaxonomyHandlers();
 
       // Save the initial state for undo/redo
       saveState();
@@ -4415,6 +4424,150 @@
       pageNumPending = null;
     }
   }
+
+  // Function to load taxonomies for a specific line
+  function loadLineTaxonomies(lineElement) {
+    const lineData = JSON.parse(lineElement.dataset.lineData.replace(/&#39;/g, "'"));
+    const detailsDiv = lineElement.querySelector('.taxonomy-details');
+    
+    if (!detailsDiv) return;
+    
+    // Get the enrichment data if it exists
+    const enrichment = lineData.enrichment || {};
+    const taxonomy = enrichment.taxonomy || {};
+    
+    if (Object.keys(taxonomy).length === 0) {
+      detailsDiv.innerHTML = '<div class="text-xs text-gray-500 italic">No taxonomies found for this line.</div>';
+      return;
+    }
+    
+    // Generate the taxonomy HTML
+    let html = '<div class="space-y-2">';
+    
+    // Process each category in the taxonomy
+    Object.entries(taxonomy).forEach(([category, terms]) => {
+      if (!Array.isArray(terms) || terms.length === 0) return;
+      
+      // Get the color for this category
+      const colorInfo = window.processedTaxonomyMap && window.processedTaxonomyMap[category.toLowerCase()];
+      const bgColor = colorInfo?.bg || '#e5e7eb';
+      const textColor = colorInfo?.textColor || '#374151';
+      
+      html += `
+        <div class="taxonomy-category">
+          <div class="taxonomy-category-name">
+            <span class="color-indicator" style="background-color: ${bgColor}"></span>
+            ${category.replace(/_/g, ' ')}
+          </div>
+          <div class="taxonomy-terms">
+            ${terms.map(term => 
+              `<span class="taxonomy-term" style="background-color: ${bgColor}20; color: ${textColor};">
+                ${term}
+              </span>`
+            ).join('')}
+          </div>
+        </div>`;
+    });
+    
+    html += '</div>';
+    detailsDiv.innerHTML = html;
+  }
+  
+  // Initialize taxonomy handlers
+  function initTaxonomyHandlers() {
+    // Initialize click handlers for taxonomy toggles
+    document.addEventListener('click', function(e) {
+      const toggleBtn = e.target.closest('.taxonomy-toggle');
+      if (toggleBtn) {
+        e.preventDefault();
+        const lineElement = toggleBtn.closest('.document-line');
+        if (lineElement) {
+          const detailsDiv = lineElement.querySelector('.taxonomy-details');
+          const icon = toggleBtn.querySelector('i');
+          
+          // Toggle the details visibility
+          detailsDiv.classList.toggle('hidden');
+          
+          // Toggle the chevron icon
+          icon.classList.toggle('transform');
+          icon.classList.toggle('rotate-180');
+          
+          // Update button text
+          const buttonText = toggleBtn.querySelector('span');
+          buttonText.textContent = detailsDiv.classList.contains('hidden') ? 'Show Taxonomies' : 'Hide Taxonomies';
+          
+          // If we're showing taxonomies and they haven't been loaded yet, load them
+          if (!detailsDiv.classList.contains('hidden') && detailsDiv.textContent.trim() === 'Loading taxonomies...') {
+            loadLineTaxonomies(lineElement);
+          }
+        }
+      }
+    });
+  }
+
+  // Add styles for taxonomy toggle and details
+  const style = document.createElement('style');
+  style.textContent = `
+    .taxonomy-toggle {
+      transition: all 0.2s ease;
+      cursor: pointer;
+      user-select: none;
+      outline: none;
+    }
+    .taxonomy-toggle:hover {
+      color: #4b5563;
+    }
+    .taxonomy-details {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background-color: #f9fafb;
+      border-radius: 0.25rem;
+    }
+    .taxonomy-details:not(.hidden) {
+      max-height: 500px;
+      padding: 0.5rem;
+      border: 1px solid #e5e7eb;
+      margin-top: 0.5rem;
+    }
+    .taxonomy-category {
+      margin-bottom: 0.5rem;
+    }
+    .taxonomy-category-name {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #4b5563;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+    }
+    .taxonomy-category-name .color-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+    .taxonomy-terms {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      margin-left: 14px;
+      margin-top: 0.25rem;
+    }
+    .taxonomy-term {
+      font-size: 0.7rem;
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+      background-color: #f3f4f6;
+      color: #4b5563;
+      white-space: nowrap;
+      line-height: 1.25;
+    }
+  `;
+  document.head.appendChild(style);
 
   // Initialize the application
   async function init() {
