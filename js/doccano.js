@@ -1797,7 +1797,7 @@
         });
 
         html += `
-        demo
+// Collapasable line taxonmies details  
                 </div>
             </div>`;
       });
