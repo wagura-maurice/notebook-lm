@@ -613,7 +613,7 @@
 
     try {
       taxonomies = await fetchAndProcessTaxonomies(
-        "./assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson"
+        "./assets/Jarvis_-_Welfare-to-Work__The_New_Deal_20251001_214714.md_concepts_full_enriched.ndjson"
       );
       console.log("Taxonomies loaded successfully:", taxonomies);
       taxonomiesLoaded = true;
@@ -1386,7 +1386,7 @@
     try {
       console.log("Fetching document content from NDJSON...");
       const response = await fetch(
-        "./assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson"
+        "./assets/Jarvis_-_Welfare-to-Work__The_New_Deal_20251001_214714.md_concepts_full_enriched.ndjson"
       );
 
       if (!response.ok) {
@@ -2186,7 +2186,7 @@
     try {
       console.log("Loading document data from NDJSON...");
       const response = await fetch(
-        "./assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson"
+        "./assets/Jarvis_-_Welfare-to-Work__The_New_Deal_20251001_214714.md_concepts_full_enriched.ndjson"
       );
 
       if (!response.ok) {
@@ -2407,7 +2407,7 @@
 
         // Get the line content from the NDJSON file
         fetch(
-          "assets/AI_ADOPTION_IN_THE_PUBLIC_SECTOR_concepts_full_enriched.ndjson"
+          "assets/Jarvis_-_Welfare-to-Work__The_New_Deal_20251001_214714.md_concepts_full_enriched.ndjson"
         )
           .then((response) => response.text())
           .then((ndjsonText) => {
