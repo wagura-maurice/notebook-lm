@@ -316,27 +316,65 @@
     }
 
     // Try to get a color from our palette first
-    const colorIndex = Math.abs(hash) % colorPalette.length;
-
-    if (!usedColorIndices.has(colorIndex)) {
-      // If we haven't used this color yet, use it
-      usedColorIndices.add(colorIndex);
-      return colorPalette[colorIndex];
-    } else {
-      // If we've used all colors, start reusing from the beginning
-      // but with a different shade based on the string
-      const baseColor = colorPalette[colorIndex];
-      const shadeVariant = (Math.abs(hash) % 7) + 1; // 1-7
-
-      // Return a new object with the same name but different shade
-      return {
-        name: baseColor.name,
-        hex: adjustShade(baseColor.hex, shadeVariant * 50),
-      };
+    let colorIndex = Math.abs(hash) % colorPalette.length;
+    let attempts = 0;
+    const maxAttempts = colorPalette.length * 2; // Prevent infinite loops
+    
+    // Try to find a suitable color that's not too close to white
+    while (attempts < maxAttempts) {
+      const color = colorPalette[colorIndex];
+      
+      // If this is a new color and it's not too close to white, use it
+      if (!usedColorIndices.has(colorIndex) && !isTooCloseToWhite(color.hex)) {
+        usedColorIndices.add(colorIndex);
+        return color;
+      }
+      
+      // Try next color in the palette
+      colorIndex = (colorIndex + 1) % colorPalette.length;
+      attempts++;
     }
+    
+    // If we've tried all colors, generate a new shade that's not white
+    const baseColor = colorPalette[Math.abs(hash) % colorPalette.length];
+    let shadeVariant = (Math.abs(hash) % 7) + 1; // 1-7
+    
+    // Ensure we don't generate a white color by adjusting the variant
+    if (shadeVariant > 4) { // Higher values tend to lighten the color
+      shadeVariant = -shadeVariant; // Make it darker instead
+    }
+    
+    // Generate the color and ensure it's not white
+    let color = {
+      name: baseColor.name,
+      hex: adjustShade(baseColor.hex, shadeVariant * 50),
+    };
+    
+    // Double check the final color isn't too close to white
+    if (isTooCloseToWhite(color.hex)) {
+      // Force a darker color
+      color.hex = adjustShade(color.hex, -150);
+    }
+    
+    return color;
   }
 
-  // Helper function to adjust color shade
+  // Function to check if a color is too close to white
+  function isTooCloseToWhite(hex) {
+    // Convert hex to RGB
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    
+    // Calculate brightness (perceived luminance)
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    
+    // Consider colors with brightness > 200 as too close to white
+    // This threshold can be adjusted (0-255, where 255 is white)
+    return brightness > 200;
+  }
+
+  // Helper function to adjust color shade and ensure it's not too close to white
   function adjustShade(hex, amount) {
     // Convert hex to RGB
     let r = parseInt(hex.slice(1, 3), 16);
@@ -349,7 +387,15 @@
     b = Math.max(0, Math.min(255, b + amount));
 
     // Convert back to hex
-    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+    const newHex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+    
+    // If the adjusted color is too close to white, darken it
+    if (isTooCloseToWhite(newHex)) {
+      // Darken by a fixed amount to ensure good contrast
+      return adjustShade(newHex, -100); // Darken significantly
+    }
+    
+    return newHex;
   }
 
   function getPrefix(str) {
@@ -1751,6 +1797,7 @@
         });
 
         html += `
+        demo
                 </div>
             </div>`;
       });
