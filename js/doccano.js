@@ -4427,51 +4427,87 @@
 
   // Function to load taxonomies for a specific line
   function loadLineTaxonomies(lineElement) {
-    const lineData = JSON.parse(lineElement.dataset.lineData.replace(/&#39;/g, "'"));
+    // Get elements and parse data
     const detailsDiv = lineElement.querySelector('.taxonomy-details');
-    
     if (!detailsDiv) return;
     
-    // Get the enrichment data if it exists
-    const enrichment = lineData.enrichment || {};
-    const taxonomy = enrichment.taxonomy || {};
-    
-    if (Object.keys(taxonomy).length === 0) {
-      detailsDiv.innerHTML = '<div class="text-xs text-gray-500 italic">No taxonomies found for this line.</div>';
-      return;
+    // Parse line data safely
+    let taxonomy = {};
+    try {
+        const lineData = JSON.parse(lineElement.dataset.lineData.replace(/&#39;/g, "'"));
+        taxonomy = lineData.enrichment?.taxonomy || {};
+    } catch (e) {
+        detailsDiv.innerHTML = '<div class="text-xs text-gray-500 italic">Error loading taxonomies.</div>';
+        return;
     }
+
+    // Process taxonomies
+    const html = ['<div class="space-y-2">'];
+    const { processedTaxonomyMap = {} } = window;
+    let hasTaxonomies = false;
     
-    // Generate the taxonomy HTML
-    let html = '<div class="space-y-2">';
+    for (const [category, terms] of Object.entries(taxonomy)) {
+        if (!Array.isArray(terms) || terms.length === 0) continue;
+        hasTaxonomies = true;
+        
+        // Get color info with case-insensitive lookup
+        const categoryKey = category.toLowerCase();
+        const colorInfo = processedTaxonomyMap[categoryKey] || 
+                         Object.values(processedTaxonomyMap).find(t => 
+                             t.name?.toLowerCase() === categoryKey
+                         ) || {};
+
+        // Debug logging - can be removed after confirming colors work
+        console.log(`Color for ${category}:`, { 
+            bgColor: colorInfo.hex || colorInfo.bg || colorInfo.color,
+            textColor: colorInfo.textColor
+        });
+
+        // Use hex value if available, otherwise fall back to other color properties
+        const bgColor = colorInfo.hex || colorInfo.bg || colorInfo.color || '#e5e7eb';
+        
+        // Calculate text color based on background brightness for better contrast
+        const hexColor = bgColor.startsWith('#') ? bgColor.substring(1) : bgColor;
+        const r = parseInt(hexColor.substring(0, 2), 16);
+        const g = parseInt(hexColor.substring(2, 4), 16);
+        const b = parseInt(hexColor.substring(4, 6), 16);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        const textColor = brightness > 155 ? '#1f2937' : '#ffffff'; // Dark gray or white text based on background
+
+        // Build category HTML
+        html.push(`
+            <div class="taxonomy-category">
+                <div class="taxonomy-category-name" style="margin-bottom: 0.25rem;">
+                    <span class="color-indicator" style="background-color: ${bgColor}; display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 6px;"></span>
+                    <span style="font-size: 0.8rem; font-weight: 500; color: #4b5563;">
+                        ${category.replace(/_/g, ' ')}
+                    </span>
+                </div>
+                <div class="taxonomy-terms" style="margin-bottom: 0.5rem;">
+                    ${terms.map(term => `
+                        <span class="taxonomy-term" 
+                              style="color: ${bgColor};
+                                     font-size: 0.8rem;
+                                     line-height: 1.25rem;
+                                     margin-right: 0.5rem;
+                                     display: inline-block;">
+                            ${term}
+                        </span>
+                    `).join('')}
+                </div>
+            </div>
+        `);
+    }
+
+    html.push('</div>');
     
-    // Process each category in the taxonomy
-    Object.entries(taxonomy).forEach(([category, terms]) => {
-      if (!Array.isArray(terms) || terms.length === 0) return;
-      
-      // Get the color for this category
-      const colorInfo = window.processedTaxonomyMap && window.processedTaxonomyMap[category.toLowerCase()];
-      const bgColor = colorInfo?.bg || '#e5e7eb';
-      const textColor = colorInfo?.textColor || '#374151';
-      
-      html += `
-        <div class="taxonomy-category">
-          <div class="taxonomy-category-name">
-            <span class="color-indicator" style="background-color: ${bgColor}"></span>
-            ${category.replace(/_/g, ' ')}
-          </div>
-          <div class="taxonomy-terms">
-            ${terms.map(term => 
-              `<span class="taxonomy-term" style="background-color: ${bgColor}20; color: ${textColor};">
-                ${term}
-              </span>`
-            ).join('')}
-          </div>
-        </div>`;
-    });
-    
-    html += '</div>';
-    detailsDiv.innerHTML = html;
-  }
+    // Show message if no taxonomies were found
+    if (!hasTaxonomies) {
+        detailsDiv.innerHTML = '<div class="text-xs text-gray-500 italic">No taxonomies to show.</div>';
+    } else {
+        detailsDiv.innerHTML = html.join('');
+    }
+}
   
   // Initialize taxonomy handlers
   function initTaxonomyHandlers() {
