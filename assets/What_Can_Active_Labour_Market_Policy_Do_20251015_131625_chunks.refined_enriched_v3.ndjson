@@ -1,0 +1,105 @@
+{
+	"id": "e2d8fb7bc0034928d404353a1bd45df528e2099f",
+	"_hash": "e2d8fb7bc0034928d404353a1bd45df528e2099f",
+	"doc": "What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined",
+	"chunk_id": "c0004",
+	"header": "Section",
+	"start": 3919,
+	"end": 4996,
+	"text": "In response to this situation, the OECD recommended a policy framework, which contained three main elements (OECD, B330b):\n\n- Mobilising labour supply, which includes measures such as training, placement and rehabilitation programmes for the unemployed.\n- Developing employment-related skills, which involves reforms in education and on-the-job training.\n- Promoting a spirit ofactive search, which concerns the role of the employment services in job matching and longer-term career development.\n\nBroadly speaking, this policy framework might be represented as an endorsement of \"active labour market policies\", that is programmes to encourage job search and assist labour mobility, as against reliance on \"passive\" policies (payment of unemployment benefit) as a response to the problems of structural change.\n\nFrom a structural perspective, the argument for active labour market policies seems a plausible one. If unemployment is caused by labour immobility in the face of changing demand, then encouraging labour mobility would appear to be an appropriate policy response.",
+	"links": [],
+	"enrichment": {
+		"title": "Section",
+		"summary": "The OECD recommends active labour market policies to address structural unemployment through training, job placement, rehabilitation, education reforms, and employment services.",
+		"keywords": ["oecd", "active labour market policies", "training", "job placement", "employment services"],
+		"entities": [{
+			"type": "org",
+			"text": "OECD",
+			"value": "Organisation for Economic Co-operation and Development",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "policy",
+			"text": "active labour market policies",
+			"value": "active labour market policies",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "recommendation",
+		"temporal": {
+			"start_date": null,
+			"end_date": null,
+			"dates_mentioned": [],
+			"follow_up_window_months": null
+		},
+		"geography": {
+			"countries": [],
+			"regions": [],
+			"country_codes": []
+		},
+		"taxonomy": {
+			"almp_instruments_top": ["training", "pes_services"],
+			"almp_instrument_subtypes": ["on_the_job_training"],
+			"target_groups": {
+				"gender": [],
+				"age": [],
+				"labour_market_status": ["unemployed_general"],
+				"skills_qualifications": [],
+				"other_characteristics": []
+			},
+			"delivery_modes": ["on_the_job"],
+			"delivery_channels": ["pes_office"],
+			"evaluation_design": [],
+			"outcomes_positive": ["employability_increase", "long_term_employment"],
+			"outcomes_negative": [],
+			"effect_direction": "positive",
+			"effect_strength": "unspecified",
+			"effect_horizon": "unspecified",
+			"geography_levels": ["country"]
+		},
+		"taxonomyDetails": {
+			"training": ["measures such as training"],
+			"pes_services": ["role of the employment services in job matching"],
+			"placement_services": ["placement programmes for the unemployed"],
+			"on_the_job_training": ["on-the-job training"],
+			"rehabilitation_programmes": ["rehabilitation programmes for the unemployed"],
+			"unemployed_general": ["programmes for the unemployed"],
+			"pes_office": ["role of the employment services"],
+			"employability_increase": ["assist labour mobility"],
+			"long_term_employment": ["longer-term career development"],
+			"effect_direction": ["encouraging labour mobility would appear to be an appropriate policy response"],
+			"country": ["policy framework might be represented as an endorsement"]
+		},
+		"confidence": 0.95,
+		"_usage": {
+			"prompt_tokens": 2056,
+			"completion_tokens": 862,
+			"total_tokens": 2918
+		},
+		"_model": "gpt-4o",
+		"_verifier_audit": {
+			"kept_counts": {
+				"almp_instruments_top": 2,
+				"almp_instrument_subtypes": 1,
+				"evaluation_design": 0,
+				"outcomes_positive": 2,
+				"outcomes_negative": 0,
+				"effect_direction": 1,
+				"effect_horizon": 0
+			}
+		}
+	},
+	"prev_enrichment": {},
+	"meta": {
+		"backend": "chonkie-local",
+		"semantic": true,
+		"token_count": 53,
+		"merged_forward": true,
+		"words": 154,
+		"sentences": 4,
+		"normalized_text": "In response to this situation, the OECD recommended a policy framework, which contained three main elements (OECD, B330b): - Mobilising labour supply, which includes measures such as training, placement and rehabilitation programmes for the unemployed. - Developing employment-related skills, which involves reforms in education and on-the-job training. - Promoting a spirit ofactive search, which concerns the role of the employment services in job matching and longer-term career development. Broadly speaking, this policy framework might be represented as an endorsement of \"active labour market policies\", that is programmes to encourage job search and assist labour mobility, as against reliance on \"passive\" policies (payment of unemployment benefit) as a response to the problems of structural change. From a structural perspective, the argument for active labour market policies seems a plausible one. If unemployment is caused by labour immobility in the face of changing demand, then encouraging labour mobility would appear to be an appropriate policy response.",
+		"summary": "The OECD recommends active labour market policies to address structural unemployment through training, job placement, rehabilitation, education reforms, and employment services."
+	},
+	"_run_id": "2eee0a8e-9be0-430f-b467-1bf09dd647f3",
+	"_ts": "2025-10-15T10:47:36.635147+00:00"
+}

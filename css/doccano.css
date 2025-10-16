@@ -1524,8 +1524,6 @@ li {
   background: white;
   min-width: 240px;
   max-height: 300px;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 #taxonomy-popup.visible {

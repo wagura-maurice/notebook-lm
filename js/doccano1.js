@@ -1,5 +1,5 @@
 // js/doccano.js
-var GlobalDocument= '';
+
 // Create a namespace for our application
 (function (global) {
   "use strict";
@@ -124,7 +124,7 @@ var GlobalDocument= '';
       
       // STRICT RULE: Only allow merging with the previous line (line above)
       if (targetLineNumber !== draggedLineNumber - 1) {
-        console.log('L Can only merge with the previous line (line directly above)');
+        console.log('❌ Can only merge with the previous line (line directly above)');
         this.handleDragEnd();
         return;
       }
@@ -209,7 +209,7 @@ var GlobalDocument= '';
         setTimeout(() => saveState(), 100);
       }
       
-      console.log(` Successfully merged line ${draggedLineNumber + 1} into line ${targetLineNumber + 1}`);
+      console.log(`✅ Successfully merged line ${draggedLineNumber + 1} into line ${targetLineNumber + 1}`);
       
       // Clear drag state
       this.handleDragEnd();
@@ -268,7 +268,7 @@ var GlobalDocument= '';
   // Enhanced color palette with maximum perceptual difference
   // Colors are organized by hue for maximum distinction
   const colorPalette = [
-    // Primary colors (0-120\B0 hue)
+    // Primary colors (0-120° hue)
     { name: "vivid-red", hex: "#FF3B30" }, // Bright red
     { name: "vivid-orange", hex: "#FF9500" }, // Vivid orange
     { name: "vivid-yellow", hex: "#FFCC00" }, // Vivid yellow
@@ -276,14 +276,14 @@ var GlobalDocument= '';
     { name: "vivid-cyan", hex: "#00C7BE" }, // Vivid cyan
     { name: "vivid-blue", hex: "#007AFF" }, // Vivid blue
 
-    // Secondary colors (120-240\B0 hue)
+    // Secondary colors (120-240° hue)
     { name: "vivid-indigo", hex: "#5856D6" }, // Vivid indigo
     { name: "vivid-violet", hex: "#AF52DE" }, // Vivid violet
     { name: "vivid-purple", hex: "#FF2D55" }, // Vivid purple
     { name: "vivid-magenta", hex: "#FF2D55" }, // Vivid magenta
     { name: "vivid-pink", hex: "#FF375F" }, // Vivid pink
 
-    // Tertiary colors (240-360\B0 hue)
+    // Tertiary colors (240-360° hue)
     { name: "deep-sky-blue", hex: "#007AFF" }, // Deep sky blue
     { name: "spring-green", hex: "#00E5A1" }, // Spring green
     { name: "electric-lime", hex: "#CDDC39" }, // Electric lime
@@ -406,120 +406,63 @@ var GlobalDocument= '';
       .substring(0, 2);
   }
 
-  function processTaxonomyTerm(category, term, taxonomyMap, taxonomyDetails = {}, text = '', subCategory = '') {
-    if (!term) return;
-    
-    const categoryKey = category.toLowerCase();
-    const termKey = term.toLowerCase();
-    
-    // Initialize category in taxonomy map if it doesn't exist
-    if (!taxonomyMap[categoryKey]) {
-      taxonomyMap[categoryKey] = {
-        id: categoryKey,
-        name: category
-          .replace(/_/g, " ")
-          .replace(/\b\w/g, (l) => l.toUpperCase()),
-        prefix: getPrefix(category),
-        color: stringToColor(category),
-        count: 0,
-        terms: {}
-      };
-    }
-    
-    // Initialize term in category if it doesn't exist
-    if (!taxonomyMap[categoryKey].terms[termKey]) {
-      taxonomyMap[categoryKey].terms[termKey] = {
-        count: 0,
-        examples: new Set(),
-        subCategories: new Set()
-      };
-    }
-    
-    // Add subcategory if provided
-    if (subCategory) {
-      taxonomyMap[categoryKey].terms[termKey].subCategories.add(subCategory);
-    }
-    
-    // Increment term and category counts
-    taxonomyMap[categoryKey].terms[termKey].count++;
-    taxonomyMap[categoryKey].count++;
-    
-    // Link taxonomy details to terms
-    if (taxonomyDetails[term] && text) {
-      const startIndex = text.toLowerCase().indexOf(term.toLowerCase());
-      if (startIndex !== -1) {
-        const contextStart = Math.max(0, startIndex - 50);
-        const contextEnd = Math.min(text.length, startIndex + term.length + 50);
-        const context = text.slice(contextStart, contextEnd);
-        taxonomyMap[categoryKey].terms[termKey].examples.add(context);
-      }
-    }
-  }
-
   function processLine(line, taxonomyMap = {}) {
     try {
       const data = JSON.parse(line);
-      
+
       // Process taxonomy data if it exists
       if (data.enrichment?.taxonomy) {
-        const { taxonomy, taxonomyDetails = {}, text = '' } = data.enrichment;
-  
-        // Process effect-related taxonomies first
-        const effectTaxonomies = ['effect_direction', 'effect_strength', 'effect_horizon'];
-        effectTaxonomies.forEach(effectType => {
-          if (taxonomy[effectType] && taxonomy[effectType] !== 'unspecified') {
-            processTaxonomyTerm(
-              effectType, 
-              taxonomy[effectType], 
-              taxonomyMap, 
-              taxonomyDetails, 
-              text
-            );
-          }
-        });
-  
+        const { taxonomy } = data.enrichment;
+
         // Process each category in the taxonomy
-        for (const [category, value] of Object.entries(taxonomy)) {
-          // Skip effect taxonomies as they're already processed
-          if (effectTaxonomies.includes(category)) continue;
-          
-          // Special handling for target_groups
-          if (category === 'target_groups' && value && typeof value === 'object' && !Array.isArray(value)) {
-            // Process each sub-category in target_groups
-            for (const [subCategory, terms] of Object.entries(value)) {
-              if (Array.isArray(terms)) {
-                terms.forEach(term => {
-                  // Use 'target_groups' as the main category and pass subCategory as additional info
-                  processTaxonomyTerm('target_groups', term, taxonomyMap, taxonomyDetails, text, subCategory);
-                });
-              }
+        for (const [category, items] of Object.entries(taxonomy)) {
+          // Only process if the category has items
+          if (Array.isArray(items) && items.length > 0) {
+            const key = category.toLowerCase();
+            if (!taxonomyMap[key]) {
+              taxonomyMap[key] = {
+                id: key,
+                name: category
+                  .replace(/_/g, " ")
+                  .replace(/\b\w/g, (l) => l.toUpperCase()),
+                prefix: getPrefix(category),
+                color: stringToColor(category),
+                count: 0,
+              };
             }
-          }
-          // Handle other nested objects
-          else if (value && typeof value === 'object' && !Array.isArray(value)) {
-            // Process each sub-category in the nested object
-            for (const [subCategory, terms] of Object.entries(value)) {
-              if (Array.isArray(terms)) {
-                terms.forEach(term => {
-                  processTaxonomyTerm(category, term, taxonomyMap, taxonomyDetails, text, subCategory);
-                });
-              }
-            }
-          }
-          // Handle direct array values
-          else if (Array.isArray(value)) {
-            value.forEach(term => {
-              processTaxonomyTerm(category, term, taxonomyMap, taxonomyDetails, text);
-            });
+            // Increment count for each document that has this category
+            taxonomyMap[key].count++;
           }
         }
       }
-  
-      return data;
-    } catch (error) {
-      console.error('Error processing line:', error, line);
-      return null;
+
+      // Process entities if they exist
+      if (data.enrichment?.entities && Array.isArray(data.enrichment.entities)) {
+        if (!taxonomyMap.entities) {
+          taxonomyMap.entities = [];
+        }
+        
+        // Add entities with proper formatting
+        data.enrichment.entities.forEach(entity => {
+          if (entity && entity.text) {
+            taxonomyMap.entities.push({
+              type: entity.type || 'unknown',
+              text: entity.text,
+              value: entity.value || '',
+              unit: entity.unit || '',
+              confidence: entity.confidence !== undefined ? parseFloat(entity.confidence) : 0.6,
+              description: entity.description || '',
+              start_offset: entity.start_offset || 0,
+              end_offset: entity.end_offset || 0,
+              source: 'ndjson'
+            });
+          }
+        });
+      }
+    } catch (e) {
+      console.warn("Failed to parse line:", line, e);
     }
+    return taxonomyMap;
   }
 
   function transformNdjsonToTaxonomies(ndjson) {
@@ -715,11 +658,8 @@ var GlobalDocument= '';
     }
 
     try {
-      // var fName = GetInputValue('hdnenFilename');
-      var fName = 'What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined_enriched_v2.ndjson';
       taxonomies = await fetchAndProcessTaxonomies(
-        // "/static/assets/concept_groups_enriched/"+fName
-        "./assets/What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined_enriched_v2.ndjson"
+        "./assets/Jarvis_-_Welfare-to-Work__The_New_Deal_20251001_214714.md_concepts_full_enriched.ndjson"
       );
       console.log("Taxonomies loaded successfully:", taxonomies);
       taxonomiesLoaded = true;
@@ -756,47 +696,11 @@ var GlobalDocument= '';
     }
   }
 
-  // Function to scroll to a specific line from URL hash
-  function scrollToLineFromHash() {
-    const hash = window.location.hash;
-    if (hash && hash.startsWith('#L')) {
-      const lineNumber = parseInt(hash.substring(2), 10);
-      if (!isNaN(lineNumber) && lineNumber > 0) {
-        // Wait a bit for the content to be rendered
-        setTimeout(() => {
-          const lineElement = document.querySelector(`[data-line-number="${lineNumber}"]`);
-          if (lineElement) {
-            // Add active class to highlight the line
-            document.querySelectorAll('.document-line').forEach(el => {
-              el.classList.remove('active');
-            });
-            lineElement.classList.add('active');
-            
-            // Scroll to the line
-            lineElement.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center'
-            });
-            
-            // Update URL without page jump
-            history.replaceState(null, null, `#L${lineNumber}`);
-          }
-        }, 500); // Adjust delay as needed for content to load
-      }
-    }
-  }
-
   // Start loading taxonomies and document data when the script loads
-  document.addEventListener('DOMContentLoaded', function() {
-    // Add scroll to line functionality
-    window.addEventListener('load', scrollToLineFromHash);
-    window.addEventListener('hashchange', scrollToLineFromHash);
-    setTimeout(scrollToLineFromHash, 1000);
-    Promise.all([
-      loadTaxonomies().catch(console.error),
-      loadDocumentData().catch(console.error),
-    ]);
-  });
+  Promise.all([
+    loadTaxonomies().catch(console.error),
+    loadDocumentData().catch(console.error),
+  ]);
 
   // Generate a summary of the entire document
   function generateDocumentSummary() {
@@ -1527,12 +1431,8 @@ var GlobalDocument= '';
   async function fetchDocumentContent() {
     try {
       console.log("Fetching document content from NDJSON...");
-      // var fName = GetInputValue('hdnenFilename');
-      var fName = 'What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined_enriched_v2.ndjson';
-      GlobalDocument = fName;
       const response = await fetch(
-        // "/static/assets/concept_groups_enriched/"+fName
-        "./assets/What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined_enriched_v2.ndjson"
+        "./assets/Jarvis_-_Welfare-to-Work__The_New_Deal_20251001_214714.md_concepts_full_enriched.ndjson"
       );
 
       if (!response.ok) {
@@ -1606,85 +1506,12 @@ var GlobalDocument= '';
         sections.push(currentSection);
       }
 
-      // Function to format text with markdown-like syntax
-      function formatTextWithMarkdown(text) {
-        if (!text) return '';
-        
-        // First, handle code blocks to prevent markdown processing inside them
-        const codeBlocks = [];
-        text = text.replace(/```[\s\S]*?```/g, (match) => {
-          const id = `code-${codeBlocks.length}`;
-          codeBlocks.push(match);
-          return id;
-        });
-        
-        // Replace markdown headers with HTML
-        let formattedText = text
-          // Handle # **Header** pattern (h1)
-          .replace(/^#\s*\*\*(.*?)\*\*/gm, '<h2 class="text-lg font-bold mt-4 mb-2">$1</h2>')
-          // Handle # Header pattern (h2)
-          .replace(/^##\s+(.*?)(\n|$)/gm, '<h3 class="text-md font-semibold mt-3 mb-1">$1</h3>')
-          // Handle ### Header pattern (h3)
-          .replace(/^###\s+(.*?)(\n|$)/gm, '<h4 class="text-sm font-semibold mt-2 mb-1">$1</h4>')
-          // Handle **bold** text
-          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-          // Handle *italic* text
-          .replace(/\*(.*?)\*/g, '<em>$1</em>')
-          // Handle `code` text
-          .replace(/`([^`]+)`/g, '<code class="bg-gray-100 px-1 rounded text-sm font-mono">$1</code>')
-          // Handle double newlines as paragraph breaks
-          .replace(/\n\s*\n/g, '</p><p class="my-2 text-sm leading-relaxed">')
-          // Handle single newlines as line breaks
-          .replace(/\n/g, ' ');
-        
-        // Restore code blocks
-        codeBlocks.forEach((codeBlock, index) => {
-          const codeContent = codeBlock
-            .replace(/```[\s\S]*?\n([\s\S]*?)```/g, '$1')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
-          
-          formattedText = formattedText.replace(
-            `code-${index}`, 
-            `<pre class="bg-gray-100 p-3 rounded text-xs overflow-x-auto my-2"><code>${codeContent}</code></pre>`
-          );
-        });
-        
-        // Wrap in a paragraph if not already wrapped and doesn't contain block elements
-        if (!formattedText.match(/^<(h[1-6]|p|div|pre|ul|ol|table)/i) && !formattedText.startsWith('<')) {
-          formattedText = '<p class="text-sm leading-relaxed">' + formattedText + '</p>';
-        }
-        
-        return formattedText;
-      }
-
       // Function to highlight taxonomy terms in text to match manual highlighting style
-      function highlightTaxonomyTerms(text, taxonomy, taxonomyDetails = {}, idPrefix = "auto-") {
+      function highlightTaxonomyTerms(text, taxonomy, idPrefix = "auto-") {
         if (!taxonomy) return text;
 
         // Create a map of terms to their taxonomy categories and colors
         const termMap = new Map();
-        const termDetailsMap = new Map(); // To map detail values to their categories
-
-        // First, process taxonomy details to map detail values to their categories
-        Object.entries(taxonomyDetails).forEach(([detailKey, detailValues]) => {
-          // Find the corresponding taxonomy category
-          const category = Object.keys(taxonomy).find(
-            cat => cat.toLowerCase() === detailKey.toLowerCase() || 
-                  cat.toLowerCase().includes(detailKey.toLowerCase())
-          );
-          
-          if (category && Array.isArray(detailValues)) {
-            detailValues.forEach(detailValue => {
-              if (detailValue && typeof detailValue === 'string') {
-                const cleanValue = detailValue.trim().toLowerCase();
-                if (cleanValue) {
-                  termDetailsMap.set(cleanValue, category);
-                }
-              }
-            });
-          }
-        });
 
         // Add terms from each taxonomy category
         Object.entries(taxonomy).forEach(([category, terms]) => {
@@ -1721,8 +1548,6 @@ var GlobalDocument= '';
               textColor: "text-white",
             };
           }
-          
-          // Process taxonomy terms
           if (Array.isArray(terms)) {
             terms.forEach((term) => {
               if (term && typeof term === "string") {
@@ -1731,7 +1556,6 @@ var GlobalDocument= '';
                   termMap.set(cleanTerm, {
                     category,
                     colorScheme: colorInfo,
-                    source: 'taxonomy'
                   });
 
                   // Add variations for better matching
@@ -1741,14 +1565,12 @@ var GlobalDocument= '';
                       termMap.set(singular, {
                         category,
                         colorScheme: colorInfo,
-                        source: 'taxonomy'
                       });
                     }
                   } else {
                     termMap.set(cleanTerm + "s", {
                       category,
                       colorScheme: colorInfo,
-                      source: 'taxonomy'
                     });
                   }
                 }
@@ -1757,40 +1579,12 @@ var GlobalDocument= '';
           }
         });
 
-        // Add taxonomy details to our term map
-        termDetailsMap.forEach((category, detailValue) => {
-          // Find the color scheme for this category
-          let colorInfo = null;
-          if (window.processedTaxonomyMap && window.processedTaxonomyMap[category.toLowerCase()]) {
-            const colorData = window.processedTaxonomyMap[category.toLowerCase()];
-            colorInfo = {
-              bg: colorData.hex,
-              text: "text-white",
-              highlight: colorData.hex,
-              highlightBorder: colorData.hex,
-              textColor: "text-white",
-            };
-          }
-          
-          if (colorInfo) {
-            termMap.set(detailValue, {
-              category,
-              colorScheme: colorInfo,
-              source: 'taxonomyDetails'
-            });
-          }
-        });
-
         if (termMap.size === 0) return text;
-
-        // Sort terms by length (longest first) to ensure we match longer terms first
-        const sortedTerms = Array.from(termMap.entries())
-          .sort((a, b) => b[0].length - a[0].length);
 
         // Create a regex pattern to match any of the terms
         const pattern = new RegExp(
-          `\\b(${sortedTerms
-            .map(([term]) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+          `\\b(${Array.from(termMap.keys())
+            .map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
             .join("|")})\\b`,
           "gi"
         );
@@ -1800,26 +1594,10 @@ var GlobalDocument= '';
           .toString(36)
           .substr(2, 9)}`;
 
-        // Keep track of which parts of the text we've already processed
-        const processedRanges = [];
-        
         // Replace each match with a highlighted span
-        return text.replace(pattern, (match, offset, fullText) => {
-          const lowerMatch = match.toLowerCase();
-          const termInfo = termMap.get(lowerMatch);
+        return text.replace(pattern, (match) => {
+          const termInfo = termMap.get(match.toLowerCase());
           if (!termInfo) return match;
-
-          // Check if this match is already within a processed range
-          const matchStart = offset;
-          const matchEnd = offset + match.length;
-          const isAlreadyProcessed = processedRanges.some(
-            ([start, end]) => matchStart >= start && matchEnd <= end
-          );
-          
-          if (isAlreadyProcessed) return match;
-          
-          // Mark this range as processed
-          processedRanges.push([matchStart, matchEnd]);
 
           const { category, colorScheme } = termInfo;
           const displayName = category
@@ -1920,109 +1698,96 @@ var GlobalDocument= '';
       // Generate HTML from the sections
       let html = "";
       let lineNumber = 1;
-      let StoreNewHeader = "";
-      let StorePrevHeader = "";
 
       sections.forEach((section) => {
         if (section.items.length === 0) return;
-        StoreNewHeader = section.header;
+
         // Add section header
-        if (StoreNewHeader !== StorePrevHeader)
-        {
         html += `
             <div class="mb-6">
                 <div class="space-y-1">
                     <div class="text-sm font-semibold text-eu-blue mt-2 mb-1">${section.header}</div>`;
-        }
-        StorePrevHeader = section.header;
+
         // Add section items (paragraphs)
         section.items.forEach((item) => {
           const lineStr = lineNumber.toString().padStart(3, "0");
           let text = item.text || "";
-          
-          // First format the text with markdown
-          text = formatTextWithMarkdown(text);
 
           // Highlight taxonomy terms in the text if taxonomy data exists
           if (item.enrichment?.taxonomy) {
-              const taxonomyDetails = item.enrichment.taxonomyDetails || {};
-              text = highlightTaxonomyTerms(text, item.enrichment.taxonomy, taxonomyDetails);
+            text = highlightTaxonomyTerms(text, item.enrichment.taxonomy);
           }
-
-          // Handle images in the text
-          const imageRegex = /!\[\]\(([^)]+)\)/g;  // Regex to match ![](image_name)
-          text = text.replace(imageRegex, (match, imageName) => {
-              imageName = GlobalDocument.replace('_chunks.refined_enriched_v2.ndjson', "_"+imageName);
-              const imageUrl = `/media/mdfiles/images/${imageName.trim()}`;  // Adjust this path as needed
-              return `<img src="${imageUrl}" alt="${imageName}" style="max-width:100%;"/>`;  // Return img tag
-          });
 
           // Check if this is a table of contents or special section
           if (
-              item.structure_type === "table_of_contents" ||
-              text.includes("|") ||
-              item.header?.includes("Table of Contents")
+            item.structure_type === "table_of_contents" ||
+            item.text?.includes("|") ||
+            item.header?.includes("Table of Contents")
           ) {
-              // Format as a table row
-              const columns = text.split("|").map((s) => s.trim());
-              const tocLineId = `line-${lineNumber}`;
-              const tocLineData = JSON.stringify({
-                  lineNumber: lineNumber,
-                  text: text,
-                  id: tocLineId,
-                  type: "table_of_contents",
-                  section: section.title,
-                  enrichment: item.enrichment || null,
-                  _ts: item._ts || new Date().toISOString(),
-                  doc: item.doc || "Document",
-                  header: item.header || "",
-              });
+            // Format as a table row
+            const [left, right = ""] = text.split("|").map((s) => s.trim());
+            // Create a unique ID for this line
+            const tocLineId = `line-${lineNumber}`;
+            const tocLineData = JSON.stringify({
+              lineNumber: lineNumber,
+              text: left + (right ? ` | ${right}` : ""),
+              id: tocLineId,
+              type: "table_of_contents",
+              section: section.title,
+              enrichment: item.enrichment || null,
+              _ts: item._ts || new Date().toISOString(),
+              doc: item.doc || "Document",
+              header: item.header || "",
+            });
 
-              html += `
-                  <div class="document-line flex items-start group mb-1" 
-                      data-line-number="${lineNumber}" 
-                      data-line-data='${tocLineData.replace(/'/g, "&#39;")}'
-                      draggable="true"
-                      ondragstart="DoccanoApp.handleDragStart(event, ${lineNumber - 1})"
-                      ondragover="DoccanoApp.handleDragOver(event, ${lineNumber - 1})"
-                      ondrop="DoccanoApp.handleDrop(event, ${lineNumber - 1})"
-                      ondragend="DoccanoApp.handleDragEnd()">
-                      <span class="line-number text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5 cursor-pointer hover:text-gray-600">${lineStr}</span>
-                      <div class="line-content flex-1">
-                          <div class="flex border-b border-gray-100 py-1">`;
-
-              // Loop through each column to create table cells
-              columns.forEach((column) => {
-                  html += `<div class="px-2 flex-1 text-sm text-left">${column}</div>`;
-              });
-
-              html += `</div></div></div>`;
+            html += `
+                    <div class="document-line flex items-start group mb-1" 
+                         data-line-number="${lineNumber}" 
+                         data-line-data='${tocLineData.replace(/'/g, "&#39;")}'
+                         draggable="true"
+                         ondragstart="DoccanoApp.handleDragStart(event, ${lineNumber - 1})"
+                         ondragover="DoccanoApp.handleDragOver(event, ${lineNumber - 1})"
+                         ondrop="DoccanoApp.handleDrop(event, ${lineNumber - 1})"
+                         ondragend="DoccanoApp.handleDragEnd()">
+                        <span class="line-number text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5 cursor-pointer hover:text-gray-600">${lineStr}</span>
+                        <div class="line-content flex-1">
+                            <div class="flex border-b border-gray-100 py-1">
+                                <div class="px-2 flex-1 text-sm">${left}</div>
+                                ${
+                                  right
+                                    ? `<div class="px-2 flex-1 text-sm">${right} |</div>`
+                                    : ""
+                                }
+                            </div>
+                        </div>
+                    </div>`;
           } else {
-              // Format as a regular paragraph with potentially highlighted text
-              const lineId = `line-${lineNumber}`;
-              const lineData = JSON.stringify({
-                  lineNumber: lineNumber,
-                  text: text.replace(/<[^>]*>/g, ""),
-                  id: lineId,
-                  type: "text",
-                  section: section.title,
-                  enrichment: item.enrichment || null,
-                  _ts: item._ts || new Date().toISOString(),
-                  doc: item.doc || "Document",
-                  header: item.header || "",
-              });
+            // Format as a regular paragraph with potentially highlighted text
+            // Create a unique ID for this line
+            const lineId = `line-${lineNumber}`;
+            const lineData = JSON.stringify({
+              lineNumber: lineNumber,
+              text: text.replace(/<[^>]*>/g, ""), // Remove HTML tags for plain text
+              id: lineId,
+              type: "text",
+              section: section.title,
+              enrichment: item.enrichment || null,
+              _ts: item._ts || new Date().toISOString(),
+              doc: item.doc || "Document",
+              header: item.header || "",
+            });
 
-              html += `
-                  <div class="document-line flex items-start group mb-1" 
-                      data-line-number="${lineNumber}" 
-                      data-line-data='${lineData.replace(/'/g, "&#39;")}'
-                      draggable="true"
-                      ondragstart="DoccanoApp.handleDragStart(event, ${lineNumber - 1})"
-                      ondragover="DoccanoApp.handleDragOver(event, ${lineNumber - 1})"
-                      ondrop="DoccanoApp.handleDrop(event, ${lineNumber - 1})"
-                      ondragend="DoccanoApp.handleDragEnd()">
-                      <span class="line-number text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5 cursor-pointer hover:text-gray-600">${lineStr}</span>
-                      <div class="line-content flex-1 w-full">
+            html += `
+                    <div class="document-line flex items-start group mb-1" 
+                         data-line-number="${lineNumber}" 
+                         data-line-data='${lineData.replace(/'/g, "&#39;")}'
+                         draggable="true"
+                         ondragstart="DoccanoApp.handleDragStart(event, ${lineNumber - 1})"
+                         ondragover="DoccanoApp.handleDragOver(event, ${lineNumber - 1})"
+                         ondrop="DoccanoApp.handleDrop(event, ${lineNumber - 1})"
+                         ondragend="DoccanoApp.handleDragEnd()">
+                        <span class="line-number text-xs text-gray-400 w-8 flex-shrink-0 mt-0.5 cursor-pointer hover:text-gray-600">${lineStr}</span>
+                        <div class="line-content flex-1 w-full">
                             <p class="text-sm text-gray-800 mb-1">${text}</p>
                             <div class="w-full flex justify-end">
                                 <button class="taxonomy-toggle text-xs text-gray-500 hover:text-gray-700 flex items-center px-2 py-1 rounded hover:bg-gray-100 transition-colors" 
@@ -2039,7 +1804,7 @@ var GlobalDocument= '';
           }
 
           lineNumber++;
-      });
+        });
 
         html += `
                 </div>
@@ -2073,7 +1838,7 @@ var GlobalDocument= '';
 
       // Re-initialize text selection for the new content
       initTextSelection();
-
+      
       // Initialize taxonomy toggle handlers
       initTaxonomyHandlers();
 
@@ -2110,16 +1875,14 @@ var GlobalDocument= '';
     const lastDoc = documentData[documentData.length - 1];
 
     // Extract document title from the first line's header or doc field
-    let docTitle = GlobalDocument;
+    let docTitle = firstDoc.header || firstDoc.doc || "Document";
 
     // Clean up the title - remove markdown formatting and extra spaces
     docTitle = docTitle
       .replace(/\*\*|##?|\[|\]/g, "") // Remove markdown formatting
       .replace(/\s+/g, " ") // Replace multiple spaces with one
       .trim(); // Trim whitespace
-    
-    docTitle = docTitle.replace(".ndjson","");
-    docTitle = docTitle.replace(/_/g, ' ');
+
     // Use the last line's _ts field for the last updated date
     let lastUpdated = new Date();
     if (lastDoc._ts) {
@@ -2387,7 +2150,7 @@ var GlobalDocument= '';
       const lengthElements = document.querySelectorAll(".document-length");
       lengthElements.forEach((el) => {
         if (!el.closest("template") && !el.getRootNode().host) {
-          el.textContent = `${charCount.toLocaleString()} characters " ${wordCount.toLocaleString()} words`;
+          el.textContent = `${charCount.toLocaleString()} characters • ${wordCount.toLocaleString()} words`;
         }
       });
 
@@ -2481,12 +2244,8 @@ var GlobalDocument= '';
   async function loadDocumentData() {
     try {
       console.log("Loading document data from NDJSON...");
-      // var fName = GetInputValue('hdnenFilename');
-      var fName = 'What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined_enriched_v2.ndjson';
-      GlobalDocument = fName;
       const response = await fetch(
-        // "/static/assets/concept_groups_enriched/"+fName
-        "./assets/What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined_enriched_v2.ndjson"
+        "./assets/Jarvis_-_Welfare-to-Work__The_New_Deal_20251001_214714.md_concepts_full_enriched.ndjson"
       );
 
       if (!response.ok) {
@@ -2576,7 +2335,7 @@ var GlobalDocument= '';
           <div class="flex items-center text-xs text-gray-700">
             <span class="w-20 text-gray-500">Content:</span>
             <span class="document-length font-medium">
-              ${totalChars.toLocaleString()} characters " ${summary.totalWords.toLocaleString()} words
+              ${totalChars.toLocaleString()} characters • ${summary.totalWords.toLocaleString()} words
             </span>
           </div>
           <div class="flex items-center text-xs text-gray-700">
@@ -2705,12 +2464,9 @@ var GlobalDocument= '';
       if (lineElement) {
         console.log("Line element found for line number: " + lineNumber);
 
-        // var fName = GetInputValue('hdnenFilename');
-      var fName = 'What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined_enriched_v2.ndjson';
         // Get the line content from the NDJSON file
         fetch(
-          // "/static/assets/concept_groups_enriched/"+fName
-          "./assets/What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined_enriched_v2.ndjson"
+          "assets/Jarvis_-_Welfare-to-Work__The_New_Deal_20251001_214714.md_concepts_full_enriched.ndjson"
         )
           .then((response) => response.text())
           .then((ndjsonText) => {
@@ -2806,7 +2562,7 @@ var GlobalDocument= '';
                       <div class="flex items-center">
                         <span class="text-xs font-medium text-gray-900 truncate">${entityData.text}</span>
                         <span class="ml-1 text-xs text-gray-500 whitespace-nowrap">
-                          (${entityData.type}${entityData.value ? `: ${entityData.value}` : ''}${entityData.unit ? ` ${entityData.unit}` : ''}${entityData.confidence !== undefined ? ` \B7 ${entityData.confidence.toFixed(2)}` : ''})
+                          (${entityData.type}${entityData.value ? `: ${entityData.value}` : ''}${entityData.unit ? ` ${entityData.unit}` : ''}${entityData.confidence !== undefined ? ` · ${entityData.confidence.toFixed(2)}` : ''})
                         </span>
                       </div>
                       ${entityData.description ? `<div class="text-xs text-gray-500 mt-1 truncate">${entityData.description}</div>` : ''}
@@ -3057,7 +2813,7 @@ var GlobalDocument= '';
                                           id="keywords-input"
                                           autocomplete="off">
                                       </div>
-                                      <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add keywords. Click \D7 to remove.</p>
+                                      <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add keywords. Click × to remove.</p>
                                     </div>
                                   </div>
                                 </div>
@@ -3215,7 +2971,7 @@ var GlobalDocument= '';
                                               data-field="taxonomy-keyword-input"
                                               autocomplete="off">
                                           </div>
-                                          <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add keywords. Click \D7 to remove.</p>
+                                          <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add keywords. Click × to remove.</p>
                                         </div>
                                       `
                                         )
@@ -3308,7 +3064,7 @@ var GlobalDocument= '';
                                           id="dates-mentioned-input"
                                           autocomplete="off">
                                       </div>
-                                      <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add dates mentioned. Click \D7 to remove.</p>
+                                      <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add dates mentioned. Click × to remove.</p>
                                     </div>
                                   </div>
                                 </div>
@@ -3466,7 +3222,7 @@ var GlobalDocument= '';
                                           id="country-codes-input"
                                           autocomplete="off">
                                       </div>
-                                      <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add country codes. Click \D7 to remove.</p>
+                                      <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add country codes. Click × to remove.</p>
                                     </div>
                                   </div>
                                 </div>
@@ -3909,6 +3665,50 @@ var GlobalDocument= '';
     }
   }
 
+  // Initialize collapsible sections
+  function initCollapsibleSections() {
+    const toggles = document.querySelectorAll('[data-toggle="collapse"]');
+
+    toggles.forEach((toggle) => {
+      const targetId = toggle.getAttribute("data-target");
+      const target = document.querySelector(targetId);
+      const chevron = toggle.querySelector("[data-chevron]");
+
+      if (target) {
+        // Set initial state
+        const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+
+        // Add initial styles
+        target.style.transition =
+          "max-height 0.25s ease-in-out, opacity 0.15s ease-in-out";
+        target.style.overflow = "hidden";
+
+        if (isExpanded) {
+          target.style.maxHeight = "none";
+          target.style.opacity = "1";
+          if (chevron) {
+            chevron.style.transform = "rotate(180deg)";
+            chevron.style.transition = "transform 0.2s ease-in-out";
+          }
+        } else {
+          target.style.maxHeight = "0";
+          target.style.opacity = "0";
+          if (chevron) {
+            chevron.style.transform = "rotate(0deg)";
+            chevron.style.transition = "transform 0.2s ease-in-out";
+          }
+        }
+
+        // Add click handler
+        toggle.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleCollapse(toggle);
+        });
+      }
+    });
+  }
+
   // Close modal and clean up
   function closeCuratorModal() {
     const modal = document.getElementById("curator-studio-modal");
@@ -4001,7 +3801,7 @@ var GlobalDocument= '';
     console.log("Form data:", JSON.stringify(formData, null, 2));
     
     // Close the modal
-    closeCuratorModal();
+    // closeCuratorModal();
   }
 
   // Make functions available globally
@@ -4422,8 +4222,7 @@ var GlobalDocument= '';
   // Open PDF Viewer
   async function openPdfViewer() {
     // Use absolute path to ensure the PDF loads correctly
-    const pdfName= GlobalDocument.replace('_chunks.refined_enriched_v2.ndjson', ".pdf");
-    const pdfUrl = new URL('media/uploads/' + pdfName, `${window.location.origin}/`).href;
+    const pdfUrl = new URL('assets/WP 03.pdf', window.location.origin + window.location.pathname).href;
     const modal = document.getElementById('pdfViewerModal');
     const pdfViewer = document.getElementById('pdfViewer');
     
@@ -4626,247 +4425,89 @@ var GlobalDocument= '';
     }
   }
 
+  // Function to load taxonomies for a specific line
   function loadLineTaxonomies(lineElement) {
+    // Get elements and parse data
     const detailsDiv = lineElement.querySelector('.taxonomy-details');
     if (!detailsDiv) return;
     
+    // Parse line data safely
+    let taxonomy = {};
     try {
-      // Parse line data safely
-      const lineData = JSON.parse(lineElement.dataset.lineData.replace(/&#39;/g, "'"));
-      const { taxonomy = {}, taxonomyDetails = {} } = lineData.enrichment || {};
-      
-      // Initialize HTML container with compact dictionary style
-      const html = ['<div class="compact-dict">'];
-      let hasTaxonomies = false;
-
-      // Helper function to format term with details in compact style
-      const formatEntry = (term, details, isSubItem = false) => {
-        if (!term) return '';
-        
-        const detailsHtml = details ? 
-          `<span class="dict-details text-gray-500 text-sm ml-2">${details}</span>` : '';
-        
-        return `
-          <div class="dict-entry ${isSubItem ? 'pl-4 text-sm' : ''} py-1 hover:bg-gray-50 rounded transition-colors">
-            <span class="dict-term font-medium text-gray-800">${term}</span>
-            ${detailsHtml}
-          </div>
-        `;
-      };
-
-      // Helper function to get details for a term
-      const getTermDetails = (term) => {
-        if (!term) return '';
-        
-        const termKey = typeof term === 'object' ? term.term || term.text || '' : term;
-        if (!termKey) return '';
-        
-        const details = [];
-        
-        // Check for direct match
-        if (taxonomyDetails[termKey]) {
-          const detail = taxonomyDetails[termKey];
-          details.push(Array.isArray(detail) ? detail.join('; ') : detail);
-        }
-        
-        // Check for partial matches
-        for (const [key, value] of Object.entries(taxonomyDetails)) {
-          if (key !== termKey && key.includes(termKey)) {
-            const detail = Array.isArray(value) ? value.join('; ') : value;
-            details.push(detail);
-          }
-        }
-        
-        return details.length > 0 ? details.join(' • ') : '';
-      };
-      
-      // Process each category in the taxonomy
-      for (const [category, value] of Object.entries(taxonomy)) {
-        // Skip empty values and effect taxonomies (handled separately)
-        if (!value || (Array.isArray(value) && value.length === 0) || 
-            (typeof value === 'object' && Object.keys(value).length === 0) ||
-            ['effect_direction', 'effect_strength', 'effect_horizon'].includes(category)) {
-          continue;
-        }
-        
-        const categoryName = category.split('_')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ');
-        
-        const categoryHtml = [
-          `<div class="dict-category text-xs font-semibold text-gray-500 uppercase tracking-wider mt-3 mb-1">
-            ${categoryName}
-          </div>`
-        ];
-        
-        // Handle nested objects (like target_groups)
-        if (value && typeof value === 'object' && !Array.isArray(value)) {
-          for (const [subCategory, subValue] of Object.entries(value)) {
-            if (!subValue || (Array.isArray(subValue) && subValue.length === 0)) continue;
-            
-            const subCategoryName = subCategory.split('_')
-              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ');
-              
-            const terms = Array.isArray(subValue) ? subValue : [subValue];
-            
-            categoryHtml.push(`
-              <div class="dict-subcategory text-xs font-medium text-gray-600 mt-2 mb-1 pl-2">
-                ${subCategoryName}
-              </div>
-            `);
-            
-            // Add terms under subcategory
-            terms.forEach(term => {
-              if (!term || term === 'unspecified') return;
-              const termText = typeof term === 'object' ? term.term || term.text || '' : term;
-              if (!termText) return;
-              const details = getTermDetails(term);
-              categoryHtml.push(formatEntry(termText, details, true));
-            });
-            
-            hasTaxonomies = true;
-          }
-        } 
-        // Handle arrays of terms
-        else if (Array.isArray(value)) {
-          value.forEach(term => {
-            if (!term || term === 'unspecified') return;
-            const termText = typeof term === 'object' ? term.term || term.text || '' : term;
-            if (!termText) return;
-            const details = getTermDetails(term);
-            categoryHtml.push(formatEntry(termText, details));
-          });
-          
-          hasTaxonomies = value.length > 0;
-        }
-        
-        if (categoryHtml.length > 1) {
-          html.push(`<div class="dict-category-group">${categoryHtml.join('')}</div>`);
-        }
-      }
-      
-      // Add effect information if available, using the same styling as other categories
-      const effectTypes = ['effect_direction', 'effect_strength', 'effect_horizon'];
-      const effectValues = [];
-      
-      effectTypes.forEach(type => {
-        const value = taxonomy[type];
-        if (value && value !== 'unspecified') {
-          const typeName = type.split('_')
-            .slice(1)
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ');
-            
-          effectValues.push({
-            term: typeName,
-            value: value,
-            details: ''
-          });
-          hasTaxonomies = true;
-        }
-      });
-      
-      if (effectValues.length > 0) {
-        const effectHtml = [];
-        effectHtml.push(`
-          <div class="dict-category text-xs font-semibold text-gray-500 uppercase tracking-wider mt-3 mb-1">
-            Effect Information
-          </div>
-        `);
-        
-        effectValues.forEach(item => {
-          effectHtml.push(`
-            <div class="dict-entry py-1 hover:bg-gray-50 rounded transition-colors">
-              <span class="dict-term font-medium text-gray-800">${item.term}</span>
-              <span class="dict-details text-gray-500 text-sm ml-2">${item.value}</span>
-            </div>
-          `);
-        });
-        
-        // Add to the beginning of the HTML
-        html.unshift(`<div class="dict-category-group">${effectHtml.join('')}</div>`);
-      }
-      
-      html.push('</div>');
-      
-      // Compact styling
-      const style = `
-        <style>
-          .compact-dict {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            font-size: 0.875rem;
-            line-height: 1.4;
-            color: #374151;
-          }
-          .dict-category {
-            letter-spacing: 0.05em;
-          }
-          .dict-subcategory {
-            color: #4b5563;
-            border-left: 2px solid #e5e7eb;
-          }
-          .dict-entry {
-            display: flex;
-            align-items: baseline;
-            padding: 0.25rem 0.5rem;
-            margin: 0.125rem 0;
-            border-radius: 0.25rem;
-          }
-          .dict-term {
-            min-width: 120px;
-            color: #111827;
-            flex-shrink: 0;
-          }
-          .dict-details {
-            color: #4b5563;
-            word-break: break-word;
-          }
-          .dict-entry:hover {
-            background-color: #f9fafb;
-          }
-          .compact-dict::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-          }
-          .compact-dict::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-          }
-          .compact-dict::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-          }
-          .compact-dict::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-          }
-        </style>
-      `;
-      
-      // Show message if no taxonomies were found
-      if (!hasTaxonomies) {
-        detailsDiv.innerHTML = '<div class="text-xs text-gray-400 italic py-2">No taxonomies to show</div>';
-      } else {
-        detailsDiv.innerHTML = style + html.join('');
-      }
+        const lineData = JSON.parse(lineElement.dataset.lineData.replace(/&#39;/g, "'"));
+        taxonomy = lineData.enrichment?.taxonomy || {};
     } catch (e) {
-      console.error('Error loading line taxonomies:', e);
-      if (detailsDiv) {
-        detailsDiv.innerHTML = '<div class="text-xs text-red-500 italic">Error loading taxonomies</div>';
-      }
+        detailsDiv.innerHTML = '<div class="text-xs text-gray-500 italic">Error loading taxonomies.</div>';
+        return;
     }
-  }
-  
-  // Helper function to get contrasting text color
-  function getContrastColor(bgColor) {
-    if (!bgColor) return '#1f2937';
-    const hex = bgColor.replace('#', '');
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-    return brightness > 155 ? '#1f2937' : '#ffffff';
-  }
+
+    // Process taxonomies
+    const html = ['<div class="space-y-2">'];
+    const { processedTaxonomyMap = {} } = window;
+    let hasTaxonomies = false;
+    
+    for (const [category, terms] of Object.entries(taxonomy)) {
+        if (!Array.isArray(terms) || terms.length === 0) continue;
+        hasTaxonomies = true;
+        
+        // Get color info with case-insensitive lookup
+        const categoryKey = category.toLowerCase();
+        const colorInfo = processedTaxonomyMap[categoryKey] || 
+                         Object.values(processedTaxonomyMap).find(t => 
+                             t.name?.toLowerCase() === categoryKey
+                         ) || {};
+
+        // Debug logging - can be removed after confirming colors work
+        console.log(`Color for ${category}:`, { 
+            bgColor: colorInfo.hex || colorInfo.bg || colorInfo.color,
+            textColor: colorInfo.textColor
+        });
+
+        // Use hex value if available, otherwise fall back to other color properties
+        const bgColor = colorInfo.hex || colorInfo.bg || colorInfo.color || '#e5e7eb';
+        
+        // Calculate text color based on background brightness for better contrast
+        const hexColor = bgColor.startsWith('#') ? bgColor.substring(1) : bgColor;
+        const r = parseInt(hexColor.substring(0, 2), 16);
+        const g = parseInt(hexColor.substring(2, 4), 16);
+        const b = parseInt(hexColor.substring(4, 6), 16);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        const textColor = brightness > 155 ? '#1f2937' : '#ffffff'; // Dark gray or white text based on background
+
+        // Build category HTML
+        html.push(`
+            <div class="taxonomy-category">
+                <div class="taxonomy-category-name" style="margin-bottom: 0.25rem;">
+                    <span class="color-indicator" style="background-color: ${bgColor}; display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 6px;"></span>
+                    <span style="font-size: 0.8rem; font-weight: 500; color: #4b5563;">
+                        ${category.replace(/_/g, ' ')}
+                    </span>
+                </div>
+                <div class="taxonomy-terms" style="margin-bottom: 0.5rem;">
+                    ${terms.map(term => `
+                        <span class="taxonomy-term" 
+                              style="color: ${bgColor};
+                                     font-size: 0.8rem;
+                                     line-height: 1.25rem;
+                                     margin-right: 0.5rem;
+                                     display: inline-block;">
+                            ${term}
+                        </span>
+                    `).join('')}
+                </div>
+            </div>
+        `);
+    }
+
+    html.push('</div>');
+    
+    // Show message if no taxonomies were found
+    if (!hasTaxonomies) {
+        detailsDiv.innerHTML = '<div class="text-xs text-gray-500 italic">No taxonomies to show.</div>';
+    } else {
+        detailsDiv.innerHTML = html.join('');
+    }
+}
   
   // Initialize taxonomy handlers
   function initTaxonomyHandlers() {
@@ -4893,7 +4534,6 @@ var GlobalDocument= '';
           
           // If we're showing taxonomies and they haven't been loaded yet, load them
           if (!detailsDiv.classList.contains('hidden') && detailsDiv.textContent.trim() === 'Loading taxonomies...') {
-            // console.log('Loading taxonomies for line:', lineElement);
             loadLineTaxonomies(lineElement);
           }
         }
@@ -4919,22 +4559,11 @@ var GlobalDocument= '';
       transition: max-height 0.3s ease;
       background-color: #f9fafb;
       border-radius: 0.25rem;
-      position: relative;
-      z-index: 10;
     }
     .taxonomy-details:not(.hidden) {
       max-height: 500px;
       padding: 0.5rem;
       border: 1px solid #e5e7eb;
-      overflow-y: auto;
-      margin-bottom: 0.5rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-    /* Ensure the line content container can expand */
-    .line-content {
-      min-height: 0; /* Allows the content to shrink if needed */
-      overflow: visible; /* Prevents content from being clipped */
-    }
       margin-top: 0.5rem;
     }
     .taxonomy-category {
@@ -4975,7 +4604,6 @@ var GlobalDocument= '';
     }
   `;
   document.head.appendChild(style);
-
 
   // Initialize the application
   async function init() {
@@ -5481,7 +5109,7 @@ var GlobalDocument= '';
                   data-field="taxonomy-keyword-input"
                   autocomplete="off">
               </div>
-              <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add keywords. Click \D7 to remove.</p>
+              <p class="text-xs text-gray-500 mt-1">Press Enter or comma to add keywords. Click × to remove.</p>
             </div>
           `;
           
@@ -6181,189 +5809,6 @@ var GlobalDocument= '';
     });
   }
 
-  /**
-   * Generates a flattened array of taxonomy details from NDJSON data
-   * @param {string} ndjsonText - The NDJSON text to process
-   * @returns {Array} Flattened array of taxonomy details
-   */
-  function getFlattenedTaxonomyDetails(ndjsonText) {
-    const lines = ndjsonText.split('\n').filter(line => line.trim());
-    const flattened = [];
-    const seenTerms = new Set();
-
-    lines.forEach(line => {
-      try {
-        const data = JSON.parse(line);
-        if (!data.enrichment?.taxonomy) return;
-
-        const { taxonomy, taxonomyDetails = {}, text = '' } = data.enrichment;
-        const lineId = data.id || data._hash || `line-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        const docId = data.doc || 'unknown-document';
-        const chunkId = data.chunk_id || '';
-
-        // Process each taxonomy category
-        for (const [category, value] of Object.entries(taxonomy)) {
-          // Skip effect-related taxonomies as they're handled separately
-          if (['effect_direction', 'effect_strength', 'effect_horizon'].includes(category)) {
-            const term = value;
-            if (!term || term === 'unspecified') continue;
-            
-            const entryKey = `${category}:${term}:${lineId}`;
-            if (seenTerms.has(entryKey)) continue;
-            seenTerms.add(entryKey);
-
-            flattened.push({
-              id: entryKey,
-              lineId,
-              docId,
-              chunkId,
-              category,
-              categoryDisplay: category.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-              term,
-              termDisplay: String(term).split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-              details: taxonomyDetails[term] || [],
-              type: 'effect',
-              source: 'taxonomy',
-              text: text.substring(0, 200) + (text.length > 200 ? '...' : '')
-            });
-            
-            continue;
-          }
-
-          // Handle target_groups specially
-          if (category === 'target_groups' && value && typeof value === 'object' && !Array.isArray(value)) {
-            for (const [subCategory, terms] of Object.entries(value)) {
-              if (!Array.isArray(terms)) continue;
-              
-              terms.forEach(term => {
-                if (!term || term === 'unspecified') return;
-                
-                const entryKey = `${category}:${subCategory}:${term}:${lineId}`;
-                if (seenTerms.has(entryKey)) return;
-                seenTerms.add(entryKey);
-                
-                const details = [];
-                if (taxonomyDetails[term]) {
-                  details.push(...(Array.isArray(taxonomyDetails[term]) ? taxonomyDetails[term] : [taxonomyDetails[term]]));
-                }
-                
-                // Also check for subcategory-specific details
-                const subCategoryDetailKey = `${subCategory}_${term}`.toLowerCase();
-                if (taxonomyDetails[subCategoryDetailKey]) {
-                  const subDetails = taxonomyDetails[subCategoryDetailKey];
-                  details.push(...(Array.isArray(subDetails) ? subDetails : [subDetails]));
-                }
-
-                flattened.push({
-                  id: entryKey,
-                  lineId,
-                  docId,
-                  chunkId,
-                  category,
-                  categoryDisplay: 'Target Groups',
-                  subCategory,
-                  subCategoryDisplay: subCategory.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-                  term,
-                  termDisplay: String(term).split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-                  details: [...new Set(details)], // Remove duplicates
-                  type: 'target_group',
-                  source: 'taxonomy',
-                  text: text.substring(0, 200) + (text.length > 200 ? '...' : '')
-                });
-              });
-            }
-            continue;
-          }
-
-          // Handle other nested objects
-          if (value && typeof value === 'object' && !Array.isArray(value)) {
-            for (const [subCategory, terms] of Object.entries(value)) {
-              if (!Array.isArray(terms)) continue;
-              
-              terms.forEach(term => {
-                if (!term || term === 'unspecified') return;
-                
-                const entryKey = `${category}:${subCategory}:${term}:${lineId}`;
-                if (seenTerms.has(entryKey)) return;
-                seenTerms.add(entryKey);
-                
-                const details = [];
-                if (taxonomyDetails[term]) {
-                  details.push(...(Array.isArray(taxonomyDetails[term]) ? taxonomyDetails[term] : [taxonomyDetails[term]]));
-                }
-
-                flattened.push({
-                  id: entryKey,
-                  lineId,
-                  docId,
-                  chunkId,
-                  category,
-                  categoryDisplay: category.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-                  subCategory,
-                  subCategoryDisplay: subCategory.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-                  term,
-                  termDisplay: String(term).split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-                  details: details,
-                  type: 'nested',
-                  source: 'taxonomy',
-                  text: text.substring(0, 200) + (text.length > 200 ? '...' : '')
-                });
-              });
-            }
-            continue;
-          }
-
-          // Handle direct array values
-          if (Array.isArray(value)) {
-            value.forEach(term => {
-              if (!term || term === 'unspecified') return;
-              
-              const entryKey = `${category}:${term}:${lineId}`;
-              if (seenTerms.has(entryKey)) return;
-              seenTerms.add(entryKey);
-              
-              const details = [];
-              if (taxonomyDetails[term]) {
-                details.push(...(Array.isArray(taxonomyDetails[term]) ? taxonomyDetails[term] : [taxonomyDetails[term]]));
-              }
-              
-              // Check for variations of the term in taxonomyDetails
-              const termLower = term.toLowerCase();
-              for (const [key, detail] of Object.entries(taxonomyDetails)) {
-                if (key.toLowerCase().includes(termLower) || termLower.includes(key.toLowerCase())) {
-                  if (Array.isArray(detail)) {
-                    details.push(...detail);
-                  } else {
-                    details.push(detail);
-                  }
-                }
-              }
-
-              flattened.push({
-                id: entryKey,
-                lineId,
-                docId,
-                chunkId,
-                category,
-                categoryDisplay: category.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-                term,
-                termDisplay: String(term).split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-                details: [...new Set(details)], // Remove duplicates
-                type: 'simple',
-                source: 'taxonomy',
-                text: text.substring(0, 200) + (text.length > 200 ? '...' : '')
-              });
-            });
-          }
-        }
-      } catch (error) {
-        console.error('Error processing line in getFlattenedTaxonomyDetails:', error);
-      }
-    });
-
-    return flattened;
-  }
-
   function renderTaxonomies() {
     const container = document.getElementById("taxonomy-container");
     if (!container) return;
@@ -6410,8 +5855,6 @@ var GlobalDocument= '';
       }
 
       container.innerHTML = "";
-
-      console.log(taxonomyList);
 
       taxonomyList.forEach((taxonomy) => {
         const element = document.createElement("div");
@@ -6805,9 +6248,9 @@ var GlobalDocument= '';
       
       // Log merged lines information
       if (mergedLines.length > 0) {
-        console.log(`=\CB Exporting ${mergedLines.length} merged line(s):`, mergedLines);
+        console.log(`📋 Exporting ${mergedLines.length} merged line(s):`, mergedLines);
       } else {
-        console.log('=\CB No merged lines to export');
+        console.log('📋 No merged lines to export');
       }
 
       // Simulate API call delay (replace with actual save/export logic)
@@ -6818,22 +6261,22 @@ var GlobalDocument= '';
             const filename = `highlights-${new Date()
               .toISOString()
               .replace(/[:.]/g, "-")}.json`;
-            //const downloadSuccess = downloadJSON(exportData, filename);
+            const downloadSuccess = downloadJSON(exportData, filename);
 
-            //if (!downloadSuccess) {
-            //  throw new Error("Failed to generate download");
-            //}
+            if (!downloadSuccess) {
+              throw new Error("Failed to generate download");
+            }
 
             // Simulate random errors (10% chance)
-            //if (Math.random() < 0.1) {
-            //  reject(
-            //    new Error(
-            //      "Failed to connect to the server. Your highlights were saved locally, but could not be synced to the server."
-            //    )
-            //  );
-            //} else {
-            resolve();
-            // }
+            if (Math.random() < 0.1) {
+              reject(
+                new Error(
+                  "Failed to connect to the server. Your highlights were saved locally, but could not be synced to the server."
+                )
+              );
+            } else {
+              resolve();
+            }
           } catch (error) {
             console.error("Error during export:", error);
             reject(error);
@@ -6843,8 +6286,8 @@ var GlobalDocument= '';
 
       // Prepare success message
       const successMessage = hasChanges
-        ? `Successfully Saved ${addedCount} added and ${removedCount} removed highlights.`
-        : "No changes to Save.";
+        ? `Successfully exported ${addedCount} added and ${removedCount} removed highlights.`
+        : "No changes to export.";
 
       // Show success message with SweetAlert2
       const Toast = Swal.mixin({
@@ -6901,11 +6344,11 @@ var GlobalDocument= '';
                 </div>
               </div>
               <div class="ml-3 flex-1">
-                <p class="text-sm font-medium text-gray-900">Highlights saved successfully!</p>
+                <p class="text-sm font-medium text-gray-900">Highlights exported successfully!</p>
                 <div class="mt-1 flex flex-wrap items-center gap-1.5">
                   ${addedBadge}${removedBadge}
                 </div>
-                <p class="mt-1 text-xs text-gray-500">${successMessage}.</p>
+                <p class="mt-1 text-xs text-gray-500">${successMessage} File download started automatically.</p>
               </div>
               <button type="button" class="ml-4 flex-shrink-0 text-gray-400 hover:text-gray-500 focus:outline-none">
                 <span class="sr-only">Close</span>
