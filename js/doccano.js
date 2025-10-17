@@ -124,7 +124,7 @@ var GlobalDocument= '';
       
       // STRICT RULE: Only allow merging with the previous line (line above)
       if (targetLineNumber !== draggedLineNumber - 1) {
-        console.log('L Can only merge with the previous line (line directly above)');
+        // console.log('L Can only merge with the previous line (line directly above)');
         this.handleDragEnd();
         return;
       }
@@ -209,7 +209,7 @@ var GlobalDocument= '';
         setTimeout(() => saveState(), 100);
       }
       
-      console.log(` Successfully merged line ${draggedLineNumber + 1} into line ${targetLineNumber + 1}`);
+      // console.log(` Successfully merged line ${draggedLineNumber + 1} into line ${targetLineNumber + 1}`);
       
       // Clear drag state
       this.handleDragEnd();
@@ -259,7 +259,7 @@ var GlobalDocument= '';
       }
     }
     
-    console.log('Drag and drop functionality initialized');
+    // console.log('Drag and drop functionality initialized');
   } // End of initDragAndDrop
   
   // Start initialization
@@ -308,7 +308,9 @@ var GlobalDocument= '';
   const usedColorIndices = new Set();
 
   // Transformer functions (moved from transformer.js)
-  function stringToColor(str) {
+  function getTaxonomyColor(str) {
+    // console.log(str);
+    console.log(onTaxonomiesLoaded);
     // Generate a hash from the string
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -420,7 +422,7 @@ var GlobalDocument= '';
           .replace(/_/g, " ")
           .replace(/\b\w/g, (l) => l.toUpperCase()),
         prefix: getPrefix(category),
-        color: stringToColor(category),
+        color: getTaxonomyColor(category),
         count: 0,
         terms: {}
       };
@@ -459,62 +461,81 @@ var GlobalDocument= '';
   function processLine(line, taxonomyMap = {}) {
     try {
       const data = JSON.parse(line);
+      if (!data.enrichment) return data;
       
-      // Process taxonomy data if it exists
-      if (data.enrichment?.taxonomy) {
-        const { taxonomy, taxonomyDetails = {}, text = '' } = data.enrichment;
-  
-        // Process effect-related taxonomies first
-        const effectTaxonomies = ['effect_direction', 'effect_strength', 'effect_horizon'];
-        effectTaxonomies.forEach(effectType => {
-          if (taxonomy[effectType] && taxonomy[effectType] !== 'unspecified') {
-            processTaxonomyTerm(
-              effectType, 
-              taxonomy[effectType], 
-              taxonomyMap, 
-              taxonomyDetails, 
-              text
+      const { taxonomy = {}, taxonomyDetails = {}, text = data.text || '' } = data.enrichment;
+      
+      // Flatten all taxonomy values into a single array
+      const allTaxonomyValues = [];
+      
+      // Process taxonomy object to collect all values
+      const processTaxonomyObject = (obj, prefix = '') => {
+        if (Array.isArray(obj)) {
+          allTaxonomyValues.push(...obj.map(item => ({ key: prefix, value: item })));
+        } else if (obj && typeof obj === 'object') {
+          Object.entries(obj).forEach(([key, value]) => {
+            const newPrefix = prefix ? `${prefix}.${key}` : key;
+            if (Array.isArray(value)) {
+              value.forEach(item => {
+                allTaxonomyValues.push({ key: newPrefix, value: item });
+              });
+            } else if (value && typeof value === 'object') {
+              processTaxonomyObject(value, newPrefix);
+            } else if (value) {
+              allTaxonomyValues.push({ key: newPrefix, value });
+            }
+          });
+        } else if (obj) {
+          allTaxonomyValues.push({ key: prefix, value: obj });
+        }
+      };
+      
+      // Process main taxonomy object
+      processTaxonomyObject(taxonomy);
+      
+      // Process taxonomy details to ensure all keys exist in the taxonomy values
+      Object.entries(taxonomyDetails).forEach(([key, values]) => {
+        if (Array.isArray(values)) {
+          values.forEach(value => {
+            const exists = allTaxonomyValues.some(
+              item => item.key === key && item.value === value
             );
-          }
-        });
-  
-        // Process each category in the taxonomy
-        for (const [category, value] of Object.entries(taxonomy)) {
-          // Skip effect taxonomies as they're already processed
-          if (effectTaxonomies.includes(category)) continue;
-          
-          // Special handling for target_groups
-          if (category === 'target_groups' && value && typeof value === 'object' && !Array.isArray(value)) {
-            // Process each sub-category in target_groups
-            for (const [subCategory, terms] of Object.entries(value)) {
-              if (Array.isArray(terms)) {
-                terms.forEach(term => {
-                  // Use 'target_groups' as the main category and pass subCategory as additional info
-                  processTaxonomyTerm('target_groups', term, taxonomyMap, taxonomyDetails, text, subCategory);
-                });
-              }
+            if (!exists) {
+              allTaxonomyValues.push({ key, value });
             }
-          }
-          // Handle other nested objects
-          else if (value && typeof value === 'object' && !Array.isArray(value)) {
-            // Process each sub-category in the nested object
-            for (const [subCategory, terms] of Object.entries(value)) {
-              if (Array.isArray(terms)) {
-                terms.forEach(term => {
-                  processTaxonomyTerm(category, term, taxonomyMap, taxonomyDetails, text, subCategory);
-                });
-              }
+          });
+        } else if (values && typeof values === 'object') {
+          // Handle nested taxonomy details
+          Object.entries(values).forEach(([subKey, subValues]) => {
+            const fullKey = `${key}.${subKey}`;
+            if (Array.isArray(subValues)) {
+              subValues.forEach(subValue => {
+                const exists = allTaxonomyValues.some(
+                  item => item.key === fullKey && item.value === subValue
+                );
+                if (!exists) {
+                  allTaxonomyValues.push({ key: fullKey, value: subValue });
+                }
+              });
             }
-          }
-          // Handle direct array values
-          else if (Array.isArray(value)) {
-            value.forEach(term => {
-              processTaxonomyTerm(category, term, taxonomyMap, taxonomyDetails, text);
-            });
+          });
+        } else if (values) {
+          const exists = allTaxonomyValues.some(
+            item => item.key === key && item.value === values
+          );
+          if (!exists) {
+            allTaxonomyValues.push({ key, value: values });
           }
         }
-      }
-  
+      });
+      
+      // Process all collected taxonomy values
+      allTaxonomyValues.forEach(({ key, value }) => {
+        if (value) {
+          processTaxonomyTerm(key, value, taxonomyMap, taxonomyDetails, text);
+        }
+      });
+      
       return data;
     } catch (error) {
       console.error('Error processing line:', error, line);
@@ -642,11 +663,11 @@ var GlobalDocument= '';
       lastChangeTime = now;
       this.updateButtonStates();
 
-      console.log("State saved:", {
-        currentIndex: this.currentIndex,
-        stackSize: this.stack.length,
-        time: new Date().toISOString(),
-      });
+      // console.log("State saved:", {
+      //   currentIndex: this.currentIndex,
+      //   stackSize: this.stack.length,
+      //   time: new Date().toISOString(),
+      // });
     },
 
     updateButtonStates: function () {
@@ -667,11 +688,11 @@ var GlobalDocument= '';
         redoBtn.classList.toggle("cursor-not-allowed", atLatestState);
 
         // Debug logging
-        console.log("Redo state:", {
-          currentIndex: this.currentIndex,
-          stackLength: this.stack.length,
-          canRedo: !atLatestState,
-        });
+        // console.log("Redo state:", {
+        //   currentIndex: this.currentIndex,
+        //   stackLength: this.stack.length,
+        //   canRedo: !atLatestState,
+        // });
       }
     },
 
@@ -721,7 +742,7 @@ var GlobalDocument= '';
         // "/static/assets/concept_groups_enriched/"+fName
         "./assets/What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined_enriched_v2.ndjson"
       );
-      console.log("Taxonomies loaded successfully:", taxonomies);
+      // console.log("Taxonomies loaded successfully:", taxonomies);
       taxonomiesLoaded = true;
 
       // Execute all pending callbacks
@@ -1124,7 +1145,7 @@ var GlobalDocument= '';
 
   // Handle line click in the document
   function handleLineClick(lineElement) {
-    console.log("Line element clicked:", lineElement);
+    // console.log("Line element clicked:", lineElement);
 
     // Remove active class from all document lines
     document.querySelectorAll(".document-line").forEach((el) => {
@@ -1148,7 +1169,7 @@ var GlobalDocument= '';
     if (lineElement.dataset.lineData) {
       try {
         lineData = JSON.parse(lineElement.dataset.lineData);
-        console.log("Found line data in dataset:", lineData);
+        // console.log("Found line data in dataset:", lineData);
       } catch (e) {
         console.error("Error parsing line data from dataset:", e);
       }
@@ -1164,13 +1185,13 @@ var GlobalDocument= '';
       );
 
       if (lineData) {
-        console.log("Found line data in documentData:", lineData);
+        // console.log("Found line data in documentData:", lineData);
       }
     }
 
     // If still no data, create a basic one
     if (!lineData) {
-      console.log("Creating basic line data");
+      // console.log("Creating basic line data");
       lineData = {
         lineNumber: lineNumber,
         text: lineElement.textContent.trim(),
@@ -1199,7 +1220,7 @@ var GlobalDocument= '';
     window.history.pushState({ lineNumber }, "", `#L${lineNumber}`);
 
     // Log the line data for debugging
-    console.log("Final line data:", lineData);
+    // console.log("Final line data:", lineData);
 
     // Update the enrichment summary
     updateEnrichmentSummary(lineData);
@@ -1252,12 +1273,12 @@ var GlobalDocument= '';
           }
 
           initTextSelection();
-          console.log("Undo to state:", {
-            currentHighlightId: snapshot.currentHighlightId,
-            highlights: snapshot.highlights.length,
-          });
+          // console.log("Undo to state:", {
+          //   currentHighlightId: snapshot.currentHighlightId,
+          //   highlights: snapshot.highlights.length,
+          // });
         } catch (e) {
-          console.error("Error during undo:", e);
+          // console.error("Error during undo:", e);
           // Fallback for old format states
           docContent.innerHTML = state;
           initTextSelection();
@@ -1313,12 +1334,12 @@ var GlobalDocument= '';
           }
 
           initTextSelection();
-          console.log("Redo to state:", {
-            currentHighlightId: snapshot.currentHighlightId,
-            highlights: snapshot.highlights.length,
-          });
+          // console.log("Redo to state:", {
+          //   currentHighlightId: snapshot.currentHighlightId,
+          //   highlights: snapshot.highlights.length,
+          // });
         } catch (e) {
-          console.error("Error during redo:", e);
+          // console.error("Error during redo:", e);
           // Fallback for old format states
           docContent.innerHTML = state;
           initTextSelection();
@@ -1460,7 +1481,7 @@ var GlobalDocument= '';
 
         hasChanges = added > 0 || removed > 0 || modified > 0;
 
-        console.log("Changes detected:", { added, removed, modified });
+        // console.log("Changes detected:", { added, removed, modified });
       } catch (e) {
         console.error("Error comparing states:", e);
         // If we can't compare, assume there are changes to be safe
@@ -1484,13 +1505,13 @@ var GlobalDocument= '';
       stateHistory.pushState(JSON.stringify(snapshot));
     }
 
-    console.log("State saved:", {
-      currentHighlightId: snapshot.currentHighlightId,
-      highlights: currentHighlights.length,
-      added,
-      removed,
-      hasChanges,
-    });
+    // console.log("State saved:", {
+    //   currentHighlightId: snapshot.currentHighlightId,
+    //   highlights: currentHighlights.length,
+    //   added,
+    //   removed,
+    //   hasChanges,
+    // });
 
     return {
       snapshot,
@@ -1524,9 +1545,54 @@ var GlobalDocument= '';
    * Fetches and processes the document content from NDJSON file
    * @returns {Promise<string>} HTML content string
    */
+  // Global variable to store taxonomy colors
+  const taxonomyColors = new Map();
+
+  // Function to get a consistent color for a taxonomy term
+  function getTaxonomyColor(term) {
+    if (!taxonomyColors.has(term)) {
+      // Use the same color generation as in the taxonomy container
+      const hue = (term.split('').reduce((a, b) => a + b.charCodeAt(0), 0) * 13) % 360;
+      const saturation = 70 + Math.floor(Math.random() * 20);
+      const lightness = 50 + Math.floor(Math.random() * 20);
+      taxonomyColors.set(term, `hsl(${hue}, ${saturation}%, ${lightness}%)`);
+    }
+    return taxonomyColors.get(term);
+  }
+
+  // Function to apply taxonomy colors to text
+  function applyTaxonomyColors(text, taxonomyDetails) {
+    if (!taxonomyDetails) return text;
+    
+    // Create a copy of the text to modify
+    let result = text;
+    
+    // Sort terms by length in descending order to handle nested terms correctly
+    const terms = Object.entries(taxonomyDetails)
+      .filter(([_, value]) => Array.isArray(value) && value.length > 0)
+      .flatMap(([key, values]) => values.map(value => ({
+        term: value,
+        category: key,
+        length: value.length
+      })))
+      .sort((a, b) => b.length - a.length);
+    
+    // Apply highlights for each term
+    terms.forEach(({ term, category }) => {
+      const color = getTaxonomyColor(term);
+      const regex = new RegExp(`(^|\s)(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?=\s|$|[.,;:!?])`, 'gi');
+      
+      result = result.replace(regex, (match, prefix, term) => {
+        return `${prefix}<span class="taxonomy-term" style="background-color: ${color}20; border: 1px solid ${color}; border-radius: 3px; padding: 0 2px;" data-term="${term}" data-category="${category}">${term}</span>`;
+      });
+    });
+    
+    return result;
+  }
+
   async function fetchDocumentContent() {
     try {
-      console.log("Fetching document content from NDJSON...");
+      // console.log("Fetching document content from NDJSON...");
       // var fName = GetInputValue('hdnenFilename');
       var fName = 'What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined_enriched_v2.ndjson';
       GlobalDocument = fName;
@@ -1552,6 +1618,17 @@ var GlobalDocument= '';
             const item = JSON.parse(line);
             // Process the line to extract entities into taxonomyMap
             processLine(line, taxonomyMap);
+            
+            // Apply taxonomy colors to the text
+            if (item.text && item.enrichment?.taxonomyDetails) {
+              item.formattedText = applyTaxonomyColors(
+                item.text, 
+                item.enrichment.taxonomyDetails
+              );
+            } else {
+              item.formattedText = item.text || '';
+            }
+            
             return item;
           } catch (e) {
             console.error("Error parsing NDJSON line:", e);
@@ -1563,7 +1640,7 @@ var GlobalDocument= '';
       // Store the extracted entities in a global variable for later use
       if (taxonomyMap.entities) {
         window.ndjsonEntities = taxonomyMap.entities;
-        console.log(`Loaded ${taxonomyMap.entities.length} entities from NDJSON`);
+        // console.log(`Loaded ${taxonomyMap.entities.length} entities from NDJSON`);
       }
 
       // Group items by their section title
@@ -1607,19 +1684,23 @@ var GlobalDocument= '';
       }
 
       // Function to format text with markdown-like syntax
-      function formatTextWithMarkdown(text) {
+      function formatTextWithMarkdown(text, formattedText = null) {
         if (!text) return '';
+        
+        // Use formatted text if available, otherwise use original text
+        let content = formattedText || text;
+        if (typeof content !== 'string') return String(content);
         
         // First, handle code blocks to prevent markdown processing inside them
         const codeBlocks = [];
-        text = text.replace(/```[\s\S]*?```/g, (match) => {
+        content = content.replace(/```[\s\S]*?```/g, (match) => {
           const id = `code-${codeBlocks.length}`;
           codeBlocks.push(match);
           return id;
         });
         
         // Replace markdown headers with HTML
-        let formattedText = text
+        let result = content
           // Handle # **Header** pattern (h1)
           .replace(/^#\s*\*\*(.*?)\*\*/gm, '<h2 class="text-lg font-bold mt-4 mb-2">$1</h2>')
           // Handle # Header pattern (h2)
@@ -1639,23 +1720,31 @@ var GlobalDocument= '';
         
         // Restore code blocks
         codeBlocks.forEach((codeBlock, index) => {
-          const codeContent = codeBlock
+          if (!codeBlock) return;
+          const codeContent = String(codeBlock)
             .replace(/```[\s\S]*?\n([\s\S]*?)```/g, '$1')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
           
-          formattedText = formattedText.replace(
+          result = result.replace(
             `code-${index}`, 
             `<pre class="bg-gray-100 p-3 rounded text-xs overflow-x-auto my-2"><code>${codeContent}</code></pre>`
           );
         });
         
-        // Wrap in a paragraph if not already wrapped and doesn't contain block elements
-        if (!formattedText.match(/^<(h[1-6]|p|div|pre|ul|ol|table)/i) && !formattedText.startsWith('<')) {
-          formattedText = '<p class="text-sm leading-relaxed">' + formattedText + '</p>';
+        // If the result is empty after processing, return the original text
+        if (!result || result.trim() === '') {
+          return text;
         }
         
-        return formattedText;
+        // Wrap in a paragraph if not already wrapped and doesn't contain block elements
+        if (result && typeof result === 'string' && 
+            !result.match(/^<(h[1-6]|p|div|pre|ul|ol|table)/i) && 
+            !result.startsWith('<')) {
+          result = '<p class="text-sm leading-relaxed">' + result + '</p>';
+        }
+        
+        return result || '';
       }
 
       // Function to highlight taxonomy terms in text to match manual highlighting style
@@ -1693,23 +1782,23 @@ var GlobalDocument= '';
           let hexColor = null;
 
           // Try to get the color from the global taxonomy map if it exists
-          if (
-            window.processedTaxonomyMap &&
-            window.processedTaxonomyMap[category.toLowerCase()]
-          ) {
-            colorInfo = window.processedTaxonomyMap[category.toLowerCase()];
-          } else {
-            // If not found, generate a new color using stringToColor
-            const colorObj = stringToColor(category);
-            hexColor = typeof colorObj === "object" ? colorObj.hex : colorObj;
+          // if (
+          //   window.processedTaxonomyMap &&
+          //   window.processedTaxonomyMap[category.toLowerCase()]
+          // ) {
+          //   colorInfo = window.processedTaxonomyMap[category.toLowerCase()];
+          // } else {
+          //   // If not found, generate a new color using getTaxonomyColor
+          //   const colorObj = getTaxonomyColor(category);
+          //   hexColor = typeof colorObj === "object" ? colorObj.hex : colorObj;
 
-            // Store in global map for consistency
-            if (!window.processedTaxonomyMap) window.processedTaxonomyMap = {};
-            window.processedTaxonomyMap[category.toLowerCase()] = {
-              hex: hexColor,
-              category: category,
-            };
-          }
+          //   // Store in global map for consistency
+          //   if (!window.processedTaxonomyMap) window.processedTaxonomyMap = {};
+          //   window.processedTaxonomyMap[category.toLowerCase()] = {
+          //     hex: hexColor,
+          //     category: category,
+          //   };
+          // }
 
           // If we have a hex color, create the highlight style
           if (hexColor) {
@@ -2069,7 +2158,7 @@ var GlobalDocument= '';
       const content = await fetchDocumentContent();
       targetElement.innerHTML = content;
 
-      console.log("Document content loaded successfully");
+      // console.log("Document content loaded successfully");
 
       // Re-initialize text selection for the new content
       initTextSelection();
@@ -2200,7 +2289,7 @@ var GlobalDocument= '';
           !Array.isArray(window.documentData) ||
           window.documentData.length === 0
         ) {
-          console.log("No document data available");
+          // console.log("No document data available");
           return null;
         }
 
@@ -2216,24 +2305,24 @@ var GlobalDocument= '';
         if (count > 0) {
           const averageConfidence =
             Math.round((totalConfidence / count) * 100 * 100) / 100;
-          console.log("Calculated average confidence:", averageConfidence);
+          // console.log("Calculated average confidence:", averageConfidence);
           return averageConfidence;
         }
 
         // Get confidence from enrichment.confidence
         const confidence = parseFloat(firstDoc.enrichment.confidence);
         if (isNaN(confidence)) {
-          console.log(
-            "Invalid confidence value in document:",
-            firstDoc.enrichment.confidence
-          );
+          // console.log(
+          //   "Invalid confidence value in document:",
+          //   firstDoc.enrichment.confidence
+          // );
           return null;
         }
 
-        console.log("Using confidence from document data:", confidence);
+        // console.log("Using confidence from document data:", confidence);
         return Math.round(confidence * 100 * 100) / 100;
       } catch (error) {
-        console.error("Error calculating confidence:", error);
+        // console.error("Error calculating confidence:", error);
         return null; // Return null on error
       }
     };
@@ -2480,7 +2569,7 @@ var GlobalDocument= '';
 
   async function loadDocumentData() {
     try {
-      console.log("Loading document data from NDJSON...");
+      // console.log("Loading document data from NDJSON...");
       // var fName = GetInputValue('hdnenFilename');
       var fName = 'What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined_enriched_v2.ndjson';
       GlobalDocument = fName;
@@ -2501,7 +2590,7 @@ var GlobalDocument= '';
 
       // Store documentData in window for global access
       window.documentData = documentData;
-      console.log("Document data loaded successfully", documentData);
+      // console.log("Document data loaded successfully", documentData);
       documentDataLoaded = true;
 
       // Update document metadata (title and last updated date)
@@ -2694,7 +2783,7 @@ var GlobalDocument= '';
 
   // Curator Studio functionality
   function openCuratorStudio() {
-    console.log("Curator Studio button clicked");
+    // console.log("Curator Studio button clicked");
 
     const lineNumberElement = document.querySelector(".document-line.active");
     if (lineNumberElement) {
@@ -2703,7 +2792,7 @@ var GlobalDocument= '';
         `[data-line-number="${lineNumber}"]`
       );
       if (lineElement) {
-        console.log("Line element found for line number: " + lineNumber);
+        // console.log("Line element found for line number: " + lineNumber);
 
         // var fName = GetInputValue('hdnenFilename');
       var fName = 'What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined_enriched_v2.ndjson';
@@ -2721,7 +2810,7 @@ var GlobalDocument= '';
             try {
               // Parse the JSON line
               const data = JSON.parse(lineContent);
-              console.log("Line data:", data);
+              // console.log("Line data:", data);
 
               // Format the line content for display
               const formatLineContent = (line) => {
@@ -3998,7 +4087,7 @@ var GlobalDocument= '';
     };
 
     // Log the form data
-    console.log("Form data:", JSON.stringify(formData, null, 2));
+    // console.log("Form data:", JSON.stringify(formData, null, 2));
     
     // Close the modal
     closeCuratorModal();
@@ -4016,9 +4105,9 @@ var GlobalDocument= '';
     if (event) {
       event.preventDefault();
       event.stopPropagation();
-      console.log('Toggle form called from:', event.target);
+      // console.log('Toggle form called from:', event.target);
     } else {
-      console.log('Toggle form called programmatically');
+      // console.log('Toggle form called programmatically');
     }
     
     const form = document.getElementById('add-entity-form');
@@ -4031,11 +4120,11 @@ var GlobalDocument= '';
     
     const isHidden = form.classList.contains('hidden');
     
-    console.log('Form is currently:', isHidden ? 'hidden' : 'visible');
+    // console.log('Form is currently:', isHidden ? 'hidden' : 'visible');
     
     if (isHidden) {
       // Show the form
-      console.log('Showing form');
+      // console.log('Showing form');
       form.classList.remove('hidden');
       form.style.display = 'block';
       form.style.maxHeight = form.scrollHeight + 'px';
@@ -4052,7 +4141,7 @@ var GlobalDocument= '';
       }
     } else {
       // Hide the form
-      console.log('Hiding form');
+      // console.log('Hiding form');
       form.classList.add('hidden');
       form.style.maxHeight = '0';
       form.style.display = 'none';
@@ -4112,7 +4201,7 @@ var GlobalDocument= '';
         // If no entities left, show the empty state
         const entitiesContainer = document.querySelector('.entity-list.space-y-3');
         if (entitiesContainer && entitiesContainer.children.length === 0) {
-          console.log('No entities left, showing empty state');
+          // console.log('No entities left, showing empty state');
           const emptyState = document.createElement('div');
           emptyState.className = 'text-sm text-gray-500 py-4 text-center';
           emptyState.textContent = 'No entities found';
@@ -4131,17 +4220,17 @@ var GlobalDocument= '';
       console.warn('handleEntityAddition called without event object');
     }
     
-    console.log('=== Add Button Clicked ===');
-    console.log('Event:', event);
+    // console.log('=== Add Button Clicked ===');
+    // console.log('Event:', event);
     
     // Log the target that was clicked
     if (event && event.target) {
-      console.log('Clicked element:', {
-        tag: event.target.tagName,
-        id: event.target.id,
-        class: event.target.className,
-        html: event.target.outerHTML
-      });
+      // console.log('Clicked element:', {
+      //   tag: event.target.tagName,
+      //   id: event.target.id,
+      //   class: event.target.className,
+      //   html: event.target.outerHTML
+      // });
     }
     
     // Get form values
@@ -4150,45 +4239,45 @@ var GlobalDocument= '';
     const descriptionInput = document.querySelector('[data-entity="description"]');
     
     // Log all form inputs and their values
-    console.log('--- Form Inputs ---');
-    console.log('Name input:', nameInput ? {
-      value: nameInput.value,
-      required: nameInput.required,
-      disabled: nameInput.disabled
-    } : 'Not found');
+    // console.log('--- Form Inputs ---');
+    // console.log('Name input:', nameInput ? {
+    //   value: nameInput.value,
+    //   required: nameInput.required,
+    //   disabled: nameInput.disabled
+    // } : 'Not found');
     
-    console.log('Type select:', typeSelect ? {
-      value: typeSelect.value,
-      options: Array.from(typeSelect.options).map(opt => ({
-        value: opt.value,
-        text: opt.text,
-        selected: opt.selected
-      })),
-      required: typeSelect.required,
-      disabled: typeSelect.disabled
-    } : 'Not found');
+    // console.log('Type select:', typeSelect ? {
+    //   value: typeSelect.value,
+    //   options: Array.from(typeSelect.options).map(opt => ({
+    //     value: opt.value,
+    //     text: opt.text,
+    //     selected: opt.selected
+    //   })),
+    //   required: typeSelect.required,
+    //   disabled: typeSelect.disabled
+    // } : 'Not found');
     
-    console.log('Description input:', descriptionInput ? {
-      value: descriptionInput.value,
-      required: descriptionInput.required,
-      disabled: descriptionInput.disabled
-    } : 'Not found');
+    // console.log('Description input:', descriptionInput ? {
+    //   value: descriptionInput.value,
+    //   required: descriptionInput.required,
+    //   disabled: descriptionInput.disabled
+    // } : 'Not found');
     
-    // Log the form element itself
-    const form = event && event.target && event.target.closest('form');
-    console.log('Form element:', form ? {
-      id: form.id,
-      class: form.className,
-      method: form.method,
-      action: form.action,
-      elements: Array.from(form.elements).map(el => ({
-        name: el.name,
-        type: el.type,
-        value: el.value,
-        checked: el.checked,
-        selected: el.selected
-      }))
-    } : 'No form element found');
+    // // Log the form element itself
+    // const form = event && event.target && event.target.closest('form');
+    // console.log('Form element:', form ? {
+    //   id: form.id,
+    //   class: form.className,
+    //   method: form.method,
+    //   action: form.action,
+    //   elements: Array.from(form.elements).map(el => ({
+    //     name: el.name,
+    //     type: el.type,
+    //     value: el.value,
+    //     checked: el.checked,
+    //     selected: el.selected
+    //   }))
+    // } : 'No form element found');
     
     if (!nameInput || !typeSelect) {
       console.error('Required form elements not found');
@@ -4214,7 +4303,7 @@ var GlobalDocument= '';
     }
     
     if (!isValid) {
-      console.log('Form validation failed');
+      // console.log('Form validation failed');
       return;
     }
     
@@ -4233,7 +4322,7 @@ var GlobalDocument= '';
       timestamp: new Date().toISOString()
     };
     
-    console.log('Creating new entity:', newEntity);
+    // console.log('Creating new entity:', newEntity);
     
     // Get the entities container - try multiple selectors
     let entitiesContainer = document.querySelector('.entity-list[data-field="entities"]');
@@ -4258,7 +4347,7 @@ var GlobalDocument= '';
       }
     }
     
-    console.log('Using container:', entitiesContainer);
+    // console.log('Using container:', entitiesContainer);
     
     // Create the new entity element with the exact structure you want
     const entityElement = document.createElement('div');
@@ -4273,21 +4362,21 @@ var GlobalDocument= '';
       </button>
     `;
     
-    console.log('Created entity element:', entityElement);
+    // console.log('Created entity element:', entityElement);
     
     // Check if we need to replace the "No entities found" message
     const noEntitiesMsg = entitiesContainer.querySelector('.text-gray-500');
     if (noEntitiesMsg && noEntitiesMsg.textContent && noEntitiesMsg.textContent.includes('No entities found')) {
-      console.log('Replacing "No entities found" message');
+      // console.log('Replacing "No entities found" message');
       entitiesContainer.innerHTML = '';
     }
     
     // Add the new entity to the top of the container
     if (entitiesContainer.firstChild) {
-      console.log('Adding entity to top of container');
+      // console.log('Adding entity to top of container');
       entitiesContainer.insertBefore(entityElement, entitiesContainer.firstChild);
     } else {
-      console.log('Adding first entity to container');
+      // console.log('Adding first entity to container');
       entitiesContainer.appendChild(entityElement);
     }
     
@@ -4295,7 +4384,7 @@ var GlobalDocument= '';
     const removeButton = entityElement.querySelector('button[data-entity]');
     if (removeButton) {
       removeButton.addEventListener('click', (e) => {
-        console.log('Remove button clicked for entity:', newEntity.text);
+        // console.log('Remove button clicked for entity:', newEntity.text);
         e.preventDefault();
         e.stopPropagation();
         removeEntity(e.target.closest('button'));
@@ -4321,7 +4410,7 @@ var GlobalDocument= '';
     if (nameInput) nameInput.focus();
     
     // Log for debugging
-    console.log('Entity added to DOM:', { entity: newEntity, container: entitiesContainer });
+    // console.log('Entity added to DOM:', { entity: newEntity, container: entitiesContainer });
     
     // Dispatch a custom event that the entity was added
     try {
@@ -4329,7 +4418,7 @@ var GlobalDocument= '';
         detail: { ...newEntity } 
       });
       document.dispatchEvent(entityAddedEvent);
-      console.log('Dispatched entityAdded event');
+      // console.log('Dispatched entityAdded event');
     } catch (error) {
       console.error('Error dispatching entityAdded event:', error);
     }
@@ -4337,11 +4426,11 @@ var GlobalDocument= '';
   
   // Initialize event listeners for entity forms
   function initEntityFormListeners() {
-    console.log('Initializing entity form listeners...');
+    // console.log('Initializing entity form listeners...');
     
     // Keep track of whether we've already set up the listeners
     if (window.entityFormInitialized) {
-      console.log('Entity form listeners already initialized');
+      // console.log('Entity form listeners already initialized');
       return;
     }
     
@@ -4391,14 +4480,14 @@ var GlobalDocument= '';
       if (form) {
         form.addEventListener('submit', function(e) {
           e.preventDefault();
-          console.log('Form submission prevented, handling with handleEntityAddition');
+          // console.log('Form submission prevented, handling with handleEntityAddition');
           handleEntityAddition(e);
           return false;
         });
-        console.log('Form submit handler attached');
+        // console.log('Form submit handler attached');
       }
       
-      console.log('Entity form listeners initialized');
+      // console.log('Entity form listeners initialized');
     }
     
     // Try to set up listeners immediately
@@ -4406,7 +4495,7 @@ var GlobalDocument= '';
     
     // If form elements aren't found, try again after a short delay
     if (!document.getElementById('add-entity-form') || !document.getElementById('add-entity-trigger-button')) {
-      console.log('Form elements not found, retrying...');
+      // console.log('Form elements not found, retrying...');
       setTimeout(setupFormListeners, 500);
     }
   }
@@ -4635,55 +4724,44 @@ var GlobalDocument= '';
       const lineData = JSON.parse(lineElement.dataset.lineData.replace(/&#39;/g, "'"));
       const { taxonomy = {}, taxonomyDetails = {} } = lineData.enrichment || {};
       
-      // Initialize HTML container with compact dictionary style
-      const html = ['<div class="compact-dict">'];
+      // Initialize HTML container with taxonomy items
+      const html = [];
       let hasTaxonomies = false;
 
-      // Helper function to format term with details in compact style
-      const formatEntry = (term, details, isSubItem = false) => {
+      // Helper function to format term with consistent styling
+      const formatTerm = (term, category = '') => {
         if (!term) return '';
         
-        const detailsHtml = details ? 
-          `<span class="dict-details text-gray-500 text-sm ml-2">${details}</span>` : '';
+        const termText = typeof term === 'object' ? term.term || term.text || '' : term;
+        if (!termText || termText === 'unspecified') return '';
+        
+        // Get color based on the term or category
+        const color = getTaxonomyColor(category || termText);
+        const textColor = getContrastColor(color);
+        
+        // Get details for the term
+        let details = '';
+        if (taxonomyDetails[termText]) {
+          const detail = taxonomyDetails[termText];
+          details = Array.isArray(detail) ? detail.join('; ') : detail;
+        }
         
         return `
-          <div class="dict-entry ${isSubItem ? 'pl-4 text-sm' : ''} py-1 hover:bg-gray-50 rounded transition-colors">
-            <span class="dict-term font-medium text-gray-800">${term}</span>
-            ${detailsHtml}
+          <div class="flex items-center py-1 px-2 hover:bg-gray-50 rounded">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2" 
+                  style="background-color: ${color}20; border: 1px solid ${color}; color: ${color};">
+              ${termText.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+            </span>
+            ${details ? `<span class="text-sm text-gray-600">${details}</span>` : ''}
           </div>
         `;
-      };
-
-      // Helper function to get details for a term
-      const getTermDetails = (term) => {
-        if (!term) return '';
-        
-        const termKey = typeof term === 'object' ? term.term || term.text || '' : term;
-        if (!termKey) return '';
-        
-        const details = [];
-        
-        // Check for direct match
-        if (taxonomyDetails[termKey]) {
-          const detail = taxonomyDetails[termKey];
-          details.push(Array.isArray(detail) ? detail.join('; ') : detail);
-        }
-        
-        // Check for partial matches
-        for (const [key, value] of Object.entries(taxonomyDetails)) {
-          if (key !== termKey && key.includes(termKey)) {
-            const detail = Array.isArray(value) ? value.join('; ') : value;
-            details.push(detail);
-          }
-        }
-        
-        return details.length > 0 ? details.join(' • ') : '';
       };
       
       // Process each category in the taxonomy
       for (const [category, value] of Object.entries(taxonomy)) {
         // Skip empty values and effect taxonomies (handled separately)
-        if (!value || (Array.isArray(value) && value.length === 0) || 
+        if (!value || 
+            (Array.isArray(value) && value.length === 0) || 
             (typeof value === 'object' && Object.keys(value).length === 0) ||
             ['effect_direction', 'effect_strength', 'effect_horizon'].includes(category)) {
           continue;
@@ -4693,11 +4771,7 @@ var GlobalDocument= '';
           .map(word => word.charAt(0).toUpperCase() + word.slice(1))
           .join(' ');
         
-        const categoryHtml = [
-          `<div class="dict-category text-xs font-semibold text-gray-500 uppercase tracking-wider mt-3 mb-1">
-            ${categoryName}
-          </div>`
-        ];
+        const categoryHtml = [];
         
         // Handle nested objects (like target_groups)
         if (value && typeof value === 'object' && !Array.isArray(value)) {
@@ -4707,46 +4781,60 @@ var GlobalDocument= '';
             const subCategoryName = subCategory.split('_')
               .map(word => word.charAt(0).toUpperCase() + word.slice(1))
               .join(' ');
-              
-            const terms = Array.isArray(subValue) ? subValue : [subValue];
             
+            const terms = Array.isArray(subValue) ? subValue : [subValue];
+            const subCategoryColor = getTaxonomyColor(subCategory);
+            const subCategoryTextColor = getContrastColor(subCategoryColor);
+            
+            // Add subcategory header
             categoryHtml.push(`
-              <div class="dict-subcategory text-xs font-medium text-gray-600 mt-2 mb-1 pl-2">
-                ${subCategoryName}
+              <div class="flex items-center mt-2 mb-1">
+                <span class="text-xs font-medium px-2 py-0.5 rounded" 
+                      style="background-color: ${subCategoryColor}20; color: ${subCategoryColor}; border: 1px solid ${subCategoryColor}80;">
+                  ${subCategoryName}
+                </span>
               </div>
             `);
             
             // Add terms under subcategory
-            terms.forEach(term => {
-              if (!term || term === 'unspecified') return;
-              const termText = typeof term === 'object' ? term.term || term.text || '' : term;
-              if (!termText) return;
-              const details = getTermDetails(term);
-              categoryHtml.push(formatEntry(termText, details, true));
-            });
-            
-            hasTaxonomies = true;
+            const termsHtml = terms
+              .map(term => formatTerm(term, subCategory))
+              .filter(Boolean);
+              
+            if (termsHtml.length > 0) {
+              categoryHtml.push(`<div class="ml-4">${termsHtml.join('')}</div>`);
+              hasTaxonomies = true;
+            }
           }
         } 
         // Handle arrays of terms
         else if (Array.isArray(value)) {
-          value.forEach(term => {
-            if (!term || term === 'unspecified') return;
-            const termText = typeof term === 'object' ? term.term || term.text || '' : term;
-            if (!termText) return;
-            const details = getTermDetails(term);
-            categoryHtml.push(formatEntry(termText, details));
-          });
-          
-          hasTaxonomies = value.length > 0;
+          const termsHtml = value
+            .map(term => formatTerm(term, category))
+            .filter(Boolean);
+            
+          if (termsHtml.length > 0) {
+            categoryHtml.push(termsHtml.join(''));
+            hasTaxonomies = true;
+          }
         }
         
-        if (categoryHtml.length > 1) {
-          html.push(`<div class="dict-category-group">${categoryHtml.join('')}</div>`);
+        // Add category section if it has content
+        if (categoryHtml.length > 0) {
+          html.push(`
+            <div class="mb-3">
+              <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                ${categoryName}
+              </h4>
+              <div class="border-l-2 border-gray-200 pl-3">
+                ${categoryHtml.join('')}
+              </div>
+            </div>
+          `);
         }
       }
       
-      // Add effect information if available, using the same styling as other categories
+      // Add effect information if available
       const effectTypes = ['effect_direction', 'effect_strength', 'effect_horizon'];
       const effectValues = [];
       
@@ -4761,98 +4849,54 @@ var GlobalDocument= '';
           effectValues.push({
             term: typeName,
             value: value,
-            details: ''
+            color: getTaxonomyColor(type)
           });
-          hasTaxonomies = true;
         }
       });
       
       if (effectValues.length > 0) {
-        const effectHtml = [];
-        effectHtml.push(`
-          <div class="dict-category text-xs font-semibold text-gray-500 uppercase tracking-wider mt-3 mb-1">
-            Effect Information
+        const effectHtml = effectValues.map(item => `
+          <div class="flex items-center py-1">
+            <span class="text-sm font-medium text-gray-700 w-24 flex-shrink-0">${item.term}:</span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" 
+                  style="background-color: ${item.color}20; border: 1px solid ${item.color}; color: ${item.color};">
+              ${item.value}
+            </span>
+          </div>
+        `).join('');
+        
+        html.unshift(`
+          <div class="mb-4 pb-3 border-b border-gray-200">
+            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+              Effect Information
+            </h4>
+            <div class="space-y-1">
+              ${effectHtml}
+            </div>
           </div>
         `);
         
-        effectValues.forEach(item => {
-          effectHtml.push(`
-            <div class="dict-entry py-1 hover:bg-gray-50 rounded transition-colors">
-              <span class="dict-term font-medium text-gray-800">${item.term}</span>
-              <span class="dict-details text-gray-500 text-sm ml-2">${item.value}</span>
-            </div>
-          `);
-        });
-        
-        // Add to the beginning of the HTML
-        html.unshift(`<div class="dict-category-group">${effectHtml.join('')}</div>`);
+        hasTaxonomies = true;
       }
-      
-      html.push('</div>');
-      
-      // Compact styling
-      const style = `
-        <style>
-          .compact-dict {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            font-size: 0.875rem;
-            line-height: 1.4;
-            color: #374151;
-          }
-          .dict-category {
-            letter-spacing: 0.05em;
-          }
-          .dict-subcategory {
-            color: #4b5563;
-            border-left: 2px solid #e5e7eb;
-          }
-          .dict-entry {
-            display: flex;
-            align-items: baseline;
-            padding: 0.25rem 0.5rem;
-            margin: 0.125rem 0;
-            border-radius: 0.25rem;
-          }
-          .dict-term {
-            min-width: 120px;
-            color: #111827;
-            flex-shrink: 0;
-          }
-          .dict-details {
-            color: #4b5563;
-            word-break: break-word;
-          }
-          .dict-entry:hover {
-            background-color: #f9fafb;
-          }
-          .compact-dict::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-          }
-          .compact-dict::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-          }
-          .compact-dict::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-          }
-          .compact-dict::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-          }
-        </style>
-      `;
       
       // Show message if no taxonomies were found
       if (!hasTaxonomies) {
         detailsDiv.innerHTML = '<div class="text-xs text-gray-400 italic py-2">No taxonomies to show</div>';
       } else {
-        detailsDiv.innerHTML = style + html.join('');
+        detailsDiv.innerHTML = `
+          <div class="space-y-3">
+            ${html.join('')}
+          </div>
+        `;
       }
     } catch (e) {
       console.error('Error loading line taxonomies:', e);
       if (detailsDiv) {
-        detailsDiv.innerHTML = '<div class="text-xs text-red-500 italic">Error loading taxonomies</div>';
+        detailsDiv.innerHTML = `
+          <div class="text-xs text-red-500 italic">
+            Error loading taxonomies: ${e.message}
+          </div>
+        `;
       }
     }
   }
@@ -4979,7 +5023,7 @@ var GlobalDocument= '';
 
   // Initialize the application
   async function init() {
-    console.log('Initializing application...');
+    // console.log('Initializing application...');
     
     // Add input event listeners to remove error states
     document.addEventListener('input', function(e) {
@@ -5007,7 +5051,7 @@ var GlobalDocument= '';
         return;
       }
       
-      console.log('Initializing entity form... (attempt ' + (initEntityForm.retryCount + 1) + ')');
+      // console.log('Initializing entity form... (attempt ' + (initEntityForm.retryCount + 1) + ')');
       
       if (!addButton || !form) {
         initEntityForm.retryCount++;
@@ -5020,7 +5064,7 @@ var GlobalDocument= '';
         } else {
           // Reduce logging - only log error if we've genuinely tried multiple times
           if (initEntityForm.retryCount >= 5) {
-            console.log('Entity form elements not found after maximum retry attempts.');
+            // console.log('Entity form elements not found after maximum retry attempts.');
           }
           // Reset the counter in case the elements appear later
           initEntityForm.retryCount = 0;
@@ -5031,9 +5075,9 @@ var GlobalDocument= '';
       // Reset retry count on successful initialization
       initEntityForm.retryCount = 0;
       
-      console.log('Entity form initialized successfully');
+      // console.log('Entity form initialized successfully');
       
-      console.log('Found entity form elements');
+      // console.log('Found entity form elements');
       
       // Set initial state
       form.classList.add('hidden');
@@ -5058,7 +5102,7 @@ var GlobalDocument= '';
         });
       }
       
-      console.log('Entity form initialization complete');
+      // console.log('Entity form initialization complete');
       
       // Focus on first input when form is shown
       const firstInput = form.querySelector('input, select, textarea');
@@ -5071,10 +5115,10 @@ var GlobalDocument= '';
       // Toggle form function
       function toggleForm(e) {
         if (e) e.preventDefault();
-        console.log('Toggle form called');
+        // console.log('Toggle form called');
         
         if (form.classList.contains('hidden')) {
-          console.log('Showing form');
+          // console.log('Showing form');
           form.classList.remove('hidden');
           form.style.display = 'block';
           form.style.maxHeight = form.scrollHeight + 'px';
@@ -5087,7 +5131,7 @@ var GlobalDocument= '';
             setTimeout(() => firstInput.focus(), 50);
           }
         } else {
-          console.log('Hiding form');
+          // console.log('Hiding form');
           form.classList.add('hidden');
           form.style.maxHeight = '0';
           form.style.display = 'none';
@@ -5099,17 +5143,17 @@ var GlobalDocument= '';
       // Handle form submission
       form.addEventListener('submit', function(e) {
         e.preventDefault();
-        console.log('Form submission prevented, handling with handleEntityAddition');
+        // console.log('Form submission prevented, handling with handleEntityAddition');
         handleEntityAddition(e);
         return false;
       });
       
-      console.log('Entity form initialized');
+      // console.log('Entity form initialized');
     }
     
     // Initialize entity form when modal is shown
     document.addEventListener('shown.bs.modal', function() {
-      console.log('Modal shown, initializing entity form');
+      // console.log('Modal shown, initializing entity form');
       setTimeout(initEntityForm, 100);
     });
     
@@ -5121,7 +5165,7 @@ var GlobalDocument= '';
       if (curatorModal) {
         // Don't call initEntityForm here since it will be called when modal opens
         // The event listener for modal open will handle initialization
-        console.log('Curator studio modal found, entity form will initialize when modal opens');
+        // console.log('Curator studio modal found, entity form will initialize when modal opens');
         return;
       } else {
         // If modal doesn't exist yet, try again after a delay
@@ -5135,7 +5179,7 @@ var GlobalDocument= '';
         if (initEntityForm.globalRetryCount < 5) { // Limit to 5 attempts
           setTimeout(checkAndInitEntityForm, 1000);
         } else {
-          console.log('Curator studio modal not found after maximum attempts, will initialize when modal is created');
+          // console.log('Curator studio modal not found after maximum attempts, will initialize when modal is created');
         }
       }
     };
@@ -5150,12 +5194,12 @@ var GlobalDocument= '';
         mutation.addedNodes.forEach(function(node) {
           if (node.nodeType === 1 && node.id === 'curator-studio-modal') {
             // When the modal is added to the DOM, set up the entity form when it's displayed
-            console.log('Curator studio modal detected, setting up event listener');
+            // console.log('Curator studio modal detected, setting up event listener');
             
             // Create a smaller observer to watch for when the modal becomes visible
             const modalObserver = new MutationObserver(function() {
               if (!node.classList.contains('hidden')) {
-                console.log('Curator studio modal opened, initializing entity form');
+                // console.log('Curator studio modal opened, initializing entity form');
                 // Give a small delay to ensure all modal content is rendered
                 setTimeout(initEntityForm, 100);
               }
@@ -5196,10 +5240,10 @@ var GlobalDocument= '';
       }
 
       if (lineElement) {
-        console.log("Line element found:", lineElement);
+        // console.log("Line element found:", lineElement);
         handleLineClick(lineElement);
       } else {
-        console.log("No line element found for click target:", e.target);
+        // console.log("No line element found for click target:", e.target);
       }
     });
     
@@ -5211,7 +5255,7 @@ var GlobalDocument= '';
         window.DoccanoApp.openCuratorStudio();
         // Give a small delay to ensure modal is created and visible before initializing form
         setTimeout(() => {
-          console.log('Curator Studio button clicked, initializing entity form');
+          // console.log('Curator Studio button clicked, initializing entity form');
           initEntityForm();
         }, 20);
       }
@@ -5258,7 +5302,7 @@ var GlobalDocument= '';
     
     // Initialize entity form
     if (document.getElementById('add-entity-form')) {
-      console.log('Initializing entity form...');
+      // console.log('Initializing entity form...');
       initEntityFormListeners();
     }
 
@@ -5672,7 +5716,7 @@ var GlobalDocument= '';
   }
 
   function handleTextSelection(e) {
-    console.log("handleTextSelection triggered");
+    // console.log("handleTextSelection triggered");
 
     // Prevent default to avoid any potential interference
     e.preventDefault();
@@ -5681,7 +5725,7 @@ var GlobalDocument= '';
     const selection = window.getSelection();
     const selectedText = selection.toString().trim();
 
-    console.log("Selected text:", selectedText);
+    // console.log("Selected text:", selectedText);
 
     // Check if selection is within document-content and inside a paragraph
     const isInValidArea =
@@ -5697,7 +5741,7 @@ var GlobalDocument= '';
       !isInside(selection, "taxonomy-popup") &&
       isInValidArea
     ) {
-      console.log("Valid selection, showing popup");
+      // console.log("Valid selection, showing popup");
 
       // Store the current selection
       currentSelection = selectedText;
@@ -5710,13 +5754,13 @@ var GlobalDocument= '';
       e.preventDefault();
       return false;
     } else {
-      console.log("Invalid selection, inside popup, or not in valid area");
+      // console.log("Invalid selection, inside popup, or not in valid area");
       if (selectedText.length === 0) {
-        console.log("No text selected");
+        // console.log("No text selected");
       } else if (!isInValidArea) {
-        console.log("Selection not within a paragraph in document-content");
+        // console.log("Selection not within a paragraph in document-content");
       } else if (isInside(selection, "taxonomy-popup")) {
-        console.log("Inside taxonomy popup");
+        // console.log("Inside taxonomy popup");
       }
     }
   }
@@ -5766,21 +5810,8 @@ var GlobalDocument= '';
       : node.closest(`#${elementId}`) !== null;
   }
 
-  // Taxonomy popup functionality
-  function initTaxonomyPopup() {
-    const popup = document.getElementById("taxonomy-popup");
-    if (!popup) return;
-
-    const closeBtn = popup.querySelector("#close-popup");
-
-    // Close popup when clicking the close button
-    if (closeBtn) {
-      closeBtn.addEventListener("click", clearSelection);
-    }
-  }
-
   function showTaxonomyPopup(selection) {
-    console.log("showTaxonomyPopup called");
+    // console.log("showTaxonomyPopup called");
     const popup = document.getElementById("taxonomy-popup");
     const optionsContainer = popup?.querySelector(".space-y-2");
 
@@ -5793,8 +5824,8 @@ var GlobalDocument= '';
       return;
     }
 
-    console.log("Popup found:", popup);
-    console.log("Options container found:", optionsContainer);
+    // console.log("Popup found:", popup);
+    // console.log("Options container found:", optionsContainer);
 
     // Clear existing options
     optionsContainer.innerHTML = "";
@@ -6107,7 +6138,7 @@ var GlobalDocument= '';
       // If saveState didn't detect the change (which can happen with direct DOM manipulation),
       // force a new state with the removal
       if (newState && !newState.hasChanges) {
-        console.log("Forcing state update after highlight removal");
+        // console.log("Forcing state update after highlight removal");
         // Push a new state manually
         const docContent = document.getElementById("document-content");
         if (docContent) {
@@ -6127,7 +6158,7 @@ var GlobalDocument= '';
           };
 
           stateHistory.pushState(JSON.stringify(snapshot));
-          console.log("Manual state update after highlight removal");
+          // console.log("Manual state update after highlight removal");
         }
       }
 
@@ -6411,7 +6442,7 @@ var GlobalDocument= '';
 
       container.innerHTML = "";
 
-      console.log(taxonomyList);
+      // console.log(taxonomyList);
 
       taxonomyList.forEach((taxonomy) => {
         const element = document.createElement("div");
@@ -6449,7 +6480,7 @@ var GlobalDocument= '';
     const docContent = document.getElementById("document-content");
 
     if (!docContent) {
-      console.log("No document content found");
+      // console.log("No document content found");
       return null;
     }
 
@@ -6609,7 +6640,7 @@ var GlobalDocument= '';
         }
       };
 
-      console.log("Exporting highlights with merged lines:", exportData);
+      // console.log("Exporting highlights with merged lines:", exportData);
       return exportData;
     } catch (error) {
       console.error("Error exporting highlights:", error);
@@ -6805,9 +6836,9 @@ var GlobalDocument= '';
       
       // Log merged lines information
       if (mergedLines.length > 0) {
-        console.log(`=\CB Exporting ${mergedLines.length} merged line(s):`, mergedLines);
+        // console.log(`=\CB Exporting ${mergedLines.length} merged line(s):`, mergedLines);
       } else {
-        console.log('=\CB No merged lines to export');
+        // console.log('=\CB No merged lines to export');
       }
 
       // Simulate API call delay (replace with actual save/export logic)
@@ -7069,13 +7100,13 @@ var GlobalDocument= '';
   document.addEventListener('click', function(e) {
     const addButton = e.target.closest && e.target.closest('#add-entity-button');
     if (addButton) {
-      console.log('=== Direct click on add entity button ===');
-      console.log('Button element:', addButton);
-      console.log('Form values:', {
-        name: document.querySelector('[data-entity="name"]')?.value,
-        type: document.querySelector('select[data-entity="type"]')?.value,
-        description: document.querySelector('[data-entity="description"]')?.value
-      });
+      // console.log('=== Direct click on add entity button ===');
+      // console.log('Button element:', addButton);
+      // console.log('Form values:', {
+      //   name: document.querySelector('[data-entity="name"]')?.value,
+      //   type: document.querySelector('select[data-entity="type"]')?.value,
+      //   description: document.querySelector('[data-entity="description"]')?.value
+      // });
       
       // Call handleEntityAddition directly
       handleEntityAddition(e);
