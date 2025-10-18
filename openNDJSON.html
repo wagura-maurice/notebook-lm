@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NDJSON Processor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .data-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fafafa;
+        }
+        .taxonomy-item {
+            margin: 5px 0;
+            padding: 8px;
+            background: #fff;
+            border-left: 4px solid #4CAF50;
+            border-radius: 0 4px 4px 0;
+        }
+        .taxonomy-key {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .taxonomy-color {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .stats {
+            background: #e8f4f8;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            margin-right: 5px;
+            border-radius: 4px 4px 0 0;
+        }
+        .tab.active {
+            background: #fff;
+            border-color: #ddd;
+            border-bottom-color: #fff;
+            margin-bottom: -1px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>NDJSON Data Processor</h1>
+        <div id="loading">Loading data...</div>
+        
+        <div id="content" style="display: none;">
+            <div class="stats">
+                <h3>Statistics</h3>
+                <div>Total items processed: <span id="total-items">0</span></div>
+                <div>Unique taxonomies: <span id="total-taxonomies">0</span></div>
+            </div>
+
+            <div class="tabs">
+                <div class="tab active" data-tab="taxonomies">Taxonomies</div>
+                <div class="tab" data-tab="raw-data">Raw Data</div>
+            </div>
+
+            <div id="taxonomies" class="tab-content active">
+                <h2>Taxonomies</h2>
+                <div id="taxonomies-list"></div>
+            </div>
+
+            <div id="raw-data" class="tab-content">
+                <h2>Raw Data</h2>
+                <pre id="data-output"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/openNDJSON.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const handler = new NDJSONHandler();
+                const result = await handler.init();
+                
+                // Update UI with the loaded data
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+                
+                // Display statistics
+                document.getElementById('total-items').textContent = result.lines.length;
+                document.getElementById('total-taxonomies').textContent = result.taxonomies.length;
+                
+                // Display taxonomies
+                const taxonomiesList = document.getElementById('taxonomies-list');
+                result.taxonomies.forEach(taxonomy => {
+                    const div = document.createElement('div');
+                    div.className = 'taxonomy-item';
+                    div.innerHTML = `
+                        <span class="taxonomy-color" style="background-color: ${taxonomy.color}"></span>
+                        <span class="taxonomy-key">${taxonomy.key}</span>
+                    `;
+                    taxonomiesList.appendChild(div);
+                });
+                
+                // Display raw data
+                document.getElementById('data-output').textContent = JSON.stringify(result, null, 2);
+                
+                // Tab functionality
+                const tabs = document.querySelectorAll('.tab');
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        // Remove active class from all tabs and content
+                        document.querySelectorAll('.tab, .tab-content').forEach(el => {
+                            el.classList.remove('active');
+                        });
+                        
+                        // Add active class to clicked tab and corresponding content
+                        tab.classList.add('active');
+                        document.getElementById(tab.dataset.tab).classList.add('active');
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').innerHTML = `
+                    <div style="color: #d32f2f; padding: 20px; background: #ffebee; border-radius: 4px;">
+                        <h3>Error loading data</h3>
+                        <p>${error.message}</p>
+                        <pre>${error.stack}</pre>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

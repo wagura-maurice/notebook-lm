@@ -124,7 +124,7 @@ var GlobalDocument= '';
       
       // STRICT RULE: Only allow merging with the previous line (line above)
       if (targetLineNumber !== draggedLineNumber - 1) {
-        // console.log('L Can only merge with the previous line (line directly above)');
+        console.log('L Can only merge with the previous line (line directly above)');
         this.handleDragEnd();
         return;
       }
@@ -209,7 +209,7 @@ var GlobalDocument= '';
         setTimeout(() => saveState(), 100);
       }
       
-      // console.log(` Successfully merged line ${draggedLineNumber + 1} into line ${targetLineNumber + 1}`);
+      console.log(` Successfully merged line ${draggedLineNumber + 1} into line ${targetLineNumber + 1}`);
       
       // Clear drag state
       this.handleDragEnd();
@@ -259,7 +259,7 @@ var GlobalDocument= '';
       }
     }
     
-    // console.log('Drag and drop functionality initialized');
+    console.log('Drag and drop functionality initialized');
   } // End of initDragAndDrop
   
   // Start initialization
@@ -308,9 +308,7 @@ var GlobalDocument= '';
   const usedColorIndices = new Set();
 
   // Transformer functions (moved from transformer.js)
-  function getTaxonomyColor(str) {
-    // console.log(str);
-    console.log(onTaxonomiesLoaded);
+  function stringToColor(str) {
     // Generate a hash from the string
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -422,7 +420,7 @@ var GlobalDocument= '';
           .replace(/_/g, " ")
           .replace(/\b\w/g, (l) => l.toUpperCase()),
         prefix: getPrefix(category),
-        color: getTaxonomyColor(category),
+        color: stringToColor(category),
         count: 0,
         terms: {}
       };
@@ -461,81 +459,62 @@ var GlobalDocument= '';
   function processLine(line, taxonomyMap = {}) {
     try {
       const data = JSON.parse(line);
-      if (!data.enrichment) return data;
       
-      const { taxonomy = {}, taxonomyDetails = {}, text = data.text || '' } = data.enrichment;
-      
-      // Flatten all taxonomy values into a single array
-      const allTaxonomyValues = [];
-      
-      // Process taxonomy object to collect all values
-      const processTaxonomyObject = (obj, prefix = '') => {
-        if (Array.isArray(obj)) {
-          allTaxonomyValues.push(...obj.map(item => ({ key: prefix, value: item })));
-        } else if (obj && typeof obj === 'object') {
-          Object.entries(obj).forEach(([key, value]) => {
-            const newPrefix = prefix ? `${prefix}.${key}` : key;
-            if (Array.isArray(value)) {
-              value.forEach(item => {
-                allTaxonomyValues.push({ key: newPrefix, value: item });
-              });
-            } else if (value && typeof value === 'object') {
-              processTaxonomyObject(value, newPrefix);
-            } else if (value) {
-              allTaxonomyValues.push({ key: newPrefix, value });
-            }
-          });
-        } else if (obj) {
-          allTaxonomyValues.push({ key: prefix, value: obj });
-        }
-      };
-      
-      // Process main taxonomy object
-      processTaxonomyObject(taxonomy);
-      
-      // Process taxonomy details to ensure all keys exist in the taxonomy values
-      Object.entries(taxonomyDetails).forEach(([key, values]) => {
-        if (Array.isArray(values)) {
-          values.forEach(value => {
-            const exists = allTaxonomyValues.some(
-              item => item.key === key && item.value === value
+      // Process taxonomy data if it exists
+      if (data.enrichment?.taxonomy) {
+        const { taxonomy, taxonomyDetails = {}, text = '' } = data.enrichment;
+  
+        // Process effect-related taxonomies first
+        const effectTaxonomies = ['effect_direction', 'effect_strength', 'effect_horizon'];
+        effectTaxonomies.forEach(effectType => {
+          if (taxonomy[effectType] && taxonomy[effectType] !== 'unspecified') {
+            processTaxonomyTerm(
+              effectType, 
+              taxonomy[effectType], 
+              taxonomyMap, 
+              taxonomyDetails, 
+              text
             );
-            if (!exists) {
-              allTaxonomyValues.push({ key, value });
+          }
+        });
+  
+        // Process each category in the taxonomy
+        for (const [category, value] of Object.entries(taxonomy)) {
+          // Skip effect taxonomies as they're already processed
+          if (effectTaxonomies.includes(category)) continue;
+          
+          // Special handling for target_groups
+          if (category === 'target_groups' && value && typeof value === 'object' && !Array.isArray(value)) {
+            // Process each sub-category in target_groups
+            for (const [subCategory, terms] of Object.entries(value)) {
+              if (Array.isArray(terms)) {
+                terms.forEach(term => {
+                  // Use 'target_groups' as the main category and pass subCategory as additional info
+                  processTaxonomyTerm('target_groups', term, taxonomyMap, taxonomyDetails, text, subCategory);
+                });
+              }
             }
-          });
-        } else if (values && typeof values === 'object') {
-          // Handle nested taxonomy details
-          Object.entries(values).forEach(([subKey, subValues]) => {
-            const fullKey = `${key}.${subKey}`;
-            if (Array.isArray(subValues)) {
-              subValues.forEach(subValue => {
-                const exists = allTaxonomyValues.some(
-                  item => item.key === fullKey && item.value === subValue
-                );
-                if (!exists) {
-                  allTaxonomyValues.push({ key: fullKey, value: subValue });
-                }
-              });
+          }
+          // Handle other nested objects
+          else if (value && typeof value === 'object' && !Array.isArray(value)) {
+            // Process each sub-category in the nested object
+            for (const [subCategory, terms] of Object.entries(value)) {
+              if (Array.isArray(terms)) {
+                terms.forEach(term => {
+                  processTaxonomyTerm(category, term, taxonomyMap, taxonomyDetails, text, subCategory);
+                });
+              }
             }
-          });
-        } else if (values) {
-          const exists = allTaxonomyValues.some(
-            item => item.key === key && item.value === values
-          );
-          if (!exists) {
-            allTaxonomyValues.push({ key, value: values });
+          }
+          // Handle direct array values
+          else if (Array.isArray(value)) {
+            value.forEach(term => {
+              processTaxonomyTerm(category, term, taxonomyMap, taxonomyDetails, text);
+            });
           }
         }
-      });
-      
-      // Process all collected taxonomy values
-      allTaxonomyValues.forEach(({ key, value }) => {
-        if (value) {
-          processTaxonomyTerm(key, value, taxonomyMap, taxonomyDetails, text);
-        }
-      });
-      
+      }
+  
       return data;
     } catch (error) {
       console.error('Error processing line:', error, line);
@@ -663,11 +642,11 @@ var GlobalDocument= '';
       lastChangeTime = now;
       this.updateButtonStates();
 
-      // console.log("State saved:", {
-      //   currentIndex: this.currentIndex,
-      //   stackSize: this.stack.length,
-      //   time: new Date().toISOString(),
-      // });
+      console.log("State saved:", {
+        currentIndex: this.currentIndex,
+        stackSize: this.stack.length,
+        time: new Date().toISOString(),
+      });
     },
 
     updateButtonStates: function () {
@@ -688,11 +667,11 @@ var GlobalDocument= '';
         redoBtn.classList.toggle("cursor-not-allowed", atLatestState);
 
         // Debug logging
-        // console.log("Redo state:", {
-        //   currentIndex: this.currentIndex,
-        //   stackLength: this.stack.length,
-        //   canRedo: !atLatestState,
-        // });
+        console.log("Redo state:", {
+          currentIndex: this.currentIndex,
+          stackLength: this.stack.length,
+          canRedo: !atLatestState,
+        });
       }
     },
 
@@ -742,7 +721,7 @@ var GlobalDocument= '';
         // "/static/assets/concept_groups_enriched/"+fName
         "./assets/What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined_enriched_v2.ndjson"
       );
-      // console.log("Taxonomies loaded successfully:", taxonomies);
+      console.log("Taxonomies loaded successfully:", taxonomies);
       taxonomiesLoaded = true;
 
       // Execute all pending callbacks
@@ -1145,7 +1124,7 @@ var GlobalDocument= '';
 
   // Handle line click in the document
   function handleLineClick(lineElement) {
-    // console.log("Line element clicked:", lineElement);
+    console.log("Line element clicked:", lineElement);
 
     // Remove active class from all document lines
     document.querySelectorAll(".document-line").forEach((el) => {
@@ -1169,7 +1148,7 @@ var GlobalDocument= '';
     if (lineElement.dataset.lineData) {
       try {
         lineData = JSON.parse(lineElement.dataset.lineData);
-        // console.log("Found line data in dataset:", lineData);
+        console.log("Found line data in dataset:", lineData);
       } catch (e) {
         console.error("Error parsing line data from dataset:", e);
       }
@@ -1185,13 +1164,13 @@ var GlobalDocument= '';
       );
 
       if (lineData) {
-        // console.log("Found line data in documentData:", lineData);
+        console.log("Found line data in documentData:", lineData);
       }
     }
 
     // If still no data, create a basic one
     if (!lineData) {
-      // console.log("Creating basic line data");
+      console.log("Creating basic line data");
       lineData = {
         lineNumber: lineNumber,
         text: lineElement.textContent.trim(),
@@ -1220,7 +1199,7 @@ var GlobalDocument= '';
     window.history.pushState({ lineNumber }, "", `#L${lineNumber}`);
 
     // Log the line data for debugging
-    // console.log("Final line data:", lineData);
+    console.log("Final line data:", lineData);
 
     // Update the enrichment summary
     updateEnrichmentSummary(lineData);
@@ -1273,12 +1252,12 @@ var GlobalDocument= '';
           }
 
           initTextSelection();
-          // console.log("Undo to state:", {
-          //   currentHighlightId: snapshot.currentHighlightId,
-          //   highlights: snapshot.highlights.length,
-          // });
+          console.log("Undo to state:", {
+            currentHighlightId: snapshot.currentHighlightId,
+            highlights: snapshot.highlights.length,
+          });
         } catch (e) {
-          // console.error("Error during undo:", e);
+          console.error("Error during undo:", e);
           // Fallback for old format states
           docContent.innerHTML = state;
           initTextSelection();
@@ -1334,12 +1313,12 @@ var GlobalDocument= '';
           }
 
           initTextSelection();
-          // console.log("Redo to state:", {
-          //   currentHighlightId: snapshot.currentHighlightId,
-          //   highlights: snapshot.highlights.length,
-          // });
+          console.log("Redo to state:", {
+            currentHighlightId: snapshot.currentHighlightId,
+            highlights: snapshot.highlights.length,
+          });
         } catch (e) {
-          // console.error("Error during redo:", e);
+          console.error("Error during redo:", e);
           // Fallback for old format states
           docContent.innerHTML = state;
           initTextSelection();
@@ -1481,7 +1460,7 @@ var GlobalDocument= '';
 
         hasChanges = added > 0 || removed > 0 || modified > 0;
 
-        // console.log("Changes detected:", { added, removed, modified });
+        console.log("Changes detected:", { added, removed, modified });
       } catch (e) {
         console.error("Error comparing states:", e);
         // If we can't compare, assume there are changes to be safe
@@ -1505,13 +1484,13 @@ var GlobalDocument= '';
       stateHistory.pushState(JSON.stringify(snapshot));
     }
 
-    // console.log("State saved:", {
-    //   currentHighlightId: snapshot.currentHighlightId,
-    //   highlights: currentHighlights.length,
-    //   added,
-    //   removed,
-    //   hasChanges,
-    // });
+    console.log("State saved:", {
+      currentHighlightId: snapshot.currentHighlightId,
+      highlights: currentHighlights.length,
+      added,
+      removed,
+      hasChanges,
+    });
 
     return {
       snapshot,
@@ -1545,226 +1524,9 @@ var GlobalDocument= '';
    * Fetches and processes the document content from NDJSON file
    * @returns {Promise<string>} HTML content string
    */
-  // Global variable to store taxonomy colors
-  const taxonomyColors = new Map();
-
-  // Function to get a consistent color for a taxonomy term
-  function getTaxonomyColor(term) {
-    if (!taxonomyColors.has(term)) {
-      // Use the same color generation as in the taxonomy container
-      const hue = (term.split('').reduce((a, b) => a + b.charCodeAt(0), 0) * 13) % 360;
-      const saturation = 70 + Math.floor(Math.random() * 20);
-      const lightness = 50 + Math.floor(Math.random() * 20);
-      taxonomyColors.set(term, `hsl(${hue}, ${saturation}%, ${lightness}%)`);
-    }
-    return taxonomyColors.get(term);
-  }
-
-  // Function to apply taxonomy colors to text
-function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
-  if (!taxonomy || !taxonomyDetails || typeof text !== 'string') return text;
-  
-  // Create a copy of the text to modify
-  let result = text;
-  
-  // Create a map of terms to highlight with their metadata
-  const termsToHighlight = new Map();
-  
-  // Function to get category abbreviation
-  const getCategoryAbbr = (category) => {
-    return category
-      .split('_')
-      .map(word => word[0]?.toUpperCase() || '')
-      .join('')
-      .substring(0, 2);
-  };
-  
-  // First, process all taxonomy details and map them to their parent categories
-  const detailToCategoryMap = new Map();
-  
-  // Process each category in taxonomy details
-  Object.entries(taxonomyDetails).forEach(([category, details]) => {
-    if (Array.isArray(details)) {
-      details.forEach(detail => {
-        if (typeof detail === 'string' && detail.trim()) {
-          const trimmedDetail = detail.trim();
-          detailToCategoryMap.set(trimmedDetail.toLowerCase(), {
-            category,
-            isDirect: true
-          });
-        }
-      });
-    } else if (typeof details === 'object' && details !== null) {
-      // Handle nested taxonomy details
-      Object.entries(details).forEach(([subCategory, subDetails]) => {
-        if (Array.isArray(subDetails)) {
-          subDetails.forEach(detail => {
-            if (typeof detail === 'string' && detail.trim()) {
-              const trimmedDetail = detail.trim();
-              detailToCategoryMap.set(trimmedDetail.toLowerCase(), {
-                category: `${category}_${subCategory}`,
-                isDirect: false
-              });
-            }
-          });
-        }
-      });
-    }
-  });
-  
-  // Process each category in taxonomy to find terms to highlight
-  const processTaxonomyCategory = (category, values, parentCategory = null) => {
-    const fullCategory = parentCategory ? `${parentCategory}_${category}` : category;
-    
-    if (Array.isArray(values)) {
-      values.forEach(term => {
-        if (typeof term === 'string' && term.trim()) {
-          const trimmedTerm = term.trim();
-          // Only add if the term exists in the text (case insensitive)
-          if (text.toLowerCase().includes(trimmedTerm.toLowerCase())) {
-            termsToHighlight.set(trimmedTerm.toLowerCase(), {
-              term: trimmedTerm,
-              category: fullCategory,
-              abbr: getCategoryAbbr(fullCategory),
-              isDirect: true
-            });
-          }
-        }
-      });
-    } else if (typeof values === 'object' && values !== null) {
-      // Process nested taxonomy
-      Object.entries(values).forEach(([subCategory, subValues]) => {
-        processTaxonomyCategory(subCategory, subValues, fullCategory);
-      });
-    }
-  };
-  
-  // Process the main taxonomy structure
-  Object.entries(taxonomy).forEach(([category, values]) => {
-    processTaxonomyCategory(category, values);
-  });
-  
-  // Also include any taxonomy details that weren't in the main taxonomy
-  detailToCategoryMap.forEach(({ category }, detail) => {
-    if (!termsToHighlight.has(detail)) {
-      termsToHighlight.set(detail, {
-        term: detail,
-        category: category,
-        abbr: getCategoryAbbr(category),
-        isDirect: false
-      });
-    }
-  });
-  
-  // Sort terms by length (longest first) to handle nested terms
-  const sortedTerms = Array.from(termsToHighlight.values())
-    .sort((a, b) => b.term.length - a.term.length);
-  
-  // Track which parts of the text have been highlighted
-  const highlightedRanges = [];
-  
-  // Process each term and apply highlighting
-  sortedTerms.forEach(({ term, category, abbr, isDirect }) => {
-    const timestamp = new Date().toISOString();
-    const id = `taxonomy-${category}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-    
-    // Create a regex that matches the term as a whole word
-    const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(`(^|\\s)(${escapedTerm})(?=\\s|$|[.,;:!?])`, 'gi');
-    
-    result = result.replace(regex, (match, prefix, matchedTerm, offset) => {
-      // Get the actual position in the text
-      const matchStart = offset;
-      const matchEnd = matchStart + match.length;
-      
-      // Skip if this range is already highlighted
-      if (highlightedRanges.some(([start, end]) => 
-          matchStart >= start && matchEnd <= end)) {
-        return match;
-      }
-      
-      // Track this highlight
-      highlightedRanges.push([matchStart, matchEnd]);
-      
-      // Get the actual text from the original text to preserve case
-      const displayTerm = text.slice(
-        matchStart + prefix.length,
-        matchStart + prefix.length + matchedTerm.length
-      );
-      
-      // Format the category name for display
-      const categoryName = category
-        .split('_')
-        .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-        .join(' ');
-      
-      // Create the highlight element
-      return `${prefix}<span 
-        class="taxonomy-highlight" 
-        id="${id}"
-        data-taxonomy-id="${category.toLowerCase().replace(/_/g, '-')}"
-        data-taxonomy-name="${categoryName}"
-        data-original-text="${displayTerm.replace(/"/g, '&quot;')}"
-        data-timestamp="${timestamp}"
-        style="
-          background-color: rgba(0, 0, 0, ${isDirect ? '0.125' : '0.05'});
-          color: #000000;
-          border-bottom: 2px solid rgba(0, 0, 0, ${isDirect ? '0.5' : '0.3'});
-          padding: 0 0.25rem;
-          border-radius: 0.25rem;
-          cursor: pointer;
-          position: relative;
-        ">
-        ${displayTerm}
-        <span class="taxonomy-badge" style="
-          display: inline-flex;
-          align-items: center;
-          background-color: #000000;
-          color: white;
-          font-size: 0.65rem;
-          font-weight: 600;
-          padding: 0.125rem 0.375rem;
-          border-radius: 0.25rem;
-          margin-left: 0.25rem;
-          vertical-align: middle;
-          text-transform: uppercase;
-          letter-spacing: 0.025em;
-          white-space: nowrap;
-          opacity: ${isDirect ? '1' : '0.7'};
-        ">${abbr}</span>
-        <span class="taxonomy-tooltip" style="
-          background-color: white; 
-          border: 1px solid rgb(229, 231, 235); 
-          border-radius: 0.375rem; 
-          padding: 0.25rem 0.5rem; 
-          position: absolute; 
-          z-index: 50; 
-          bottom: 100%; 
-          left: 50%; 
-          transform: translateX(-50%) translateY(-5px); 
-          white-space: nowrap; 
-          box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px; 
-          opacity: 0; 
-          visibility: hidden; 
-          color: rgb(55, 65, 81); 
-          font-size: 0.75rem; 
-          font-weight: 500; 
-          transition: 0.2s ease-in-out; 
-          pointer-events: none;
-        ">
-          <span class="inline-block w-2 h-2 rounded-full mr-1" style="background-color: #000000"></span>
-          ${categoryName}${isDirect ? '' : ' (Related)'}
-        </span>
-      </span>`;
-    });
-  });
-  
-  return result;
-}
-
   async function fetchDocumentContent() {
     try {
-      // console.log("Fetching document content from NDJSON...");
+      console.log("Fetching document content from NDJSON...");
       // var fName = GetInputValue('hdnenFilename');
       var fName = 'What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined_enriched_v2.ndjson';
       GlobalDocument = fName;
@@ -1790,18 +1552,6 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
             const item = JSON.parse(line);
             // Process the line to extract entities into taxonomyMap
             processLine(line, taxonomyMap);
-            
-            // Apply taxonomy colors to the text
-            if (item.text && item.enrichment?.taxonomyDetails) {
-              item.formattedText = applyTaxonomyColors(
-                item.text, 
-                item.enrichment.taxonomy,
-                item.enrichment.taxonomyDetails
-              );
-            } else {
-              item.formattedText = item.text || '';
-            }
-            
             return item;
           } catch (e) {
             console.error("Error parsing NDJSON line:", e);
@@ -1813,7 +1563,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       // Store the extracted entities in a global variable for later use
       if (taxonomyMap.entities) {
         window.ndjsonEntities = taxonomyMap.entities;
-        // console.log(`Loaded ${taxonomyMap.entities.length} entities from NDJSON`);
+        console.log(`Loaded ${taxonomyMap.entities.length} entities from NDJSON`);
       }
 
       // Group items by their section title
@@ -1857,23 +1607,19 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       }
 
       // Function to format text with markdown-like syntax
-      function formatTextWithMarkdown(text, formattedText = null) {
+      function formatTextWithMarkdown(text) {
         if (!text) return '';
-        
-        // Use formatted text if available, otherwise use original text
-        let content = formattedText || text;
-        if (typeof content !== 'string') return String(content);
         
         // First, handle code blocks to prevent markdown processing inside them
         const codeBlocks = [];
-        content = content.replace(/```[\s\S]*?```/g, (match) => {
+        text = text.replace(/```[\s\S]*?```/g, (match) => {
           const id = `code-${codeBlocks.length}`;
           codeBlocks.push(match);
           return id;
         });
         
         // Replace markdown headers with HTML
-        let result = content
+        let formattedText = text
           // Handle # **Header** pattern (h1)
           .replace(/^#\s*\*\*(.*?)\*\*/gm, '<h2 class="text-lg font-bold mt-4 mb-2">$1</h2>')
           // Handle # Header pattern (h2)
@@ -1893,31 +1639,23 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
         
         // Restore code blocks
         codeBlocks.forEach((codeBlock, index) => {
-          if (!codeBlock) return;
-          const codeContent = String(codeBlock)
+          const codeContent = codeBlock
             .replace(/```[\s\S]*?\n([\s\S]*?)```/g, '$1')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
           
-          result = result.replace(
+          formattedText = formattedText.replace(
             `code-${index}`, 
             `<pre class="bg-gray-100 p-3 rounded text-xs overflow-x-auto my-2"><code>${codeContent}</code></pre>`
           );
         });
         
-        // If the result is empty after processing, return the original text
-        if (!result || result.trim() === '') {
-          return text;
-        }
-        
         // Wrap in a paragraph if not already wrapped and doesn't contain block elements
-        if (result && typeof result === 'string' && 
-            !result.match(/^<(h[1-6]|p|div|pre|ul|ol|table)/i) && 
-            !result.startsWith('<')) {
-          result = '<p class="text-sm leading-relaxed">' + result + '</p>';
+        if (!formattedText.match(/^<(h[1-6]|p|div|pre|ul|ol|table)/i) && !formattedText.startsWith('<')) {
+          formattedText = '<p class="text-sm leading-relaxed">' + formattedText + '</p>';
         }
         
-        return result || '';
+        return formattedText;
       }
 
       // Function to highlight taxonomy terms in text to match manual highlighting style
@@ -1955,23 +1693,23 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
           let hexColor = null;
 
           // Try to get the color from the global taxonomy map if it exists
-          // if (
-          //   window.processedTaxonomyMap &&
-          //   window.processedTaxonomyMap[category.toLowerCase()]
-          // ) {
-          //   colorInfo = window.processedTaxonomyMap[category.toLowerCase()];
-          // } else {
-          //   // If not found, generate a new color using getTaxonomyColor
-          //   const colorObj = getTaxonomyColor(category);
-          //   hexColor = typeof colorObj === "object" ? colorObj.hex : colorObj;
+          if (
+            window.processedTaxonomyMap &&
+            window.processedTaxonomyMap[category.toLowerCase()]
+          ) {
+            colorInfo = window.processedTaxonomyMap[category.toLowerCase()];
+          } else {
+            // If not found, generate a new color using stringToColor
+            const colorObj = stringToColor(category);
+            hexColor = typeof colorObj === "object" ? colorObj.hex : colorObj;
 
-          //   // Store in global map for consistency
-          //   if (!window.processedTaxonomyMap) window.processedTaxonomyMap = {};
-          //   window.processedTaxonomyMap[category.toLowerCase()] = {
-          //     hex: hexColor,
-          //     category: category,
-          //   };
-          // }
+            // Store in global map for consistency
+            if (!window.processedTaxonomyMap) window.processedTaxonomyMap = {};
+            window.processedTaxonomyMap[category.toLowerCase()] = {
+              hex: hexColor,
+              category: category,
+            };
+          }
 
           // If we have a hex color, create the highlight style
           if (hexColor) {
@@ -2201,8 +1939,6 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
         section.items.forEach((item) => {
           const lineStr = lineNumber.toString().padStart(3, "0");
           let text = item.text || "";
-
-          console.log(text);
           
           // First format the text with markdown
           text = formatTextWithMarkdown(text);
@@ -2333,7 +2069,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       const content = await fetchDocumentContent();
       targetElement.innerHTML = content;
 
-      // console.log("Document content loaded successfully");
+      console.log("Document content loaded successfully");
 
       // Re-initialize text selection for the new content
       initTextSelection();
@@ -2464,7 +2200,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
           !Array.isArray(window.documentData) ||
           window.documentData.length === 0
         ) {
-          // console.log("No document data available");
+          console.log("No document data available");
           return null;
         }
 
@@ -2480,24 +2216,24 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
         if (count > 0) {
           const averageConfidence =
             Math.round((totalConfidence / count) * 100 * 100) / 100;
-          // console.log("Calculated average confidence:", averageConfidence);
+          console.log("Calculated average confidence:", averageConfidence);
           return averageConfidence;
         }
 
         // Get confidence from enrichment.confidence
         const confidence = parseFloat(firstDoc.enrichment.confidence);
         if (isNaN(confidence)) {
-          // console.log(
-          //   "Invalid confidence value in document:",
-          //   firstDoc.enrichment.confidence
-          // );
+          console.log(
+            "Invalid confidence value in document:",
+            firstDoc.enrichment.confidence
+          );
           return null;
         }
 
-        // console.log("Using confidence from document data:", confidence);
+        console.log("Using confidence from document data:", confidence);
         return Math.round(confidence * 100 * 100) / 100;
       } catch (error) {
-        // console.error("Error calculating confidence:", error);
+        console.error("Error calculating confidence:", error);
         return null; // Return null on error
       }
     };
@@ -2744,7 +2480,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
 
   async function loadDocumentData() {
     try {
-      // console.log("Loading document data from NDJSON...");
+      console.log("Loading document data from NDJSON...");
       // var fName = GetInputValue('hdnenFilename');
       var fName = 'What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined_enriched_v2.ndjson';
       GlobalDocument = fName;
@@ -2765,7 +2501,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
 
       // Store documentData in window for global access
       window.documentData = documentData;
-      // console.log("Document data loaded successfully", documentData);
+      console.log("Document data loaded successfully", documentData);
       documentDataLoaded = true;
 
       // Update document metadata (title and last updated date)
@@ -2958,7 +2694,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
 
   // Curator Studio functionality
   function openCuratorStudio() {
-    // console.log("Curator Studio button clicked");
+    console.log("Curator Studio button clicked");
 
     const lineNumberElement = document.querySelector(".document-line.active");
     if (lineNumberElement) {
@@ -2967,7 +2703,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
         `[data-line-number="${lineNumber}"]`
       );
       if (lineElement) {
-        // console.log("Line element found for line number: " + lineNumber);
+        console.log("Line element found for line number: " + lineNumber);
 
         // var fName = GetInputValue('hdnenFilename');
       var fName = 'What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined_enriched_v2.ndjson';
@@ -2985,7 +2721,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
             try {
               // Parse the JSON line
               const data = JSON.parse(lineContent);
-              // console.log("Line data:", data);
+              console.log("Line data:", data);
 
               // Format the line content for display
               const formatLineContent = (line) => {
@@ -4262,7 +3998,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
     };
 
     // Log the form data
-    // console.log("Form data:", JSON.stringify(formData, null, 2));
+    console.log("Form data:", JSON.stringify(formData, null, 2));
     
     // Close the modal
     closeCuratorModal();
@@ -4280,9 +4016,9 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
     if (event) {
       event.preventDefault();
       event.stopPropagation();
-      // console.log('Toggle form called from:', event.target);
+      console.log('Toggle form called from:', event.target);
     } else {
-      // console.log('Toggle form called programmatically');
+      console.log('Toggle form called programmatically');
     }
     
     const form = document.getElementById('add-entity-form');
@@ -4295,11 +4031,11 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
     
     const isHidden = form.classList.contains('hidden');
     
-    // console.log('Form is currently:', isHidden ? 'hidden' : 'visible');
+    console.log('Form is currently:', isHidden ? 'hidden' : 'visible');
     
     if (isHidden) {
       // Show the form
-      // console.log('Showing form');
+      console.log('Showing form');
       form.classList.remove('hidden');
       form.style.display = 'block';
       form.style.maxHeight = form.scrollHeight + 'px';
@@ -4316,7 +4052,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       }
     } else {
       // Hide the form
-      // console.log('Hiding form');
+      console.log('Hiding form');
       form.classList.add('hidden');
       form.style.maxHeight = '0';
       form.style.display = 'none';
@@ -4376,7 +4112,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
         // If no entities left, show the empty state
         const entitiesContainer = document.querySelector('.entity-list.space-y-3');
         if (entitiesContainer && entitiesContainer.children.length === 0) {
-          // console.log('No entities left, showing empty state');
+          console.log('No entities left, showing empty state');
           const emptyState = document.createElement('div');
           emptyState.className = 'text-sm text-gray-500 py-4 text-center';
           emptyState.textContent = 'No entities found';
@@ -4395,17 +4131,17 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       console.warn('handleEntityAddition called without event object');
     }
     
-    // console.log('=== Add Button Clicked ===');
-    // console.log('Event:', event);
+    console.log('=== Add Button Clicked ===');
+    console.log('Event:', event);
     
     // Log the target that was clicked
     if (event && event.target) {
-      // console.log('Clicked element:', {
-      //   tag: event.target.tagName,
-      //   id: event.target.id,
-      //   class: event.target.className,
-      //   html: event.target.outerHTML
-      // });
+      console.log('Clicked element:', {
+        tag: event.target.tagName,
+        id: event.target.id,
+        class: event.target.className,
+        html: event.target.outerHTML
+      });
     }
     
     // Get form values
@@ -4414,45 +4150,45 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
     const descriptionInput = document.querySelector('[data-entity="description"]');
     
     // Log all form inputs and their values
-    // console.log('--- Form Inputs ---');
-    // console.log('Name input:', nameInput ? {
-    //   value: nameInput.value,
-    //   required: nameInput.required,
-    //   disabled: nameInput.disabled
-    // } : 'Not found');
+    console.log('--- Form Inputs ---');
+    console.log('Name input:', nameInput ? {
+      value: nameInput.value,
+      required: nameInput.required,
+      disabled: nameInput.disabled
+    } : 'Not found');
     
-    // console.log('Type select:', typeSelect ? {
-    //   value: typeSelect.value,
-    //   options: Array.from(typeSelect.options).map(opt => ({
-    //     value: opt.value,
-    //     text: opt.text,
-    //     selected: opt.selected
-    //   })),
-    //   required: typeSelect.required,
-    //   disabled: typeSelect.disabled
-    // } : 'Not found');
+    console.log('Type select:', typeSelect ? {
+      value: typeSelect.value,
+      options: Array.from(typeSelect.options).map(opt => ({
+        value: opt.value,
+        text: opt.text,
+        selected: opt.selected
+      })),
+      required: typeSelect.required,
+      disabled: typeSelect.disabled
+    } : 'Not found');
     
-    // console.log('Description input:', descriptionInput ? {
-    //   value: descriptionInput.value,
-    //   required: descriptionInput.required,
-    //   disabled: descriptionInput.disabled
-    // } : 'Not found');
+    console.log('Description input:', descriptionInput ? {
+      value: descriptionInput.value,
+      required: descriptionInput.required,
+      disabled: descriptionInput.disabled
+    } : 'Not found');
     
-    // // Log the form element itself
-    // const form = event && event.target && event.target.closest('form');
-    // console.log('Form element:', form ? {
-    //   id: form.id,
-    //   class: form.className,
-    //   method: form.method,
-    //   action: form.action,
-    //   elements: Array.from(form.elements).map(el => ({
-    //     name: el.name,
-    //     type: el.type,
-    //     value: el.value,
-    //     checked: el.checked,
-    //     selected: el.selected
-    //   }))
-    // } : 'No form element found');
+    // Log the form element itself
+    const form = event && event.target && event.target.closest('form');
+    console.log('Form element:', form ? {
+      id: form.id,
+      class: form.className,
+      method: form.method,
+      action: form.action,
+      elements: Array.from(form.elements).map(el => ({
+        name: el.name,
+        type: el.type,
+        value: el.value,
+        checked: el.checked,
+        selected: el.selected
+      }))
+    } : 'No form element found');
     
     if (!nameInput || !typeSelect) {
       console.error('Required form elements not found');
@@ -4478,7 +4214,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
     }
     
     if (!isValid) {
-      // console.log('Form validation failed');
+      console.log('Form validation failed');
       return;
     }
     
@@ -4497,7 +4233,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       timestamp: new Date().toISOString()
     };
     
-    // console.log('Creating new entity:', newEntity);
+    console.log('Creating new entity:', newEntity);
     
     // Get the entities container - try multiple selectors
     let entitiesContainer = document.querySelector('.entity-list[data-field="entities"]');
@@ -4522,7 +4258,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       }
     }
     
-    // console.log('Using container:', entitiesContainer);
+    console.log('Using container:', entitiesContainer);
     
     // Create the new entity element with the exact structure you want
     const entityElement = document.createElement('div');
@@ -4537,21 +4273,21 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       </button>
     `;
     
-    // console.log('Created entity element:', entityElement);
+    console.log('Created entity element:', entityElement);
     
     // Check if we need to replace the "No entities found" message
     const noEntitiesMsg = entitiesContainer.querySelector('.text-gray-500');
     if (noEntitiesMsg && noEntitiesMsg.textContent && noEntitiesMsg.textContent.includes('No entities found')) {
-      // console.log('Replacing "No entities found" message');
+      console.log('Replacing "No entities found" message');
       entitiesContainer.innerHTML = '';
     }
     
     // Add the new entity to the top of the container
     if (entitiesContainer.firstChild) {
-      // console.log('Adding entity to top of container');
+      console.log('Adding entity to top of container');
       entitiesContainer.insertBefore(entityElement, entitiesContainer.firstChild);
     } else {
-      // console.log('Adding first entity to container');
+      console.log('Adding first entity to container');
       entitiesContainer.appendChild(entityElement);
     }
     
@@ -4559,7 +4295,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
     const removeButton = entityElement.querySelector('button[data-entity]');
     if (removeButton) {
       removeButton.addEventListener('click', (e) => {
-        // console.log('Remove button clicked for entity:', newEntity.text);
+        console.log('Remove button clicked for entity:', newEntity.text);
         e.preventDefault();
         e.stopPropagation();
         removeEntity(e.target.closest('button'));
@@ -4585,7 +4321,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
     if (nameInput) nameInput.focus();
     
     // Log for debugging
-    // console.log('Entity added to DOM:', { entity: newEntity, container: entitiesContainer });
+    console.log('Entity added to DOM:', { entity: newEntity, container: entitiesContainer });
     
     // Dispatch a custom event that the entity was added
     try {
@@ -4593,7 +4329,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
         detail: { ...newEntity } 
       });
       document.dispatchEvent(entityAddedEvent);
-      // console.log('Dispatched entityAdded event');
+      console.log('Dispatched entityAdded event');
     } catch (error) {
       console.error('Error dispatching entityAdded event:', error);
     }
@@ -4601,11 +4337,11 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
   
   // Initialize event listeners for entity forms
   function initEntityFormListeners() {
-    // console.log('Initializing entity form listeners...');
+    console.log('Initializing entity form listeners...');
     
     // Keep track of whether we've already set up the listeners
     if (window.entityFormInitialized) {
-      // console.log('Entity form listeners already initialized');
+      console.log('Entity form listeners already initialized');
       return;
     }
     
@@ -4655,14 +4391,14 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       if (form) {
         form.addEventListener('submit', function(e) {
           e.preventDefault();
-          // console.log('Form submission prevented, handling with handleEntityAddition');
+          console.log('Form submission prevented, handling with handleEntityAddition');
           handleEntityAddition(e);
           return false;
         });
-        // console.log('Form submit handler attached');
+        console.log('Form submit handler attached');
       }
       
-      // console.log('Entity form listeners initialized');
+      console.log('Entity form listeners initialized');
     }
     
     // Try to set up listeners immediately
@@ -4670,7 +4406,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
     
     // If form elements aren't found, try again after a short delay
     if (!document.getElementById('add-entity-form') || !document.getElementById('add-entity-trigger-button')) {
-      // console.log('Form elements not found, retrying...');
+      console.log('Form elements not found, retrying...');
       setTimeout(setupFormListeners, 500);
     }
   }
@@ -4890,11 +4626,6 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
     }
   }
 
-  // Function to escape special regex characters
-  function escapeRegExp(string) {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
-
   function loadLineTaxonomies(lineElement) {
     const detailsDiv = lineElement.querySelector('.taxonomy-details');
     if (!detailsDiv) return;
@@ -4904,165 +4635,55 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       const lineData = JSON.parse(lineElement.dataset.lineData.replace(/&#39;/g, "'"));
       const { taxonomy = {}, taxonomyDetails = {} } = lineData.enrichment || {};
       
-      // Collect all terms for highlighting
-      const highlightTerms = [];
-      
-      // Process taxonomy to collect all terms
-      function collectTerms(taxonomyObj, prefix = '') {
-        const terms = [];
-        
-        for (const [key, value] of Object.entries(taxonomyObj)) {
-          if (value === null || value === undefined) continue;
-          
-          if (Array.isArray(value)) {
-            // Handle array of terms
-            value.forEach(term => {
-              if (term && typeof term === 'object') {
-                terms.push(...collectTerms(term, `${prefix}${key}.`));
-              } else if (term && term !== 'unspecified') {
-                terms.push({
-                  term: String(term),
-                  category: key,
-                  color: getTaxonomyColor(key)
-                });
-              }
-            });
-          } else if (typeof value === 'object') {
-            // Handle nested objects
-            terms.push(...collectTerms(value, `${prefix}${key}.`));
-          } else if (value && value !== 'unspecified') {
-            // Handle simple values
-            terms.push({
-              term: String(value),
-              category: key,
-              color: getTaxonomyColor(key)
-            });
-          }
-        }
-        
-        return terms;
-      }
-      
-      // Collect all terms from taxonomy
-      const allTerms = collectTerms(taxonomy);
-      
-      // Add terms from taxonomyDetails that aren't already in the taxonomy
-      for (const [term, details] of Object.entries(taxonomyDetails || {})) {
-        if (!allTerms.some(t => t.term === term)) {
-          allTerms.push({
-            term,
-            category: 'details',
-            color: getTaxonomyColor(term)
-          });
-        }
-      }
-      
-      // Sort terms by length (longest first) to handle nested terms correctly
-      allTerms.sort((a, b) => b.term.length - a.term.length);
-      
-      // Highlight terms in the document content
-      const contentElement = lineElement.querySelector('.document-content');
-      if (contentElement) {
-        let content = contentElement.textContent || '';
-        
-        // Create a map of unique terms to avoid duplicate highlighting
-        const uniqueTerms = [];
-        const seen = new Set();
-        
-        for (const term of allTerms) {
-          const normalizedTerm = term.term.toLowerCase();
-          if (!seen.has(normalizedTerm)) {
-            seen.add(normalizedTerm);
-            uniqueTerms.push(term);
-          }
-        }
-        
-        // Apply highlights
-        uniqueTerms.forEach(({ term, category, color }) => {
-          const escapedTerm = escapeRegExp(term);
-          const regex = new RegExp(`(^|\\s)(${escapedTerm})(?=\\s|$|[.,;:!?])`, 'gi');
-          
-          content = content.replace(regex, (match, prefix, matchedTerm) => {
-            return `${prefix}<span class="taxonomy-highlight" 
-              style="background-color: ${color}20; 
-                     border-bottom: 2px solid ${color};
-                     padding: 0 1px;
-                     border-radius: 2px;
-                     position: relative;">
-              ${matchedTerm}
-              <span class="taxonomy-tooltip" 
-                    style="position: absolute;
-                           bottom: 100%;
-                           left: 50%;
-                           transform: translateX(-50%);
-                           background: ${color};
-                           color: white;
-                           padding: 2px 6px;
-                           border-radius: 4px;
-                           font-size: 10px;
-                           white-space: nowrap;
-                           display: none;
-                           z-index: 100;">
-                ${category}
-              </span>
-            </span>`;
-          });
-        });
-        
-        // Update the content with highlights
-        contentElement.innerHTML = content;
-        
-        // Add event listeners for tooltips
-        contentElement.querySelectorAll('.taxonomy-highlight').forEach(el => {
-          el.addEventListener('mouseenter', (e) => {
-            const tooltip = e.target.querySelector('.taxonomy-tooltip');
-            if (tooltip) tooltip.style.display = 'block';
-          });
-          el.addEventListener('mouseleave', (e) => {
-            const tooltip = e.target.querySelector('.taxonomy-tooltip');
-            if (tooltip) tooltip.style.display = 'none';
-          });
-        });
-      }
-      
-      // Initialize HTML container with taxonomy items
-      const html = [];
+      // Initialize HTML container with compact dictionary style
+      const html = ['<div class="compact-dict">'];
       let hasTaxonomies = false;
 
-      // Helper function to format term with consistent styling
-      const formatTerm = (term, category = '') => {
+      // Helper function to format term with details in compact style
+      const formatEntry = (term, details, isSubItem = false) => {
         if (!term) return '';
         
-        const termText = typeof term === 'object' ? term.term || term.text || '' : term;
-        if (!termText || termText === 'unspecified') return '';
-        
-        // Get color based on the term or category
-        const color = getTaxonomyColor(category || termText);
-        const textColor = getContrastColor(color);
-        
-        // Get details for the term
-        let details = '';
-        if (taxonomyDetails[termText]) {
-          const detail = taxonomyDetails[termText];
-          details = Array.isArray(detail) ? detail.join('; ') : detail;
-        }
+        const detailsHtml = details ? 
+          `<span class="dict-details text-gray-500 text-sm ml-2">${details}</span>` : '';
         
         return `
-          <div class="flex items-center py-1 px-2 hover:bg-gray-50 rounded">
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2" 
-                  style="background-color: ${color}20; border: 1px solid ${color}; color: ${color};">
-              ${termText.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-            </span>
-            ${details ? `<span class="text-sm text-gray-600">${details}</span>` : ''}
+          <div class="dict-entry ${isSubItem ? 'pl-4 text-sm' : ''} py-1 hover:bg-gray-50 rounded transition-colors">
+            <span class="dict-term font-medium text-gray-800">${term}</span>
+            ${detailsHtml}
           </div>
         `;
+      };
+
+      // Helper function to get details for a term
+      const getTermDetails = (term) => {
+        if (!term) return '';
+        
+        const termKey = typeof term === 'object' ? term.term || term.text || '' : term;
+        if (!termKey) return '';
+        
+        const details = [];
+        
+        // Check for direct match
+        if (taxonomyDetails[termKey]) {
+          const detail = taxonomyDetails[termKey];
+          details.push(Array.isArray(detail) ? detail.join('; ') : detail);
+        }
+        
+        // Check for partial matches
+        for (const [key, value] of Object.entries(taxonomyDetails)) {
+          if (key !== termKey && key.includes(termKey)) {
+            const detail = Array.isArray(value) ? value.join('; ') : value;
+            details.push(detail);
+          }
+        }
+        
+        return details.length > 0 ? details.join(' • ') : '';
       };
       
       // Process each category in the taxonomy
       for (const [category, value] of Object.entries(taxonomy)) {
         // Skip empty values and effect taxonomies (handled separately)
-        if (!value || 
-            (Array.isArray(value) && value.length === 0) || 
+        if (!value || (Array.isArray(value) && value.length === 0) || 
             (typeof value === 'object' && Object.keys(value).length === 0) ||
             ['effect_direction', 'effect_strength', 'effect_horizon'].includes(category)) {
           continue;
@@ -5072,7 +4693,11 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
           .map(word => word.charAt(0).toUpperCase() + word.slice(1))
           .join(' ');
         
-        const categoryHtml = [];
+        const categoryHtml = [
+          `<div class="dict-category text-xs font-semibold text-gray-500 uppercase tracking-wider mt-3 mb-1">
+            ${categoryName}
+          </div>`
+        ];
         
         // Handle nested objects (like target_groups)
         if (value && typeof value === 'object' && !Array.isArray(value)) {
@@ -5082,60 +4707,46 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
             const subCategoryName = subCategory.split('_')
               .map(word => word.charAt(0).toUpperCase() + word.slice(1))
               .join(' ');
-            
+              
             const terms = Array.isArray(subValue) ? subValue : [subValue];
-            const subCategoryColor = getTaxonomyColor(subCategory);
-            const subCategoryTextColor = getContrastColor(subCategoryColor);
             
-            // Add subcategory header
             categoryHtml.push(`
-              <div class="flex items-center mt-2 mb-1">
-                <span class="text-xs font-medium px-2 py-0.5 rounded" 
-                      style="background-color: ${subCategoryColor}20; color: ${subCategoryColor}; border: 1px solid ${subCategoryColor}80;">
-                  ${subCategoryName}
-                </span>
+              <div class="dict-subcategory text-xs font-medium text-gray-600 mt-2 mb-1 pl-2">
+                ${subCategoryName}
               </div>
             `);
             
             // Add terms under subcategory
-            const termsHtml = terms
-              .map(term => formatTerm(term, subCategory))
-              .filter(Boolean);
-              
-            if (termsHtml.length > 0) {
-              categoryHtml.push(`<div class="ml-4">${termsHtml.join('')}</div>`);
-              hasTaxonomies = true;
-            }
+            terms.forEach(term => {
+              if (!term || term === 'unspecified') return;
+              const termText = typeof term === 'object' ? term.term || term.text || '' : term;
+              if (!termText) return;
+              const details = getTermDetails(term);
+              categoryHtml.push(formatEntry(termText, details, true));
+            });
+            
+            hasTaxonomies = true;
           }
         } 
         // Handle arrays of terms
         else if (Array.isArray(value)) {
-          const termsHtml = value
-            .map(term => formatTerm(term, category))
-            .filter(Boolean);
-            
-          if (termsHtml.length > 0) {
-            categoryHtml.push(termsHtml.join(''));
-            hasTaxonomies = true;
-          }
+          value.forEach(term => {
+            if (!term || term === 'unspecified') return;
+            const termText = typeof term === 'object' ? term.term || term.text || '' : term;
+            if (!termText) return;
+            const details = getTermDetails(term);
+            categoryHtml.push(formatEntry(termText, details));
+          });
+          
+          hasTaxonomies = value.length > 0;
         }
         
-        // Add category section if it has content
-        if (categoryHtml.length > 0) {
-          html.push(`
-            <div class="mb-3">
-              <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-                ${categoryName}
-              </h4>
-              <div class="border-l-2 border-gray-200 pl-3">
-                ${categoryHtml.join('')}
-              </div>
-            </div>
-          `);
+        if (categoryHtml.length > 1) {
+          html.push(`<div class="dict-category-group">${categoryHtml.join('')}</div>`);
         }
       }
       
-      // Add effect information if available
+      // Add effect information if available, using the same styling as other categories
       const effectTypes = ['effect_direction', 'effect_strength', 'effect_horizon'];
       const effectValues = [];
       
@@ -5150,54 +4761,98 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
           effectValues.push({
             term: typeName,
             value: value,
-            color: getTaxonomyColor(type)
+            details: ''
           });
+          hasTaxonomies = true;
         }
       });
       
       if (effectValues.length > 0) {
-        const effectHtml = effectValues.map(item => `
-          <div class="flex items-center py-1">
-            <span class="text-sm font-medium text-gray-700 w-24 flex-shrink-0">${item.term}:</span>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" 
-                  style="background-color: ${item.color}20; border: 1px solid ${item.color}; color: ${item.color};">
-              ${item.value}
-            </span>
-          </div>
-        `).join('');
-        
-        html.unshift(`
-          <div class="mb-4 pb-3 border-b border-gray-200">
-            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              Effect Information
-            </h4>
-            <div class="space-y-1">
-              ${effectHtml}
-            </div>
+        const effectHtml = [];
+        effectHtml.push(`
+          <div class="dict-category text-xs font-semibold text-gray-500 uppercase tracking-wider mt-3 mb-1">
+            Effect Information
           </div>
         `);
         
-        hasTaxonomies = true;
+        effectValues.forEach(item => {
+          effectHtml.push(`
+            <div class="dict-entry py-1 hover:bg-gray-50 rounded transition-colors">
+              <span class="dict-term font-medium text-gray-800">${item.term}</span>
+              <span class="dict-details text-gray-500 text-sm ml-2">${item.value}</span>
+            </div>
+          `);
+        });
+        
+        // Add to the beginning of the HTML
+        html.unshift(`<div class="dict-category-group">${effectHtml.join('')}</div>`);
       }
+      
+      html.push('</div>');
+      
+      // Compact styling
+      const style = `
+        <style>
+          .compact-dict {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 0.875rem;
+            line-height: 1.4;
+            color: #374151;
+          }
+          .dict-category {
+            letter-spacing: 0.05em;
+          }
+          .dict-subcategory {
+            color: #4b5563;
+            border-left: 2px solid #e5e7eb;
+          }
+          .dict-entry {
+            display: flex;
+            align-items: baseline;
+            padding: 0.25rem 0.5rem;
+            margin: 0.125rem 0;
+            border-radius: 0.25rem;
+          }
+          .dict-term {
+            min-width: 120px;
+            color: #111827;
+            flex-shrink: 0;
+          }
+          .dict-details {
+            color: #4b5563;
+            word-break: break-word;
+          }
+          .dict-entry:hover {
+            background-color: #f9fafb;
+          }
+          .compact-dict::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+          }
+          .compact-dict::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+          }
+          .compact-dict::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+          }
+          .compact-dict::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+          }
+        </style>
+      `;
       
       // Show message if no taxonomies were found
       if (!hasTaxonomies) {
         detailsDiv.innerHTML = '<div class="text-xs text-gray-400 italic py-2">No taxonomies to show</div>';
       } else {
-        detailsDiv.innerHTML = `
-          <div class="space-y-3">
-            ${html.join('')}
-          </div>
-        `;
+        detailsDiv.innerHTML = style + html.join('');
       }
     } catch (e) {
       console.error('Error loading line taxonomies:', e);
       if (detailsDiv) {
-        detailsDiv.innerHTML = `
-          <div class="text-xs text-red-500 italic">
-            Error loading taxonomies: ${e.message}
-          </div>
-        `;
+        detailsDiv.innerHTML = '<div class="text-xs text-red-500 italic">Error loading taxonomies</div>';
       }
     }
   }
@@ -5324,7 +4979,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
 
   // Initialize the application
   async function init() {
-    // console.log('Initializing application...');
+    console.log('Initializing application...');
     
     // Add input event listeners to remove error states
     document.addEventListener('input', function(e) {
@@ -5352,7 +5007,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
         return;
       }
       
-      // console.log('Initializing entity form... (attempt ' + (initEntityForm.retryCount + 1) + ')');
+      console.log('Initializing entity form... (attempt ' + (initEntityForm.retryCount + 1) + ')');
       
       if (!addButton || !form) {
         initEntityForm.retryCount++;
@@ -5365,7 +5020,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
         } else {
           // Reduce logging - only log error if we've genuinely tried multiple times
           if (initEntityForm.retryCount >= 5) {
-            // console.log('Entity form elements not found after maximum retry attempts.');
+            console.log('Entity form elements not found after maximum retry attempts.');
           }
           // Reset the counter in case the elements appear later
           initEntityForm.retryCount = 0;
@@ -5376,9 +5031,9 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       // Reset retry count on successful initialization
       initEntityForm.retryCount = 0;
       
-      // console.log('Entity form initialized successfully');
+      console.log('Entity form initialized successfully');
       
-      // console.log('Found entity form elements');
+      console.log('Found entity form elements');
       
       // Set initial state
       form.classList.add('hidden');
@@ -5403,7 +5058,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
         });
       }
       
-      // console.log('Entity form initialization complete');
+      console.log('Entity form initialization complete');
       
       // Focus on first input when form is shown
       const firstInput = form.querySelector('input, select, textarea');
@@ -5416,10 +5071,10 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       // Toggle form function
       function toggleForm(e) {
         if (e) e.preventDefault();
-        // console.log('Toggle form called');
+        console.log('Toggle form called');
         
         if (form.classList.contains('hidden')) {
-          // console.log('Showing form');
+          console.log('Showing form');
           form.classList.remove('hidden');
           form.style.display = 'block';
           form.style.maxHeight = form.scrollHeight + 'px';
@@ -5432,7 +5087,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
             setTimeout(() => firstInput.focus(), 50);
           }
         } else {
-          // console.log('Hiding form');
+          console.log('Hiding form');
           form.classList.add('hidden');
           form.style.maxHeight = '0';
           form.style.display = 'none';
@@ -5444,17 +5099,17 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       // Handle form submission
       form.addEventListener('submit', function(e) {
         e.preventDefault();
-        // console.log('Form submission prevented, handling with handleEntityAddition');
+        console.log('Form submission prevented, handling with handleEntityAddition');
         handleEntityAddition(e);
         return false;
       });
       
-      // console.log('Entity form initialized');
+      console.log('Entity form initialized');
     }
     
     // Initialize entity form when modal is shown
     document.addEventListener('shown.bs.modal', function() {
-      // console.log('Modal shown, initializing entity form');
+      console.log('Modal shown, initializing entity form');
       setTimeout(initEntityForm, 100);
     });
     
@@ -5466,7 +5121,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       if (curatorModal) {
         // Don't call initEntityForm here since it will be called when modal opens
         // The event listener for modal open will handle initialization
-        // console.log('Curator studio modal found, entity form will initialize when modal opens');
+        console.log('Curator studio modal found, entity form will initialize when modal opens');
         return;
       } else {
         // If modal doesn't exist yet, try again after a delay
@@ -5480,7 +5135,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
         if (initEntityForm.globalRetryCount < 5) { // Limit to 5 attempts
           setTimeout(checkAndInitEntityForm, 1000);
         } else {
-          // console.log('Curator studio modal not found after maximum attempts, will initialize when modal is created');
+          console.log('Curator studio modal not found after maximum attempts, will initialize when modal is created');
         }
       }
     };
@@ -5495,12 +5150,12 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
         mutation.addedNodes.forEach(function(node) {
           if (node.nodeType === 1 && node.id === 'curator-studio-modal') {
             // When the modal is added to the DOM, set up the entity form when it's displayed
-            // console.log('Curator studio modal detected, setting up event listener');
+            console.log('Curator studio modal detected, setting up event listener');
             
             // Create a smaller observer to watch for when the modal becomes visible
             const modalObserver = new MutationObserver(function() {
               if (!node.classList.contains('hidden')) {
-                // console.log('Curator studio modal opened, initializing entity form');
+                console.log('Curator studio modal opened, initializing entity form');
                 // Give a small delay to ensure all modal content is rendered
                 setTimeout(initEntityForm, 100);
               }
@@ -5541,10 +5196,10 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       }
 
       if (lineElement) {
-        // console.log("Line element found:", lineElement);
+        console.log("Line element found:", lineElement);
         handleLineClick(lineElement);
       } else {
-        // console.log("No line element found for click target:", e.target);
+        console.log("No line element found for click target:", e.target);
       }
     });
     
@@ -5556,7 +5211,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
         window.DoccanoApp.openCuratorStudio();
         // Give a small delay to ensure modal is created and visible before initializing form
         setTimeout(() => {
-          // console.log('Curator Studio button clicked, initializing entity form');
+          console.log('Curator Studio button clicked, initializing entity form');
           initEntityForm();
         }, 20);
       }
@@ -5603,7 +5258,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
     
     // Initialize entity form
     if (document.getElementById('add-entity-form')) {
-      // console.log('Initializing entity form...');
+      console.log('Initializing entity form...');
       initEntityFormListeners();
     }
 
@@ -6017,7 +5672,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
   }
 
   function handleTextSelection(e) {
-    // console.log("handleTextSelection triggered");
+    console.log("handleTextSelection triggered");
 
     // Prevent default to avoid any potential interference
     e.preventDefault();
@@ -6026,7 +5681,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
     const selection = window.getSelection();
     const selectedText = selection.toString().trim();
 
-    // console.log("Selected text:", selectedText);
+    console.log("Selected text:", selectedText);
 
     // Check if selection is within document-content and inside a paragraph
     const isInValidArea =
@@ -6042,7 +5697,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       !isInside(selection, "taxonomy-popup") &&
       isInValidArea
     ) {
-      // console.log("Valid selection, showing popup");
+      console.log("Valid selection, showing popup");
 
       // Store the current selection
       currentSelection = selectedText;
@@ -6055,13 +5710,13 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       e.preventDefault();
       return false;
     } else {
-      // console.log("Invalid selection, inside popup, or not in valid area");
+      console.log("Invalid selection, inside popup, or not in valid area");
       if (selectedText.length === 0) {
-        // console.log("No text selected");
+        console.log("No text selected");
       } else if (!isInValidArea) {
-        // console.log("Selection not within a paragraph in document-content");
+        console.log("Selection not within a paragraph in document-content");
       } else if (isInside(selection, "taxonomy-popup")) {
-        // console.log("Inside taxonomy popup");
+        console.log("Inside taxonomy popup");
       }
     }
   }
@@ -6111,8 +5766,21 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       : node.closest(`#${elementId}`) !== null;
   }
 
+  // Taxonomy popup functionality
+  function initTaxonomyPopup() {
+    const popup = document.getElementById("taxonomy-popup");
+    if (!popup) return;
+
+    const closeBtn = popup.querySelector("#close-popup");
+
+    // Close popup when clicking the close button
+    if (closeBtn) {
+      closeBtn.addEventListener("click", clearSelection);
+    }
+  }
+
   function showTaxonomyPopup(selection) {
-    // console.log("showTaxonomyPopup called");
+    console.log("showTaxonomyPopup called");
     const popup = document.getElementById("taxonomy-popup");
     const optionsContainer = popup?.querySelector(".space-y-2");
 
@@ -6125,8 +5793,8 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       return;
     }
 
-    // console.log("Popup found:", popup);
-    // console.log("Options container found:", optionsContainer);
+    console.log("Popup found:", popup);
+    console.log("Options container found:", optionsContainer);
 
     // Clear existing options
     optionsContainer.innerHTML = "";
@@ -6233,216 +5901,171 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
   }
 
   function assignTaxonomyToSelection(taxonomy) {
-    // Early return if no valid selection or taxonomy
-    if (!currentSelection || !currentSelectionRange || !taxonomy?.id) {
-      console.warn('Invalid selection or taxonomy');
-      return;
-    }
-  
+    if (!currentSelection || !currentSelectionRange) return;
+
     // Save state before making changes
     const saveStateBeforeChange = () => {
-      try {
-        const lineNumber = getLineNumber(window.getSelection().anchorNode);
-        if (!lineNumber) {
-          console.warn('Could not determine line number');
-          return { lineNumber: null, lineContent: '', enrichment: {} };
+      // Get the line number from the selected text or current position
+      const lineNumber = getLineNumber(window.getSelection().anchorNode);
+      const lineContent = getLineContent(lineNumber);
+      
+      // Get enrichment data for the current line or document
+      const enrichment = documentData[lineNumber - 1]?.enrichment || {};
+      
+      // Add entities from NDJSON if available
+      if (window.ndjsonEntities) {
+        if (!enrichment.entities) {
+          enrichment.entities = [];
         }
-  
-        const lineContent = getLineContent(lineNumber);
-        const enrichment = { ...(documentData[lineNumber - 1]?.enrichment || {}) };
-        
-        // Add entities from NDJSON if available
-        if (window.ndjsonEntities?.length) {
-          if (!enrichment.entities) {
-            enrichment.entities = [];
+        // Only add entities that aren't already in the enrichment
+        const existingEntityTexts = new Set(enrichment.entities.map(e => e.text));
+        window.ndjsonEntities.forEach(entity => {
+          if (!existingEntityTexts.has(entity.text)) {
+            enrichment.entities.push({
+              ...entity,
+              source: entity.source || 'ndjson'
+            });
           }
-          
-          const existingEntityTexts = new Set(enrichment.entities.map(e => e.text));
-          window.ndjsonEntities.forEach(entity => {
-            if (entity?.text && !existingEntityTexts.has(entity.text)) {
-              enrichment.entities.push({
-                ...entity,
-                source: entity.source || 'ndjson'
-              });
-            }
-          });
-        }
-        
-        return { lineNumber, lineContent, enrichment };
-      } catch (error) {
-        console.error('Error saving state:', error);
-        return { lineNumber: null, lineContent: '', enrichment: {} };
+        });
       }
+      
+      return { lineNumber, lineContent, enrichment };
     };
-  
-    // Get current state
+    
     const { lineNumber, lineContent, enrichment } = saveStateBeforeChange();
-    if (!lineNumber) return;
-  
-    // Find existing highlight in selection
+    
+    // Check if there's an existing highlight in the selection
     let existingHighlight = null;
-    try {
+    if (currentSelectionRange) {
       const container = currentSelectionRange.commonAncestorContainer;
       const element = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
       existingHighlight = element.closest('.taxonomy-highlight');
-    } catch (error) {
-      console.error('Error finding existing highlight:', error);
     }
-  
-    // Handle existing highlight
+    
+    // If the same taxonomy, remove the highlight
+    if (existingHighlight && existingHighlight.dataset.taxonomyId === taxonomy.id) {
+      removeHighlight(existingHighlight);
+      return;
+    }
+    
+    // If different taxonomy, replace it
     if (existingHighlight) {
-      if (existingHighlight.dataset.taxonomyId === taxonomy.id) {
-        // Remove if same taxonomy
-        removeHighlight(existingHighlight);
-        return;
-      }
-      
-      // Replace with new taxonomy
-      try {
-        const range = document.createRange();
-        range.selectNode(existingHighlight);
-        currentSelectionRange = range;
-        currentSelection = existingHighlight.dataset.originalText || existingHighlight.textContent;
-        existingHighlight.remove();
-      } catch (error) {
-        console.error('Error replacing existing highlight:', error);
-        return;
-      }
+      const range = document.createRange();
+      range.selectNode(existingHighlight);
+      currentSelectionRange = range;
+      currentSelection = existingHighlight.dataset.originalText || existingHighlight.textContent;
+      existingHighlight.remove();
     }
-  
-    // Create new highlight
-    try {
-      const bgColor = typeof taxonomy.color === 'object' ? taxonomy.color.hex : taxonomy.color;
-      if (!bgColor) {
-        console.warn('No color defined for taxonomy:', taxonomy.id);
-        return;
+
+    // Create a span to wrap the selected text
+    const span = document.createElement("span");
+    const bgColor =
+      typeof taxonomy.color === "object" ? taxonomy.color.hex : taxonomy.color;
+
+    // Use inline styles for consistent coloring with the taxonomy list
+    span.style.cssText = `
+                background-color: ${bgColor}20;
+                color: ${bgColor};
+                border-bottom: 2px solid ${bgColor}80;
+                padding: 0 0.25rem;
+                border-radius: 0.25rem;
+                cursor: pointer;
+                position: relative;
+            `;
+
+    span.className = "taxonomy-highlight";
+    span.id = `taxonomy-${taxonomy.id}-${Date.now()}`; // Add timestamp for unique ID
+    span.dataset.taxonomyId = taxonomy.id;
+    span.dataset.taxonomyName = taxonomy.name;
+    span.dataset.lineNumber = lineNumber || "";
+    span.dataset.originalText = currentSelection; // Store original text separately
+    span.dataset.timestamp = new Date().toISOString(); // Add timestamp for tracking
+
+    // Add visible badge and tooltip with matching color and hover effects
+    span.innerHTML = `
+                ${currentSelection}
+                <span class="taxonomy-badge" style="
+                    display: inline-flex;
+                    align-items: center;
+                    background-color: ${bgColor};
+                    color: white;
+                    font-size: 0.65rem;
+                    font-weight: 600;
+                    padding: 0.125rem 0.375rem;
+                    border-radius: 0.25rem;
+                    margin-left: 0.25rem;
+                    vertical-align: middle;
+                    text-transform: uppercase;
+                    letter-spacing: 0.025em;
+                    white-space: nowrap;
+                ">${taxonomy.prefix || taxonomy.name.substring(0, 2).toUpperCase()}</span>
+                <span class="taxonomy-tooltip" style="
+                    background-color: white;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 0.375rem;
+                    padding: 0.25rem 0.5rem;
+                    position: absolute;
+                    z-index: 50;
+                    bottom: 100%;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(-5px);
+                    white-space: nowrap;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                    opacity: 0;
+                    visibility: hidden;
+                    color: #374151;
+                    font-size: 0.75rem;
+                    font-weight: 500;
+                    transition: all 0.2s ease-in-out;
+                    pointer-events: none;
+                ">
+                    <span class="inline-block w-2 h-2 rounded-full mr-1" style="background-color: ${bgColor}"></span>
+                    ${taxonomy.name}
+                </span>`;
+
+    // Add hover effects for the tooltip
+    span.addEventListener("mouseenter", (e) => {
+      const tooltip = span.querySelector(".taxonomy-tooltip");
+      if (tooltip) {
+        tooltip.style.opacity = "1";
+        tooltip.style.visibility = "visible";
+        tooltip.style.transform = "translateX(-50%) translateY(-10px)";
       }
-  
-      const span = document.createElement('span');
-      span.className = 'taxonomy-highlight';
-      span.id = `taxonomy-${taxonomy.id}-${Date.now()}`;
-      span.dataset.taxonomyId = taxonomy.id;
-      span.dataset.taxonomyName = taxonomy.name;
-      span.dataset.lineNumber = lineNumber;
-      span.dataset.originalText = currentSelection;
-      span.dataset.timestamp = new Date().toISOString();
-  
-      // Apply styles
-      Object.assign(span.style, {
-        backgroundColor: `${bgColor}20`,
-        color: bgColor,
-        borderBottom: `2px solid ${bgColor}80`,
-        padding: '0 0.25rem',
-        borderRadius: '0.25rem',
-        cursor: 'pointer',
-        position: 'relative'
-      });
-  
-      // Create badge and tooltip
-      const badgeText = taxonomy.prefix || taxonomy.name.substring(0, 2).toUpperCase();
-      span.innerHTML = `
-        ${currentSelection}
-        <span class="taxonomy-badge" style="
-          display: inline-flex;
-          align-items: center;
-          background-color: ${bgColor};
-          color: white;
-          font-size: 0.65rem;
-          font-weight: 600;
-          padding: 0.125rem 0.375rem;
-          border-radius: 0.25rem;
-          margin-left: 0.25rem;
-          vertical-align: middle;
-          text-transform: uppercase;
-          letter-spacing: 0.025em;
-          white-space: nowrap;
-        ">${badgeText}</span>
-        <span class="taxonomy-tooltip" style="
-          background-color: white;
-          border: 1px solid #e5e7eb;
-          border-radius: 0.375rem;
-          padding: 0.25rem 0.5rem;
-          position: absolute;
-          z-index: 50;
-          bottom: 100%;
-          left: 50%;
-          transform: translateX(-50%) translateY(-5px);
-          white-space: nowrap;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-          opacity: 0;
-          visibility: hidden;
-          color: #374151;
-          font-size: 0.75rem;
-          font-weight: 500;
-          transition: all 0.2s ease-in-out;
-          pointer-events: none;
-        ">
-          <span class="inline-block w-2 h-2 rounded-full mr-1" 
-                style="background-color: ${bgColor}"></span>
-          ${taxonomy.name}
-        </span>`;
-  
-      // Add hover effects
-      span.addEventListener('mouseenter', (e) => {
-        const tooltip = span.querySelector('.taxonomy-tooltip');
-        if (tooltip) {
-          tooltip.style.opacity = '1';
-          tooltip.style.visibility = 'visible';
-          tooltip.style.transform = 'translateX(-50%) translateY(-10px)';
-        }
-      });
-  
-      span.addEventListener('mouseleave', (e) => {
-        const tooltip = span.querySelector('.taxonomy-tooltip');
-        if (tooltip) {
-          tooltip.style.opacity = '0';
-          tooltip.style.visibility = 'hidden';
-          tooltip.style.transform = 'translateX(-50%) translateY(-5px)';
-        }
-      });
-  
-      // Insert the highlight
-      currentSelectionRange.deleteContents();
-      currentSelectionRange.insertNode(span);
-  
-      // Update document data
-      if (!enrichment.annotations) {
-        enrichment.annotations = [];
+    });
+
+    span.addEventListener("mouseleave", (e) => {
+      const tooltip = span.querySelector(".taxonomy-tooltip");
+      if (tooltip) {
+        tooltip.style.opacity = "0";
+        tooltip.style.visibility = "hidden";
+        tooltip.style.transform = "translateX(-50%) translateY(-5px)";
       }
-  
-      // Remove any existing annotations for this exact text in this line
-      enrichment.annotations = enrichment.annotations.filter(ann => 
-        !(ann.text === currentSelection && ann.taxonomyId === taxonomy.id)
-      );
-  
-      // Add the new annotation
-      enrichment.annotations.push({
-        id: span.id,
-        text: currentSelection,
-        taxonomyId: taxonomy.id,
-        taxonomyName: taxonomy.name,
-        color: bgColor,
-        start: getTextPositionInLine(lineContent, currentSelection),
-        end: getTextPositionInLine(lineContent, currentSelection) + currentSelection.length,
-        timestamp: new Date().toISOString()
-      });
-  
-      // Update the document data
-      documentData[lineNumber - 1] = documentData[lineNumber - 1] || { text: lineContent, enrichment: {} };
-      documentData[lineNumber - 1].enrichment = enrichment;
-  
-      // Update UI and save
-      updateDocumentView();
-      saveDocument();
-  
-      // Clear the selection
-      window.getSelection().removeAllRanges();
-      currentSelection = null;
-      currentSelectionRange = null;
-  
-    } catch (error) {
-      console.error('Error creating taxonomy highlight:', error);
-    }
+    });
+
+    // Store position information
+    const range = currentSelectionRange.cloneRange();
+    const preCaretRange = range.cloneRange();
+    preCaretRange.selectNodeContents(
+      document.getElementById("document-content")
+    );
+    preCaretRange.setEnd(range.startContainer, range.startOffset);
+    const startOffset = preCaretRange.toString().length;
+
+    span.dataset.startOffset = startOffset;
+    span.dataset.endOffset = startOffset + currentSelection.length;
+
+    // Replace the selected text with our highlighted span
+    currentSelectionRange.deleteContents();
+    currentSelectionRange.insertNode(span);
+
+    // Update the count
+    taxonomy.count++;
+
+    // Re-render taxonomies to update the count
+    renderTaxonomies();
+
+    // Clear the selection
+    clearSelection();
   }
 
   function removeHighlight(highlightElement, skipConfirmation = false) {
@@ -6484,7 +6107,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       // If saveState didn't detect the change (which can happen with direct DOM manipulation),
       // force a new state with the removal
       if (newState && !newState.hasChanges) {
-        // console.log("Forcing state update after highlight removal");
+        console.log("Forcing state update after highlight removal");
         // Push a new state manually
         const docContent = document.getElementById("document-content");
         if (docContent) {
@@ -6504,7 +6127,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
           };
 
           stateHistory.pushState(JSON.stringify(snapshot));
-          // console.log("Manual state update after highlight removal");
+          console.log("Manual state update after highlight removal");
         }
       }
 
@@ -6788,7 +6411,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
 
       container.innerHTML = "";
 
-      // console.log(taxonomyList);
+      console.log(taxonomyList);
 
       taxonomyList.forEach((taxonomy) => {
         const element = document.createElement("div");
@@ -6826,7 +6449,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
     const docContent = document.getElementById("document-content");
 
     if (!docContent) {
-      // console.log("No document content found");
+      console.log("No document content found");
       return null;
     }
 
@@ -6986,7 +6609,7 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
         }
       };
 
-      // console.log("Exporting highlights with merged lines:", exportData);
+      console.log("Exporting highlights with merged lines:", exportData);
       return exportData;
     } catch (error) {
       console.error("Error exporting highlights:", error);
@@ -7182,9 +6805,9 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
       
       // Log merged lines information
       if (mergedLines.length > 0) {
-        // console.log(`=\CB Exporting ${mergedLines.length} merged line(s):`, mergedLines);
+        console.log(`=\CB Exporting ${mergedLines.length} merged line(s):`, mergedLines);
       } else {
-        // console.log('=\CB No merged lines to export');
+        console.log('=\CB No merged lines to export');
       }
 
       // Simulate API call delay (replace with actual save/export logic)
@@ -7446,13 +7069,13 @@ function applyTaxonomyColors(text, taxonomy, taxonomyDetails) {
   document.addEventListener('click', function(e) {
     const addButton = e.target.closest && e.target.closest('#add-entity-button');
     if (addButton) {
-      // console.log('=== Direct click on add entity button ===');
-      // console.log('Button element:', addButton);
-      // console.log('Form values:', {
-      //   name: document.querySelector('[data-entity="name"]')?.value,
-      //   type: document.querySelector('select[data-entity="type"]')?.value,
-      //   description: document.querySelector('[data-entity="description"]')?.value
-      // });
+      console.log('=== Direct click on add entity button ===');
+      console.log('Button element:', addButton);
+      console.log('Form values:', {
+        name: document.querySelector('[data-entity="name"]')?.value,
+        type: document.querySelector('select[data-entity="type"]')?.value,
+        description: document.querySelector('[data-entity="description"]')?.value
+      });
       
       // Call handleEntityAddition directly
       handleEntityAddition(e);

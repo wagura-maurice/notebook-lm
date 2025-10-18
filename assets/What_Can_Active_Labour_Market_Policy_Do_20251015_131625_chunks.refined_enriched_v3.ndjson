@@ -1,4 +1,445 @@
 {
+	"id": "189386776c55c57b77b963247e861a23593b447f",
+	"_hash": "189386776c55c57b77b963247e861a23593b447f",
+	"doc": "What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined",
+	"chunk_id": "c0000",
+	"header": "Section",
+	"start": 0,
+	"end": 1197,
+	"text": "# **What Can Active Labour Market Policy Do!**\n\n# Richard Jackman\\*\n\n# **Summary.**\n\n**H** During the 1380s, two dimensions in particular of the unemployment problem have been a source of increasing concern for policy-makers in Europe. \n\nOne is the increasing rate of structural change, and the resulting decline in employment opportunities for unskilled manual workers. The other is the evidence of the corrosive effects of long spells of unemployment on individuals and societies. This paper attempts to assess the role of active labour market policies in addressing these problems. It argues that, in the absence of active policies, the combination of more rapid structural change and the indefinite availability of cash benefits can be expected to lead to a continuing growth in long-term unemployment. Even where schemes do not have much of a return to those who are on them, as much of the microeconomic evidence suggests, they may still have a substantial social return in preventing the emergence of long-term unemployment. The key requirement is to ensure that no unemployed person, who is able and willing to work, should be allowed to draw benefit for more than a limited period of time.",
+	"links": [],
+	"enrichment": {
+		"title": "What Can Active Labour Market Policy Do!",
+		"summary": "The paper examines active labour market policies addressing structural change and long-term unemployment, emphasizing social returns and limiting indefinite cash benefits.",
+		"keywords": ["active labour market policies", "unemployment", "structural change", "long-term unemployment", "cash benefits"],
+		"entities": [{
+			"type": "person",
+			"text": "Richard Jackman",
+			"value": "Richard Jackman",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "location",
+			"text": "Europe",
+			"value": "Europe",
+			"unit": null,
+			"confidence": 1.0
+		}],
+		"rhetorical_role": "discussion",
+		"temporal": {
+			"start_date": null,
+			"end_date": null,
+			"dates_mentioned": ["1380s"],
+			"follow_up_window_months": null
+		},
+		"geography": {
+			"countries": [],
+			"regions": ["Europe"],
+			"country_codes": []
+		},
+		"taxonomy": {
+			"almp_instruments_top": [],
+			"almp_instrument_subtypes": [],
+			"target_groups": {
+				"gender": [],
+				"age": [],
+				"labour_market_status": [],
+				"skills_qualifications": [],
+				"other_characteristics": []
+			},
+			"delivery_modes": [],
+			"delivery_channels": [],
+			"evaluation_design": [],
+			"outcomes_positive": [],
+			"outcomes_negative": [],
+			"effect_direction": "unspecified",
+			"effect_strength": "unspecified",
+			"effect_horizon": "unspecified",
+			"geography_levels": ["regional"]
+		},
+		"taxonomyDetails": {
+			"geography_levels": ["Europe"]
+		},
+		"confidence": 0.95,
+		"_usage": {
+			"prompt_tokens": 2093,
+			"completion_tokens": 509,
+			"total_tokens": 2602
+		},
+		"_model": "gpt-4o",
+		"_verifier_audit": {
+			"kept_counts": {
+				"almp_instruments_top": 0,
+				"almp_instrument_subtypes": 0,
+				"evaluation_design": 0,
+				"outcomes_positive": 0,
+				"outcomes_negative": 0,
+				"effect_direction": 0,
+				"effect_horizon": 0
+			}
+		}
+	},
+	"prev_enrichment": {},
+	"meta": {
+		"backend": "chonkie-local",
+		"semantic": true,
+		"token_count": 58,
+		"merged_forward": true,
+		"words": 193,
+		"sentences": 7,
+		"normalized_text": "# **What Can Active Labour Market Policy Do!** # Richard Jackman\\* # **Summary.** **H** During the 1380s, two dimensions in particular of the unemployment problem have been a source of increasing concern for policy-makers in Europe. One is the increasing rate of structural change, and the resulting decline in employment opportunities for unskilled manual workers. The other is the evidence of the corrosive effects of long spells of unemployment on individuals and societies. This paper attempts to assess the role of active labour market policies in addressing these problems. It argues that, in the absence of active policies, the combination of more rapid structural change and the indefinite availability of cash benefits can be expected to lead to a continuing growth in long-term unemployment. Even where schemes do not have much of a return to those who are on them, as much of the microeconomic evidence suggests, they may still have a substantial social return in preventing the emergence of long-term unemployment. The key requirement is to ensure that no unemployed person, who is able and willing to work, should be allowed to draw benefit for more than a limited period of time.",
+		"summary": "The paper examines active labour market policies addressing structural change and long-term unemployment, emphasizing social returns and limiting indefinite cash benefits."
+	},
+	"_run_id": "2eee0a8e-9be0-430f-b467-1bf09dd647f3",
+	"_ts": "2025-10-15T10:47:11.271413+00:00"
+} {
+	"id": "42b928ec58f5cf86063615172b480f7ce40dbd79",
+	"_hash": "42b928ec58f5cf86063615172b480f7ce40dbd79",
+	"doc": "What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined",
+	"chunk_id": "c0001",
+	"header": "Section",
+	"start": 1197,
+	"end": 1713,
+	"text": "The resources of the labour market authorities should be used to ensure that as a last resort some appropriate temporary job or training opportunity is made available by the end of this period. \n**W** \n\n<sup>\\*</sup> *The ntithoi is n Reader in Economics at the London School ofEconomics, and a Programme Dirprtor for Hzimizn Resozrrc~s at the Centre for Economic Performance He has written exten- .ri~~ell, on t~nemploymentpolicies and long-term unemployment.* \n\n# **at** Can Active **Labour** Market **Policy** Do!",
+	"links": [],
+	"enrichment": {
+		"title": "Can Active Labour Market Policy Do!",
+		"summary": "Labour market authorities should ensure temporary jobs or training opportunities are available as a last resort by the end of a specified period.",
+		"keywords": ["labour market", "training", "temporary jobs", "unemployment", "policy"],
+		"entities": [{
+			"type": "org",
+			"text": "Centre for Economic Performance",
+			"value": "Centre for Economic Performance",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "London School of Economics",
+			"value": "London School of Economics",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "ntithoi",
+			"value": "ntithoi",
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "policy",
+			"text": "Active Labour Market Policy",
+			"value": "Active Labour Market Policy",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "recommendation",
+		"temporal": {
+			"start_date": null,
+			"end_date": null,
+			"dates_mentioned": [],
+			"follow_up_window_months": null
+		},
+		"geography": {
+			"countries": [],
+			"regions": [],
+			"country_codes": []
+		},
+		"taxonomy": {
+			"almp_instruments_top": ["training", "direct_job_creation"],
+			"almp_instrument_subtypes": ["classroom_training", "public_works"],
+			"target_groups": {
+				"gender": [],
+				"age": [],
+				"labour_market_status": ["long_term_unemployed"],
+				"skills_qualifications": [],
+				"other_characteristics": []
+			},
+			"delivery_modes": ["classroom"],
+			"delivery_channels": ["pes_office"],
+			"evaluation_design": [],
+			"outcomes_positive": [],
+			"outcomes_negative": [],
+			"effect_direction": "unspecified",
+			"effect_strength": "unspecified",
+			"effect_horizon": "unspecified",
+			"geography_levels": []
+		},
+		"taxonomyDetails": {
+			"training": ["training opportunity is made available"],
+			"direct_job_creation": ["appropriate temporary job"],
+			"classroom_training": ["training opportunity is made available"],
+			"public_works": ["appropriate temporary job"],
+			"long_term_unemployed": ["long-term unemployment"],
+			"classroom": ["training opportunity is made available"],
+			"pes_office": ["labour market authorities should be used"]
+		},
+		"confidence": 0.95,
+		"_usage": {
+			"prompt_tokens": 1988,
+			"completion_tokens": 748,
+			"total_tokens": 2736
+		},
+		"_model": "gpt-4o",
+		"_verifier_audit": {
+			"kept_counts": {
+				"almp_instruments_top": 2,
+				"almp_instrument_subtypes": 2,
+				"evaluation_design": 0,
+				"outcomes_positive": 0,
+				"outcomes_negative": 0,
+				"effect_direction": 0,
+				"effect_horizon": 0
+			}
+		}
+	},
+	"prev_enrichment": {},
+	"meta": {
+		"backend": "chonkie-local",
+		"semantic": true,
+		"token_count": 34,
+		"attached_followers": 1,
+		"words": 78,
+		"sentences": 1,
+		"normalized_text": "The resources of the labour market authorities should be used to ensure that as a last resort some appropriate temporary job or training opportunity is made available by the end of this period. **W** <sup>\\*</sup> *The ntithoi is n Reader in Economics at the London School ofEconomics, and a Programme Dirprtor for Hzimizn Resozrrc~s at the Centre for Economic Performance He has written exten- .ri~~ell, on t~nemploymentpolicies and long-term unemployment.* # **at** Can Active **Labour** Market **Policy** Do!",
+		"summary": "Labour market authorities should ensure temporary jobs or training opportunities are available as a last resort by the end of a specified period."
+	},
+	"_run_id": "2eee0a8e-9be0-430f-b467-1bf09dd647f3",
+	"_ts": "2025-10-15T10:47:17.116827+00:00"
+} {
+	"id": "a849d7c1823dbe472fc3b6181b5edc5175a93f6c",
+	"_hash": "a849d7c1823dbe472fc3b6181b5edc5175a93f6c",
+	"doc": "What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined",
+	"chunk_id": "c0002",
+	"header": "Section",
+	"start": 1713,
+	"end": 2723,
+	"text": "# Richard Jackman\\*\n\nIn introducing its 1330 Employment *OutLook,* the OECD noted that growth both in output and employment during the 1380s had been strong, and that the unemployment rate in the OECD area had fallen for six years in succession. \n\nNonetheless, unemployment rates in most member states were significantly higher than those recorded at the previous cyclical peak in 1378-73. Further, evidence of inflationary pressure, and of high rates of capacity utilisation, suggested at that time that there was no further scope for reducing unemployment through expansion of demand. The persistent unemployment of the 1380s, it concluded \"...is basically structural in nature\".\n\nStructural unemployment is held to have arisen from profound changes both in the composition of demand for labour and in the characteristics of the lahour force. \n\nMost important has been the substantial shift in demand towards more highly skilled occupations and away from, in particular, unskilled and semi-skilled manual work.",
+	"links": [],
+	"enrichment": {
+		"title": "Section",
+		"summary": "The OECD's Employment Outlook highlights structural unemployment due to shifts in labor demand towards skilled occupations and away from unskilled work during the 1980s.",
+		"keywords": ["oecd", "employment", "unemployment", "structural", "labor demand", "skilled occupations"],
+		"entities": [{
+			"type": "person",
+			"text": "Richard Jackman",
+			"value": "Richard Jackman",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "OECD",
+			"value": "OECD",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "date",
+			"text": "1380s",
+			"value": "1980s",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "1378-73",
+			"value": "1973-1978",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "background",
+		"temporal": {
+			"start_date": "1973-01-01",
+			"end_date": "1989-12-31",
+			"dates_mentioned": ["1973-01-01", "1978-12-31", "1980-01-01", "1989-12-31"],
+			"follow_up_window_months": null
+		},
+		"geography": {
+			"countries": [],
+			"regions": ["oecd"],
+			"country_codes": []
+		},
+		"taxonomy": {
+			"almp_instruments_top": [],
+			"almp_instrument_subtypes": [],
+			"target_groups": {
+				"gender": [],
+				"age": [],
+				"labour_market_status": [],
+				"skills_qualifications": ["skilled", "unskilled"],
+				"other_characteristics": []
+			},
+			"delivery_modes": [],
+			"delivery_channels": [],
+			"evaluation_design": [],
+			"outcomes_positive": [],
+			"outcomes_negative": [],
+			"effect_direction": "unspecified",
+			"effect_strength": "unspecified",
+			"effect_horizon": "unspecified",
+			"geography_levels": ["regional"]
+		},
+		"taxonomyDetails": {
+			"skilled": ["substantial shift in demand towards more highly skilled occupations"],
+			"unskilled": ["away from unskilled and semi-skilled manual work"],
+			"none_or_not_analysed": ["persistent unemployment of the 1380s is basically structural in nature"],
+			"regional": ["unemployment rate in the OECD area"]
+		},
+		"confidence": 0.95,
+		"_usage": {
+			"prompt_tokens": 2057,
+			"completion_tokens": 727,
+			"total_tokens": 2784
+		},
+		"_model": "gpt-4o",
+		"_verifier_audit": {
+			"kept_counts": {
+				"almp_instruments_top": 0,
+				"almp_instrument_subtypes": 0,
+				"evaluation_design": 0,
+				"outcomes_positive": 0,
+				"outcomes_negative": 0,
+				"effect_direction": 0,
+				"effect_horizon": 0
+			}
+		}
+	},
+	"prev_enrichment": {},
+	"meta": {
+		"backend": "chonkie-local",
+		"semantic": true,
+		"token_count": 55,
+		"merged_forward": true,
+		"words": 153,
+		"sentences": 6,
+		"normalized_text": "# Richard Jackman\\* In introducing its 1330 Employment *OutLook,* the OECD noted that growth both in output and employment during the 1380s had been strong, and that the unemployment rate in the OECD area had fallen for six years in succession. Nonetheless, unemployment rates in most member states were significantly higher than those recorded at the previous cyclical peak in 1378-73. Further, evidence of inflationary pressure, and of high rates of capacity utilisation, suggested at that time that there was no further scope for reducing unemployment through expansion of demand. The persistent unemployment of the 1380s, it concluded \"...is basically structural in nature\". Structural unemployment is held to have arisen from profound changes both in the composition of demand for labour and in the characteristics of the lahour force. Most important has been the substantial shift in demand towards more highly skilled occupations and away from, in particular, unskilled and semi-skilled manual work.",
+		"summary": "The OECD's Employment Outlook highlights structural unemployment due to shifts in labor demand towards skilled occupations and away from unskilled work during the 1980s."
+	},
+	"_run_id": "2eee0a8e-9be0-430f-b467-1bf09dd647f3",
+	"_ts": "2025-10-15T10:47:23.720064+00:00"
+} {
+	"id": "f6593f9e3d951acd56eaec2a985ba2bd6a84e03e",
+	"_hash": "f6593f9e3d951acd56eaec2a985ba2bd6a84e03e",
+	"doc": "What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined",
+	"chunk_id": "c0003",
+	"header": "Section",
+	"start": 2723,
+	"end": 3919,
+	"text": "There have ahso been substantial changes on the supply side, in particular the increased labour force participation of married women, and in the forms of employment organisation, such as the growth in part-time and temporary work and in self-employment (OECD, 193Oa).\n\nClearly the appropriate labour market response to increased structural imbalance is greater mobility across sectors. \n\nHowever, most OECD countries (the United States being a conspicuous exception) provide a reasonable measure of income support for unemployed people. Unemployment\n\n*<sup>\\*</sup>I am very grateful to Anders B~orklund and, especially, to Lars Calmforsfor extremely helpfil comments on an earlier drafi of this paper, and to the Centre for Economic Pevformance,for research support. \n\nThe Centre for Economic Pevformance isjnanced by the Economic and Social Research Council.* \n\nbenefits reduce the incentive to incur the costs and risks of occupational or geographical mobility. Some unemployed people appear to have resigned themselves to labour market inactivity and to life on benefits. There is also concern that the benefit system is being abused, particularly among young people, by the idle and fraudulent.",
+	"links": [],
+	"enrichment": {
+		"title": "Section",
+		"summary": "The text discusses labour market changes, income support for unemployed individuals, and concerns about benefit system abuse.",
+		"keywords": ["labour market", "income support", "unemployment", "mobility", "benefits"],
+		"entities": [{
+			"type": "org",
+			"text": "OECD",
+			"value": "Organisation for Economic Co-operation and Development",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Anders B~orklund",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "person",
+			"text": "Lars Calmfors",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "Centre for Economic Pevformance",
+			"value": "Centre for Economic Performance",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "Economic and Social Research Council",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "location",
+			"text": "United States",
+			"value": "United States",
+			"unit": null,
+			"confidence": 1.0
+		}],
+		"rhetorical_role": "discussion",
+		"temporal": {
+			"start_date": null,
+			"end_date": null,
+			"dates_mentioned": ["1930"],
+			"follow_up_window_months": null
+		},
+		"geography": {
+			"countries": ["United States"],
+			"regions": [],
+			"country_codes": ["US"]
+		},
+		"taxonomy": {
+			"almp_instruments_top": [],
+			"almp_instrument_subtypes": [],
+			"target_groups": {
+				"gender": ["women", "unspecified"],
+				"age": ["youth", "unspecified"],
+				"labour_market_status": ["unemployed_general", "inactive"],
+				"skills_qualifications": ["unspecified"],
+				"other_characteristics": ["unspecified"]
+			},
+			"delivery_modes": [],
+			"delivery_channels": [],
+			"evaluation_design": [],
+			"outcomes_positive": [],
+			"outcomes_negative": ["stigmatisation"],
+			"effect_direction": "unspecified",
+			"effect_strength": "unspecified",
+			"effect_horizon": "unspecified",
+			"geography_levels": ["multi_country", "country"]
+		},
+		"taxonomyDetails": {
+			"women": ["increased labour force participation of married women"],
+			"youth": ["concern that the benefit system is being abused, particularly among young people"],
+			"unemployed_general": ["income support for unemployed people"],
+			"inactive": ["resigned themselves to labour market inactivity"],
+			"locking_in": ["benefits reduce the incentive to incur the costs and risks of mobility"],
+			"stigmatisation": ["concern that the benefit system is being abused"],
+			"negative": ["benefits reduce the incentive to incur the costs and risks of mobility"],
+			"multi_country": ["most OECD countries"],
+			"country": ["United States being a conspicuous exception"]
+		},
+		"confidence": 0.95,
+		"_usage": {
+			"prompt_tokens": 2096,
+			"completion_tokens": 869,
+			"total_tokens": 2965
+		},
+		"_model": "gpt-4o",
+		"_verifier_audit": {
+			"kept_counts": {
+				"almp_instruments_top": 0,
+				"almp_instrument_subtypes": 0,
+				"evaluation_design": 0,
+				"outcomes_positive": 0,
+				"outcomes_negative": 1,
+				"effect_direction": 0,
+				"effect_horizon": 0
+			}
+		}
+	},
+	"prev_enrichment": {},
+	"meta": {
+		"backend": "chonkie-local",
+		"semantic": true,
+		"token_count": 73,
+		"merged_forward": true,
+		"words": 174,
+		"sentences": 7,
+		"normalized_text": "There have ahso been substantial changes on the supply side, in particular the increased labour force participation of married women, and in the forms of employment organisation, such as the growth in part-time and temporary work and in self-employment (OECD, 193Oa). Clearly the appropriate labour market response to increased structural imbalance is greater mobility across sectors. However, most OECD countries (the United States being a conspicuous exception) provide a reasonable measure of income support for unemployed people. Unemployment *<sup>\\*</sup>I am very grateful to Anders B~orklund and, especially, to Lars Calmforsfor extremely helpfil comments on an earlier drafi of this paper, and to the Centre for Economic Pevformance,for research support. The Centre for Economic Pevformance isjnanced by the Economic and Social Research Council.* benefits reduce the incentive to incur the costs and risks of occupational or geographical mobility. Some unemployed people appear to have resigned themselves to labour market inactivity and to life on benefits. There is also concern that the benefit system is being abused, particularly among young people, by the idle and fraudulent.",
+		"summary": "The text discusses labour market changes, income support for unemployed individuals, and concerns about benefit system abuse."
+	},
+	"_run_id": "2eee0a8e-9be0-430f-b467-1bf09dd647f3",
+	"_ts": "2025-10-15T10:47:30.117577+00:00"
+} {
 	"id": "e2d8fb7bc0034928d404353a1bd45df528e2099f",
 	"_hash": "e2d8fb7bc0034928d404353a1bd45df528e2099f",
 	"doc": "What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined",
@@ -102,4 +543,622 @@
 	},
 	"_run_id": "2eee0a8e-9be0-430f-b467-1bf09dd647f3",
 	"_ts": "2025-10-15T10:47:36.635147+00:00"
+} {
+	"id": "d21d820f9115579f90b49ae8fa9a6e3649f24669",
+	"_hash": "d21d820f9115579f90b49ae8fa9a6e3649f24669",
+	"doc": "What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined",
+	"chunk_id": "c0005",
+	"header": "Section",
+	"start": 4996,
+	"end": 6877,
+	"text": "But this immediately raises wo questions. First, economies are always subject to structural change of various sorts, yet unemployment rates vary a lot across countries and over time, so does it make sense to attribute unemployment to structural causes? Second, even if it is true that in some sense unemployment is structural, is not the adjustment to shifts in demand and technology something which prices and markers are supposed to be for? \n\nmat are the causes of market failure in this context, and how far can they justify government intervention!\n\nIn Section 1 of the paper 1 argue, primarily on the basis of evidence from the United States, that structural changes confronting the industrialised economies are indeed more substantial than in earlier decades and that the outcome of market forces in these circumstances has been a marked increase in income inequality. In most European countries, including Sweden, the political commitment to social insurance is likely to rule out American levels of inequality, and hence will blunt the capacity of market forces to achieve the required structural change. The problem confronting policy-makers in Sweden and elsewhere in Europe is how to achieve labour mobility without removing social protection from those whose jobs are lost in the process of change.\n\nSection 2 of the paper offers a brief discussion of the relative merits in principle of active as against passive labour market policies in the context of the dual objectives of encouraging labour mobility and maintaining social protection. The main conclusion of the section is that active policies can maintain people's incomes without creating a disincentive to mobility, whereas cash benefits will discourage mobility.\n\nWith these considerations in mind, Sections 3 and 4 review the evidence from OECD countries on the effectiveness of active labour market policies.",
+	"links": [],
+	"enrichment": {
+		"title": "Section",
+		"summary": "The text discusses structural unemployment causes, market failures, and the role of active labour market policies in balancing labour mobility and social protection.",
+		"keywords": ["structural change", "unemployment", "labour mobility", "social protection", "active policies"],
+		"entities": [{
+			"type": "location",
+			"text": "United States",
+			"value": "United States",
+			"unit": null,
+			"confidence": 1
+		}, {
+			"type": "location",
+			"text": "Sweden",
+			"value": "Sweden",
+			"unit": null,
+			"confidence": 1
+		}, {
+			"type": "org",
+			"text": "OECD",
+			"value": "Organisation for Economic Co-operation and Development",
+			"unit": null,
+			"confidence": 1
+		}, {
+			"type": "policy",
+			"text": "active labour market policies",
+			"value": "active labour market policies",
+			"unit": null,
+			"confidence": 1
+		}, {
+			"type": "policy",
+			"text": "social insurance",
+			"value": "social insurance",
+			"unit": null,
+			"confidence": 1
+		}],
+		"rhetorical_role": "discussion",
+		"temporal": {
+			"start_date": null,
+			"end_date": null,
+			"dates_mentioned": [],
+			"follow_up_window_months": null
+		},
+		"geography": {
+			"countries": ["United States", "Sweden"],
+			"regions": ["Europe"],
+			"country_codes": ["US", "SE"]
+		},
+		"taxonomy": {
+			"almp_instruments_top": ["employment_incentives", "supported_employment"],
+			"almp_instrument_subtypes": [],
+			"target_groups": {
+				"gender": [],
+				"age": [],
+				"labour_market_status": [],
+				"skills_qualifications": [],
+				"other_characteristics": []
+			},
+			"delivery_modes": [],
+			"delivery_channels": [],
+			"evaluation_design": [],
+			"outcomes_positive": ["individual_income_increase"],
+			"outcomes_negative": [],
+			"effect_direction": "unspecified",
+			"effect_strength": "unspecified",
+			"effect_horizon": "unspecified",
+			"geography_levels": ["country", "multi_country"]
+		},
+		"taxonomyDetails": {
+			"employment_incentives": ["active policies can maintain people's incomes"],
+			"supported_employment": ["active policies can maintain people's incomes"],
+			"individual_income_increase": ["marked increase in income inequality"],
+			"disincentive_to_mobility": ["cash benefits will discourage mobility"],
+			"multi_country": ["policy-makers in Sweden and elsewhere in Europe"],
+			"country": ["Sweden and elsewhere in Europe"]
+		},
+		"confidence": 0.95,
+		"_usage": {
+			"prompt_tokens": 2192,
+			"completion_tokens": 781,
+			"total_tokens": 2973
+		},
+		"_model": "gpt-4o",
+		"_verifier_audit": {
+			"kept_counts": {
+				"almp_instruments_top": 2,
+				"almp_instrument_subtypes": "0e+0",
+				"evaluation_design": "0e+0",
+				"outcomes_positive": 1,
+				"outcomes_negative": "0e+0",
+				"effect_direction": "0e+0",
+				"effect_horizon": "0e+0"
+			}
+		}
+	},
+	"prev_enrichment": {},
+	"meta": {
+		"backend": "chonkie-local",
+		"semantic": true,
+		"token_count": 80,
+		"merged_forward": true,
+		"words": 295,
+		"sentences": 9,
+		"normalized_text": "But this immediately raises wo questions. First, economies are always subject to structural change of various sorts, yet unemployment rates vary a lot across countries and over time, so does it make sense to attribute unemployment to structural causes? Second, even if it is true that in some sense unemployment is structural, is not the adjustment to shifts in demand and technology something which prices and markers are supposed to be for? mat are the causes of market failure in this context, and how far can they justify government intervention! In Section 1 of the paper 1 argue, primarily on the basis of evidence from the United States, that structural changes confronting the industrialised economies are indeed more substantial than in earlier decades and that the outcome of market forces in these circumstances has been a marked increase in income inequality. In most European countries, including Sweden, the political commitment to social insurance is likely to rule out American levels of inequality, and hence will blunt the capacity of market forces to achieve the required structural change. The problem confronting policy-makers in Sweden and elsewhere in Europe is how to achieve labour mobility without removing social protection from those whose jobs are lost in the process of change. Section 2 of the paper offers a brief discussion of the relative merits in principle of active as against passive labour market policies in the context of the dual objectives of encouraging labour mobility and maintaining social protection. The main conclusion of the section is that active policies can maintain people's incomes without creating a disincentive to mobility, whereas cash benefits will discourage mobility. With these considerations in mind, Sections 3 and 4 review the evidence from OECD countries on the effectiveness of active labour market policies.",
+		"summary": "The text discusses structural unemployment causes, market failures, and the role of active labour market policies in balancing labour mobility and social protection."
+	},
+	"_run_id": "2eee0a8e-9be0-430f-b467-1bf09dd647f3",
+	"_ts": "2025-10-15T10:47:42.973635+00:00"
+} {
+	"id": "df77c32b2346d4ea85b94222a9dc1b6c19b68e63",
+	"_hash": "df77c32b2346d4ea85b94222a9dc1b6c19b68e63",
+	"doc": "What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined",
+	"chunk_id": "c0006",
+	"header": "Section",
+	"start": 6877,
+	"end": 7811,
+	"text": "Section 3 surveys studies on the effects of individual programmes on the employment prospects or subsequent earnings of those participating in them. Section 4 is concerned with macroeconomic evaluations, that is whether or not countries which invest more heavily in active policies achieve higher degrees of labour mobility or lower overall unemployment rates than those which do not. It has to be said that overall the evidence is not enormously compelling, but on balance tends to suggest that active policies can have beneficial effects at both micro and macro levels.\n\nThe paper concludes, in Section *5,* by suggesting that the policy choice facing the industrialised countries in this context is to strike a balance between greater reliance on the market (implying greater income inequality dnd lower benefits for the unemployed) on the one hand, and fuller and more effective use of active labour market policies on the other.",
+	"links": [],
+	"enrichment": {
+		"title": "Section",
+		"summary": "The text discusses micro and macro evaluations of active labour market policies, suggesting they have beneficial effects, and concludes with a policy choice for industrialised countries.",
+		"keywords": ["active policies", "employment", "labour mobility", "unemployment", "income inequality"],
+		"entities": [{
+			"type": "policy",
+			"text": "active labour market policies",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "location",
+			"text": "countries",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "location",
+			"text": "industrialised countries",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}],
+		"rhetorical_role": "discussion",
+		"temporal": {
+			"start_date": null,
+			"end_date": null,
+			"dates_mentioned": [],
+			"follow_up_window_months": null
+		},
+		"geography": {
+			"countries": [],
+			"regions": [],
+			"country_codes": []
+		},
+		"taxonomy": {
+			"almp_instruments_top": [],
+			"almp_instrument_subtypes": [],
+			"target_groups": {
+				"gender": [],
+				"age": [],
+				"labour_market_status": [],
+				"skills_qualifications": [],
+				"other_characteristics": []
+			},
+			"delivery_modes": [],
+			"delivery_channels": [],
+			"evaluation_design": [],
+			"outcomes_positive": [],
+			"outcomes_negative": [],
+			"effect_direction": "positive",
+			"effect_strength": "unspecified",
+			"effect_horizon": "unspecified",
+			"geography_levels": ["country"]
+		},
+		"taxonomyDetails": {
+			"effect_direction": ["active policies can have beneficial effects"],
+			"geography_levels": ["countries which invest more heavily in active policies"]
+		},
+		"confidence": 0.95,
+		"_usage": {
+			"prompt_tokens": 2030,
+			"completion_tokens": 527,
+			"total_tokens": 2557
+		},
+		"_model": "gpt-4o",
+		"_verifier_audit": {
+			"kept_counts": {
+				"almp_instruments_top": 0,
+				"almp_instrument_subtypes": 0,
+				"evaluation_design": 0,
+				"outcomes_positive": 0,
+				"outcomes_negative": 0,
+				"effect_direction": 1,
+				"effect_horizon": 0
+			}
+		}
+	},
+	"prev_enrichment": {},
+	"meta": {
+		"backend": "chonkie-local",
+		"semantic": true,
+		"token_count": 166,
+		"words": 148,
+		"sentences": 4,
+		"normalized_text": "Section 3 surveys studies on the effects of individual programmes on the employment prospects or subsequent earnings of those participating in them. Section 4 is concerned with macroeconomic evaluations, that is whether or not countries which invest more heavily in active policies achieve higher degrees of labour mobility or lower overall unemployment rates than those which do not. It has to be said that overall the evidence is not enormously compelling, but on balance tends to suggest that active policies can have beneficial effects at both micro and macro levels. The paper concludes, in Section *5,* by suggesting that the policy choice facing the industrialised countries in this context is to strike a balance between greater reliance on the market (implying greater income inequality dnd lower benefits for the unemployed) on the one hand, and fuller and more effective use of active labour market policies on the other.",
+		"summary": "The text discusses micro and macro evaluations of active labour market policies, suggesting they have beneficial effects, and concludes with a policy choice for industrialised countries."
+	},
+	"_run_id": "2eee0a8e-9be0-430f-b467-1bf09dd647f3",
+	"_ts": "2025-10-15T10:47:47.569920+00:00"
+} {
+	"id": "203d4c6bc2fd4e5c973907bb52ceac2ef5051ac3",
+	"_hash": "203d4c6bc2fd4e5c973907bb52ceac2ef5051ac3",
+	"doc": "What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined",
+	"chunk_id": "c0007",
+	"header": "Section",
+	"start": 7811,
+	"end": 9967,
+	"text": "Sweden is a!ready at one extreme, and though its system may have served it well in holding down urlemploynlerlt in the past, at current rates of unemployment it may be beconling prohibitively expensive (quite apart from exhausting administrative capacity). In these circumstances there may be an argument for relying to a greater extent on the market, which would imply widening wage differentials and a cutback in the level of unemployment benefit. I suggest that the policy to be avoided is a cutback in active measures in conjunction with an extension of income support for the unemployed.\n\n# **I. Recent developments in OECD labour markets**\n\nThe unprecedented severity and persistence of unemployment in many OECD countries during the 1980s has been the subject of extensive research. \n\nWhile many questions remain unresolved, there appears to be agreement on three main points:\n\n(i) The sharp rise in unemployment at the beginning of the 1980s can be attributed to the supply shocks associated with OPEC 11, and the adoption of restrictive monetary policies in response to these shocks. In the early 1980s, high unemployment was associated with falling inflation.\n\n(ii) From the mid 1980s, unemployment remained high but inflation stopped falling. While this might suggest a rise in equilibrium unemployment, there is no evidence that any of the aggregative factors associated with higher equilibrium unemployment (such as trade union power, the generosity of unemployment benefits, payroll taxes or other labour costs) had increased - if anything the reverse occurred (see, e.g. Bean et a[., 1987).\n\n(iii) While long-term unemployment has an important role in explaining the dynamics of high unemployment, and can exacerbate and prolong the unemployment effects of adverse shocks, it cannot of itself be an explanation of a higher permanent unemployment rate. In the UK, for example, comparing the mid-1980s with the late 1970s, while long-term unemployment rose by a factor of five over the same period short-term unemployment doubled and the increase in short-term unemployment accounted for about half the total increase in unemployment (see, e.g.",
+	"links": [],
+	"enrichment": {
+		"title": "Section",
+		"summary": "The text discusses Sweden's unemployment challenges, OECD labor market trends in the 1980s, and factors influencing unemployment dynamics, including supply shocks, monetary policies, and long-term unemployment effects.",
+		"keywords": ["sweden", "unemployment", "oecd", "labor market", "1980s", "supply shocks", "monetary policies"],
+		"entities": [{
+			"type": "location",
+			"text": "Sweden",
+			"value": "Sweden",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "org",
+			"text": "OECD",
+			"value": "Organisation for Economic Co-operation and Development",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "date",
+			"text": "1980s",
+			"value": "1980",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "person",
+			"text": "Bean et al.",
+			"value": "Bean et al.",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "location",
+			"text": "UK",
+			"value": "United Kingdom",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "date",
+			"text": "mid-1980s",
+			"value": "1985",
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "date",
+			"text": "late 1970s",
+			"value": "1979",
+			"unit": null,
+			"confidence": 0.8
+		}],
+		"rhetorical_role": "discussion",
+		"temporal": {
+			"start_date": null,
+			"end_date": null,
+			"dates_mentioned": ["1980s", "mid-1980s", "late 1970s"],
+			"follow_up_window_months": null
+		},
+		"geography": {
+			"countries": ["Sweden", "United Kingdom"],
+			"regions": [],
+			"country_codes": ["SE", "GB"]
+		},
+		"taxonomy": {
+			"almp_instruments_top": [],
+			"almp_instrument_subtypes": [],
+			"target_groups": {
+				"gender": [],
+				"age": [],
+				"labour_market_status": [],
+				"skills_qualifications": [],
+				"other_characteristics": []
+			},
+			"delivery_modes": [],
+			"delivery_channels": [],
+			"evaluation_design": [],
+			"outcomes_positive": [],
+			"outcomes_negative": [],
+			"effect_direction": "unspecified",
+			"effect_strength": "unspecified",
+			"effect_horizon": "unspecified",
+			"geography_levels": []
+		},
+		"taxonomyDetails": {},
+		"confidence": 0.95,
+		"_usage": {
+			"prompt_tokens": 2287,
+			"completion_tokens": 674,
+			"total_tokens": 2961
+		},
+		"_model": "gpt-4o",
+		"_verifier_audit": {
+			"kept_counts": {
+				"almp_instruments_top": 0,
+				"almp_instrument_subtypes": 0,
+				"evaluation_design": 0,
+				"outcomes_positive": 0,
+				"outcomes_negative": 0,
+				"effect_direction": 0,
+				"effect_horizon": 0
+			}
+		}
+	},
+	"prev_enrichment": {},
+	"meta": {
+		"backend": "chonkie-local",
+		"semantic": true,
+		"token_count": 158,
+		"merged_forward": true,
+		"words": 335,
+		"sentences": 9,
+		"normalized_text": "Sweden is a!ready at one extreme, and though its system may have served it well in holding down urlemploynlerlt in the past, at current rates of unemployment it may be beconling prohibitively expensive (quite apart from exhausting administrative capacity). In these circumstances there may be an argument for relying to a greater extent on the market, which would imply widening wage differentials and a cutback in the level of unemployment benefit. I suggest that the policy to be avoided is a cutback in active measures in conjunction with an extension of income support for the unemployed. # **I. Recent developments in OECD labour markets** The unprecedented severity and persistence of unemployment in many OECD countries during the 1980s has been the subject of extensive research. While many questions remain unresolved, there appears to be agreement on three main points: (i) The sharp rise in unemployment at the beginning of the 1980s can be attributed to the supply shocks associated with OPEC 11, and the adoption of restrictive monetary policies in response to these shocks. In the early 1980s, high unemployment was associated with falling inflation. (ii) From the mid 1980s, unemployment remained high but inflation stopped falling. While this might suggest a rise in equilibrium unemployment, there is no evidence that any of the aggregative factors associated with higher equilibrium unemployment (such as trade union power, the generosity of unemployment benefits, payroll taxes or other labour costs) had increased - if anything the reverse occurred (see, e.g. Bean et a[., 1987). (iii) While long-term unemployment has an important role in explaining the dynamics of high unemployment, and can exacerbate and prolong the unemployment effects of adverse shocks, it cannot of itself be an explanation of a higher permanent unemployment rate. In the UK, for example, comparing the mid-1980s with the late 1970s, while long-term unemployment rose by a factor of five over the same period short-term unemployment doubled and the increase in short-term unemployment accounted for about half the total increase in unemployment (see, e.g.",
+		"summary": "The text discusses Sweden's unemployment challenges, OECD labor market trends in the 1980s, and factors influencing unemployment dynamics, including supply shocks, monetary policies, and long-term unemployment effects."
+	},
+	"_run_id": "2eee0a8e-9be0-430f-b467-1bf09dd647f3",
+	"_ts": "2025-10-15T10:47:52.767590+00:00"
+} {
+	"id": "a29f9d272ead00fc09f1f21060aa770380f4d71c",
+	"_hash": "a29f9d272ead00fc09f1f21060aa770380f4d71c",
+	"doc": "What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined",
+	"chunk_id": "c0008",
+	"header": "Section",
+	"start": 9967,
+	"end": 11232,
+	"text": "Haskel and Jackman, 1988).\n\nBy the end of the 1980s, the belief that continuing high unemployment could be explained primarily in terms of a never ending hangover from the deflationary policies of the beginning of the decade was becoming increasingly hard to sustain. Theories of unemployment hysteresis (the idea that the equilibrium unemployment rate would adjust to the actual unemployment rate, so that a temporary shock to unemployment would persist indefinitely) had been couched in terms of insiderloutsider models (Blanchard and Summers, 1986; Lindbeck and Snower, 1988) and in terms of the effects of long-term unemployment (Layard and Nickell, 1987; Blanchard and Diamond, 1994). \n\nBut both theoretical argument and empirical evidence (reviewed, e.g. by Layard *et* al., 1991) appear to establish that though these factors were important, the degree of hysteresis was significantly less than 100 percent. The return of unemployment to its long-run equilibrium might be prolonged but would not be prevented by these types of factors.\n\nThe idea that worsening structural imbalance in the labour market could be the explanation of persistent high unemployment had of course been frequently proposed. But evidence on sectoral unemployment rates (surveyed, e.g.",
+	"links": [],
+	"enrichment": {
+		"title": "Section",
+		"summary": "Theories of unemployment hysteresis were debated in the 1980s, with evidence suggesting structural imbalances and long-term unemployment contributed to persistent high unemployment but did not prevent equilibrium recovery.",
+		"keywords": ["unemployment", "hysteresis", "labour market", "structural imbalance", "long-term unemployment"],
+		"entities": [{
+			"type": "person",
+			"text": "Haskel",
+			"value": "Haskel",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Jackman",
+			"value": "Jackman",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Blanchard",
+			"value": "Blanchard",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Summers",
+			"value": "Summers",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Lindbeck",
+			"value": "Lindbeck",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Snower",
+			"value": "Snower",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Layard",
+			"value": "Layard",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Nickell",
+			"value": "Nickell",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Diamond",
+			"value": "Diamond",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "Layard et al.",
+			"value": "Layard et al.",
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "date",
+			"text": "1980s",
+			"value": "1980",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "1986",
+			"value": "1986",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "1987",
+			"value": "1987",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "1988",
+			"value": "1988",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "1991",
+			"value": "1991",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "discussion",
+		"temporal": {
+			"start_date": null,
+			"end_date": null,
+			"dates_mentioned": ["1980", "1986", "1987", "1988", "1991"],
+			"follow_up_window_months": null
+		},
+		"geography": {
+			"countries": [],
+			"regions": [],
+			"country_codes": []
+		},
+		"taxonomy": {
+			"almp_instruments_top": [],
+			"almp_instrument_subtypes": [],
+			"target_groups": {
+				"gender": [],
+				"age": [],
+				"labour_market_status": [],
+				"skills_qualifications": [],
+				"other_characteristics": []
+			},
+			"delivery_modes": [],
+			"delivery_channels": [],
+			"evaluation_design": [],
+			"outcomes_positive": [],
+			"outcomes_negative": [],
+			"effect_direction": "unspecified",
+			"effect_strength": "unspecified",
+			"effect_horizon": "unspecified",
+			"geography_levels": []
+		},
+		"taxonomyDetails": {},
+		"confidence": 0.95,
+		"_usage": {
+			"prompt_tokens": 2130,
+			"completion_tokens": 925,
+			"total_tokens": 3055
+		},
+		"_model": "gpt-4o",
+		"_verifier_audit": {
+			"kept_counts": {
+				"almp_instruments_top": 0,
+				"almp_instrument_subtypes": 0,
+				"evaluation_design": 0,
+				"outcomes_positive": 0,
+				"outcomes_negative": 0,
+				"effect_direction": 0,
+				"effect_horizon": 0
+			}
+		}
+	},
+	"prev_enrichment": {},
+	"meta": {
+		"backend": "chonkie-local",
+		"semantic": true,
+		"token_count": 142,
+		"merged_forward": true,
+		"words": 190,
+		"sentences": 7,
+		"normalized_text": "Haskel and Jackman, 1988). By the end of the 1980s, the belief that continuing high unemployment could be explained primarily in terms of a never ending hangover from the deflationary policies of the beginning of the decade was becoming increasingly hard to sustain. Theories of unemployment hysteresis (the idea that the equilibrium unemployment rate would adjust to the actual unemployment rate, so that a temporary shock to unemployment would persist indefinitely) had been couched in terms of insiderloutsider models (Blanchard and Summers, 1986; Lindbeck and Snower, 1988) and in terms of the effects of long-term unemployment (Layard and Nickell, 1987; Blanchard and Diamond, 1994). But both theoretical argument and empirical evidence (reviewed, e.g. by Layard *et* al., 1991) appear to establish that though these factors were important, the degree of hysteresis was significantly less than 100 percent. The return of unemployment to its long-run equilibrium might be prolonged but would not be prevented by these types of factors. The idea that worsening structural imbalance in the labour market could be the explanation of persistent high unemployment had of course been frequently proposed. But evidence on sectoral unemployment rates (surveyed, e.g.",
+		"summary": "Theories of unemployment hysteresis were debated in the 1980s, with evidence suggesting structural imbalances and long-term unemployment contributed to persistent high unemployment but did not prevent equilibrium recovery."
+	},
+	"_run_id": "2eee0a8e-9be0-430f-b467-1bf09dd647f3",
+	"_ts": "2025-10-15T10:47:59.201004+00:00"
+} {
+	"id": "e55c0502e0ee4e47c1e911337b1c91a703890f00",
+	"_hash": "e55c0502e0ee4e47c1e911337b1c91a703890f00",
+	"doc": "What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined",
+	"chunk_id": "c0009",
+	"header": "Section",
+	"start": 11232,
+	"end": 11733,
+	"text": "by Layard *et* aL, 1991, ch. 6) seem to suggest that while structural imbalance was a serious problem, it had got no worse during the 1980s. By the end of the decade, however, evidence on relative wages, in particular from the United States, presented a very different picture.\n\nThis section first looks at the evidence from the United States, then very briefly returns to the relative unemployment rates, and finally sets out a simple model of structural change as a framework for policy discussion.",
+	"links": [],
+	"enrichment": {
+		"title": "Section",
+		"summary": "The section examines evidence on structural imbalance, relative wages, and unemployment rates, presenting a model for policy discussion.",
+		"keywords": ["structural imbalance", "relative wages", "unemployment rates", "policy discussion", "model"],
+		"entities": [{
+			"type": "person",
+			"text": "Layard",
+			"value": "Layard",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "1991",
+			"value": "1991",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "location",
+			"text": "United States",
+			"value": "United States",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "1980s",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "date",
+			"text": "end of the decade",
+			"value": null,
+			"unit": null,
+			"confidence": 0.7
+		}],
+		"rhetorical_role": "discussion",
+		"temporal": {
+			"start_date": null,
+			"end_date": null,
+			"dates_mentioned": ["1991", "1980s", "end of the decade"],
+			"follow_up_window_months": null
+		},
+		"geography": {
+			"countries": ["United States"],
+			"regions": [],
+			"country_codes": ["US"]
+		},
+		"taxonomy": {
+			"almp_instruments_top": [],
+			"almp_instrument_subtypes": [],
+			"target_groups": {
+				"gender": [],
+				"age": [],
+				"labour_market_status": [],
+				"skills_qualifications": [],
+				"other_characteristics": []
+			},
+			"delivery_modes": [],
+			"delivery_channels": [],
+			"evaluation_design": [],
+			"outcomes_positive": [],
+			"outcomes_negative": [],
+			"effect_direction": "unspecified",
+			"effect_strength": "unspecified",
+			"effect_horizon": "unspecified",
+			"geography_levels": []
+		},
+		"taxonomyDetails": {},
+		"confidence": 0.95,
+		"_usage": {
+			"prompt_tokens": 1971,
+			"completion_tokens": 562,
+			"total_tokens": 2533
+		},
+		"_model": "gpt-4o",
+		"_verifier_audit": {
+			"kept_counts": {
+				"almp_instruments_top": 0,
+				"almp_instrument_subtypes": 0,
+				"evaluation_design": 0,
+				"outcomes_positive": 0,
+				"outcomes_negative": 0,
+				"effect_direction": 0,
+				"effect_horizon": 0
+			}
+		}
+	},
+	"prev_enrichment": {},
+	"meta": {
+		"backend": "chonkie-local",
+		"semantic": true,
+		"token_count": 102,
+		"words": 84,
+		"sentences": 4,
+		"normalized_text": "by Layard *et* aL, 1991, ch. 6) seem to suggest that while structural imbalance was a serious problem, it had got no worse during the 1980s. By the end of the decade, however, evidence on relative wages, in particular from the United States, presented a very different picture. This section first looks at the evidence from the United States, then very briefly returns to the relative unemployment rates, and finally sets out a simple model of structural change as a framework for policy discussion.",
+		"summary": "The section examines evidence on structural imbalance, relative wages, and unemployment rates, presenting a model for policy discussion."
+	},
+	"_run_id": "2eee0a8e-9be0-430f-b467-1bf09dd647f3",
+	"_ts": "2025-10-15T10:48:03.899566+00:00"
 }
