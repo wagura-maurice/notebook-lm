@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NotebookLM - Curator Page</title>
+
+    <!-- Meta Tags -->
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https: data:; img-src 'self' https: data: blob:; connect-src 'self' https: blob:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self' blob:;" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js with persistence plugin -->
+    <script
+      type="application/javascript"
+      src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"
+    ></script>
+    <!-- ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Alpine JS -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
+
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js" id="pdfjs-script"></script>
+    <script>
+        // Set worker path after the script loads
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.pdfjsLib) {
+                window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+                    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+            }
+        });
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf_viewer.min.css" />
+
+    <!-- App Initialization -->
+    <script type="application/javascript">
+      document.addEventListener("alpine:init", () => {
+        // Store for shared state
+        Alpine.store('scroll', {
+          // Track scroll state for each column
+          scrollStates: {},
+          
+          // Function to handle scroll position changes
+          handleScrollPosition(columnName, isAtBottom) {
+            const isMobile = Alpine.store('app').isMobile;
+            const screenType = isMobile ? 'mobile' : 'desktop';
+            
+            // Initialize state for this column if it doesn't exist
+            if (this.scrollStates[columnName] === undefined) {
+              this.scrollStates[columnName] = { wasAtBottom: false };
+            }
+            
+            const columnState = this.scrollStates[columnName];
+            
+            // Check if we've crossed the threshold
+            if (isAtBottom && !columnState.wasAtBottom) {
+              // Just reached the bottom
+              console.log(`[${new Date().toISOString()}] Reached bottom of ${columnName} column on ${screenType} view`);
+              
+              if (isMobile) {
+                console.log('Mobile view: Bottom reached - consider showing a "Load More" button');
+              } else {
+                console.log('Desktop view: Bottom reached - could auto-load more content');
+              }
+              
+            } else if (!isAtBottom && columnState.wasAtBottom) {
+              // Just scrolled away from bottom
+              console.log(`[${new Date().toISOString()}] Scrolled away from bottom of ${columnName} column on ${screenType} view`);
+              
+              if (isMobile) {
+                console.log('Mobile view: Scrolled up from bottom - might want to hide any bottom action buttons');
+              } else {
+                console.log('Desktop view: Scrolled up from bottom - could pause any auto-loading');
+              }
+            }
+            
+            // Update the state
+            columnState.wasAtBottom = isAtBottom;
+          }
+        });
+
+        // Custom directive to detect scroll position
+        Alpine.directive('at-bottom', (el, { expression }, { evaluateLater }) => {
+          const handleScroll = () => {
+            const isAtBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 5; // 5px threshold
+            
+            // Always call the handler with current scroll state
+            if (expression) {
+              const columnName = expression.replace(/["']/g, ''); // Clean up the column name
+              Alpine.store('scroll').handleScrollPosition(columnName, isAtBottom);
+              
+              // Also execute any additional expression
+              Alpine.evaluate(el, expression);
+            }
+          };
+          
+          // Initial check
+          handleScroll();
+          
+          // Check on scroll with debounce
+          let ticking = false;
+          el.addEventListener('scroll', () => {
+            if (!ticking) {
+              window.requestAnimationFrame(() => {
+                handleScroll();
+                ticking = false;
+              });
+              ticking = true;
+            }
+          });
+          
+          // Cleanup
+          return () => {
+            el.removeEventListener('scroll', handleScroll);
+          };
+        });
+        
+        // Store for shared state
+        Alpine.store("app", {
+          activeTab: Alpine.$persist("middle-column"),
+          isMobile: window.innerWidth < 1024,
+          checkScreenSize() {
+            const isMobile = window.innerWidth < 1024;
+            console.log('Screen size changed:', isMobile ? 'Mobile' : 'Desktop');
+            this.isMobile = isMobile;
+            return isMobile;
+          }
+        });
+
+        // Initial check
+        Alpine.store('app').checkScreenSize();
+
+        // Add resize listener
+        window.addEventListener('resize', () => {
+          Alpine.store('app').checkScreenSize();
+        });
+
+        // Global app functions
+        window.app = {
+          switchTab: function (tabId) {
+            // Hide all columns
+            document.querySelectorAll(".column").forEach((col) => {
+              col.classList.remove("active");
+            });
+
+            // Show selected column
+            const target = document.getElementById(tabId);
+            if (target) {
+              target.classList.add("active");
+              // Store the full tab ID with -column suffix
+              Alpine.store("app").activeTab = tabId;
+            }
+          },
+        };
+      });
+
+      // Initialize when DOM is ready
+      document.addEventListener("DOMContentLoaded", () => {
+        // Set initial tab - ensure it has the -column suffix
+        let initialTab = Alpine.store("app").activeTab;
+        if (!initialTab.endsWith("-column")) {
+          initialTab = "middle-column"; // Default to middle column if format is incorrect
+          Alpine.store("app").activeTab = initialTab;
+        }
+        window.app.switchTab(initialTab);
+      });
+    </script>
+
+    <!-- Tailwind Configuration -->
+    <script
+      type="application/javascript"
+      src="./js/tailwind-config.js"
+    ></script>
+
+    <!-- Application Scripts -->
+    <script type="application/javascript" src="./js/index2.js"></script>
+    <script type="application/javascript" src="./js/app.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./css/app.css" />
+    <link rel="stylesheet" href="./css/index2.css" />
+    <link rel="stylesheet" href="./css/tour.css" />
+</head>
+
+<body class="h-screen flex flex-col bg-eu-white font-sans text-text-primary overflow-hidden" style="--tw-bg-opacity: 1"
+    x-data="{
+        preloaderVisible: true,
+        profileDropdownOpen: false,
+        handleDropdownMenuItemClick(action) {
+            this.profileDropdownOpen = false;
+            switch (action) {
+                case 'profile':
+                    window.location.href = './profile.html';
+                    break;
+                case 'settings':
+                    window.location.href = './settings.html';
+                    break;
+                case 'signout':
+                    console.log('Signing out...');
+                    // Add sign out logic here
+                    break;
+            }
+        },
+        init() {
+            // Hide preloader when page is fully loaded
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    this.preloaderVisible = false;
+                }, 500);
+            });
+        }
+    }" x-init="init()">
+    <!-- Preloader -->
+    <div id="preloader"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-eu-blue transition-opacity duration-500"
+        x-show="preloaderVisible" x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-eu-orange" aria-label="Loading"></div>
+    </div>
+    <!-- Mobile Header (visible on small screens) -->
+    <div class="lg:hidden bg-[#003087] shadow-md z-10 w-full">
+        <!-- Top Row: Logo and Profile -->
+        <div class="flex items-center justify-between px-4 py-3">
+            <!-- Logo -->
+            <a href="./index.html" class="flex items-center flex-shrink-0">
+                <img src="./images/rgb-logo_white_onblue.svg" alt="Logo" class="h-10 w-10" />
+                <span class="ml-2 text-white text-base font-bold whitespace-nowrap">
+                    Notebook LLM
+                </span>
+            </a>
+
+            <!-- Profile Button -->
+            <div class="relative">
+                <button @click.stop="profileDropdownOpen = !profileDropdownOpen" class="p-1 focus:outline-none"
+                    aria-expanded="false" aria-haspopup="true">
+                    <span class="sr-only">Open user menu</span>
+                    <div class="relative">
+                        <div class="absolute inset-0 rounded-full transition-all duration-200"
+                            :class="{ 'ring-2 ring-eu-orange': profileDropdownOpen, 'ring-2 ring-white': !profileDropdownOpen }">
+                        </div>
+                        <img class="h-8 w-8 rounded-full"
+                            src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
+                            alt="Profile" />
+                    </div>
+                </button>
+
+                <!-- Dropdown menu -->
+                <div x-show="profileDropdownOpen" @click.away="profileDropdownOpen = false"
+                    class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                    role="menu" aria-orientation="vertical" x-transition:enter="transition ease-out duration-100"
+                    x-transition:enter-start="transform opacity-0 scale-95"
+                    x-transition:enter-end="transform opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-75"
+                    x-transition:leave-start="transform opacity-100 scale-100"
+                    x-transition:leave-end="transform opacity-0 scale-95">
+                    <div class="py-1" role="none">
+                        <div class="px-4 py-3 border-b border-gray-100">
+                            <p class="text-xs text-gray-500">Welcome back,</p>
+                            <p class="text-sm font-medium text-gray-900 truncate">
+                                Peter Thirikwa
+                            </p>
+                            <p class="text-xs text-gray-500 truncate">peter@rgb.co.tz</p>
+                        </div>
+                        <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            role="menuitem" @click.stop="handleDropdownMenuItemClick('profile')">
+                            <i class="fas fa-user-circle w-5 text-center text-eu-blue mr-3"></i>
+                            <span>My Profile</span>
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            role="menuitem" @click.stop="handleDropdownMenuItemClick('settings')">
+                            <i class="fas fa-cog w-5 text-center text-eu-blue mr-3"></i>
+                            <span>Settings</span>
+                        </a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <a href="#" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                            role="menuitem" @click.stop="handleDropdownMenuItemClick('signout')">
+                            <i class="fas fa-sign-out-alt w-5 text-center text-red-500 mr-3"></i>
+                            <span>Sign out</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Page Title - Visible in header on mobile -->
+        <div class="lg:hidden bg-[#003087] px-4 py-2 relative z-10">
+            <h1 class="text-base font-bold text-white text-center">
+                Documents Curator Page
+            </h1>
+        </div>
+    </div>
+
+    <!-- Desktop Header (hidden on mobile) -->
+    <header class="hidden lg:flex px-4 py-3 bg-[#003087] shadow-md z-10 w-full">
+        <div class="flex items-center justify-between w-full">
+            <!-- Logo and name on the left -->
+            <div class="flex-shrink-0">
+                <a href="./index.html" class="flex items-center group">
+                    <div class="relative">
+                        <img src="./images/rgb-logo_white_onblue.svg" alt="Logo"
+                            class="h-10 w-10 lg:h-12 lg:w-12 rounded-full transform transition-transform duration-300 group-hover:rotate-12" />
+                        <div
+                            class="absolute inset-0 rounded-full border-2 border-transparent group-hover:border-eu-orange transition-all duration-300">
+                        </div>
+                    </div>
+                    <span
+                        class="ml-3 text-eu-white text-lg lg:text-xl font-semibold transition-colors duration-200 hover:text-eu-orange">
+                        Notebook LLM
+                    </span>
+                </a>
+            </div>
+
+            <!-- Title in the center with hover effect -->
+            <div class="flex-1 flex justify-center px-4">
+                <h1
+                    class="text-xl lg:text-2xl font-bold text-eu-white whitespace-nowrap transition-all duration-300 transform hover:scale-105 hover:text-eu-orange">
+                    Documents Curator Page
+                </h1>
+            </div>
+
+            <!-- Icons and profile on the right -->
+            <div class="flex items-center space-x-6">
+                <div class="flex items-center space-x-5">
+                    <button class="text-eu-white hover:text-eu-orange transition-colors" title="Help">
+                        <i class="fas fa-question-circle text-xl"></i>
+                    </button>
+                    <button class="text-eu-white hover:text-eu-orange transition-colors relative"
+                        title="Notifications">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-eu-orange"></span>
+                    </button>
+                </div>
+
+                <!-- Profile dropdown -->
+                <div class="relative">
+                    <button @click.stop="profileDropdownOpen = !profileDropdownOpen"
+                        class="p-1 focus:outline-none group" :class="{ 'ring-2 ring-eu-orange': profileDropdownOpen }">
+                        <div class="relative">
+                            <!-- Background circle with hover/active states -->
+                            <div class="relative h-10 w-10 flex items-center justify-center">
+                                <!-- Hover background -->
+                                <div
+                                    class="absolute inset-0 rounded-full bg-eu-orange/0 group-hover:bg-eu-orange/10 transition-colors duration-200">
+                                </div>
+
+                                <!-- Active state background -->
+                                <div class="absolute inset-0 rounded-full transition-opacity duration-200"
+                                    :class="{ 'bg-eu-orange/20': profileDropdownOpen }"></div>
+
+                                <!-- Border ring -->
+                                <div class="absolute inset-0 rounded-full ring-1 ring-white/50 group-hover:ring-2 group-hover:ring-eu-orange transition-all duration-200"
+                                    :class="{ 'ring-2 ring-eu-orange': profileDropdownOpen }"></div>
+
+                                <!-- Profile image -->
+                                <img src="https://ui-avatars.com/api/?name=Peter+Thirikwa&background=003087&color=fff&rounded=true&size=40"
+                                    class="h-8 w-8 rounded-full object-cover transition-transform duration-200 group-hover:scale-105"
+                                    alt="Profile" />
+                            </div>
+                        </div>
+                    </button>
+
+                    <!-- Dropdown menu -->
+                    <div x-show="profileDropdownOpen" @click.away="profileDropdownOpen = false"
+                        class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl z-50 border border-eu-blue/10 overflow-hidden"
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="transform opacity-0 scale-95"
+                        x-transition:enter-end="transform opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="transform opacity-100 scale-100"
+                        x-transition:leave-end="transform opacity-0 scale-95">
+                        <!-- Welcome Message -->
+                        <div class="px-4 py-3 border-b border-gray-100">
+                            <p class="text-xs text-gray-500 mb-1">Welcome back,</p>
+                            <p class="text-sm font-medium text-gray-900 truncate">
+                                Peter Thirikwa
+                            </p>
+                            <p class="text-xs text-gray-500 truncate">peter@rgb.co.tz</p>
+                        </div>
+
+                        <!-- Menu Items -->
+                        <div class="py-1" role="menu" aria-orientation="vertical">
+                            <a href="#"
+                                class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                role="menuitem" @click.stop="handleDropdownMenuItemClick('profile')">
+                                <i class="fas fa-user-circle w-5 text-center text-eu-blue mr-3"></i>
+                                <span>My Profile</span>
+                            </a>
+                            <a href="#"
+                                class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                role="menuitem" @click.stop="handleDropdownMenuItemClick('settings')">
+                                <i class="fas fa-cog w-5 text-center text-eu-blue mr-3"></i>
+                                <span>Settings</span>
+                            </a>
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <a href="#"
+                                class="flex items-center px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                                role="menuitem" @click.stop="handleDropdownMenuItemClick('signout')">
+                                <i class="fas fa-sign-out-alt w-5 text-center mr-3"></i>
+                                <span>Sign out</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Wrapper -->
+    <div id="main-content-wrapper" class="relative flex-1 flex flex-col overflow-hidden">
+        <!-- Main Content Container - This will be behind the dropdowns -->
+        <!-- Main Content -->
+        <main id="main-content" class="flex-1 overflow-auto py-8 px-4 md:px-8 bg-eu-white">
+            <div class="container mx-auto max-w-7xl">
+                <!-- Welcome Message -->
+                <section class="mb-10">
+                    <div class="mb-2">
+                        <h2 class="text-3xl md:text-4xl font-extrabold text-eu-orange leading-tight mb-4"
+                            style="font-family: Rubik, sans-serif">
+                            Your Documents
+                        </h2>
+                    </div>
+                    <div class="max-w-full md:max-w-[70%]">
+                        <p class="text-base md:text-lg text-text-secondary"
+                            style="font-family: Rubik, sans-serif; line-height: 1.75">
+                            Create AI-powered study guides from your documents. Upload
+                            sources, ask questions, and get answers backed by your content.
+                            Work more efficiently by leveraging the power of AI to summarize
+                            long documents, extract key concepts, and identify relevant
+                            information quickly.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Action Bar -->
+                <div class="flex items-center justify-between md:justify-start space-x-4">
+                    <!-- Upload Button - moved to the left -->
+                    <div class="relative inline-block text-left h-12">
+                        <button
+                            class="create-button flex items-center gap-3 px-6 py-2 md:px-8 md:py-2 font-semibold text-lg shadow-lg bg-eu-blue text-eu-white rounded-full hover:bg-eu-orange transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-eu-blue focus:ring-offset-2 scale-100 hover:scale-105 active:scale-100 w-full md:w-auto justify-center md:justify-start h-12"
+                            onclick="document.getElementById('uploadDocumentModal').classList.remove('hidden'); document.body.style.overflow = 'hidden';">
+                            <span
+                                class="w-6 h-6 flex items-center justify-center rounded-full bg-[#003087]/10 hover:bg-[#003087]/20 transition-colors">
+                                <i class="fas fa-plus text-white fa-lg"></i>
+                            </span>
+                            <span>Upload Documents</span>
+                        </button>
+                    </div>
+
+                    <!-- Spacer to push view and sort controls to the right -->
+                    <div class="flex-1"></div>
+
+                    <!-- View Options - moved to the right -->
+                    <div class="view-toggle flex rounded bg-eu-white border border-eu h-12 items-center">
+                        <button id="taxonomy-edit-btn"
+                            class="p-2 rounded bg-eu-white text-eu-blue hover:bg-eu-orange hover:text-eu-white h-10"
+                            onclick="toggleTaxonomyModal()" type="button" style="margin: 2px" title="Edit Taxonomy">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <button id="grid-view-btn"
+                            class="grid-view p-2 rounded bg-eu-white text-eu-blue hover:bg-eu-orange hover:text-eu-white h-10"
+                            onclick="setViewMode('grid')" type="button" style="margin: 2px">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                        <button id="list-view-btn"
+                            class="list-view p-2 rounded bg-eu-orange text-eu-white h-10"
+                            onclick="setViewMode('list')" type="button" style="margin: 2px">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+
+                    <!-- Sort Dropdown - moved to the right -->
+                    <div class="relative inline-block text-left h-12">
+                        <button
+                            class="flex items-center space-x-2 px-3 py-2 rounded bg-eu-white border border-eu hover:bg-eu-orange hover:text-eu-white focus:outline-none text-eu-blue h-12 cursor-pointer"
+                            style="height: 48px" onclick="toggleDropdown()" type="button">
+                            <span id="sort-label" class="pointer-events-none">Most recent</span>
+                            <i class="fas fa-caret-down pointer-events-none"></i>
+                        </button>
+                        <div id="sort-menu"
+                            class="dropdown-menu absolute right-0 mt-2 bg-eu-white border border-eu rounded shadow-lg hidden z-50">
+                            <a href="#"
+                                class="block px-4 py-2 text-sm text-eu-blue hover:bg-eu-orange hover:text-eu-white"
+                                onclick="setSort('recent')">Most recent</a>
+                            <a href="#"
+                                class="block px-4 py-2 text-sm text-eu-blue hover:bg-eu-orange hover:text-eu-white"
+                                onclick="setSort('name')">Name (A-Z)</a>
+                            <a href="#"
+                                class="block px-4 py-2 text-sm text-eu-blue hover:bg-eu-orange hover:text-eu-white"
+                                onclick="setSort('modified')">Last modified</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- List View (Default) -->
+                <div id="list-view"
+                    class="bg-white rounded-lg border border-eu overflow-hidden mt-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <!-- Table Header -->
+                    <div
+                        class="grid grid-cols-12 bg-gray-50 text-eu-blue text-sm font-medium border-b border-eu py-3 px-4">
+                        <div class="col-span-6 md:col-span-5 flex items-center">
+                            <span class="ml-2">Title</span>
+                        </div>
+                        <div class="col-span-3 md:col-span-2 text-center">Modified</div>
+                        <div class="col-span-2 text-center hidden md:block">Size</div>
+                        <div class="col-span-1 text-center hidden md:block">Type</div>
+                        <div class="col-span-3 md:col-span-2 text-center">Actions</div>
+                    </div>
+
+                    <!-- List Items -->
+                    <div class="eu_almpo-list divide-y divide-gray-100">
+                        <!-- Item 1 -->
+                        <div class="eu_almpo-list-item group hover:bg-eu-orange/5 transition-colors">
+                            <div class="grid grid-cols-12 items-center text-eu-blue text-sm py-4 px-4">
+                                <div class="col-span-6 md:col-span-5 flex items-center">
+                                    <div class="flex items-center min-w-0">
+                                        <div
+                                            class="flex-shrink-0 h-10 w-10 rounded-full bg-eu-orange/10 flex items-center justify-center mr-3">
+                                            <i class="fas fa-book text-eu-orange text-lg"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-medium text-eu-blue truncate">My First eu_almpo</p>
+                                            <p class="text-xs text-gray-500 group-hover:text-eu-white/80 truncate">
+                                                Created 2 days ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="col-span-3 md:col-span-2 text-center text-sm text-gray-600 group-hover:text-eu-white">
+                                    2 hours ago
+                                </div>
+                                <div
+                                    class="col-span-2 text-center hidden md:block text-sm text-gray-600 group-hover:text-eu-white">
+                                    12.5 MB
+                                </div>
+                                <div class="col-span-1 text-center hidden md:block">
+                                    <span
+                                        class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 group-hover:bg-eu-orange/20 group-hover:text-eu-white">
+                                        PDF
+                                    </span>
+                                </div>
+                                <div class="col-span-3 md:col-span-2 flex items-center justify-center">
+                                    <div class="relative">
+                                        <button
+                                            class="list-item-menu-btn p-1.5 rounded-full hover:bg-eu-orange/10 text-gray-400 hover:text-eu-orange group-hover:text-eu-white transition-colors focus:outline-none"
+                                            onclick="toggleListItemMenu(event, 'item1')" aria-haspopup="true"
+                                            aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v w-4 h-4"></i>
+                                        </button>
+                                        <!-- Dropdown menu -->
+                                        <div class="list-item-menu hidden w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200">
+                                            <a href="#"
+                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+                                                <i class="fas fa-edit mr-2"></i>Rename
+                                            </a>
+                                            <a href="#"
+                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+                                                <i class="fas fa-copy mr-2"></i>Make a copy
+                                            </a>
+                                            <a href="#"
+                                                class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50">
+                                                <i class="fas fa-trash-alt mr-2"></i>Delete
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 2 -->
+                        <div class="eu_almpo-list-item group hover:bg-eu-orange/5 transition-colors">
+                            <div class="grid grid-cols-12 items-center text-eu-blue text-sm py-4 px-4">
+                                <div class="col-span-6 md:col-span-5 flex items-center">
+                                    <div class="flex items-center min-w-0">
+                                        <div
+                                            class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                            <i class="fas fa-file-pdf text-blue-600 text-lg"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-medium text-eu-blue truncate">Project Report Q3</p>
+                                            <p class="text-xs text-gray-500 group-hover:text-eu-white/80 truncate">
+                                                Created 1 week ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="col-span-3 md:col-span-2 text-center text-sm text-gray-600 group-hover:text-eu-white">
+                                    1 day ago
+                                </div>
+                                <div
+                                    class="col-span-2 text-center hidden md:block text-sm text-gray-600 group-hover:text-eu-white">
+                                    8.2 MB
+                                </div>
+                                <div class="col-span-1 text-center hidden md:block">
+                                    <span
+                                        class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 group-hover:bg-eu-orange/20 group-hover:text-eu-white">
+                                        DOCX
+                                    </span>
+                                </div>
+                                <div class="col-span-3 md:col-span-2 flex items-center justify-center">
+                                    <div class="relative">
+                                        <button
+                                            class="list-item-menu-btn p-1.5 rounded-full hover:bg-eu-orange/10 text-gray-400 hover:text-eu-orange group-hover:text-eu-white transition-colors focus:outline-none"
+                                            onclick="toggleListItemMenu(event, 'item2')" aria-haspopup="true"
+                                            aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v w-4 h-4"></i>
+                                        </button>
+                                        <!-- Dropdown menu -->
+                                        <div class="list-item-menu hidden w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200">
+                                            <a href="#"
+                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+                                                <i class="fas fa-edit mr-2"></i>Rename
+                                            </a>
+                                            <a href="#"
+                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+                                                <i class="fas fa-copy mr-2"></i>Make a copy
+                                            </a>
+                                            <a href="#"
+                                                class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50">
+                                                <i class="fas fa-trash-alt mr-2"></i>Delete
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 3 -->
+                        <div class="eu_almpo-list-item group hover:bg-eu-orange/5 transition-colors">
+                            <div class="grid grid-cols-12 items-center text-eu-blue text-sm py-4 px-4">
+                                <div class="col-span-6 md:col-span-5 flex items-center">
+                                    <div class="flex items-center min-w-0">
+                                        <div
+                                            class="flex-shrink-0 h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+                                            <i class="fas fa-file-excel text-purple-600 text-lg"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-medium text-eu-blue truncate">Financial Data 2025
+                                            </p>
+                                            <p class="text-xs text-gray-500 group-hover:text-eu-white/80 truncate">
+                                                Created 2 weeks ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="col-span-3 md:col-span-2 text-center text-sm text-gray-600 group-hover:text-eu-white">
+                                    3 days ago
+                                </div>
+                                <div
+                                    class="col-span-2 text-center hidden md:block text-sm text-gray-600 group-hover:text-eu-white">
+                                    5.7 MB
+                                </div>
+                                <div class="col-span-1 text-center hidden md:block">
+                                    <span
+                                        class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800 group-hover:bg-eu-orange/20 group-hover:text-eu-white">
+                                        XLSX
+                                    </span>
+                                </div>
+                                <div class="col-span-3 md:col-span-2 flex items-center justify-center">
+                                    <div class="relative">
+                                        <button
+                                            class="list-item-menu-btn p-1.5 rounded-full hover:bg-eu-orange/10 text-gray-400 hover:text-eu-orange group-hover:text-eu-white transition-colors focus:outline-none"
+                                            onclick="toggleListItemMenu(event, 'item3')" aria-haspopup="true"
+                                            aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v w-4 h-4"></i>
+                                        </button>
+                                        <!-- Dropdown menu -->
+                                        <div class="list-item-menu hidden w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200">
+                                            <a href="#"
+                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+                                                <i class="fas fa-edit mr-2"></i>Rename
+                                            </a>
+                                            <a href="#"
+                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+                                                <i class="fas fa-copy mr-2"></i>Make a copy
+                                            </a>
+                                            <a href="#"
+                                                class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50">
+                                                <i class="fas fa-trash-alt mr-2"></i>Delete
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid View (Hidden) -->
+                <div id="grid-view"
+                    class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
+                    <!-- Card 1 - My First eu_almpo -->
+                    <div class="bg-white rounded-lg border border-eu overflow-hidden hover:shadow-lg transition-all">
+                        <div class="p-5 relative group">
+                            <div class="absolute top-4 right-4">
+                                <div class="relative">
+                                    <button
+                                        class="card-menu-btn p-1.5 rounded-full hover:bg-eu-orange/10 text-gray-400 hover:text-eu-orange transition-colors focus:outline-none"
+                                        onclick="toggleCardMenu(event, 'card1')">
+                                        <i class="fas fa-ellipsis-v w-4 h-4"></i>
+                                    </button>
+                                    <div id="card1-menu"
+                                        class="card-menu hidden w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200">
+                                        <a href="#"
+                                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+                                            <i class="fas fa-edit mr-2"></i>Rename
+                                        </a>
+                                        <a href="#"
+                                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+                                            <i class="fas fa-copy mr-2"></i>Make a copy
+                                        </a>
+                                        <a href="#"
+                                            class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50">
+                                            <i class="fas fa-trash-alt mr-2"></i>Delete
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-center text-center pt-2">
+                                <div
+                                    class="w-16 h-16 rounded-full bg-eu-orange/10 flex items-center justify-center mb-4">
+                                    <i class="fas fa-book text-eu-orange text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-eu-blue mb-1">My First eu_almpo</h3>
+                                <p class="text-sm text-gray-500 mb-2">Modified: 2 hours ago</p>
+                                <div class="flex items-center justify-center space-x-2 mb-2">
+                                    <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                                        PDF
+                                    </span>
+                                    <span class="text-xs text-gray-500">12.5 MB</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 - Project Report Q3 -->
+                    <div class="bg-white rounded-lg border border-eu overflow-hidden hover:shadow-lg transition-all">
+                        <div class="p-5 relative group">
+                            <div class="absolute top-4 right-4">
+                                <div class="relative">
+                                    <button
+                                        class="card-menu-btn p-1.5 rounded-full hover:bg-eu-orange/10 text-gray-400 hover:text-eu-orange transition-colors focus:outline-none"
+                                        onclick="toggleCardMenu(event, 'card2')">
+                                        <i class="fas fa-ellipsis-v w-4 h-4"></i>
+                                    </button>
+                                    <div id="card2-menu"
+                                        class="card-menu hidden w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200">
+                                        <a href="#"
+                                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+                                            <i class="fas fa-edit mr-2"></i>Rename
+                                        </a>
+                                        <a href="#"
+                                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+                                            <i class="fas fa-copy mr-2"></i>Make a copy
+                                        </a>
+                                        <a href="#"
+                                            class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50">
+                                            <i class="fas fa-trash-alt mr-2"></i>Delete
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-center text-center pt-2">
+                                <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+                                    <i class="fas fa-file-pdf text-blue-600 text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-eu-blue mb-1">Project Report Q3</h3>
+                                <p class="text-sm text-gray-500 mb-2">Modified: 1 day ago</p>
+                                <div class="flex items-center justify-center space-x-2 mb-2">
+                                    <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                                        DOCX
+                                    </span>
+                                    <span class="text-xs text-gray-500">8.2 MB</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 - Financial Data 2025 -->
+                    <div class="bg-white rounded-lg border border-eu overflow-hidden hover:shadow-lg transition-all">
+                        <div class="p-5 relative group">
+                            <div class="absolute top-4 right-4">
+                                <div class="relative">
+                                    <button
+                                        class="card-menu-btn p-1.5 rounded-full hover:bg-eu-orange/10 text-gray-400 hover:text-eu-orange transition-colors focus:outline-none"
+                                        onclick="toggleCardMenu(event, 'card3')">
+                                        <i class="fas fa-ellipsis-v w-4 h-4"></i>
+                                    </button>
+                                    <div id="card3-menu"
+                                        class="card-menu hidden w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200">
+                                        <a href="#"
+                                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+                                            <i class="fas fa-edit mr-2"></i>Rename
+                                        </a>
+                                        <a href="#"
+                                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+                                            <i class="fas fa-copy mr-2"></i>Make a copy
+                                        </a>
+                                        <a href="#"
+                                            class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50">
+                                            <i class="fas fa-trash-alt mr-2"></i>Delete
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-center text-center pt-2">
+                                <div
+                                    class="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mb-4">
+                                    <i class="fas fa-file-excel text-purple-600 text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-eu-blue mb-1">Financial Data 2025</h3>
+                                <p class="text-sm text-gray-500 mb-2">Modified: 3 days ago</p>
+                                <div class="flex items-center justify-center space-x-2 mb-2">
+                                    <span class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800">
+                                        XLSX
+                                    </span>
+                                    <span class="text-xs text-gray-500">5.7 MB</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Upload Document Modal -->
+    <div id="uploadDocumentModal" class="hidden fixed inset-0 z-[100] overflow-hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" id="uploadDocumentBackdrop"
+            style="cursor: pointer"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl flex flex-col overflow-hidden">
+                <!-- Header -->
+                <div class="bg-eu-blue px-6 py-4 rounded-t-lg flex justify-between items-center">
+                    <h2 class="text-xl font-semibold text-white">Upload Document</h2>
+                    <button id="closeUploadModal" class="text-white hover:text-gray-200 focus:outline-none"
+                        onclick="closeUploadModal()">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+
+                <!-- Content Area -->
+                <div class="p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-1">Add Source</h3>
+                    <p class="text-sm text-gray-600 mb-6">Select a source to add to your collection</p>
+                    <div id="dropZone"
+                        class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-eu-orange transition-colors duration-200">
+                        <div class="space-y-4">
+                            <div
+                                class="mx-auto w-16 h-16 bg-eu-orange/10 rounded-full flex items-center justify-center">
+                                <i class="fas fa-upload text-2xl text-eu-orange"></i>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900">Upload sources</h3>
+                            <p class="text-sm text-gray-500">Drag and drop or choose file to upload</p>
+                            <p class="text-xs text-gray-500">Supported file types: PDF, txt, Markdown, Audio (e.g. mp3)
+                            </p>
+                            <label
+                                class="inline-flex items-center px-6 py-2.5 bg-eu-orange text-white rounded-md hover:bg-eu-orange/90 cursor-pointer transition-colors duration-200 font-medium">
+                                Select Files
+                                <input type="file" id="fileInput" class="hidden" multiple>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Selected Files List -->
+                    <div id="selectedFiles" class="mt-4 space-y-2 max-h-40 overflow-y-auto">
+                        <!-- Files will be listed here -->
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="bg-gray-50 border-t border-gray-200 px-6 py-4 rounded-b-lg flex justify-end space-x-3">
+                    <button id="cancelUpload"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-eu-orange"
+                        onclick="closeUploadModal()">
+                        Cancel
+                    </button>
+                    <button id="confirmUpload"
+                        class="px-4 py-2 text-sm font-medium text-white bg-eu-orange border border-transparent rounded-md hover:bg-eu-orange/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-eu-orange">
+                        Upload Files
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Taxonomy Edit Modal -->
+    <div id="taxonomyModal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" id="taxonomyBackdrop"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl flex flex-col overflow-hidden max-h-[90vh]">
+                <!-- Header -->
+                <div class="bg-eu-blue px-6 py-4 rounded-t-lg flex justify-between items-center">
+                    <h2 class="text-xl font-semibold text-white">Edit Taxonomy</h2>
+                    <button id="closeTaxonomyModal" class="text-white hover:text-gray-200 focus:outline-none">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+                
+                <!-- Content Area -->
+                <div class="p-6 overflow-y-auto flex-1">
+                    <div class="mb-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Manage Categories</h3>
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            <div class="flex items-center space-x-2">
+                                <input type="text" id="newCategory" placeholder="New category name" 
+                                    class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-eu-orange focus:border-transparent">
+                                <button id="addCategory" class="px-4 py-2 bg-eu-orange text-white rounded-md hover:bg-orange-600 transition-colors">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4" id="categoriesList">
+                            <!-- Categories will be populated here by JavaScript -->
+                            <div class="text-gray-500 text-center py-4">No categories added yet.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-gray-200 pt-4">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Preview</h3>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-gray-600">Your taxonomy changes will be previewed here.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="bg-gray-50 border-t border-gray-200 px-6 py-4 rounded-b-lg flex justify-end space-x-3">
+                    <button id="cancelTaxonomyChanges" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button id="saveTaxonomyChanges" class="px-4 py-2 text-sm font-medium text-white bg-eu-orange rounded-md hover:bg-orange-600">
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer with Disclaimer -->
+    <p class="text-center text-xs text-gray-500 mb-1">
+        NotebookLM can be inaccurate; please double-check its responses.
+    </p>
+    
+    </div>
+    </div>
+    </div>
+</body>
+
+</html>
