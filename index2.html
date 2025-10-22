@@ -420,97 +420,95 @@
         </div>
     </header>
 
-    <!-- Main Content Wrapper -->
-    <div class="flex-1 w-full overflow-hidden pt-16">
-        <!-- Main Content Container - This will be behind the dropdowns -->
-        <main class="h-full overflow-y-auto">
-            <div class="container mx-auto max-w-7xl">
-                <!-- Welcome Message -->
-                <section class="py-10 px-4">
-                    <div class="mb-2">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-eu-orange leading-tight mb-4"
-                            style="font-family: Rubik, sans-serif">
-                            Your Documents
-                        </h2>
-                    </div>
-                    <div class="max-w-full md:max-w-[70%]">
-                        <p class="text-base text-text-secondary"
-                            style="font-family: Rubik, sans-serif; line-height: 1.75">
-                            Create AI-powered study guides from your documents. Upload
-                            sources, ask questions, and get answers backed by your content.
-                            Work more efficiently by leveraging the power of AI to summarize
-                            long documents, extract key concepts, and identify relevant
-                            information quickly.
-                        </p>
-                    </div>
-                </section>
+    <!-- Main Content Container -->
+    <main class="flex-1 overflow-y-auto lg:pt-16">
+        <!-- <div class="container mx-auto max-w-7xl pt-10 px-4"> -->
+        <div class="container mx-auto w-full pt-10 px-4">
+            <!-- Welcome Message -->
+            <section class="mb-10">
+                <div class="mb-2">
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-eu-orange leading-tight mb-4"
+                        style="font-family: Rubik, sans-serif">
+                        Your Documents
+                    </h2>
+                </div>
+                <div class="max-w-full md:max-w-[70%]">
+                    <p class="text-base lg:text-lg text-text-secondary"
+                        style="font-family: Rubik, sans-serif; line-height: 1.75">
+                        Create AI-powered study guides from your documents. Upload
+                        sources, ask questions, and get answers backed by your content.
+                        Work more efficiently by leveraging the power of AI to summarize
+                        long documents, extract key concepts, and identify relevant
+                        information quickly.
+                    </p>
+                </div>
+            </section>
 
-                <!-- Action Bar -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 gap-4">
-                    <!-- Left section - Upload Button -->
-                    <div class="w-full sm:w-auto">
-                        <button
-                            class="create-button flex items-center justify-center sm:justify-start gap-3 px-6 py-2 md:px-8 font-semibold text-base sm:text-lg shadow-lg bg-eu-blue text-eu-white rounded-full hover:bg-eu-orange transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-eu-blue focus:ring-offset-2 scale-100 hover:scale-105 active:scale-100 w-full sm:w-auto h-12"
-                            onclick="document.getElementById('uploadDocumentModal').classList.remove('hidden'); document.body.style.overflow = 'hidden';">
-                            <span class="w-6 h-6 flex-shrink-0 flex items-center justify-center rounded-full bg-white/20">
-                                <i class="fas fa-plus text-white text-sm"></i>
-                            </span>
-                            <span>Upload Documents</span>
+            <!-- Action Bar -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <!-- Left section - Upload Button -->
+                <div class="w-full sm:w-auto">
+                    <button
+                        class="create-button flex items-center justify-center sm:justify-start gap-3 px-6 py-2 md:px-8 font-semibold text-base sm:text-lg shadow-lg bg-eu-blue text-eu-white rounded-full hover:bg-eu-orange transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-eu-blue focus:ring-offset-2 scale-100 hover:scale-105 active:scale-100 w-full sm:w-auto h-12"
+                        onclick="document.getElementById('uploadDocumentModal').classList.remove('hidden'); document.body.style.overflow = 'hidden';">
+                        <span class="w-6 h-6 flex-shrink-0 flex items-center justify-center rounded-full bg-white/20">
+                            <i class="fas fa-plus text-white text-sm"></i>
+                        </span>
+                        <span>Upload Documents</span>
+                    </button>
+                </div>
+
+                <!-- Right section - View Toggle and Sort -->
+                <div class="flex items-center justify-end space-x-2 w-full sm:w-auto">
+
+                <!-- View Options - moved to the right -->
+                <div class="view-toggle flex items-center h-12">
+                    <div class="flex rounded-full bg-eu-white border border-eu overflow-hidden h-10">
+                        <button id="taxonomy-edit-btn"
+                            class="px-4 py-2 h-10 bg-eu-white text-eu-blue hover:bg-eu-orange hover:text-eu-white focus:outline-none border-r border-eu/20"
+                            onclick="toggleTaxonomyModal()" type="button" title="Edit Taxonomy">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <button id="grid-view-btn"
+                            class="px-4 py-2 h-10 bg-eu-white text-eu-blue hover:bg-eu-orange hover:text-eu-white focus:outline-none border-r border-eu/20"
+                            onclick="setViewMode('grid')" type="button" title="Grid View">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                        <button id="list-view-btn"
+                            class="px-4 py-2 h-10 bg-eu-orange text-eu-white focus:outline-none"
+                            onclick="setViewMode('list')" type="button" title="List View">
+                            <i class="fas fa-list"></i>
                         </button>
                     </div>
+                </div>
 
-                    <!-- Right section - View Toggle and Sort -->
-                    <div class="flex items-center justify-end space-x-2 w-full sm:w-auto">
-
-                    <!-- View Options - moved to the right -->
-                    <div class="view-toggle flex items-center h-12">
-                        <div class="flex rounded-full bg-eu-white border border-eu overflow-hidden h-10">
-                            <button id="taxonomy-edit-btn"
-                                class="px-4 py-2 h-10 bg-eu-white text-eu-blue hover:bg-eu-orange hover:text-eu-white focus:outline-none border-r border-eu/20"
-                                onclick="toggleTaxonomyModal()" type="button" title="Edit Taxonomy">
-                                <i class="fas fa-cog"></i>
-                            </button>
-                            <button id="grid-view-btn"
-                                class="px-4 py-2 h-10 bg-eu-white text-eu-blue hover:bg-eu-orange hover:text-eu-white focus:outline-none border-r border-eu/20"
-                                onclick="setViewMode('grid')" type="button" title="Grid View">
-                                <i class="fas fa-th-large"></i>
-                            </button>
-                            <button id="list-view-btn"
-                                class="px-4 py-2 h-10 bg-eu-orange text-eu-white focus:outline-none"
-                                onclick="setViewMode('list')" type="button" title="List View">
-                                <i class="fas fa-list"></i>
-                            </button>
-                        </div>
+                <!-- Sort Dropdown - moved to the right -->
+                <div class="relative h-10">
+                    <button class="flex items-center justify-center sm:justify-start space-x-1 sm:space-x-2 px-3 py-2 rounded-full bg-eu-white border border-eu hover:bg-eu-orange hover:text-eu-white focus:outline-none text-eu-blue h-10 w-10 sm:w-auto cursor-pointer" onclick="toggleDropdown(event)" type="button" title="Sort">
+                        <i class="fas fa-sort-amount-down text-sm"></i>
+                        <span id="sort-label" class="hidden sm:inline pointer-events-none">Sort</span>
+                    </button>
+                    <div id="sort-menu" class="dropdown-menu absolute right-0 mt-2 bg-eu-white border border-eu rounded shadow-lg hidden z-50 min-w-[180px]">
+                        <a href="#" class="block px-4 py-2 text-sm text-eu-blue hover:bg-eu-orange hover:text-eu-white" onclick="setSort('recent')">Most recent</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-eu-blue hover:bg-eu-orange hover:text-eu-white" onclick="setSort('name')">Name (A-Z)</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-eu-blue hover:bg-eu-orange hover:text-eu-white" onclick="setSort('modified')">Last modified</a>
                     </div>
-
-                    <!-- Sort Dropdown - moved to the right -->
-                    <div class="relative h-10">
-                        <button class="flex items-center justify-center sm:justify-start space-x-1 sm:space-x-2 px-3 py-2 rounded-full bg-eu-white border border-eu hover:bg-eu-orange hover:text-eu-white focus:outline-none text-eu-blue h-10 w-10 sm:w-auto cursor-pointer" onclick="toggleDropdown(event)" type="button" title="Sort">
-                            <i class="fas fa-sort-amount-down text-sm"></i>
-                            <span id="sort-label" class="hidden sm:inline pointer-events-none">Sort</span>
-                        </button>
-                        <div id="sort-menu" class="dropdown-menu absolute right-0 mt-2 bg-eu-white border border-eu rounded shadow-lg hidden z-50 min-w-[180px]">
-                            <a href="#" class="block px-4 py-2 text-sm text-eu-blue hover:bg-eu-orange hover:text-eu-white" onclick="setSort('recent')">Most recent</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-eu-blue hover:bg-eu-orange hover:text-eu-white" onclick="setSort('name')">Name (A-Z)</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-eu-blue hover:bg-eu-orange hover:text-eu-white" onclick="setSort('modified')">Last modified</a>
-                        </div>
-                    </div>
-                </div>
-                </div>
-
-                <!-- List View (Default) -->
-                <div id="list-view" class="mt-6">
-                    <!-- Content will be dynamically generated by JavaScript -->
-                </div>
-
-                <!-- Grid View (Hidden) -->
-                <div id="grid-view" class="hidden mt-6">
-                    <!-- Content will be dynamically generated by JavaScript -->
                 </div>
             </div>
-        </main>
-    </div>
-    
+            </div>
+
+            <!-- List View (Default) -->
+            <div id="list-view">
+                <!-- Content will be dynamically generated by JavaScript -->
+            </div>
+
+            <!-- Grid View (Hidden) -->
+            <div id="grid-view" class="hidden">
+                <!-- Content will be dynamically generated by JavaScript -->
+            </div>
+        </div>
+    </main>
+
     <!-- Footer with Disclaimer -->
     <footer class="py-3">
         <p class="text-center text-xs text-gray-500">
