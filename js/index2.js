@@ -1,12 +1,45 @@
 // js/index2.js
+// Global database object
+let database = {
+  documents: [],
+  taxonomy: { name: "", categories: [] },
+  settings: { defaultViewMode: "list", sortBy: "recent", itemsPerPage: 10 },
+};
+
+// Load database from JSON file
+async function loadDatabase() {
+  try {
+    const response = await fetch("./index2_db.json");
+    if (response.ok) {
+      database = await response.json();
+      console.log("Database loaded successfully:", database);
+    } else {
+      console.warn("Could not load database file, using default data");
+    }
+  } catch (error) {
+    console.error("Error loading database:", error);
+  }
+}
+
+// Save database to JSON file (simulated - in real app would POST to server)
+function saveDatabase() {
+  console.log("Saving database:", database);
+  // In a real application, you would send this to your backend
+  // fetch('/api/save-database', { method: 'POST', body: JSON.stringify(database) });
+}
+
 // Document Ready Handler
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+  // Load database first
+  await loadDatabase();
+
   // Initialize modals and event listeners
   initModals();
   initViewMode();
   initSorting();
   initMenuHandlers();
   initTaxonomyModal();
+  initDocuments();
 });
 
 // Modal Functions
@@ -81,8 +114,8 @@ function initViewMode() {
   const gridButtons = document.querySelectorAll(".grid-view");
   const listButton = document.getElementById("list-view-btn");
 
-  // Set initial view mode from localStorage or default to 'list'
-  const savedViewMode = localStorage.getItem("viewMode") || "list";
+  // Set initial view mode from database or default to 'list'
+  const savedViewMode = database.settings.defaultViewMode || "list";
   setViewMode(savedViewMode);
 
   // Add event listeners to all grid view buttons
@@ -134,8 +167,9 @@ function setViewMode(mode) {
     }
   }
 
-  // Save preference to localStorage
-  localStorage.setItem("viewMode", mode);
+  // Save preference to database
+  database.settings.defaultViewMode = mode;
+  saveDatabase();
 }
 
 // Sorting Functionality
@@ -165,18 +199,21 @@ function setSort(option) {
   switch (option) {
     case "recent":
       label.textContent = "Most recent";
-      // Add sorting logic here
+      database.settings.sortBy = "recent";
       break;
     case "name":
       label.textContent = "Name (A-Z)";
-      // Add sorting logic here
+      database.settings.sortBy = "name";
       break;
     case "modified":
       label.textContent = "Last modified";
-      // Add sorting logic here
+      database.settings.sortBy = "modified";
       break;
   }
 
+  // Save sort preference and re-render documents
+  saveDatabase();
+  renderDocuments();
   menu.classList.add("hidden");
 }
 
@@ -192,6 +229,186 @@ function initMenuHandlers() {
         });
     }
   });
+}
+
+// Documents Functions
+function initDocuments() {
+  renderDocuments();
+}
+
+function renderDocuments() {
+  const listView = document.getElementById("list-view");
+  const gridView = document.getElementById("grid-view");
+
+  if (!listView || !gridView) return;
+
+  // Sort documents based on current sort setting
+  const sortedDocs = [...database.documents].sort((a, b) => {
+    switch (database.settings.sortBy) {
+      case "name":
+        return a.title.localeCompare(b.title);
+      case "modified":
+        return new Date(b.modifiedAt) - new Date(a.modifiedAt);
+      case "recent":
+      default:
+        return new Date(b.createdAt) - new Date(a.createdAt);
+    }
+  });
+
+  // Render list view
+  const listItems = sortedDocs
+    .map(
+      (doc, index) => `
+    <div class="eu_almpo-list-item group hover:bg-eu-orange/5 transition-colors">
+      <div class="grid grid-cols-12 items-center text-eu-blue text-sm py-4 px-4">
+        <div class="col-span-6 md:col-span-5 flex items-center">
+          <div class="flex items-center min-w-0">
+            <div class="flex-shrink-0 h-10 w-10 rounded-full ${
+              doc.iconBg
+            } flex items-center justify-center mr-3">
+              <i class="${doc.icon} ${doc.iconColor} text-lg"></i>
+            </div>
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-eu-blue truncate">${
+                doc.title
+              }</p>
+              <p class="text-xs text-gray-500 group-hover:text-eu-white/80 truncate">${
+                doc.description
+              }</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-3 md:col-span-2 text-center text-sm text-gray-600 group-hover:text-eu-white">
+          ${getTimeAgo(doc.modifiedAt)}
+        </div>
+        <div class="col-span-2 text-center hidden md:block text-sm text-gray-600 group-hover:text-eu-white">
+          ${doc.size}
+        </div>
+        <div class="col-span-1 text-center hidden md:block">
+          <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 group-hover:bg-eu-orange/20 group-hover:text-eu-white">
+            ${doc.type}
+          </span>
+        </div>
+        <div class="col-span-3 md:col-span-2 flex items-center justify-center">
+          <div class="relative">
+            <button class="list-item-menu-btn p-1.5 rounded-full hover:bg-eu-orange/10 text-gray-400 hover:text-eu-orange group-hover:text-eu-white transition-colors focus:outline-none"
+              onclick="toggleListItemMenu(event, 'item${
+                index + 1
+              }')" aria-haspopup="true" aria-expanded="false">
+              <i class="fas fa-ellipsis-v w-4 h-4"></i>
+            </button>
+            <div class="list-item-menu hidden w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200">
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+                <i class="fas fa-edit mr-2"></i>Rename
+              </a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+                <i class="fas fa-copy mr-2"></i>Make a copy
+              </a>
+              <a href="#" class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50">
+                <i class="fas fa-trash-alt mr-2"></i>Delete
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+    )
+    .join("");
+
+  const listContent = `
+    <div class="bg-white rounded-lg border border-eu overflow-hidden mt-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+      <div class="grid grid-cols-12 bg-gray-50 text-eu-blue text-sm font-medium border-b border-eu py-3 px-4">
+        <div class="col-span-6 md:col-span-5 flex items-center">
+          <span class="ml-2">Title</span>
+        </div>
+        <div class="col-span-3 md:col-span-2 text-center">Modified</div>
+        <div class="col-span-2 text-center hidden md:block">Size</div>
+        <div class="col-span-1 text-center hidden md:block">Type</div>
+        <div class="col-span-3 md:col-span-2 text-center">Actions</div>
+      </div>
+      <div class="eu_almpo-list divide-y divide-gray-100">
+        ${listItems}
+      </div>
+    </div>
+  `;
+
+  // Render grid view
+  const gridItems = sortedDocs
+    .map(
+      (doc, index) => `
+    <div class="bg-white rounded-lg border border-eu overflow-hidden hover:shadow-lg transition-all">
+      <div class="p-5 relative group">
+        <div class="absolute top-4 right-4">
+          <div class="relative">
+            <button class="card-menu-btn p-1.5 rounded-full hover:bg-eu-orange/10 text-gray-400 hover:text-eu-orange transition-colors focus:outline-none"
+              onclick="toggleCardMenu(event, 'card${index + 1}')">
+              <i class="fas fa-ellipsis-v w-4 h-4"></i>
+            </button>
+            <div id="card${
+              index + 1
+            }-menu" class="card-menu hidden w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200">
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+                <i class="fas fa-edit mr-2"></i>Rename
+              </a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+                <i class="fas fa-copy mr-2"></i>Make a copy
+              </a>
+              <a href="#" class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50">
+                <i class="fas fa-trash-alt mr-2"></i>Delete
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col items-center text-center pt-2">
+          <div class="w-16 h-16 rounded-full ${
+            doc.iconBg
+          } flex items-center justify-center mb-4">
+            <i class="${doc.icon} ${doc.iconColor} text-2xl"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-eu-blue mb-1">${doc.title}</h3>
+          <p class="text-sm text-gray-500 mb-2">Modified: ${getTimeAgo(
+            doc.modifiedAt
+          )}</p>
+          <div class="flex items-center justify-center space-x-2 mb-2">
+            <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">${
+              doc.type
+            }</span>
+            <span class="text-xs text-gray-500">${doc.size}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+    )
+    .join("");
+
+  const gridContent = `
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
+      ${gridItems}
+    </div>
+  `;
+
+  // Update the DOM
+  listView.innerHTML = listContent;
+  gridView.innerHTML = gridContent;
+}
+
+function getTimeAgo(dateString) {
+  const now = new Date();
+  const date = new Date(dateString);
+  const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
+
+  if (diffInHours < 1) return "Just now";
+  if (diffInHours < 24)
+    return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
+
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 7)
+    return `${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`;
+
+  const diffInWeeks = Math.floor(diffInDays / 7);
+  return `${diffInWeeks} week${diffInWeeks > 1 ? "s" : ""} ago`;
 }
 
 // Taxonomy Modal Functions
@@ -234,13 +451,13 @@ function initTaxonomyModal() {
 
     // Reset the form title and button text
     if (categoryLabel) {
-      categoryLabel.textContent = 'Add New Category';
+      categoryLabel.textContent = "Add New Category";
     }
     if (addButtonText) {
-      addButtonText.textContent = 'Create';
+      addButtonText.textContent = "Create";
     }
     if (saveButton) {
-      saveButton.textContent = 'Create';
+      saveButton.textContent = "Create";
     }
 
     if (configInput) configInput.value = "";
@@ -258,22 +475,17 @@ function initTaxonomyModal() {
     updateCategoriesList();
   }
 
-  // Load categories from localStorage
+  // Load categories from database
   function loadCategories() {
-    const savedData = JSON.parse(localStorage.getItem("taxonomy")) || {
-      categories: [],
-    };
-    categories = [...savedData.categories];
+    categories = [...database.taxonomy.categories];
     updateCategoriesList();
   }
 
-  // Save categories to localStorage
+  // Save categories to database
   function saveCategories() {
-    const data = {
-      categories: [...categories],
-      updatedAt: new Date().toISOString(),
-    };
-    localStorage.setItem("taxonomy", JSON.stringify(data));
+    database.taxonomy.categories = [...categories];
+    database.taxonomy.updatedAt = new Date().toISOString();
+    saveDatabase();
   }
 
   // View category configuration
@@ -281,21 +493,26 @@ function initTaxonomyModal() {
     if (event) {
       event.stopPropagation();
     }
-    
+
     if (index >= 0 && index < categories.length) {
       const category = categories[index];
       const config = typeof category === "object" ? category.config : null;
-      
+
       // Find the clicked category item and view button
-      const categoryItems = document.querySelectorAll('#categoriesList > div');
+      const categoryItems = document.querySelectorAll("#categoriesList > div");
       if (index >= categoryItems.length) return;
-      
+
       const categoryItem = categoryItems[index];
-      const viewButton = event?.currentTarget || categoryItem.querySelector('button[title="View"]');
-      
+      const viewButton =
+        event?.currentTarget ||
+        categoryItem.querySelector('button[title="View"]');
+
       // Check if we're toggling off an already open viewer
-      const existingViewer = categoryItem.nextElementSibling?.classList.contains('category-config-viewer');
-      
+      const existingViewer =
+        categoryItem.nextElementSibling?.classList.contains(
+          "category-config-viewer"
+        );
+
       if (existingViewer) {
         // Remove the viewer
         categoryItem.nextElementSibling.remove();
@@ -310,10 +527,12 @@ function initTaxonomyModal() {
         }
         return;
       }
-      
+
       // Remove any other open viewers first
-      document.querySelectorAll('.category-config-viewer').forEach(el => el.remove());
-      
+      document
+        .querySelectorAll(".category-config-viewer")
+        .forEach((el) => el.remove());
+
       // Update the eye icon to show it's active
       if (viewButton) {
         viewButton.innerHTML = `
@@ -322,27 +541,30 @@ function initTaxonomyModal() {
           </svg>
         `;
       }
-      
+
       // Create config viewer
-      const configViewer = document.createElement('div');
-      configViewer.className = 'category-config-viewer bg-gray-50 p-3 border-t border-gray-200';
-      
+      const configViewer = document.createElement("div");
+      configViewer.className =
+        "category-config-viewer bg-gray-50 p-3 border-t border-gray-200";
+
       if (config) {
-        const pre = document.createElement('pre');
-        pre.className = 'text-xs font-mono text-gray-700 overflow-auto max-h-40';
+        const pre = document.createElement("pre");
+        pre.className =
+          "text-xs font-mono text-gray-700 overflow-auto max-h-40";
         pre.textContent = JSON.stringify(config, null, 2);
         configViewer.appendChild(pre);
       } else {
-        const message = document.createElement('div');
-        message.className = 'text-sm text-gray-500 italic';
-        message.textContent = 'No configuration available';
+        const message = document.createElement("div");
+        message.className = "text-sm text-gray-500 italic";
+        message.textContent = "No configuration available";
         configViewer.appendChild(message);
       }
-      
+
       // Add close button
-      const closeBtn = document.createElement('button');
-      closeBtn.className = 'absolute top-2 right-2 text-gray-400 hover:text-gray-600';
-      closeBtn.innerHTML = '&times;';
+      const closeBtn = document.createElement("button");
+      closeBtn.className =
+        "absolute top-2 right-2 text-gray-400 hover:text-gray-600";
+      closeBtn.innerHTML = "&times;";
       closeBtn.onclick = (e) => {
         e.stopPropagation();
         configViewer.remove();
@@ -357,19 +579,24 @@ function initTaxonomyModal() {
         }
       };
       configViewer.appendChild(closeBtn);
-      
+
       // Safely insert after the category item
       if (categoryItem && categoryItem.parentNode) {
         // Remove any existing viewers first to prevent duplicates
-        const existingViewers = document.querySelectorAll('.category-config-viewer');
-        existingViewers.forEach(viewer => viewer.remove());
-        
+        const existingViewers = document.querySelectorAll(
+          ".category-config-viewer"
+        );
+        existingViewers.forEach((viewer) => viewer.remove());
+
         // Insert the new viewer
-        categoryItem.parentNode.insertBefore(configViewer, categoryItem.nextSibling);
-        
+        categoryItem.parentNode.insertBefore(
+          configViewer,
+          categoryItem.nextSibling
+        );
+
         // Smooth scroll to the config if needed
         setTimeout(() => {
-          configViewer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          configViewer.scrollIntoView({ behavior: "smooth", block: "nearest" });
         }, 10);
       }
     }
@@ -404,14 +631,16 @@ function initTaxonomyModal() {
 
     // Get the currently expanded category index (if any)
     let expandedIndex = -1;
-    const existingViewer = document.querySelector('.category-config-viewer');
+    const existingViewer = document.querySelector(".category-config-viewer");
     if (existingViewer && existingViewer.previousElementSibling) {
-      const items = Array.from(document.querySelectorAll('#categoriesList > div'));
+      const items = Array.from(
+        document.querySelectorAll("#categoriesList > div")
+      );
       expandedIndex = items.indexOf(existingViewer.previousElementSibling);
     }
-    
+
     // Clear the list but keep any open config viewer
-    const configViewer = document.querySelector('.category-config-viewer');
+    const configViewer = document.querySelector(".category-config-viewer");
     if (configViewer) {
       configViewer.remove();
     }
@@ -422,16 +651,19 @@ function initTaxonomyModal() {
         const isObject = typeof category === "object";
         const name = isObject ? category.name : category;
         const config = isObject ? category.config : null;
-        
+
         return `
         <div class="flex items-center justify-between bg-white p-3 rounded border border-gray-200 hover:bg-gray-50 group relative">
           <div class="flex-1 min-w-0">
             <div class="text-sm font-medium text-gray-800 truncate">${name}</div>
-            ${config ? `
+            ${
+              config
+                ? `
             <div class="text-xs text-gray-500 truncate">
               ${Object.keys(config).length} config properties
-            </div>` : 
-            '<div class="text-xs text-gray-400">No configuration</div>'}
+            </div>`
+                : '<div class="text-xs text-gray-400">No configuration</div>'
+            }
           </div>
           <div class="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <button onclick="viewCategory(${index}, event)" class="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100 view-toggle" title="View">
@@ -449,7 +681,7 @@ function initTaxonomyModal() {
         </div>`;
       })
       .join("");
-      
+
     // Re-open the config viewer if it was open before
     if (expandedIndex >= 0 && expandedIndex < categories.length) {
       // Small delay to ensure DOM is updated
@@ -468,30 +700,36 @@ function initTaxonomyModal() {
 
     // Reset any previous error states
     if (newCategoryInput) {
-      newCategoryInput.classList.remove('border-red-500');
-      const errorElement = document.getElementById('categoryNameError');
+      newCategoryInput.classList.remove("border-red-500");
+      const errorElement = document.getElementById("categoryNameError");
       if (errorElement) {
         errorElement.remove();
       }
     }
 
     // Only validate and show error if we're not in the middle of resetting the form
-    const isFormResetting = !categoryName && !newCategoryInput?.value && document.activeElement !== newCategoryInput;
-    
+    const isFormResetting =
+      !categoryName &&
+      !newCategoryInput?.value &&
+      document.activeElement !== newCategoryInput;
+
     // Validate category name
     if (!categoryName && !isFormResetting) {
       if (newCategoryInput) {
-        newCategoryInput.classList.add('border-red-500');
-        const errorElement = document.createElement('p');
-        errorElement.id = 'categoryNameError';
-        errorElement.className = 'mt-1 text-sm text-red-600';
-        errorElement.textContent = 'Please enter a category name';
-        
+        newCategoryInput.classList.add("border-red-500");
+        const errorElement = document.createElement("p");
+        errorElement.id = "categoryNameError";
+        errorElement.className = "mt-1 text-sm text-red-600";
+        errorElement.textContent = "Please enter a category name";
+
         // Only add the error if there isn't one already
-        if (!document.getElementById('categoryNameError')) {
-          newCategoryInput.parentNode.insertBefore(errorElement, newCategoryInput.nextSibling);
+        if (!document.getElementById("categoryNameError")) {
+          newCategoryInput.parentNode.insertBefore(
+            errorElement,
+            newCategoryInput.nextSibling
+          );
         }
-        
+
         newCategoryInput.focus();
       }
       return;
@@ -542,19 +780,24 @@ function initTaxonomyModal() {
 
       if (exists) {
         // Remove any existing error message first
-        const existingError = document.getElementById('categoryNameError');
+        const existingError = document.getElementById("categoryNameError");
         if (existingError) existingError.remove();
-        
+
         // Create new error message
-        const errorElement = document.createElement('p');
-        errorElement.id = 'categoryNameError';
-        errorElement.className = 'mt-1 text-sm text-red-600';
-        errorElement.textContent = 'A category with this name already exists';
-        
+        const errorElement = document.createElement("p");
+        errorElement.id = "categoryNameError";
+        errorElement.className = "mt-1 text-sm text-red-600";
+        errorElement.textContent = "A category with this name already exists";
+
         // Add the new error message after the input group
         if (newCategoryInput) {
-          const inputGroup = newCategoryInput.closest('.relative') || newCategoryInput.parentNode;
-          inputGroup.parentNode.insertBefore(errorElement, inputGroup.nextSibling);
+          const inputGroup =
+            newCategoryInput.closest(".relative") ||
+            newCategoryInput.parentNode;
+          inputGroup.parentNode.insertBefore(
+            errorElement,
+            inputGroup.nextSibling
+          );
           newCategoryInput.focus();
         }
         return;
@@ -592,13 +835,13 @@ function initTaxonomyModal() {
 
       // Update the form title and button text
       if (categoryLabel) {
-        categoryLabel.textContent = 'Update Category';
+        categoryLabel.textContent = "Update Category";
       }
       if (addButtonText) {
-        addButtonText.textContent = 'Update';
+        addButtonText.textContent = "Update";
       }
       if (saveButton) {
-        saveButton.textContent = 'Update';
+        saveButton.textContent = "Update";
       }
 
       // Set the category name
@@ -648,28 +891,29 @@ function initTaxonomyModal() {
     if (event) {
       event.stopPropagation();
     }
-    
+
     if (index >= 0 && index < categories.length) {
       const category = categories[index];
-      const categoryName = typeof category === 'object' ? category.name : category;
+      const categoryName =
+        typeof category === "object" ? category.name : category;
       if (confirm(`Are you sure you want to delete "${categoryName}"?`)) {
         // Remove the category from the array
         categories.splice(index, 1);
-        
+
         // Save the updated categories
         saveCategories();
-        
+
         // Update the UI
         updateCategoriesList();
-        
+
         // If no categories left, ensure the empty state is shown
         if (categories.length === 0) {
           if (categoriesList) {
-            categoriesList.innerHTML = 
+            categoriesList.innerHTML =
               '<div class="text-sm text-gray-500 italic text-center py-4">No categories added yet</div>';
           }
           if (categoryCount) {
-            categoryCount.textContent = '0 categories';
+            categoryCount.textContent = "0 categories";
           }
         }
       }
@@ -677,57 +921,64 @@ function initTaxonomyModal() {
   };
 
   function initToggleConfig() {
-    const toggleConfigBtn = document.getElementById('toggleConfigBtn');
-    const configContainer = document.getElementById('categoryConfigContainer');
-    const configIcon = toggleConfigBtn?.querySelector('svg');
-    const configInput = document.getElementById('categoryConfig');
+    const toggleConfigBtn = document.getElementById("toggleConfigBtn");
+    const configContainer = document.getElementById("categoryConfigContainer");
+    const configIcon = toggleConfigBtn?.querySelector("svg");
+    const configInput = document.getElementById("categoryConfig");
 
     if (!toggleConfigBtn || !configContainer || !configInput) return;
 
     // Check if we already have a clear config button
     let clearConfigBtn = configContainer.nextElementSibling;
-    const isExistingClearBtn = clearConfigBtn && clearConfigBtn.matches('button.text-red-600');
-    
+    const isExistingClearBtn =
+      clearConfigBtn && clearConfigBtn.matches("button.text-red-600");
+
     // If clear button doesn't exist, create it
     if (!isExistingClearBtn) {
       // Create clear config button (initially hidden)
-      clearConfigBtn = document.createElement('button');
-      clearConfigBtn.type = 'button';
-      clearConfigBtn.className = 'text-xs text-red-600 hover:text-red-800 mt-2 flex items-center transition-opacity duration-200 opacity-0';
+      clearConfigBtn = document.createElement("button");
+      clearConfigBtn.type = "button";
+      clearConfigBtn.className =
+        "text-xs text-red-600 hover:text-red-800 mt-2 flex items-center transition-opacity duration-200 opacity-0";
       clearConfigBtn.innerHTML = `
         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
         Clear Config
       `;
-      clearConfigBtn.style.display = 'none';
-      
+      clearConfigBtn.style.display = "none";
+
       // Add clear button after the config container
-      configContainer.parentNode.insertBefore(clearConfigBtn, configContainer.nextSibling);
-      
+      configContainer.parentNode.insertBefore(
+        clearConfigBtn,
+        configContainer.nextSibling
+      );
+
       // Add event listener for the clear button
-      clearConfigBtn.addEventListener('click', (e) => {
+      clearConfigBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        configInput.value = '';
+        configInput.value = "";
         updateClearButtonVisibility(configInput, clearConfigBtn, true);
       });
     }
-    
+
     // Remove any existing event listeners to prevent duplicates
     const newToggleBtn = toggleConfigBtn.cloneNode(true);
     toggleConfigBtn.parentNode.replaceChild(newToggleBtn, toggleConfigBtn);
 
     // Toggle config visibility
-    newToggleBtn.addEventListener('click', (e) => {
+    newToggleBtn.addEventListener("click", (e) => {
       e.preventDefault();
-      const isHidden = configContainer.classList.toggle('hidden');
+      const isHidden = configContainer.classList.toggle("hidden");
       if (configIcon) {
-        configIcon.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
+        configIcon.style.transform = isHidden
+          ? "rotate(0deg)"
+          : "rotate(180deg)";
       }
-      
+
       // Toggle clear button visibility based on content
       updateClearButtonVisibility(configInput, clearConfigBtn, isHidden);
-      
+
       // If showing the config, focus the textarea
       if (!isHidden) {
         setTimeout(() => {
@@ -746,27 +997,35 @@ function initTaxonomyModal() {
     });
 
     // Update clear button visibility when input changes
-    configInput.addEventListener('input', () => {
-      updateClearButtonVisibility(configInput, clearConfigBtn, configContainer.classList.contains('hidden'));
+    configInput.addEventListener("input", () => {
+      updateClearButtonVisibility(
+        configInput,
+        clearConfigBtn,
+        configContainer.classList.contains("hidden")
+      );
     });
   }
-  
+
   // Helper function to update clear button visibility
-  function updateClearButtonVisibility(inputElement, buttonElement, isContainerHidden) {
-    const hasContent = inputElement.value.trim() !== '';
+  function updateClearButtonVisibility(
+    inputElement,
+    buttonElement,
+    isContainerHidden
+  ) {
+    const hasContent = inputElement.value.trim() !== "";
     if (hasContent && !isContainerHidden) {
-      buttonElement.style.display = 'flex';
+      buttonElement.style.display = "flex";
       setTimeout(() => {
-        buttonElement.classList.remove('opacity-0');
-        buttonElement.classList.add('opacity-100');
+        buttonElement.classList.remove("opacity-0");
+        buttonElement.classList.add("opacity-100");
       }, 10);
     } else {
-      buttonElement.classList.remove('opacity-100');
-      buttonElement.classList.add('opacity-0');
+      buttonElement.classList.remove("opacity-100");
+      buttonElement.classList.add("opacity-0");
       setTimeout(() => {
-        buttonElement.style.display = 'none';
+        buttonElement.style.display = "none";
       }, 200); // Match this with the transition duration
-    } 
+    }
   }
 
   // Initialize toggle config button

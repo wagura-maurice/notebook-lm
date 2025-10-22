@@ -1,0 +1,147 @@
+{
+  "documents": [
+    {
+      "id": "doc-1",
+      "title": "My First eu_almpo",
+      "type": "PDF",
+      "size": "12.5 MB",
+      "createdAt": "2024-01-15T10:30:00Z",
+      "modifiedAt": "2024-01-17T14:20:00Z",
+      "description": "Created 2 days ago",
+      "icon": "fas fa-book",
+      "iconColor": "text-eu-orange",
+      "iconBg": "bg-eu-orange/10"
+    },
+    {
+      "id": "doc-2",
+      "title": "Project Report Q3",
+      "type": "DOCX",
+      "size": "8.2 MB",
+      "createdAt": "2024-01-08T09:15:00Z",
+      "modifiedAt": "2024-01-16T11:45:00Z",
+      "description": "Created 1 week ago",
+      "icon": "fas fa-file-pdf",
+      "iconColor": "text-blue-600",
+      "iconBg": "bg-blue-100"
+    },
+    {
+      "id": "doc-3",
+      "title": "Financial Data 2025",
+      "type": "XLSX",
+      "size": "5.7 MB",
+      "createdAt": "2024-01-01T16:20:00Z",
+      "modifiedAt": "2024-01-14T08:30:00Z",
+      "description": "Created 2 weeks ago",
+      "icon": "fas fa-file-excel",
+      "iconColor": "text-purple-600",
+      "iconBg": "bg-purple-100"
+    }
+  ],
+  "taxonomy": {
+    "name": "ALMP Taxonomy",
+    "categories": [
+      {
+        "id": "cat-1",
+        "name": "ALMP Instruments Hierarchy",
+        "config": {
+          "color": "#3B82F6",
+          "priority": "high"
+        }
+      },
+      {
+        "id": "cat-2",
+        "name": "Target Groups Facets",
+        "config": {
+          "color": "#10B981",
+          "priority": "high"
+        }
+      },
+      {
+        "id": "cat-3",
+        "name": "Delivery Modes",
+        "config": {
+          "color": "#F59E0B",
+          "priority": "medium"
+        }
+      },
+      {
+        "id": "cat-4",
+        "name": "Delivery Channels",
+        "config": {
+          "color": "#8B5CF6",
+          "priority": "medium"
+        }
+      },
+      {
+        "id": "cat-5",
+        "name": "Evaluation Designs",
+        "config": {
+          "color": "#EC4899",
+          "priority": "high"
+        }
+      },
+      {
+        "id": "cat-6",
+        "name": "Outcomes Positive",
+        "config": {
+          "color": "#10B981",
+          "priority": "high"
+        }
+      },
+      {
+        "id": "cat-7",
+        "name": "Outcomes Negative",
+        "config": {
+          "color": "#EF4444",
+          "priority": "high"
+        }
+      },
+      {
+        "id": "cat-8",
+        "name": "Effect Direction",
+        "config": {
+          "color": "#3B82F6",
+          "priority": "medium"
+        }
+      },
+      {
+        "id": "cat-9",
+        "name": "Effect Strength",
+        "config": {
+          "color": "#F59E0B",
+          "priority": "medium"
+        }
+      },
+      {
+        "id": "cat-10",
+        "name": "Effect Horizon",
+        "config": {
+          "color": "#8B5CF6",
+          "priority": "medium"
+        }
+      },
+      {
+        "id": "cat-11",
+        "name": "Geography Levels",
+        "config": {
+          "color": "#10B981",
+          "priority": "low"
+        }
+      },
+      {
+        "id": "cat-12",
+        "name": "Rhetorical Roles",
+        "config": {
+          "color": "#3B82F6",
+          "priority": "medium"
+        }
+      }
+    ],
+    "updatedAt": "2024-10-22T18:20:00Z"
+  },
+  "settings": {
+    "defaultViewMode": "list",
+    "sortBy": "recent",
+    "itemsPerPage": 10
+  }
+}
