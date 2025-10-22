@@ -358,11 +358,20 @@ function initTaxonomyModal() {
       };
       configViewer.appendChild(closeBtn);
       
-      // Insert after the category item
-      categoryItem.parentNode.insertBefore(configViewer, categoryItem.nextSibling);
-      
-      // Smooth scroll to the config if needed
-      configViewer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      // Safely insert after the category item
+      if (categoryItem && categoryItem.parentNode) {
+        // Remove any existing viewers first to prevent duplicates
+        const existingViewers = document.querySelectorAll('.category-config-viewer');
+        existingViewers.forEach(viewer => viewer.remove());
+        
+        // Insert the new viewer
+        categoryItem.parentNode.insertBefore(configViewer, categoryItem.nextSibling);
+        
+        // Smooth scroll to the config if needed
+        setTimeout(() => {
+          configViewer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 10);
+      }
     }
   };
 
