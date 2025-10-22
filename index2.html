@@ -645,11 +645,24 @@
                                             class="flex-shrink-0 h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center mr-3">
                                             <i class="fas fa-file-excel text-purple-600 text-lg"></i>
                                         </div>
-                                        <div class="min-w-0">
-                                            <p class="text-sm font-medium text-eu-blue truncate">Financial Data 2025
-                                            </p>
-                                            <p class="text-xs text-gray-500 group-hover:text-eu-white/80 truncate">
-                                                Created 2 weeks ago</p>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="text-sm font-medium text-gray-800 truncate">Financial Data 2025</div>
+                                            <div class="text-xs text-gray-500 truncate">
+                                                Created 2 weeks ago
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button onclick="viewCategory(2)" class="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100" title="View">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                            </button>
+                                            <button onclick="deleteCategory(2)" class="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50" title="Delete">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -896,52 +909,81 @@
     </div>
 
     <!-- Taxonomy Edit Modal -->
-    <div id="taxonomyModal" class="fixed inset-0 z-[100] hidden">
+    <div id="taxonomyModal" class="hidden fixed inset-0 z-[100] overflow-hidden">
         <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" id="taxonomyBackdrop"></div>
         <div class="fixed inset-0 flex items-center justify-center p-4">
-            <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl flex flex-col overflow-hidden max-h-[90vh]">
+            <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl flex flex-col overflow-hidden max-h-[80vh] min-h-[400px]">
                 <!-- Header -->
-                <div class="bg-eu-blue px-6 py-4 rounded-t-lg flex justify-between items-center">
-                    <h2 class="text-xl font-semibold text-white">Edit Taxonomy</h2>
-                    <button id="closeTaxonomyModal" class="text-white hover:text-gray-200 focus:outline-none">
-                        <i class="fas fa-times text-2xl"></i>
+                <div class="flex items-center justify-between bg-blue-50 px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Edit Taxonomy</h3>
+                    <button id="closeTaxonomyModal" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                        <span class="sr-only">Close</span>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                     </button>
                 </div>
-                
-                <!-- Content Area -->
-                <div class="p-6 overflow-y-auto flex-1">
-                    <div class="mb-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Manage Categories</h3>
-                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
-                            <div class="flex items-center space-x-2">
-                                <input type="text" id="newCategory" placeholder="New category name" 
-                                    class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-eu-orange focus:border-transparent">
-                                <button id="addCategory" class="px-4 py-2 bg-eu-orange text-white rounded-md hover:bg-orange-600 transition-colors">
-                                    Add
+
+                <!-- Content -->
+                <div class="flex flex-col flex-1 overflow-hidden">
+                    <div class="p-6 space-y-6 overflow-y-auto flex-1">
+                        <!-- Add Category -->
+                        <div class="space-y-2">
+                            <label for="newCategory" class="block text-sm font-medium text-gray-700 mb-1">Add New Category</label>
+                            <div class="flex space-x-2">
+                                <input type="text" id="newCategory" 
+                                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                       placeholder="Enter category name">
+                                <button id="addCategory" 
+                                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 whitespace-nowrap">
+                                    <span id="addCategoryText">Add</span>
                                 </button>
                             </div>
+                            <button type="button" id="toggleConfigBtn" class="text-xs text-blue-600 hover:text-blue-800 flex items-center">
+                                <svg class="w-3 h-3 mr-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                                Add configuration (optional)
+                            </button>
+                            <div id="categoryConfigContainer" class="hidden mt-2">
+                                <label for="categoryConfig" class="block text-sm font-medium text-gray-700 mb-1">Configuration (JSON)</label>
+                                <textarea id="categoryConfig" 
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm h-32"
+                                          placeholder="Enter configuration as JSON"></textarea>
+                            </div>
                         </div>
-                        
-                        <div class="space-y-4" id="categoriesList">
-                            <!-- Categories will be populated here by JavaScript -->
-                            <div class="text-gray-500 text-center py-4">No categories added yet.</div>
+
+                        <!-- Categories List -->
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-sm font-medium text-gray-700">Your Categories</h4>
+                                <span id="categoryCount" class="text-xs text-gray-500">0 categories</span>
+                            </div>
+                            <div id="categoriesList" class="space-y-2 max-h-[200px] overflow-y-auto p-2 border border-gray-200 rounded-md">
+                                <div class="text-sm text-gray-500 italic text-center py-4">No categories added yet</div>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="border-t border-gray-200 pt-4">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Preview</h3>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-gray-600">Your taxonomy changes will be previewed here.</p>
+                    <!-- JSON Viewer (positioned absolutely when visible) -->
+                    <div id="jsonViewer" class="border-t border-gray-200 bg-white hidden">
+                        <div class="bg-gray-50 px-4 py-2 border-b border-gray-200 flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-700">Configuration</span>
+                            <button id="closeJsonViewer" class="text-gray-400 hover:text-gray-500">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
                         </div>
+                        <pre id="jsonContent" class="p-4 text-sm font-mono overflow-auto max-h-48"></pre>
                     </div>
-                </div>
                 
                 <!-- Footer -->
-                <div class="bg-gray-50 border-t border-gray-200 px-6 py-4 rounded-b-lg flex justify-end space-x-3">
-                    <button id="cancelTaxonomyChanges" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 rounded-b-lg flex justify-end space-x-3">
+                    <button id="cancelTaxonomyChanges" type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         Cancel
                     </button>
-                    <button id="saveTaxonomyChanges" class="px-4 py-2 text-sm font-medium text-white bg-eu-orange rounded-md hover:bg-orange-600">
+                    <button id="saveTaxonomyChanges" type="button" class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         Save Changes
                     </button>
                 </div>
