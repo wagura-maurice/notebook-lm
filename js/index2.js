@@ -322,9 +322,6 @@ function renderDocuments() {
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
                 <i class="fas fa-edit mr-2"></i>Rename
               </a>
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
-                <i class="fas fa-copy mr-2"></i>Make a copy
-              </a>
               <a href="#" class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50">
                 <i class="fas fa-trash-alt mr-2"></i>Delete
               </a>
@@ -371,9 +368,6 @@ function renderDocuments() {
             }-menu" class="card-menu hidden w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200">
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
                 <i class="fas fa-edit mr-2"></i>Rename
-              </a>
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
-                <i class="fas fa-copy mr-2"></i>Make a copy
               </a>
               <a href="#" class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50">
                 <i class="fas fa-trash-alt mr-2"></i>Delete
