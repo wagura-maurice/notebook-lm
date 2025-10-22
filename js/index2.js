@@ -635,14 +635,34 @@ function initTaxonomyModal() {
   };
 
   // Delete category
-  window.deleteCategory = function (index) {
+  window.deleteCategory = function (index, event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    
     if (index >= 0 && index < categories.length) {
       const category = categories[index];
       const categoryName = typeof category === 'object' ? category.name : category;
       if (confirm(`Are you sure you want to delete "${categoryName}"?`)) {
+        // Remove the category from the array
         categories.splice(index, 1);
+        
+        // Save the updated categories
         saveCategories();
+        
+        // Update the UI
         updateCategoriesList();
+        
+        // If no categories left, ensure the empty state is shown
+        if (categories.length === 0) {
+          if (categoriesList) {
+            categoriesList.innerHTML = 
+              '<div class="text-sm text-gray-500 italic text-center py-4">No categories added yet</div>';
+          }
+          if (categoryCount) {
+            categoryCount.textContent = '0 categories';
+          }
+        }
       }
     }
   };
