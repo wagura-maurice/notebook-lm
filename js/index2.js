@@ -132,18 +132,18 @@ function initViewMode() {
 function setViewMode(mode) {
   const gridView = document.getElementById("grid-view");
   const listView = document.getElementById("list-view");
-  const gridButtons = document.querySelectorAll(".grid-view");
+  const gridButton = document.getElementById("grid-view-btn");
   const listButton = document.getElementById("list-view-btn");
 
   if (mode === "grid") {
     gridView?.classList.remove("hidden");
     listView?.classList.add("hidden");
 
-    // Update grid buttons
-    gridButtons.forEach((btn) => {
-      btn.classList.add("bg-eu-orange", "text-eu-white");
-      btn.classList.remove("bg-eu-white", "text-eu-blue");
-    });
+    // Update grid button
+    if (gridButton) {
+      gridButton.classList.add("bg-eu-orange", "text-eu-white");
+      gridButton.classList.remove("bg-eu-white", "text-eu-blue");
+    }
 
     // Update list button
     if (listButton) {
@@ -154,11 +154,11 @@ function setViewMode(mode) {
     listView?.classList.remove("hidden");
     gridView?.classList.add("hidden");
 
-    // Update grid buttons
-    gridButtons.forEach((btn) => {
-      btn.classList.remove("bg-eu-orange", "text-eu-white");
-      btn.classList.add("bg-eu-white", "text-eu-blue");
-    });
+    // Update grid button
+    if (gridButton) {
+      gridButton.classList.remove("bg-eu-orange", "text-eu-white");
+      gridButton.classList.add("bg-eu-white", "text-eu-blue");
+    }
 
     // Update list button
     if (listButton) {
@@ -175,19 +175,36 @@ function setViewMode(mode) {
 // Sorting Functionality
 function initSorting() {
   const sortMenu = document.getElementById("sort-menu");
-  const sortButton = document.querySelector('[onclick="toggleDropdown()"]');
+  const sortButton = document.querySelector('[onclick="toggleDropdown(event)"]');
 
   // Close sort menu when clicking outside
-  document.addEventListener("click", function (e) {
-    if (!sortMenu?.contains(e.target) && e.target !== sortButton) {
-      sortMenu?.classList.add("hidden");
+  const handleClickOutside = (event) => {
+    if (sortMenu && !sortMenu.contains(event.target) && event.target !== sortButton && !sortButton.contains(event.target)) {
+      sortMenu.classList.add("hidden");
     }
-  });
+  };
+
+  // Add both touch and click events for better mobile support
+  document.addEventListener("click", handleClickOutside);
+  document.addEventListener("touchend", handleClickOutside);
+
+  // Cleanup event listeners
+  return () => {
+    document.removeEventListener("click", handleClickOutside);
+    document.removeEventListener("touchend", handleClickOutside);
+  };
 }
 
-function toggleDropdown() {
+function toggleDropdown(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
   const menu = document.getElementById("sort-menu");
-  menu?.classList.toggle("hidden");
+  if (menu) {
+    menu.classList.toggle("hidden");
+  }
 }
 
 function setSort(option) {
@@ -195,6 +212,10 @@ function setSort(option) {
   const menu = document.getElementById("sort-menu");
 
   if (!label || !menu) return;
+  
+  // Prevent default to handle touch events properly
+  event?.preventDefault();
+  event?.stopPropagation();
 
   switch (option) {
     case "recent":
@@ -269,33 +290,33 @@ function renderDocuments() {
               <i class="${doc.icon} ${doc.iconColor} text-lg"></i>
             </div>
             <div class="min-w-0">
-              <p class="text-sm font-medium text-eu-blue truncate">${
+              <p class="text-sm font-medium text-eu-blue group-hover:text-eu-blue/90 truncate">${
                 doc.title
               }</p>
-              <p class="text-xs text-gray-500 group-hover:text-eu-white/80 truncate">${
+              <p class="text-xs text-gray-500 group-hover:text-gray-700 truncate">${
                 doc.description
               }</p>
             </div>
           </div>
         </div>
-        <div class="col-span-3 md:col-span-2 text-center text-sm text-gray-600 group-hover:text-eu-white">
+        <div class="col-span-3 md:col-span-2 text-center text-sm text-gray-600 group-hover:text-gray-800">
           ${getTimeAgo(doc.modifiedAt)}
         </div>
-        <div class="col-span-2 text-center hidden md:block text-sm text-gray-600 group-hover:text-eu-white">
+        <div class="col-span-2 text-center hidden md:block text-sm text-gray-600 group-hover:text-gray-800">
           ${doc.size}
         </div>
         <div class="col-span-1 text-center hidden md:block">
-          <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 group-hover:bg-eu-orange/20 group-hover:text-eu-white">
+          <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 group-hover:bg-eu-orange/20 group-hover:text-blue-800">
             ${doc.type}
           </span>
         </div>
         <div class="col-span-3 md:col-span-2 flex items-center justify-center">
           <div class="relative">
-            <button class="list-item-menu-btn p-1.5 rounded-full hover:bg-eu-orange/10 text-gray-400 hover:text-eu-orange group-hover:text-eu-white transition-colors focus:outline-none"
+            <button class="list-item-menu-btn w-8 h-8 flex items-center justify-center rounded-full hover:bg-eu-orange/20 text-gray-500 hover:text-eu-orange transition-colors focus:outline-none"
               onclick="toggleListItemMenu(event, 'item${
                 index + 1
-              }')" aria-haspopup="true" aria-expanded="false">
-              <i class="fas fa-ellipsis-v w-4 h-4"></i>
+              }')" aria-haspopup="true" aria-expanded="false" title="Actions">
+              <i class="fas fa-ellipsis-v text-base"></i>
             </button>
             <div class="list-item-menu hidden w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200">
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
@@ -659,7 +680,7 @@ function initTaxonomyModal() {
             ${
               config
                 ? `
-            <div class="text-xs text-gray-500 truncate">
+            <div class="text-xs text-blue-800 truncate">
               ${Object.keys(config).length} config properties
             </div>`
                 : '<div class="text-xs text-gray-400">No configuration</div>'

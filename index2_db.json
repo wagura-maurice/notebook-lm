@@ -7,20 +7,20 @@
       "size": "12.5 MB",
       "createdAt": "2024-01-15T10:30:00Z",
       "modifiedAt": "2024-01-17T14:20:00Z",
-      "description": "Created 2 days ago",
+      "description": "Initial project documentation",
       "icon": "fas fa-book",
       "iconColor": "text-eu-orange",
       "iconBg": "bg-eu-orange/10"
     },
     {
       "id": "doc-2",
-      "title": "Project Report Q3",
+      "title": "Project Report Q3 2024",
       "type": "DOCX",
       "size": "8.2 MB",
       "createdAt": "2024-01-08T09:15:00Z",
       "modifiedAt": "2024-01-16T11:45:00Z",
-      "description": "Created 1 week ago",
-      "icon": "fas fa-file-pdf",
+      "description": "Quarterly performance summary",
+      "icon": "fas fa-file-word",
       "iconColor": "text-blue-600",
       "iconBg": "bg-blue-100"
     },
@@ -31,10 +31,94 @@
       "size": "5.7 MB",
       "createdAt": "2024-01-01T16:20:00Z",
       "modifiedAt": "2024-01-14T08:30:00Z",
-      "description": "Created 2 weeks ago",
+      "description": "Budget and expenditure tracking",
       "icon": "fas fa-file-excel",
+      "iconColor": "text-green-600",
+      "iconBg": "bg-green-100"
+    },
+    {
+      "id": "doc-4",
+      "title": "Training Manual v2.1",
+      "type": "PDF",
+      "size": "15.3 MB",
+      "createdAt": "2023-12-28T11:00:00Z",
+      "modifiedAt": "2024-01-10T09:15:00Z",
+      "description": "Updated training guidelines for PES staff",
+      "icon": "fas fa-graduation-cap",
+      "iconColor": "text-indigo-600",
+      "iconBg": "bg-indigo-100"
+    },
+    {
+      "id": "doc-5",
+      "title": "Impact Evaluation Summary",
+      "type": "PPTX",
+      "size": "22.1 MB",
+      "createdAt": "2023-12-20T14:30:00Z",
+      "modifiedAt": "2024-01-05T13:20:00Z",
+      "description": "Key findings from RCT analysis",
+      "icon": "fas fa-file-powerpoint",
+      "iconColor": "text-red-600",
+      "iconBg": "bg-red-100"
+    },
+    {
+      "id": "doc-6",
+      "title": "Policy Brief – Youth Employment",
+      "type": "PDF",
+      "size": "3.4 MB",
+      "createdAt": "2023-12-15T08:45:00Z",
+      "modifiedAt": "2024-01-03T10:10:00Z",
+      "description": "Recommendations for NEET interventions",
+      "icon": "fas fa-file-alt",
+      "iconColor": "text-teal-600",
+      "iconBg": "bg-teal-100"
+    },
+    {
+      "id": "doc-7",
+      "title": "Stakeholder Feedback Report",
+      "type": "DOCX",
+      "size": "6.8 MB",
+      "createdAt": "2023-12-10T12:00:00Z",
+      "modifiedAt": "2023-12-28T15:30:00Z",
+      "description": "Input from employers and NGOs",
+      "icon": "fas fa-comments",
+      "iconColor": "text-yellow-600",
+      "iconBg": "bg-yellow-100"
+    },
+    {
+      "id": "doc-8",
+      "title": "Cost-Benefit Analysis Model",
+      "type": "XLSX",
+      "size": "9.1 MB",
+      "createdAt": "2023-11-25T09:00:00Z",
+      "modifiedAt": "2024-01-02T11:20:00Z",
+      "description": "CBA framework for ALMP programs",
+      "icon": "fas fa-calculator",
       "iconColor": "text-purple-600",
       "iconBg": "bg-purple-100"
+    },
+    {
+      "id": "doc-9",
+      "title": "Annual Work Plan 2025",
+      "type": "PDF",
+      "size": "11.0 MB",
+      "createdAt": "2023-11-15T14:00:00Z",
+      "modifiedAt": "2023-12-20T10:45:00Z",
+      "description": "Strategic objectives and KPIs",
+      "icon": "fas fa-calendar-check",
+      "iconColor": "text-pink-600",
+      "iconBg": "bg-pink-100"
+    },
+    {
+      "id": "doc-10",
+      "title": "Database Schema & ERD",
+      "type": "PNG",
+      "size": "2.3 MB",
+      "createdAt": "2023-11-05T13:15:00Z",
+      "modifiedAt": "2023-12-18T09:00:00Z",
+      "description": "Entity-Relationship Diagram for ALMP data",
+      "icon": "fas fa-project-diagram",
+      "iconColor": "text-cyan-600",
+      "iconBg": "bg-cyan-100"
     }
   ],
   "taxonomy": {
@@ -44,97 +128,226 @@
         "id": "cat-1",
         "name": "ALMP Instruments Hierarchy",
         "config": {
-          "color": "#3B82F6",
-          "priority": "high"
+          "training": [
+            "classroom_training",
+            "online_training",
+            "blended_training",
+            "on_the_job_training",
+            "apprenticeship",
+            "work_based_learning",
+            "vocational_education",
+            "digital_skills_voucher"
+          ],
+          "employment_incentives": [
+            "wage_subsidy",
+            "hiring_bonus",
+            "reduced_social_contributions",
+            "short_time_work_subsidy"
+          ],
+          "start_up_support": [
+            "start_up_grant",
+            "microcredit",
+            "entrepreneurship_training",
+            "mentoring_coaching"
+          ],
+          "direct_job_creation": [
+            "public_works",
+            "social_enterprise_jobs"
+          ],
+          "supported_employment": [
+            "disability_supported_employment",
+            "sheltered_workshops",
+            "job_coaching_on_site"
+          ],
+          "pes_services": [
+            "job_search_assistance",
+            "counseling",
+            "career_guidance",
+            "placement_services",
+            "profiling_digital"
+          ],
+          "labor_regulation_adjustments": [
+            "firing_hiring_rules_adjustment",
+            "overtime_rules_adjustment"
+          ],
+          "other": [
+            "other_or_unspecified"
+          ]
         }
       },
       {
         "id": "cat-2",
         "name": "Target Groups Facets",
         "config": {
-          "color": "#10B981",
-          "priority": "high"
+          "gender": [
+            "women",
+            "men",
+            "both",
+            "unspecified"
+          ],
+          "age": [
+            "youth",
+            "working_age",
+            "adults",
+            "seniors",
+            "whole_population",
+            "unspecified"
+          ],
+          "labour_market_status": [
+            "unemployed_general for less than 12 months",
+            "unemployed_general",
+            "long_term_unemployed",
+            "short_term_unemployed",
+            "inactive",
+            "employed"
+          ],
+          "skills_qualifications": [
+            "unskilled",
+            "underskilled_underqualified",
+            "skilled",
+            "all_levels",
+            "unspecified"
+          ],
+          "other_characteristics": [
+            "migrants",
+            "refugees",
+            "people_with_disabilities",
+            "neet",
+            "recent_graduates",
+            "school_dropouts_at_risk",
+            "single_parents",
+            "people_with_complex_problems",
+            "informal_sector_workers",
+            "unspecified"
+          ]
         }
       },
       {
         "id": "cat-3",
         "name": "Delivery Modes",
-        "config": {
-          "color": "#F59E0B",
-          "priority": "medium"
-        }
+        "config": [
+          "classroom",
+          "online",
+          "blended",
+          "on_the_job",
+          "workshop",
+          "mentoring",
+          "coaching",
+          "counseling"
+        ]
       },
       {
         "id": "cat-4",
         "name": "Delivery Channels",
-        "config": {
-          "color": "#8B5CF6",
-          "priority": "medium"
-        }
+        "config": [
+          "pes_office",
+          "online_portal",
+          "mobile_app",
+          "employer_based",
+          "community_center",
+          "mixed_or_unspecified"
+        ]
       },
       {
         "id": "cat-5",
         "name": "Evaluation Designs",
-        "config": {
-          "color": "#EC4899",
-          "priority": "high"
-        }
+        "config": [
+          "rct",
+          "difference_in_differences",
+          "matching_psm",
+          "regression_discontinuity",
+          "instrumental_variables",
+          "sequence_analysis",
+          "coarsened_exact_matching",
+          "before_after",
+          "cross_sectional",
+          "cost_benefit_analysis",
+          "meta_analysis",
+          "other"
+        ]
       },
       {
         "id": "cat-6",
         "name": "Outcomes Positive",
-        "config": {
-          "color": "#10B981",
-          "priority": "high"
-        }
+        "config": [
+          "short_term_employment",
+          "medium_term_employment",
+          "long_term_employment",
+          "employability_increase",
+          "work_readiness_increase",
+          "individual_income_increase"
+        ]
       },
       {
         "id": "cat-7",
         "name": "Outcomes Negative",
-        "config": {
-          "color": "#EF4444",
-          "priority": "high"
-        }
+        "config": [
+          "deadweight",
+          "displacement",
+          "substitution",
+          "locking_in",
+          "creaming",
+          "stigmatisation",
+          "none_or_not_analysed"
+        ]
       },
       {
         "id": "cat-8",
         "name": "Effect Direction",
-        "config": {
-          "color": "#3B82F6",
-          "priority": "medium"
-        }
+        "config": [
+          "positive",
+          "negative",
+          "neutral",
+          "unspecified"
+        ]
       },
       {
         "id": "cat-9",
         "name": "Effect Strength",
-        "config": {
-          "color": "#F59E0B",
-          "priority": "medium"
-        }
+        "config": [
+          "small",
+          "moderate",
+          "large",
+          "unspecified"
+        ]
       },
       {
         "id": "cat-10",
         "name": "Effect Horizon",
-        "config": {
-          "color": "#8B5CF6",
-          "priority": "medium"
-        }
+        "config": [
+          "short_term",
+          "medium_term",
+          "long_term",
+          "unspecified"
+        ]
       },
       {
         "id": "cat-11",
         "name": "Geography Levels",
-        "config": {
-          "color": "#10B981",
-          "priority": "low"
-        }
+        "config": [
+          "country",
+          "multi_country",
+          "regional",
+          "local"
+        ]
       },
       {
         "id": "cat-12",
         "name": "Rhetorical Roles",
-        "config": {
-          "color": "#3B82F6",
-          "priority": "medium"
-        }
+        "config": [
+          "background",
+          "definition",
+          "method",
+          "procedure",
+          "result",
+          "discussion",
+          "recommendation",
+          "limitation",
+          "requirement",
+          "example",
+          "conclusion",
+          "other"
+        ]
       }
     ],
     "updatedAt": "2024-10-22T18:20:00Z"
