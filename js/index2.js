@@ -26,20 +26,57 @@ function saveDatabase() {
   console.log("Saving database:", database);
   // In a real application, you would send this to your backend
   // fetch('/api/save-database', { method: 'POST', body: JSON.stringify(database) });
+  updateDocumentCount(); // Update the count after saving
+}
+
+// Update document count and progress bar
+function updateDocumentCount() {
+  const documentCount = document.getElementById('documentCount');
+  const storagePercentage = document.getElementById('storagePercentage');
+  const storageProgress = document.getElementById('storageProgress');
+  
+  if (!documentCount || !storagePercentage || !storageProgress) return;
+  
+  const currentCount = database.documents?.length || 0;
+  const maxCount = 50;
+  const percentage = Math.min(100, Math.round((currentCount / maxCount) * 100));
+  
+  documentCount.textContent = currentCount;
+  storagePercentage.textContent = `${percentage}%`;
+  storageProgress.style.width = `${percentage}%`;
+  
+  // Update progress bar color based on usage
+  if (percentage >= 90) {
+    storageProgress.classList.remove('bg-yellow-500', 'bg-eu-orange');
+    storageProgress.classList.add('bg-red-500');
+  } else if (percentage >= 70) {
+    storageProgress.classList.remove('bg-eu-orange', 'bg-red-500');
+    storageProgress.classList.add('bg-yellow-500');
+  } else {
+    storageProgress.classList.remove('bg-yellow-500', 'bg-red-500');
+    storageProgress.classList.add('bg-eu-orange');
+  }
 }
 
 // Document Ready Handler
 document.addEventListener("DOMContentLoaded", async function () {
-  // Load database first
-  await loadDatabase();
-
-  // Initialize modals and event listeners
-  initModals();
-  initViewMode();
-  initSorting();
-  initMenuHandlers();
-  initTaxonomyModal();
-  initDocuments();
+  try {
+    // Load database first
+    await loadDatabase();
+    
+    // Initialize UI components
+    initModals();
+    initViewMode();
+    initSorting();
+    initMenuHandlers();
+    initTaxonomyModal();
+    initDocuments();
+    
+    // Update document count after everything is loaded
+    updateDocumentCount();
+  } catch (error) {
+    console.error("Error initializing application:", error);
+  }
 });
 
 // Modal Functions
@@ -105,6 +142,150 @@ function initModals() {
 
   // Make closeUploadModal available globally
   window.closeUploadModal = closeUploadModal;
+  
+  // Initialize other modals
+  setupRenameModal();
+  setupDeleteModal();
+}
+
+// Handle Rename Document Modal
+function setupRenameModal() {
+  const modal = document.getElementById('renameDocumentModal');
+  const backdrop = document.getElementById('renameDocumentBackdrop');
+  const container = modal?.querySelector('div.fixed.inset-0.flex');
+  const modalContent = modal?.querySelector('.bg-white');
+
+  // Open modal with document details
+  window.openRenameModal = (docId, docTitle) => {
+    document.getElementById('currentDocumentId').value = docId;
+    document.getElementById('newDocumentName').value = docTitle;
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  };
+
+  // Close modal
+  window.closeRenameModal = () => {
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+  };
+
+  // Close buttons
+  document.querySelectorAll('.close-rename-modal').forEach(button => {
+    button.addEventListener('click', closeRenameModal);
+  });
+
+  // Close when clicking the backdrop
+  if (backdrop) {
+    backdrop.addEventListener('click', closeRenameModal);
+  }
+
+  // Close when clicking outside the modal content
+  if (container) {
+    container.addEventListener('click', function(e) {
+      if (e.target === container) {
+        closeRenameModal();
+      }
+    });
+  }
+
+  // Close with Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+      closeRenameModal();
+    }
+  });
+
+  // Stop propagation for modal content
+  if (modalContent) {
+    modalContent.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+  }
+
+  // Handle rename confirmation
+  document.getElementById('confirmRenameDocument').addEventListener('click', () => {
+    const docId = document.getElementById('currentDocumentId').value;
+    const newName = document.getElementById('newDocumentName').value.trim();
+    
+    if (newName) {
+      const docIndex = database.documents.findIndex(doc => doc.id === docId);
+      if (docIndex > -1) {
+        database.documents[docIndex].title = newName;
+        database.documents[docIndex].modifiedAt = new Date().toISOString();
+        saveDatabase();
+        renderDocuments();
+        closeRenameModal();
+      }
+    }
+  });
+}
+
+// Handle Delete Document Modal
+function setupDeleteModal() {
+  const modal = document.getElementById('deleteDocumentModal');
+  const backdrop = document.getElementById('deleteDocumentBackdrop');
+  const container = modal?.querySelector('div.fixed.inset-0.flex');
+  const modalContent = modal?.querySelector('.bg-white');
+
+  // Open modal with document details
+  window.openDeleteModal = (docId, docTitle) => {
+    document.getElementById('documentIdToDelete').value = docId;
+    document.getElementById('documentToDelete').textContent = `"${docTitle}"`;
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  };
+
+  // Close modal
+  window.closeDeleteModal = () => {
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+  };
+
+  // Close buttons
+  document.querySelectorAll('.close-delete-modal').forEach(button => {
+    button.addEventListener('click', closeDeleteModal);
+  });
+
+  // Close when clicking the backdrop
+  if (backdrop) {
+    backdrop.addEventListener('click', closeDeleteModal);
+  }
+
+  // Close when clicking outside the modal content
+  if (container) {
+    container.addEventListener('click', function(e) {
+      if (e.target === container) {
+        closeDeleteModal();
+      }
+    });
+  }
+
+  // Close with Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+      closeDeleteModal();
+    }
+  });
+
+  // Stop propagation for modal content
+  if (modalContent) {
+    modalContent.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+  }
+
+  // Handle delete confirmation
+  document.getElementById('confirmDeleteDocument').addEventListener('click', () => {
+    const docId = document.getElementById('documentIdToDelete').value;
+    const docIndex = database.documents.findIndex(doc => doc.id === docId);
+    
+    if (docIndex > -1) {
+      database.documents.splice(docIndex, 1);
+      saveDatabase();
+      renderDocuments();
+      closeDeleteModal();
+    }
+  });
 }
 
 // View Mode Toggle
@@ -319,10 +500,10 @@ function renderDocuments() {
               <i class="fas fa-ellipsis-v text-base"></i>
             </button>
             <div class="list-item-menu hidden w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200">
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white" onclick="event.stopPropagation(); openRenameModal('${doc.id}', '${doc.title.replace(/'/g, "\\'")}')">
                 <i class="fas fa-edit mr-2"></i>Rename
               </a>
-              <a href="#" class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50">
+              <a href="#" class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50" onclick="event.stopPropagation(); openDeleteModal('${doc.id}', '${doc.title.replace(/'/g, "\\'")}')">
                 <i class="fas fa-trash-alt mr-2"></i>Delete
               </a>
             </div>
@@ -366,10 +547,10 @@ function renderDocuments() {
             <div id="card${
               index + 1
             }-menu" class="card-menu hidden w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200">
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white">
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-eu-orange hover:text-white" onclick="event.stopPropagation(); openRenameModal('${doc.id}', '${doc.title.replace(/'/g, "\\'")}')">
                 <i class="fas fa-edit mr-2"></i>Rename
               </a>
-              <a href="#" class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50">
+              <a href="#" class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50" onclick="event.stopPropagation(); openDeleteModal('${doc.id}', '${doc.title.replace(/'/g, "\\'")}')">
                 <i class="fas fa-trash-alt mr-2"></i>Delete
               </a>
             </div>
@@ -534,10 +715,7 @@ function initTaxonomyModal() {
         // Reset the eye icon
         if (viewButton) {
           viewButton.innerHTML = `
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
+            <i class="fas fa-eye"></i>
           `;
         }
         return;
@@ -551,9 +729,7 @@ function initTaxonomyModal() {
       // Update the eye icon to show it's active
       if (viewButton) {
         viewButton.innerHTML = `
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-          </svg>
+         <i class="fas fa-eye-slash"></i>
         `;
       }
 
@@ -586,10 +762,7 @@ function initTaxonomyModal() {
         // Reset the eye icon when closed via the X button
         if (viewButton) {
           viewButton.innerHTML = `
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
+            <i class="fas fa-eye-slash"></i>
           `;
         }
       };
@@ -682,15 +855,10 @@ function initTaxonomyModal() {
           </div>
           <div class="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <button onclick="viewCategory(${index}, event)" class="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100 view-toggle" title="View">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
+              <i class="fas fa-eye"></i>
             </button>
             <button onclick="event.stopPropagation(); deleteCategory(${index})" class="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50" title="Delete">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
+              <i class="fas fa-trash"></i>
             </button>
           </div>
         </div>`;
@@ -956,9 +1124,7 @@ function initTaxonomyModal() {
       clearConfigBtn.className =
         "text-xs text-red-600 hover:text-red-800 mt-2 flex items-center transition-opacity duration-200 opacity-0";
       clearConfigBtn.innerHTML = `
-        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        <i class="fas fa-times mr-1"></i>
         Clear Config
       `;
       clearConfigBtn.style.display = "none";
@@ -985,10 +1151,15 @@ function initTaxonomyModal() {
     newToggleBtn.addEventListener("click", (e) => {
       e.preventDefault();
       const isHidden = configContainer.classList.toggle("hidden");
-      if (configIcon) {
-        configIcon.style.transform = isHidden
-          ? "rotate(0deg)"
-          : "rotate(180deg)";
+      
+      // Toggle data attribute for the chevron rotation
+      const chevron = document.getElementById("configChevron");
+      if (chevron) {
+        if (isHidden) {
+          chevron.parentElement.removeAttribute("data-expanded");
+        } else {
+          chevron.parentElement.setAttribute("data-expanded", "true");
+        }
       }
 
       // Toggle clear button visibility based on content
@@ -1122,6 +1293,19 @@ function toggleCardMenu(event, cardId) {
     menu.style.transform = "none";
     menu.style.zIndex = "9999";
 
+    // Close when clicking on menu items
+    const menuItems = menu.querySelectorAll('button, a, [role="menuitem"]');
+    menuItems.forEach(item => {
+      // Remove any existing click handlers to prevent duplicates
+      item.removeEventListener('click', closeMenu);
+      // Add new click handler
+      item.addEventListener('click', closeMenu);
+    });
+
+    function closeMenu() {
+      menu.classList.add('hidden');
+    }
+
     // Close when clicking outside
     const clickHandler = function (e) {
       if (
@@ -1179,6 +1363,19 @@ function toggleListItemMenu(event, itemId) {
     menu.style.transform = "none";
     menu.style.zIndex = "9999";
 
+    // Close when clicking on menu items
+    const menuItems = menu.querySelectorAll('button, a, [role="menuitem"]');
+    menuItems.forEach(item => {
+      // Remove any existing click handlers to prevent duplicates
+      item.removeEventListener('click', closeMenu);
+      // Add new click handler
+      item.addEventListener('click', closeMenu);
+    });
+
+    function closeMenu() {
+      menu.classList.add('hidden');
+    }
+
     // Close when clicking outside
     const clickHandler = function (e) {
       if (
@@ -1214,7 +1411,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Make toggleTaxonomyModal available globally
+// Make toggleTaxonomyModal and closeTaxonomyModal available globally
+window.closeTaxonomyModal = function() {
+  const modal = document.getElementById("taxonomyModal");
+  if (modal) {
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+};
+
 window.toggleTaxonomyModal = function () {
   const modal = document.getElementById("taxonomyModal");
   const cogButton = document.getElementById("taxonomy-edit-btn");
@@ -1245,3 +1450,42 @@ window.toggleTaxonomyModal = function () {
     cogButton.classList.remove("bg-eu-orange", "text-eu-white");
   }
 };
+
+// Taxonomy Modal Click Outside Handler
+function initTaxonomyModalHandlers() {
+  const modal = document.getElementById('taxonomyModal');
+  const backdrop = document.getElementById('taxonomyBackdrop');
+  const container = modal?.querySelector('div.fixed.inset-0.flex');
+  const modalContent = modal?.querySelector('.bg-white');
+
+  // Close when clicking the backdrop
+  if (backdrop) {
+    backdrop.addEventListener('click', toggleTaxonomyModal);
+  }
+
+  // Close when clicking outside the modal content
+  if (container) {
+    container.addEventListener('click', function(e) {
+      if (e.target === container) {
+        toggleTaxonomyModal();
+      }
+    });
+  }
+
+  // Stop propagation for modal content
+  if (modalContent) {
+    modalContent.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+  }
+
+  // Close with Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+      toggleTaxonomyModal();
+    }
+  });
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', initTaxonomyModalHandlers);
