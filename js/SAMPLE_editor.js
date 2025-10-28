@@ -5,6 +5,22 @@ let allChunksData = {};
 let changes = {};
 let editingEntity = null;
 
+// UI Elements
+const UI_ELEMENTS = {
+  toolbar: null,
+  sidebar: null,
+  documentContent: null,
+  metadataPanel: null,
+  entityModal: null,
+  // Add references to dynamic elements
+  modeToggle: null,
+  modeText: null,
+  changesBadge: null,
+  changesCount: null,
+  documentTitle: null,
+  documentMeta: null
+};
+
 // Load the JSON data asynchronously
 async function loadChunksData() {
   try {
@@ -23,23 +39,417 @@ async function loadChunksData() {
   }
 }
 
-// Initialize the application
+/**
+ * Initialize the application UI by creating and appending all components
+ */
+function initializeUI() {
+  // Create the main container
+  const appContainer = document.createElement('div');
+  appContainer.id = 'app';
+  document.body.appendChild(appContainer);
+  
+  // Create and append all UI components
+  createToolbar();
+  createSidebar();
+  createDocumentArea();
+  createMetadataPanel();
+  createEntityModal();
+  
+  // Set up the main container structure
+  const container = document.createElement('div');
+  container.className = 'container';
+  
+  // Append sidebar and document content to container
+  container.appendChild(UI_ELEMENTS.sidebar);
+  container.appendChild(UI_ELEMENTS.documentContent);
+  
+  // Append everything to the app container
+  appContainer.appendChild(UI_ELEMENTS.toolbar);
+  appContainer.appendChild(container);
+  appContainer.appendChild(UI_ELEMENTS.metadataPanel);
+  appContainer.appendChild(UI_ELEMENTS.entityModal);
+  
+  // Apply any initial styles
+  applyInitialStyles();
+}
+
+/**
+ * Initialize the application
+ */
 function initializeApp() {
+  try {
+    // Initialize UI first
+    initializeUI();
+    
+    // Set up all event listeners
+    setupEventListeners();
+    
+    // If there's a hash in the URL, try to select that chunk
+    if (window.location.hash) {
+      const chunkId = window.location.hash.substring(1);
+      if (allChunksData[chunkId]) {
+        selectChunk(chunkId);
+      }
+    }
+    
+    // Update UI based on initial state
+    updateUIForEditMode();
+    
+  } catch (error) {
+    console.error('Error initializing application:', error);
+    // Show error to user
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.textContent = 'Failed to initialize the application. Please refresh the page or contact support.';
+    document.body.appendChild(errorDiv);
+  }
+}
+
+/**
+ * Set up all event listeners
+ */
+function setupEventListeners() {
   setupChunkListeners();
   setupNavigationListeners();
   setupOutlineToggles();
+  
+  // Add keyboard shortcuts
+  document.addEventListener('keydown', handleKeyDown);
+  
+  // Add window resize handler
+  window.addEventListener('resize', handleWindowResize);
+}
 
-  // If there's a hash in the URL, try to select that chunk
-  if (window.location.hash) {
-    const chunkId = window.location.hash.substring(1);
-    if (allChunksData[chunkId]) {
-      selectChunk(chunkId);
+/**
+ * Handle keyboard shortcuts
+ */
+function handleKeyDown(e) {
+  // Escape key closes modals/panels
+  if (e.key === 'Escape') {
+    closeMetadata();
+    closeEntityModal();
+  }
+  
+  // Ctrl+S or Cmd+S to save
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault();
+    exportAnnotations();
+  }
+}
+
+/**
+ * Handle window resize events
+ */
+function handleWindowResize() {
+  // Update any responsive elements here
+  if (UI_ELEMENTS.metadataPanel) {
+    // Adjust metadata panel position if needed
+    if (currentChunkId) {
+      const chunkElement = document.getElementById(currentChunkId);
+      if (chunkElement) {
+        positionMetadataPanel(chunkElement);
+      }
     }
   }
 }
 
-// Start loading the data when the script loads
-document.addEventListener("DOMContentLoaded", loadChunksData);
+/**
+ * Apply initial styles to the application
+ */
+function applyInitialStyles() {
+  const style = document.createElement('style');
+  style.textContent = `
+    #app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      color: #333;
+    }
+    
+    .container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    
+    /* Add any other base styles here */
+  `;
+  document.head.appendChild(style);
+}
+
+/**
+ * Update UI elements based on edit mode
+ */
+function updateUIForEditMode() {
+  if (!UI_ELEMENTS.modeText) return;
+  
+  if (editMode) {
+    UI_ELEMENTS.modeText.textContent = 'Switch to View Mode';
+    document.body.classList.add('edit-mode');
+  } else {
+    UI_ELEMENTS.modeText.textContent = 'Switch to Edit Mode';
+    document.body.classList.remove('edit-mode');
+  }
+  
+  // Update other UI elements as needed
+  updateChangeBadge();
+}
+
+// UI Component Creators
+function createToolbar() {
+  const toolbar = document.createElement('div');
+  toolbar.className = 'toolbar';
+  
+  const toolbarLeft = document.createElement('div');
+  toolbarLeft.className = 'toolbar-left';
+  
+  const title = document.createElement('div');
+  title.className = 'toolbar-title';
+  title.textContent = '📝 Annotation Editor';
+  
+  const modeToggle = document.createElement('button');
+  modeToggle.className = 'mode-toggle';
+  modeToggle.id = 'mode-toggle';
+  modeToggle.onclick = toggleEditMode;
+  
+  const modeText = document.createElement('span');
+  modeText.id = 'mode-text';
+  modeText.textContent = 'Switch to Edit Mode';
+  
+  modeToggle.appendChild(modeText);
+  
+  const changesBadge = document.createElement('span');
+  changesBadge.className = 'changes-badge';
+  changesBadge.id = 'changes-badge';
+  changesBadge.style.display = 'none';
+  
+  const changesCount = document.createElement('span');
+  changesCount.id = 'changes-count';
+  changesCount.textContent = '0';
+  
+  changesBadge.appendChild(document.createTextNode(' '));
+  changesBadge.appendChild(changesCount);
+  changesBadge.appendChild(document.createTextNode(' changes'));
+  
+  toolbarLeft.appendChild(title);
+  toolbarLeft.appendChild(modeToggle);
+  toolbarLeft.appendChild(changesBadge);
+  
+  const toolbarActions = document.createElement('div');
+  toolbarActions.className = 'toolbar-actions';
+  
+  const exportBtn = document.createElement('button');
+  exportBtn.className = 'btn btn-export';
+  exportBtn.onclick = exportAnnotations;
+  exportBtn.innerHTML = '💾 Export Changes';
+  
+  const resetBtn = document.createElement('button');
+  resetBtn.className = 'btn btn-reset';
+  resetBtn.onclick = resetChanges;
+  resetBtn.innerHTML = '🔄 Reset All';
+  
+  toolbarActions.appendChild(exportBtn);
+  toolbarActions.appendChild(resetBtn);
+  
+  toolbar.appendChild(toolbarLeft);
+  toolbar.appendChild(toolbarActions);
+  
+  UI_ELEMENTS.toolbar = toolbar;
+}
+
+function createSidebar() {
+  const sidebar = document.createElement('div');
+  sidebar.className = 'sidebar';
+  
+  const sidebarHeader = document.createElement('div');
+  sidebarHeader.className = 'sidebar-header';
+  
+  const sidebarTitle = document.createElement('div');
+  sidebarTitle.className = 'sidebar-title';
+  sidebarTitle.textContent = 'Document Navigation';
+  
+  const sidebarSubtitle = document.createElement('div');
+  sidebarSubtitle.className = 'sidebar-subtitle';
+  sidebarSubtitle.textContent = '0 chunks'; // Will be updated after loading data
+  
+  sidebarHeader.appendChild(sidebarTitle);
+  sidebarHeader.appendChild(sidebarSubtitle);
+  
+  const outlineSection = document.createElement('div');
+  outlineSection.className = 'outline-section';
+  outlineSection.style.marginLeft = '0px';
+  
+  sidebar.appendChild(sidebarHeader);
+  sidebar.appendChild(outlineSection);
+  
+  UI_ELEMENTS.sidebar = sidebar;
+}
+
+function createDocumentArea() {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'document-wrapper';
+  
+  const documentEl = document.createElement('div');
+  documentEl.className = 'document';
+  
+  const documentHeader = document.createElement('div');
+  documentHeader.className = 'document-header';
+  
+  const documentTitle = document.createElement('h1');
+  documentTitle.className = 'document-title';
+  documentTitle.textContent = 'Document Title';
+  
+  const documentMeta = document.createElement('div');
+  documentMeta.className = 'document-meta';
+  documentMeta.textContent = 'Loading document...';
+  
+  documentHeader.appendChild(documentTitle);
+  documentHeader.appendChild(documentMeta);
+  
+  const documentContent = document.createElement('div');
+  documentContent.className = 'document-content';
+  documentContent.id = 'document-content';
+  
+  documentEl.appendChild(documentHeader);
+  documentEl.appendChild(documentContent);
+  wrapper.appendChild(documentEl);
+  
+  UI_ELEMENTS.documentContent = wrapper;
+}
+
+function createMetadataPanel() {
+  const panel = document.createElement('div');
+  panel.className = 'metadata-panel';
+  panel.id = 'metadata-panel';
+  
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'metadata-close';
+  closeBtn.innerHTML = '&times;';
+  closeBtn.onclick = closeMetadata;
+  
+  const content = document.createElement('div');
+  content.id = 'metadata-content';
+  
+  const defaultContent = document.createElement('div');
+  defaultContent.className = 'metadata-section';
+  
+  const title = document.createElement('div');
+  title.className = 'metadata-title';
+  title.textContent = 'Chunk Metadata';
+  
+  const message = document.createElement('p');
+  message.textContent = 'Click on any chunk to view and edit its metadata.';
+  
+  defaultContent.appendChild(title);
+  defaultContent.appendChild(message);
+  content.appendChild(defaultContent);
+  
+  panel.appendChild(closeBtn);
+  panel.appendChild(content);
+  
+  UI_ELEMENTS.metadataPanel = panel;
+}
+
+function createEntityModal() {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.id = 'entity-modal';
+  
+  const modalContent = document.createElement('div');
+  modalContent.className = 'modal-content';
+  
+  const modalTitle = document.createElement('div');
+  modalTitle.className = 'modal-title';
+  modalTitle.textContent = 'Edit Entity';
+  
+  const formGroup1 = document.createElement('div');
+  formGroup1.className = 'form-group';
+  
+  const label1 = document.createElement('label');
+  label1.className = 'form-label';
+  label1.textContent = 'Entity Text:';
+  
+  const input1 = document.createElement('input');
+  input1.type = 'text';
+  input1.className = 'form-input';
+  input1.id = 'entity-text-input';
+  
+  formGroup1.appendChild(label1);
+  formGroup1.appendChild(input1);
+  
+  const formGroup2 = document.createElement('div');
+  formGroup2.className = 'form-group';
+  
+  const label2 = document.createElement('label');
+  label2.className = 'form-label';
+  label2.textContent = 'Entity Type:';
+  
+  const select = document.createElement('select');
+  select.className = 'form-input';
+  select.id = 'entity-type-input';
+  
+  const entityTypes = [
+    'person', 'org', 'location', 'program', 
+    'date', 'amount', 'metric', 'law', 'policy'
+  ];
+  
+  entityTypes.forEach(type => {
+    const option = document.createElement('option');
+    option.value = type;
+    option.textContent = type;
+    select.appendChild(option);
+  });
+  
+  formGroup2.appendChild(label2);
+  formGroup2.appendChild(select);
+  
+  const modalActions = document.createElement('div');
+  modalActions.className = 'modal-actions';
+  
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'btn btn-cancel';
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.onclick = closeEntityModal;
+  
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'btn btn-save';
+  saveBtn.textContent = 'Save';
+  saveBtn.onclick = saveEntityEdit;
+  
+  modalActions.appendChild(cancelBtn);
+  modalActions.appendChild(saveBtn);
+  
+  modalContent.appendChild(modalTitle);
+  modalContent.appendChild(formGroup1);
+  modalContent.appendChild(formGroup2);
+  modalContent.appendChild(modalActions);
+  
+  modal.appendChild(modalContent);
+  
+  UI_ELEMENTS.entityModal = modal;
+}
+
+/**
+ * Start loading the data when the script loads
+ */
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadChunksData);
+} else {
+  // If the document is already loaded, start immediately
+  loadChunksData();
+}
+
+// Expose public API
+window.EditorApp = {
+  toggleEditMode,
+  exportAnnotations,
+  resetChanges,
+  selectChunk,
+  closeMetadata,
+  closeEntityModal
+};
 
 // Rest of your existing functions...
 function setupChunkListeners() {
