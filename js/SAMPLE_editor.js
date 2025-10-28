@@ -24,7 +24,7 @@ const UI_ELEMENTS = {
 // Load the JSON data asynchronously
 async function loadChunksData() {
   try {
-    const response = await fetch("../assets/SAMPLE_editor.json");
+    const response = await fetch("/assets/SAMPLE_editor.json");
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
