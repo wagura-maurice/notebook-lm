@@ -1,6 +1,6 @@
 // js/openNDJSON.js
 class NDJSONHandler {
-  constructor(filePath = 'assets/What_Can_Active_Labour_Market_Policy_Do_20251015_131625_chunks.refined_enriched_v2.ndjson') {
+  constructor(filePath = 'assets/A_randomized_evaluation_of_the_Job_Training_Partnership_Act_20251018_184309_chunks.refined_enriched_v2.ndjson') {
     this.filePath = filePath;
     this.data = [];
     this.taxonomies = {};

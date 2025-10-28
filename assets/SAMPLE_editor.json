@@ -1,0 +1,2316 @@
+{
+	"c0000": {
+		"chunk_id": "c0000",
+		"summary": "This case study explores factors influencing AI adoption in the public sector, highlighting human-centred approaches, subsidy support, and organizational challenges.",
+		"keywords": ["ai adoption", "public sector", "human-centred approach", "subsidy support", "organizational barriers", "work processes", "technology integration"],
+		"entities": [{
+			"type": "person",
+			"text": "Laura Nurski",
+			"value": null,
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "location",
+			"text": "Europe",
+			"value": null,
+			"unit": null,
+			"confidence": 1.0
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 181,
+		"sentences": 7
+	},
+	"c0001": {
+		"chunk_id": "c0001",
+		"summary": "This working paper explores AI adoption in the public sector, with contributions from researchers and case organizations.",
+		"keywords": ["ai adoption", "public sector", "case study", "research assistance", "working paper"],
+		"entities": [{
+			"type": "person",
+			"text": "Tom Schraepen",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "Bruegel",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Mia Hoffmann",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "Georgetown's Center for Security and Emerging Technology",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Laura Nurski",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "Bruegel",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2023",
+			"value": "2023",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2020",
+			"value": "2020",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "background",
+		"confidence": 0.9,
+		"words": 86,
+		"sentences": 1
+	},
+	"c0002": {
+		"chunk_id": "c0002",
+		"summary": "The study explores AI adoption, user acceptance, productivity impacts, and organisational practices, offering recommendations to enhance AI acceptance.",
+		"keywords": ["ai adoption", "user acceptance", "productivity paradox", "organisational practices", "technology utilisation", "hr practices", "ai impact"],
+		"entities": [],
+		"rhetorical_role": "background",
+		"confidence": 0.9,
+		"words": 78,
+		"sentences": 4
+	},
+	"c0003": {
+		"chunk_id": "c0003",
+		"summary": "This teaching case explores technology adoption, bridging disciplines like IT and economics, and aims to provide lessons for policy and business.",
+		"keywords": ["technology adoption", "policy lessons", "future of work", "inclusive growth", "interdisciplinary approach"],
+		"entities": [{
+			"type": "person",
+			"text": "Baker and Gil",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "Bruegel",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "program",
+			"text": "Future of Work & Inclusive Growth",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "background",
+		"confidence": 0.9,
+		"words": 119,
+		"sentences": 3
+	},
+	"c0004": {
+		"chunk_id": "c0004",
+		"summary": "The case study examines AI adoption by Flanders Investment and Trade (FIT), a trade promotion organisation in Flanders, Belgium, supported by Radix.",
+		"keywords": ["ai adoption", "flanders investment and trade", "trade promotion organisation", "export assistance", "foreign investment", "regional offices", "market insights"],
+		"entities": [{
+			"type": "org",
+			"text": "Flanders Investment and Trade",
+			"value": "Flanders Investment and Trade",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "org",
+			"text": "Radix",
+			"value": "Radix",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "location",
+			"text": "Flanders",
+			"value": "Flanders",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "location",
+			"text": "Belgium",
+			"value": "Belgium",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "location",
+			"text": "Brussels",
+			"value": "Brussels",
+			"unit": null,
+			"confidence": 1.0
+		}],
+		"rhetorical_role": "background",
+		"confidence": 0.9,
+		"words": 192,
+		"sentences": 7
+	},
+	"c0005": {
+		"chunk_id": "c0005",
+		"summary": "Radix, a Belgian AI provider founded in 2018, offers AI solutions for industries like manufacturing, transportation, finance, and the public sector.",
+		"keywords": ["ai solutions", "manufacturing", "transportation", "financial services", "public sector", "belgium", "radix"],
+		"entities": [{
+			"type": "org",
+			"text": "Radix",
+			"value": "Radix",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "location",
+			"text": "Belgium",
+			"value": "Belgium",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "location",
+			"text": "Flanders",
+			"value": "Flanders",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "location",
+			"text": "Brussels",
+			"value": "Brussels",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "date",
+			"text": "2018",
+			"value": "2018",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "metric",
+			"text": "40 engineers and solution leads",
+			"value": "40",
+			"unit": "people",
+			"confidence": 1.0
+		}],
+		"rhetorical_role": "background",
+		"confidence": 0.9,
+		"words": 51,
+		"sentences": 3
+	},
+	"c0006": {
+		"chunk_id": "c0006",
+		"summary": "The text discusses AI applications in Flemish public employment and production processes, highlighting case studies like job-matching algorithms and productivity-enhancing tools.",
+		"keywords": ["ai-supported orientation test", "job-matching algorithm", "productivity effects", "job satisfaction", "routine cognitive tasks", "flemish public employment agency"],
+		"entities": [{
+			"type": "org",
+			"text": "Radix",
+			"value": "Radix",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "Flemish public employment agency",
+			"value": "Flemish public employment agency",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "FIT",
+			"value": "FIT",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "location",
+			"text": "Flanders",
+			"value": "Flanders",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "metric",
+			"text": "27 percent time savings",
+			"value": "27",
+			"unit": "percent",
+			"confidence": 0.9
+		}, {
+			"type": "metric",
+			"text": "36 percent more questions answered",
+			"value": "36",
+			"unit": "percent",
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "background",
+		"confidence": 0.9,
+		"words": 325,
+		"sentences": 10
+	},
+	"c0007": {
+		"chunk_id": "c0007",
+		"summary": "The study utilized desk research, interviews, and analysis of data sources to explore AI adoption and acceptance, focusing on FIT and Radix.",
+		"keywords": ["ai adoption", "desk research", "interviews", "technology acceptance", "case study"],
+		"entities": [{
+			"type": "person",
+			"text": "Hoffman",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Nurski",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "FIT",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "Radix",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "location",
+			"text": "France",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "location",
+			"text": "Germany",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "location",
+			"text": "Italy",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "location",
+			"text": "USA",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "method",
+		"confidence": 0.9,
+		"words": 154,
+		"sentences": 7
+	},
+	"c0008": {
+		"chunk_id": "c0008",
+		"summary": "The text discusses interviewee specialization by region or industry and mentions collected documents as a data source for case studies.",
+		"keywords": ["case study materials", "interviewee specialization", "regions", "industries", "training materials"],
+		"entities": [],
+		"rhetorical_role": "background",
+		"confidence": 0.8,
+		"words": 56,
+		"sentences": 3
+	},
+	"c0009": {
+		"chunk_id": "c0009",
+		"summary": "The section discusses AI adoption within the organisation, but no specific details are provided in the text.",
+		"keywords": ["ai adoption", "organisation"],
+		"entities": [],
+		"rhetorical_role": "background",
+		"confidence": 0.8,
+		"words": 8,
+		"sentences": 1
+	},
+	"c0010": {
+		"chunk_id": "c0010",
+		"summary": "The text describes FIT's AI adoption process from 2017 to 2021, including experimenting with AI, developing a strategy, and establishing data infrastructure.",
+		"keywords": ["ai adoption", "data infrastructure", "ai strategy", "proof-of-concepts", "ai integration", "fit services", "roadmap"],
+		"entities": [{
+			"type": "org",
+			"text": "FIT",
+			"value": "FIT",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2017",
+			"value": "2017",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2019",
+			"value": "2019",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2020",
+			"value": "2020",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2021",
+			"value": "2021",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "procedure",
+		"confidence": 0.9,
+		"words": 60,
+		"sentences": 3
+	},
+	"c0011": {
+		"chunk_id": "c0011",
+		"summary": "FIT explored AI technology through workshops and developed five proof-of-concepts to enhance trade and invest services, including web scraping and predictive modeling.",
+		"keywords": ["ai technology", "proof-of-concepts", "trade services", "invest services", "web scraping", "predictive modeling", "social listening"],
+		"entities": [{
+			"type": "org",
+			"text": "FIT",
+			"value": "FIT",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "Radix",
+			"value": "Radix",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2017-2019",
+			"value": "2017-01-01/2019-12-31",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "procedure",
+		"confidence": 0.9,
+		"words": 176,
+		"sentences": 6
+	},
+	"c0012": {
+		"chunk_id": "c0012",
+		"summary": "An AI algorithm was developed to automate answering trade questions for Flemish companies, using NLP trained on past data. Evaluation included interviews and testing with 175 new trade questions.",
+		"keywords": ["ai", "natural language processing", "trade cases", "crm integration", "evaluation", "flemish companies"],
+		"entities": [{
+			"type": "org",
+			"text": "FIT",
+			"value": "FIT",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "program",
+			"text": "trade cases question-answering POC",
+			"value": "trade cases question-answering POC",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "metric",
+			"text": "60 percent to 70 percent of their workload",
+			"value": "60-70",
+			"unit": "percent",
+			"confidence": 0.9
+		}, {
+			"type": "metric",
+			"text": "10,000 per year",
+			"value": "10000",
+			"unit": "questions per year",
+			"confidence": 0.9
+		}, {
+			"type": "metric",
+			"text": "875 AI-suggested answers",
+			"value": "875",
+			"unit": "answers",
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 385,
+		"sentences": 10
+	},
+	"c0013": {
+		"chunk_id": "c0013",
+		"summary": "The algorithm's hit rate improved from 51% to 62% after retraining based on FIT staff feedback, addressing issues like synonyms and unclear links.",
+		"keywords": ["algorithm retraining", "user feedback", "hit rate improvement", "synonyms recognition", "ai quality enhancement"],
+		"entities": [{
+			"type": "org",
+			"text": "FIT",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "metric",
+			"text": "hit rate",
+			"value": "51",
+			"unit": "percent",
+			"confidence": 0.9
+		}, {
+			"type": "metric",
+			"text": "hit rate",
+			"value": "62",
+			"unit": "percent",
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "result",
+		"confidence": 0.9,
+		"words": 122,
+		"sentences": 4
+	},
+	"c0014": {
+		"chunk_id": "c0014",
+		"summary": "FIT developed an AI strategy in 2020, including an AI maturity assessment, enterprise architecture, and training programs to enhance AI adoption.",
+		"keywords": ["ai strategy", "ai maturity assessment", "enterprise architecture", "training", "data-driven marketing", "ai adoption", "fit"],
+		"entities": [{
+			"type": "org",
+			"text": "FIT",
+			"value": "FIT",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2020",
+			"value": "2020",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "metric",
+			"text": "AI ready",
+			"value": "AI ready",
+			"unit": null,
+			"confidence": 0.8
+		}],
+		"rhetorical_role": "procedure",
+		"confidence": 0.9,
+		"words": 292,
+		"sentences": 8
+	},
+	"c0015": {
+		"chunk_id": "c0015",
+		"summary": "The AI roadmap outlines three stages for FIT's digital transformation, focusing on analytics, conversational platforms, and advanced AI capabilities for marketing.",
+		"keywords": ["ai roadmap", "data-driven decision-making", "natural language processing", "cloud infrastructure", "machine learning", "digital marketing", "analytics"],
+		"entities": [{
+			"type": "org",
+			"text": "FIT",
+			"value": "FIT",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "program",
+			"text": "Office 365 workplace analytics",
+			"value": "Office 365 workplace analytics",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "program",
+			"text": "Power BI",
+			"value": "Power BI",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "program",
+			"text": "Azure data services",
+			"value": "Azure data services",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "program",
+			"text": "Application Programming Interfaces (APIs) to Natural Language Processing (NLP) models",
+			"value": "Application Programming Interfaces (APIs) to Natural Language Processing (NLP) models",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 169,
+		"sentences": 6
+	},
+	"c0016": {
+		"chunk_id": "c0016",
+		"summary": "FIT developed a data hub and operational database layer to centralize internal and external data sources, enabling future AI projects and data management.",
+		"keywords": ["data infrastructure", "data hub", "api access layer", "crm system", "erp system", "unstructured data"],
+		"entities": [{
+			"type": "org",
+			"text": "FIT",
+			"value": "FIT",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2020-2021",
+			"value": "2020-01-01/2021-12-31",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "program",
+			"text": "data hub",
+			"value": "data hub",
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "program",
+			"text": "data vault",
+			"value": "data vault",
+			"unit": null,
+			"confidence": 0.8
+		}],
+		"rhetorical_role": "procedure",
+		"confidence": 0.9,
+		"words": 180,
+		"sentences": 6
+	},
+	"c0017": {
+		"chunk_id": "c0017",
+		"summary": "Self-service analytics enables business professionals to perform queries and generate reports independently, supporting AI development with real-time data processing.",
+		"keywords": ["self-service analytics", "business intelligence", "real-time data", "ai development", "data processing"],
+		"entities": [{
+			"type": "org",
+			"text": "Gartner",
+			"value": "Gartner",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "definition",
+		"confidence": 0.9,
+		"words": 52,
+		"sentences": 1
+	},
+	"c0018": {
+		"chunk_id": "c0018",
+		"summary": "Adoption of new technology is influenced by technological, organisational, and environmental contexts, as noted by Baker (2012) and Hoffmann & Nurski (2021).",
+		"keywords": ["technology adoption", "organisational context", "environmental context", "technological context"],
+		"entities": [{
+			"type": "person",
+			"text": "Baker",
+			"value": "Baker",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Hoffmann",
+			"value": "Hoffmann",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Nurski",
+			"value": "Nurski",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "background",
+		"confidence": 0.9,
+		"words": 31,
+		"sentences": 1
+	},
+	"c0019": {
+		"chunk_id": "c0019",
+		"summary": "The text discusses factors influencing AI adoption at FIT, including productivity gains, data availability, leadership support, IT infrastructure, skilled labor, and funding.",
+		"keywords": ["ai adoption", "productivity gains", "data availability", "leadership support", "it infrastructure", "skilled labor", "external funding"],
+		"entities": [{
+			"type": "org",
+			"text": "FIT",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 52,
+		"sentences": 3
+	},
+	"c0020": {
+		"chunk_id": "c0020",
+		"summary": "The chunk cites Bruegel's analysis based on Baker (2012), interviews, documents, and websites, as detailed in the annex.",
+		"keywords": ["bruegel", "baker 2012", "interviews", "documents", "websites", "annex"],
+		"entities": [{
+			"type": "org",
+			"text": "Bruegel",
+			"value": "Bruegel",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Baker",
+			"value": "Baker",
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "date",
+			"text": "2012",
+			"value": "2012",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "background",
+		"confidence": 0.9,
+		"words": 13,
+		"sentences": 1
+	},
+	"c0021": {
+		"chunk_id": "c0021",
+		"summary": "Flanders' economy is driven by international trade, with €378.8 billion in imports and €380.5 billion in exports in 2021. Key trading partners include Germany, France, and the Netherlands.",
+		"keywords": ["flanders", "international trade", "exports", "imports", "economic development", "global trade", "employment"],
+		"entities": [{
+			"type": "location",
+			"text": "Flanders",
+			"value": "Flanders",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "amount",
+			"text": "€378.8 billion",
+			"value": "378.8",
+			"unit": "billion euros",
+			"confidence": 1.0
+		}, {
+			"type": "amount",
+			"text": "€380.5 billion",
+			"value": "380.5",
+			"unit": "billion euros",
+			"confidence": 1.0
+		}, {
+			"type": "location",
+			"text": "Germany",
+			"value": "Germany",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "location",
+			"text": "France",
+			"value": "France",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "location",
+			"text": "Netherlands",
+			"value": "Netherlands",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "metric",
+			"text": "843,900 jobs",
+			"value": "843900",
+			"unit": "jobs",
+			"confidence": 1.0
+		}, {
+			"type": "metric",
+			"text": "five million total employment",
+			"value": "5000000",
+			"unit": "jobs",
+			"confidence": 1.0
+		}, {
+			"type": "date",
+			"text": "2021",
+			"value": "2021",
+			"unit": null,
+			"confidence": 1.0
+		}],
+		"rhetorical_role": "background",
+		"confidence": 0.9,
+		"words": 146,
+		"sentences": 6
+	},
+	"c0022": {
+		"chunk_id": "c0022",
+		"summary": "FIT is recognized by the European Commission for its digitalisation and AI adoption, aligning with the Flemish Digital Strategy and Data Strategy approved in 2022.",
+		"keywords": ["digitalisation", "ai adoption", "flemish digital strategy", "flemish data strategy", "digital public services", "desi index"],
+		"entities": [{
+			"type": "org",
+			"text": "FIT",
+			"value": "FIT",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "European Commission",
+			"value": "European Commission",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "policy",
+			"text": "Flemish Digital Strategy",
+			"value": "Flemish Digital Strategy",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "policy",
+			"text": "Flemish Data Strategy",
+			"value": "Flemish Data Strategy",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "metric",
+			"text": "Digital Economy and Society Index",
+			"value": "Digital Economy and Society Index",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "18 March 2022",
+			"value": "2022-03-18",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "background",
+		"confidence": 0.9,
+		"words": 128,
+		"sentences": 5
+	},
+	"c0023": {
+		"chunk_id": "c0023",
+		"summary": "FIT's digitalisation strategy involved external financing, AI strategy development, and organisational changes, supported by EU and regional funds.",
+		"keywords": ["ai adoption", "digitalisation strategy", "external financing", "flemish economy", "ai training", "data infrastructure", "structural reform support"],
+		"entities": [{
+			"type": "org",
+			"text": "Flanders Accelerates",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "FIT",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "European Regional Development Fund",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "Hermes Fund",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "VLAIO",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "European Commission",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "DG Reform",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2017",
+			"value": "2017",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2022",
+			"value": "2022",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "15 December 2020",
+			"value": "2020-12-15",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "amount",
+			"text": "€1.8 million",
+			"value": "1.8",
+			"unit": "million euros",
+			"confidence": 0.9
+		}, {
+			"type": "amount",
+			"text": "€1.6 million",
+			"value": "1.6",
+			"unit": "million euros",
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 431,
+		"sentences": 11
+	},
+	"c0024": {
+		"chunk_id": "c0024",
+		"summary": "FIT's roadmap includes AI training for all employees, focusing on data value, AI impact, and vocabulary. The digital marketing team receives specialized training in data-driven strategies and tools.",
+		"keywords": ["ai training", "data-driven marketing", "google analytics", "ai impact", "business operations"],
+		"entities": [{
+			"type": "org",
+			"text": "FIT",
+			"value": "FIT",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "program",
+			"text": "AI training roadmap",
+			"value": "AI training roadmap",
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "metric",
+			"text": "Google Analytics",
+			"value": "Google Analytics",
+			"unit": null,
+			"confidence": 0.8
+		}],
+		"rhetorical_role": "procedure",
+		"confidence": 0.9,
+		"words": 108,
+		"sentences": 5
+	},
+	"c0025": {
+		"chunk_id": "c0025",
+		"summary": "The AI lead and Radix agency explored AI opportunities for FIT, focusing on productivity gains and data availability to develop proofs-of-concept.",
+		"keywords": ["ai adoption", "data availability", "productivity gains", "fit organisation", "radix agency", "technical barriers"],
+		"entities": [{
+			"type": "person",
+			"text": "AI lead",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "org",
+			"text": "Radix",
+			"value": "Radix",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "FIT organisation",
+			"value": "FIT organisation",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "location",
+			"text": "Flemish",
+			"value": "Flemish",
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "metric",
+			"text": "potential productivity gains",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "date",
+			"text": "phase 1",
+			"value": null,
+			"unit": null,
+			"confidence": 0.7
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 154,
+		"sentences": 5
+	},
+	"c0026": {
+		"chunk_id": "c0026",
+		"summary": "The text discusses the importance of existing digital infrastructure for AI adoption, highlighting the role of data storage and processing capabilities.",
+		"keywords": ["ai adoption", "digital infrastructure", "data storage", "crm system", "intelligent decision-making", "technological readiness"],
+		"entities": [{
+			"type": "org",
+			"text": "Microsoft Dynamics",
+			"value": "Microsoft Dynamics",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "Lotus Notes",
+			"value": "Lotus Notes",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Hoffmann",
+			"value": "Hoffmann",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Nurski",
+			"value": "Nurski",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Zolas",
+			"value": "Zolas",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "background",
+		"confidence": 0.9,
+		"words": 248,
+		"sentences": 7
+	},
+	"c0027": {
+		"chunk_id": "c0027",
+		"summary": null,
+		"keywords": [],
+		"entities": [],
+		"rhetorical_role": "other",
+		"confidence": 0.0,
+		"words": 1,
+		"sentences": 1
+	},
+	"c0028": {
+		"chunk_id": "c0028",
+		"summary": "This section examines staff acceptance and usage of AI algorithms, focusing on AI-assisted question answering for trade cases and interviews with case handlers.",
+		"keywords": ["ai algorithms", "staff acceptance", "trade cases", "case handlers", "interviews", "regional specialization"],
+		"entities": [{
+			"type": "location",
+			"text": "France",
+			"value": "France",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "location",
+			"text": "Germany",
+			"value": "Germany",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "location",
+			"text": "Italy",
+			"value": "Italy",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "location",
+			"text": "USA",
+			"value": "USA",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "person",
+			"text": "case handlers",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "metric",
+			"text": "four end users",
+			"value": "4",
+			"unit": "individuals",
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 144,
+		"sentences": 4
+	},
+	"c0029": {
+		"chunk_id": "c0029",
+		"summary": "FIT implemented an AI algorithm to automate answering trade cases by retrieving relevant past answers using natural language processing.",
+		"keywords": ["ai-assisted question answering", "trade cases", "natural language processing", "export recommendations", "crm software", "sharepoint"],
+		"entities": [{
+			"type": "org",
+			"text": "FIT",
+			"value": "FIT",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "metric",
+			"text": "11,152 tailor-made export recommendations",
+			"value": "11152",
+			"unit": "recommendations",
+			"confidence": 0.9
+		}, {
+			"type": "location",
+			"text": "Flemish",
+			"value": "Flemish",
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "location",
+			"text": "Paris",
+			"value": "Paris",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "program",
+			"text": "Microsoft Dynamics",
+			"value": "Microsoft Dynamics",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "program",
+			"text": "Microsoft SharePoint",
+			"value": "Microsoft SharePoint",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 347,
+		"sentences": 11
+	},
+	"c0030": {
+		"chunk_id": "c0030",
+		"summary": "AI suggestions were added to the CRM system as a tab displaying information on incoming questions.",
+		"keywords": ["ai integration", "crm system", "incoming questions"],
+		"entities": [],
+		"rhetorical_role": "procedure",
+		"confidence": 0.9,
+		"words": 24,
+		"sentences": 1
+	},
+	"c0031": {
+		"chunk_id": "c0031",
+		"summary": "The Unified Theory of Acceptance and Use of Technology model is used to analyze user acceptance of AI at FIT, focusing on intention, facilitating conditions, and perceived usefulness.",
+		"keywords": ["user acceptance", "technology uptake", "ai", "facilitating conditions", "perceived usefulness", "ease of use", "social environment"],
+		"entities": [{
+			"type": "org",
+			"text": "FIT",
+			"value": "FIT",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Venkatesh et al",
+			"value": "Venkatesh et al",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Davis",
+			"value": "Davis",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2003",
+			"value": "2003",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "1989",
+			"value": "1989",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "definition",
+		"confidence": 0.9,
+		"words": 159,
+		"sentences": 5
+	},
+	"c0032": {
+		"chunk_id": "c0032",
+		"summary": "The chunk discusses limited use and minimal time savings from an algorithm, contrasting with earlier productivity claims, especially among experienced workers.",
+		"keywords": ["algorithm usage", "time savings", "productivity", "experienced workers", "ai acceptance", "technology adoption"],
+		"entities": [{
+			"type": "person",
+			"text": "Venkatesh",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Hoffman",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Nurski",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2003",
+			"value": "2003",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2021b",
+			"value": null,
+			"unit": null,
+			"confidence": 0.7
+		}, {
+			"type": "metric",
+			"text": "10 minutes per usage",
+			"value": "10",
+			"unit": "minutes",
+			"confidence": 0.9
+		}, {
+			"type": "metric",
+			"text": "10 minutes saved per week",
+			"value": "10",
+			"unit": "minutes",
+			"confidence": 0.9
+		}, {
+			"type": "metric",
+			"text": "four cases a week",
+			"value": "4",
+			"unit": "cases",
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.8,
+		"words": 158,
+		"sentences": 5
+	},
+	"c0033": {
+		"chunk_id": "c0033",
+		"summary": "Interviewees noted that time savings and usage benefits are higher for less experienced workers, such as interns or those covering different specializations.",
+		"keywords": ["time savings", "less experienced workers", "interns", "specialisation", "expertise"],
+		"entities": [],
+		"rhetorical_role": "discussion",
+		"confidence": 0.8,
+		"words": 43,
+		"sentences": 1
+	},
+	"c0034": {
+		"chunk_id": "c0034",
+		"summary": "The text discusses factors influencing worker acceptance of an AI product at FIT, highlighting drivers, barriers, and facilitating conditions.",
+		"keywords": ["ai acceptance", "drivers", "barriers", "facilitating conditions", "worker perception", "ease-of-use", "social influence"],
+		"entities": [],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 73,
+		"sentences": 4
+	},
+	"c0035": {
+		"chunk_id": "c0035",
+		"summary": "The AI system was integrated into Microsoft Dynamics CRM to enhance user experience, allowing users to access suggested answers quickly and efficiently.",
+		"keywords": ["ai integration", "crm system", "user experience", "microsoft dynamics", "technology design"],
+		"entities": [{
+			"type": "org",
+			"text": "Bruegel",
+			"value": "Bruegel",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "FIT",
+			"value": "FIT",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "Microsoft Dynamics",
+			"value": "Microsoft Dynamics",
+			"unit": null,
+			"confidence": 1.0
+		}, {
+			"type": "person",
+			"text": "Venkatesh",
+			"value": "Venkatesh",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2003",
+			"value": "2003",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 160,
+		"sentences": 5
+	},
+	"c0036": {
+		"chunk_id": "c0036",
+		"summary": "Interviewees find AI-retrieved past answers easy to use but require adjustments for new clients. Editing PDF attachments involves retrieving original files from SharePoint.",
+		"keywords": ["ai-retrieved answers", "pdf editing", "crm system", "sharepoint", "case handling"],
+		"entities": [{
+			"type": "org",
+			"text": "Microsoft SharePoint",
+			"value": "Microsoft SharePoint",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.8,
+		"words": 276,
+		"sentences": 8
+	},
+	"c0037": {
+		"chunk_id": "c0037",
+		"summary": "The chunk discusses challenges in using a CRM system, including difficulties in editing PDF attachments and navigating old answers.",
+		"keywords": ["crm system", "pdf attachments", "workflow challenges", "editing limitations", "case management"],
+		"entities": [{
+			"type": "org",
+			"text": "Dynamics",
+			"value": "Dynamics",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.8,
+		"words": 133,
+		"sentences": 4
+	},
+	"c0041": {
+		"chunk_id": "c0041",
+		"summary": "The interviewee discusses their approach to handling recurring industry-related questions by referencing past cases stored in a SharePoint folder.",
+		"keywords": ["information retrieval", "industry inquiries", "sharepoint", "case management", "data access"],
+		"entities": [{
+			"type": "date",
+			"text": "1-2 months ago",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "org",
+			"text": "SharePoint",
+			"value": "SharePoint",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.7,
+		"words": 57,
+		"sentences": 3
+	},
+	"c0042": {
+		"chunk_id": "c0042",
+		"summary": "Interviewees highlighted the benefits of AI-assisted retrieval for newer colleagues lacking historical memory, emphasizing its value for somewhat routine questions.",
+		"keywords": ["ai-assisted retrieval", "historical memory", "routine questions", "workplace efficiency", "new colleagues", "algorithm use"],
+		"entities": [{
+			"type": "person",
+			"text": "Interviewee 3",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Interviewee 1",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Interviewee 4",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "Sharepoint",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.8,
+		"words": 255,
+		"sentences": 4
+	},
+	"c0043": {
+		"chunk_id": "c0043",
+		"summary": "The text discusses AI's role in retrieving information from CRM systems and its perceived usefulness in task routines and worker experience.",
+		"keywords": ["ai assistance", "crm systems", "task routines", "worker experience", "information retrieval"],
+		"entities": [],
+		"rhetorical_role": "discussion",
+		"confidence": 0.8,
+		"words": 78,
+		"sentences": 2
+	},
+	"c0044": {
+		"chunk_id": "c0044",
+		"summary": "The text analyzes AI retrieval quality and usefulness for tasks of varying routineness and frequency, highlighting differences in utility for low- and high-experience workers.",
+		"keywords": ["ai retrieval quality", "task routineness", "worker experience", "routine tasks", "unique tasks", "task frequency"],
+		"entities": [],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 86,
+		"sentences": 4
+	},
+	"c0045": {
+		"chunk_id": "c0045",
+		"summary": "Interviewees reported no social pressure or compulsory policies to use the AI tool, noting colleagues' limited interest or capability with new technologies.",
+		"keywords": ["social influence", "facilitating conditions", "ai tool", "technology adoption", "workplace policies"],
+		"entities": [],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 101,
+		"sentences": 6
+	},
+	"c0046": {
+		"chunk_id": "c0046",
+		"summary": "Interviewees discuss their managers' attitudes towards AI, highlighting differences in openness and skepticism about its use in the workplace.",
+		"keywords": ["ai adoption", "managerial attitudes", "workplace technology", "implementation barriers", "team dynamics"],
+		"entities": [{
+			"type": "person",
+			"text": "Interviewee 4",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Interviewee 2",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.8,
+		"words": 106,
+		"sentences": 5
+	},
+	"c0047": {
+		"chunk_id": "c0047",
+		"summary": "Interviewees shared views on using AI tools, highlighting differences in proactive learning and sources of support like IT teams and project leads.",
+		"keywords": ["ai tool", "proactive learning", "algorithm support", "personality types", "it assistance", "information session"],
+		"entities": [{
+			"type": "person",
+			"text": "Interviewee 4",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "general IT support",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "org",
+			"text": "AI project lead",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 152,
+		"sentences": 5
+	},
+	"c0048": {
+		"chunk_id": "c0048",
+		"summary": "Participants expressed confidence in receiving help for tool-related issues, with clear knowledge of support contacts, though no help was requested.",
+		"keywords": ["support contacts", "tool usage", "confidence", "help requests", "fit"],
+		"entities": [{
+			"type": "person",
+			"text": "Interviewee 2",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "org",
+			"text": "FIT",
+			"value": "FIT",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "[the AI lead]",
+			"value": null,
+			"unit": null,
+			"confidence": 0.7
+		}, {
+			"type": "person",
+			"text": "[the IT support]",
+			"value": null,
+			"unit": null,
+			"confidence": 0.7
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.8,
+		"words": 61,
+		"sentences": 4
+	},
+	"c0049": {
+		"chunk_id": "c0049",
+		"summary": "The text discusses how AI support affects task distribution, learning, and social relationships, with managers varying their approaches to benefit junior workers.",
+		"keywords": ["ai support", "task routineness", "worker experience", "learning opportunities", "social relationships"],
+		"entities": [{
+			"type": "person",
+			"text": "Interviewee 3",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 156,
+		"sentences": 4
+	},
+	"c0050": {
+		"chunk_id": "c0050",
+		"summary": "The text discusses the need for workers to learn domain-specific knowledge and skills to use and check AI systems, emphasizing the importance of complementing AI limitations with human expertise.",
+		"keywords": ["ai systems", "worker learning", "domain expertise", "digitalisation", "knowledge management system", "crm"],
+		"entities": [{
+			"type": "program",
+			"text": "Knowledge Management System (KMS)",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "program",
+			"text": "CRM",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.8,
+		"words": 229,
+		"sentences": 7
+	},
+	"c0051": {
+		"chunk_id": "c0051",
+		"summary": "The use of AI tools has improved efficiency but reduced direct communication and collaboration among team members, with mixed preferences for in-person interaction.",
+		"keywords": ["ai tools", "team communication", "collaboration", "efficiency", "knowledge sharing"],
+		"entities": [{
+			"type": "person",
+			"text": "HR lead",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Interviewee 4",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.8,
+		"words": 158,
+		"sentences": 7
+	},
+	"c0052": {
+		"chunk_id": "c0052",
+		"summary": "The text discusses the influence of remote work on collaboration, highlighting changes in communication behavior and self-reliance among employees.",
+		"keywords": ["remote work", "collaboration", "communication behavior", "self-reliance", "employee interaction"],
+		"entities": [],
+		"rhetorical_role": "discussion",
+		"confidence": 0.8,
+		"words": 68,
+		"sentences": 4
+	},
+	"c0053": {
+		"chunk_id": "c0053",
+		"summary": "The text discusses HR's role in AI adoption, including the creation of new roles like 'AI lead' in 2017 and voluntary 'data steward' positions.",
+		"keywords": ["ai adoption", "hr involvement", "data-driven culture", "ai lead", "data stewards"],
+		"entities": [{
+			"type": "person",
+			"text": "Three people",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "org",
+			"text": "HR",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "program",
+			"text": "project manager data architecture & artificial intelligence",
+			"value": "AI lead",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2017",
+			"value": "2017",
+			"unit": null,
+			"confidence": 1.0
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 89,
+		"sentences": 3
+	},
+	"c0054": {
+		"chunk_id": "c0054",
+		"summary": "A strategic personnel plan was developed, including budget for two promotion functions for data stewards. A new Chief Data Officer role was also created.",
+		"keywords": ["strategic personnel plan", "data steward", "chief data officer", "ai adoption", "data infrastructure"],
+		"entities": [{
+			"type": "person",
+			"text": "HR lead",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "program",
+			"text": "strategic personnel plan",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "policy",
+			"text": "strategic staffing plan",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "metric",
+			"text": "two promotion functions",
+			"value": "2",
+			"unit": "functions",
+			"confidence": 0.9
+		}, {
+			"type": "program",
+			"text": "AI adoption",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 120,
+		"sentences": 4
+	},
+	"c0055": {
+		"chunk_id": "c0055",
+		"summary": "The text discusses differing speeds of strategic HR exercises versus AI-driven processes, emphasizing communication, development, and learning for AI adoption.",
+		"keywords": ["strategic hr", "ai integration", "communication", "organisational development", "learning and development"],
+		"entities": [{
+			"type": "person",
+			"text": "HR lead",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "person",
+			"text": "AI project lead",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.7,
+		"words": 151,
+		"sentences": 5
+	},
+	"c0056": {
+		"chunk_id": "c0056",
+		"summary": "The text highlights that communication was prioritized from the beginning.",
+		"keywords": ["communication", "focus", "priority"],
+		"entities": [],
+		"rhetorical_role": "background",
+		"confidence": 0.9,
+		"words": 10,
+		"sentences": 1
+	},
+	"c0057": {
+		"chunk_id": "c0057",
+		"summary": "The text discusses efforts to address fears and misconceptions about AI, emphasizing awareness and communication between IT and business departments.",
+		"keywords": ["ai tools", "technology acceptance", "communication", "awareness", "business-it collaboration"],
+		"entities": [{
+			"type": "person",
+			"text": "AI lead",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "org",
+			"text": "IT department",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "org",
+			"text": "business department",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.7,
+		"words": 178,
+		"sentences": 5
+	},
+	"c0058": {
+		"chunk_id": "c0058",
+		"summary": "The decentralisation of IT support roles at FIT improved accessibility for both employees and external clients, enhancing the use of digital tools.",
+		"keywords": ["it support", "decentralisation", "digital tools", "crm", "ai", "technology acceptance framework"],
+		"entities": [{
+			"type": "org",
+			"text": "FIT",
+			"value": "FIT",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "metric",
+			"text": "facilitating conditions",
+			"value": "facilitating conditions",
+			"unit": null,
+			"confidence": 0.8
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.8,
+		"words": 167,
+		"sentences": 5
+	},
+	"c0059": {
+		"chunk_id": "c0059",
+		"summary": "HR discusses strategies for tool adoption, including senior facilitators, a business IT helpdesk, and a non-monetary reward system for digital tool usage milestones.",
+		"keywords": ["tool adoption", "business it helpdesk", "digital tools", "employee development", "reward system", "training plans"],
+		"entities": [{
+			"type": "org",
+			"text": "HR",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "program",
+			"text": "business IT helpdesk",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "metric",
+			"text": "milestones in digital tool usage",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.8,
+		"words": 183,
+		"sentences": 4
+	},
+	"c0060": {
+		"chunk_id": "c0060",
+		"summary": "The text describes a reward system to incentivize digital tool usage, align employer-employee goals, and establish social norms within an organization.",
+		"keywords": ["reward system", "digital tools", "technology acceptance", "social influence", "learning path", "incentives"],
+		"entities": [{
+			"type": "person",
+			"text": "HR",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}],
+		"rhetorical_role": "example",
+		"confidence": 0.9,
+		"words": 106,
+		"sentences": 3
+	},
+	"c0061": {
+		"chunk_id": "c0061",
+		"summary": "The case study highlights the importance of demonstrating the relevance, quality, and impact of AI and digital tools to improve acceptance among employees.",
+		"keywords": ["ai acceptance", "digital tools", "technology impact", "hr strategies", "employee engagement"],
+		"entities": [{
+			"type": "person",
+			"text": "Jane Hart",
+			"value": "Jane Hart",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "HR",
+			"value": "HR",
+			"unit": null,
+			"confidence": 0.8
+		}],
+		"rhetorical_role": "discussion",
+		"confidence": 0.8,
+		"words": 105,
+		"sentences": 2
+	},
+	"c0062": {
+		"chunk_id": "c0062",
+		"summary": "The study identifies key factors for successful human-centred AI adoption, emphasizing trialability, worker involvement, HR alignment, and financial support.",
+		"keywords": ["human-centred ai", "trialability", "worker involvement", "hr alignment", "financial support", "ai adoption"],
+		"entities": [{
+			"type": "org",
+			"text": "EU's SRSP",
+			"value": "EU's SRSP",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "ERDF programmes",
+			"value": "ERDF programmes",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "policy",
+			"text": "financial support from diverse European and national subsidy channels",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}],
+		"rhetorical_role": "recommendation",
+		"confidence": 0.9,
+		"words": 247,
+		"sentences": 9
+	},
+	"c0063": {
+		"chunk_id": "c0063",
+		"summary": "The text discusses barriers to worker acceptance of AI, emphasizing the importance of task routineness, worker experience, and organizational design.",
+		"keywords": ["ai integration", "worker experience", "task allocation", "organizational design", "technology design", "task routineness"],
+		"entities": [],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 156,
+		"sentences": 5
+	},
+	"c0064": {
+		"chunk_id": "c0064",
+		"summary": "Adopting human-centred AI requires investments in intangible organisational capital, including process redesign beyond digital skills training.",
+		"keywords": ["human-centred ai", "intangible capital", "organisational processes", "digital skills", "technology adoption"],
+		"entities": [],
+		"rhetorical_role": "discussion",
+		"confidence": 0.9,
+		"words": 44,
+		"sentences": 3
+	},
+	"c0065": {
+		"chunk_id": "c0065",
+		"summary": "The text discusses the need to adapt accounting standards to better capture firms' intangible investments in people and organizational processes.",
+		"keywords": ["intangible investments", "people management", "organizational development", "accounting standards", "business process reengineering"],
+		"entities": [{
+			"type": "person",
+			"text": "Brynjolfsson",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Alderucci, D.",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "L. Branstetter",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "E. Hovy",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "A. Runge",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "N. Zolas",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Atkin, D.",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "A. Chaudhry",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "A.K. Khandelwal",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "F. Verhoogen",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Baker, J.",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "US census",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "org",
+			"text": "ASSA 2020 Annual Meeting",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "location",
+			"text": "Pakistan",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "recommendation",
+		"confidence": 0.9,
+		"words": 171,
+		"sentences": 11
+	},
+	"c0066": {
+		"chunk_id": "c0066",
+		"summary": "This chunk lists references related to artificial intelligence, labor productivity, organizational economics, and information technology impacts on workplaces.",
+		"keywords": ["artificial intelligence", "labor productivity", "organizational economics", "information technology", "workplace organization"],
+		"entities": [{
+			"type": "person",
+			"text": "Bloom, N.",
+			"value": "Bloom, N.",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "R. Sadun",
+			"value": "R. Sadun",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "J.V. Reenen",
+			"value": "J.V. Reenen",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "T.F. Bresnahan",
+			"value": "T.F. Bresnahan",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "E. Brynjolfsson",
+			"value": "E. Brynjolfsson",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "L.M. Hitt",
+			"value": "L.M. Hitt",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "D. Rock",
+			"value": "D. Rock",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "C. Syverson",
+			"value": "C. Syverson",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "G.P. Baker",
+			"value": "G.P. Baker",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "R. Gil",
+			"value": "R. Gil",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "R. Gibbons",
+			"value": "R. Gibbons",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "J. Roberts",
+			"value": "J. Roberts",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "G. Damioli",
+			"value": "G. Damioli",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "V. Van Roy",
+			"value": "V. Van Roy",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "D. Vertesy",
+			"value": "D. Vertesy",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "F.D. Davis",
+			"value": "F.D. Davis",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "S. Devaraj",
+			"value": "S. Devaraj",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "R. Kohli",
+			"value": "R. Kohli",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "European Commission",
+			"value": "European Commission",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "World Bank Group",
+			"value": "World Bank Group",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "Bruegel",
+			"value": "Bruegel",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2020",
+			"value": "2020",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2021",
+			"value": "2021",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "30 June 2021",
+			"value": "2021-06-30",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "1989",
+			"value": "1989",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2003",
+			"value": "2003",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "metric",
+			"text": "labor productivity",
+			"value": "labor productivity",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "background",
+		"confidence": 0.9,
+		"words": 252,
+		"sentences": 15
+	},
+	"c0067": {
+		"chunk_id": "c0067",
+		"summary": "The chunk lists various references on topics such as trade promotion, technology adoption, diffusion of innovation, and employee incentives.",
+		"keywords": ["trade promotion", "technology adoption", "diffusion of innovation", "employee incentives", "information technology", "organizational development"],
+		"entities": [{
+			"type": "person",
+			"text": "Jaramillo, C.",
+			"value": "Jaramillo, C.",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Kawaguchi, K.",
+			"value": "Kawaguchi, K.",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Landauer, T.K.",
+			"value": "Landauer, T.K.",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Rogers, E.M.",
+			"value": "Rogers, E.M.",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Rueda-Cantuche, J.M.",
+			"value": "Rueda-Cantuche, J.M.",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Venkatesh, V.",
+			"value": "Venkatesh, V.",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Xu, Y.",
+			"value": "Xu, Y.",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "L. Zhu",
+			"value": "L. Zhu",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "World Trade Organisation",
+			"value": "World Trade Organisation",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "location",
+			"text": "New York",
+			"value": "New York",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "1992",
+			"value": "1992",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2020",
+			"value": "2020",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "1995",
+			"value": "1995",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2003",
+			"value": "2003",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "1983",
+			"value": "1983",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "2021",
+			"value": "2021",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "background",
+		"confidence": 0.8,
+		"words": 148,
+		"sentences": 12
+	},
+	"c0068": {
+		"chunk_id": "c0068",
+		"summary": "The chunk references studies on foreign direct investment and advanced technology adoption by U.S. firms, highlighting key issues for promotion agencies and evidence from surveys.",
+		"keywords": ["foreign direct investment", "technology adoption", "promotion agencies", "annual business survey", "advanced technologies"],
+		"entities": [{
+			"type": "person",
+			"text": "M. Zanatta",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "I. Costa",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "S. Filippov",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "United Nations University",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "N. Zolas",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "Z. Kroff",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "E. Brynjolfsson",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "K. McElheran",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "D. Beede",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "C. Buffington",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "N. Goldschlag",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "L. Foster",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "person",
+			"text": "E. Dinlersoz",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "National Bureau of Economic Research",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "program",
+			"text": "Annual Business Survey",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "policy",
+			"text": "Foreign direct investment",
+			"value": null,
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "background",
+		"confidence": 0.9,
+		"words": 67,
+		"sentences": 13
+	},
+	"c0069": {
+		"chunk_id": "c0069",
+		"summary": "This annex lists various case study materials, including interviews, slide decks, and online resources related to AI and trade strategies in Flanders.",
+		"keywords": ["case studies", "ai adoption", "flanders", "trade strategy", "investment", "interviews", "digital strategy"],
+		"entities": [{
+			"type": "org",
+			"text": "Flanders Investment and Trade",
+			"value": "Flanders Investment and Trade",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "Radix",
+			"value": "Radix",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "org",
+			"text": "Bruegel",
+			"value": "Bruegel",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "location",
+			"text": "Flanders",
+			"value": "Flanders",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "July 11th 2022",
+			"value": "2022-07-11",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "4/11/2021",
+			"value": "2021-11-04",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "23/11/2021",
+			"value": "2021-11-23",
+			"unit": null,
+			"confidence": 0.9
+		}, {
+			"type": "date",
+			"text": "May and July 2022",
+			"value": null,
+			"unit": null,
+			"confidence": 0.8
+		}, {
+			"type": "date",
+			"text": "18/05/2022",
+			"value": "2022-05-18",
+			"unit": null,
+			"confidence": 0.9
+		}],
+		"rhetorical_role": "background",
+		"confidence": 0.9,
+		"words": 124,
+		"sentences": 1
+	}
+}
