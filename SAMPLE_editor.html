@@ -420,23 +420,20 @@
         .metadata-panel {
             position: fixed;
             top: 70px;
-            right: 0;
-            width: calc(100% - 320px); /* Full width minus sidebar */
-            max-width: 960px; /* Match document max-width */
-            margin: 0 auto;
-            right: -100%; /* Start off-screen */
+            right: -500px;
+            width: 480px;
             height: calc(100vh - 70px);
             background: white;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-            z-index: 997;
-            transition: right 0.3s ease-in-out;
+            border-left: 1px solid #e0e6ed;
+            box-shadow: -4px 0 25px rgba(0,0,0,0.1);
             overflow-y: auto;
+            transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 997;
             padding: 30px;
-            box-sizing: border-box;
         }
 
         .metadata-panel.visible {
-            right: calc((100% - 320px - 960px) / 2); /* Center the panel */
+            right: 0;
         }
 
         .metadata-close {
