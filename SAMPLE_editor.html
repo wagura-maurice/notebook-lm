@@ -18,12 +18,25 @@
             line-height: 1.7;
             color: #2c3e50;
             background: #f5f7fa;
+            overflow: hidden;
         }
 
         .container {
             display: grid;
             grid-template-columns: 320px 1fr;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .document-wrapper {
+            height: 100vh;
+            overflow-y: auto;
+            padding-top: 70px;
         }
 
         /* Additional styles from SAMPLE_editor.css would go here or be linked */
@@ -307,6 +320,65 @@
         function highlightEntitiesInElement(element, entities) {
             if (!entities || entities.length === 0) return;
 
+            // Sort entities by their position in the text (longest first to avoid partial matches)
+            const sortedEntities = [...entities].sort((a, b) => b.text.length - a.text.length);
+            
+            // Get all text content
+            let html = element.innerHTML;
+            
+            // Create a map to store entity replacements
+            const replacements = [];
+            
+            sortedEntities.forEach((entity, idx) => {
+                // Create a unique placeholder
+                const placeholder = `__ENTITY_${idx}__`;
+                
+                // Create the highlighted span
+                const span = document.createElement('span');
+                span.className = `entity entity-${entity.type}`;
+                span.textContent = entity.text;
+                
+                const tooltip = document.createElement('span');
+                tooltip.className = 'tooltip';
+                tooltip.textContent = `${entity.type.toUpperCase()}: ${entity.text} (conf: ${(entity.confidence || 1).toFixed(2)})`;
+                span.appendChild(tooltip);
+                
+                // Store the replacement
+                replacements.push({
+                    placeholder: placeholder,
+                    html: span.outerHTML,
+                    text: entity.text
+                });
+                
+                // Replace text with placeholder (case-insensitive, whole word)
+                const regex = new RegExp(`\\b${escapeRegex(entity.text)}\\b`, 'gi');
+                html = html.replace(regex, (match) => {
+                    // Only replace if not already inside a tag
+                    return placeholder;
+                });
+            });
+            
+            // Replace all placeholders with actual HTML
+            replacements.forEach(rep => {
+                html = html.replace(new RegExp(rep.placeholder, 'g'), rep.html);
+            });
+            
+            element.innerHTML = html;
+        }
+
+        /**
+         * Escape special regex characters
+         */
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        /**
+         * Highlight entities in an element's text nodes
+         */
+        function highlightEntitiesInElement(element, entities) {
+            if (!entities || entities.length === 0) return;
+
             entities.forEach(entity => {
                 const text = element.textContent;
                 const index = text.indexOf(entity.text);
@@ -430,9 +502,17 @@
             const chunkChanges = changes[chunkId] || {};
             let html = '';
 
+            // Helper function to escape HTML
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
             // Summary
-            const summary = chunkChanges.summary !== undefined ? chunkChanges.summary : chunkData.summary;
+            const summary = chunkChanges.summary !== undefined ? chunkChanges.summary : chunkData.enrichment.summary;
             const summaryEdited = chunkChanges.summary !== undefined;
+            const escapedSummary = escapeHtml(summary || 'No summary');
 
             html += `
             <div class="metadata-section">
@@ -442,12 +522,12 @@
                     id="summary-field"
                     ${editMode ? '' : 'readonly'}
                     onchange="updateField('${chunkId}', 'summary', this.value)"
-                >${summary || 'No summary'}</textarea>
+                >${escapedSummary}</textarea>
             </div>
             `;
 
             // Rhetorical Role
-            const role = chunkChanges.rhetorical_role !== undefined ? chunkChanges.rhetorical_role : chunkData.rhetorical_role;
+            const role = chunkChanges.rhetorical_role !== undefined ? chunkChanges.rhetorical_role : chunkData.enrichment.rhetorical_role;
             const roleEdited = chunkChanges.rhetorical_role !== undefined;
 
             html += `
@@ -480,7 +560,7 @@
             }, 0);
 
             // Keywords
-            const keywords = chunkChanges.keywords !== undefined ? chunkChanges.keywords : chunkData.keywords;
+            const keywords = chunkChanges.keywords !== undefined ? chunkChanges.keywords : chunkData.enrichment.keywords;
             html += `
             <div class="metadata-section">
                 <div class="metadata-title">Keywords (${keywords.length})</div>
@@ -488,9 +568,10 @@
             `;
 
             keywords.forEach((kw, idx) => {
+                const escapedKw = escapeHtml(kw);
                 html += `
                 <span class="keyword-tag ${editMode ? 'editable' : ''}">
-                    ${kw}
+                    ${escapedKw}
                     ${editMode ? `<span class="keyword-remove" onclick="removeKeyword('${chunkId}', ${idx})">×</span>` : ''}
                 </span>
                 `;
@@ -503,7 +584,7 @@
             html += '</div></div>';
 
             // Entities
-            const entities = chunkChanges.entities !== undefined ? chunkChanges.entities : chunkData.entities;
+            const entities = chunkChanges.entities !== undefined ? chunkChanges.entities : chunkData.enrichment.entities;
             html += `
             <div class="metadata-section">
                 <div class="metadata-title">Entities (${entities.length})</div>
@@ -512,10 +593,12 @@
 
             entities.forEach((entity, idx) => {
                 const color = getEntityColor(entity.type);
+                const escapedText = escapeHtml(entity.text);
+                const escapedType = escapeHtml(entity.type);
                 html += `
                 <div class="entity-item ${editMode ? 'editable' : ''}" onclick="${editMode ? `editEntity('${chunkId}', ${idx})` : ''}">
-                    <div class="entity-text">${entity.text}</div>
-                    <div class="entity-type-badge" style="background: ${color};">${entity.type}</div>
+                    <div class="entity-text">${escapedText}</div>
+                    <div class="entity-type-badge" style="background: ${color};">${escapedType}</div>
                     ${editMode ? `<button class="entity-remove" onclick="event.stopPropagation(); removeEntity('${chunkId}', ${idx})">×</button>` : ''}
                 </div>
                 `;
@@ -533,11 +616,11 @@
                 <div class="metadata-title">Statistics</div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div style="background: #f8f9fa; padding: 10px; border-radius: 4px; text-align: center;">
-                        <div style="font-size: 24px; font-weight: 700; color: #667eea;">${chunkData.words}</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #667eea;">${chunkData.meta.words}</div>
                         <div style="font-size: 11px; color: #7f8c8d;">Words</div>
                     </div>
                     <div style="background: #f8f9fa; padding: 10px; border-radius: 4px; text-align: center;">
-                        <div style="font-size: 24px; font-weight: 700; color: #667eea;">${chunkData.sentences}</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #667eea;">${chunkData.meta.sentences}</div>
                         <div style="font-size: 11px; color: #7f8c8d;">Sentences</div>
                     </div>
                 </div>
@@ -643,7 +726,7 @@
 
         function removeKeyword(chunkId, index) {
             const chunkData = allChunksData[chunkId];
-            const currentKeywords = changes[chunkId]?.keywords || chunkData.keywords || [];
+            const currentKeywords = changes[chunkId]?.keywords || chunkData.enrichment.keywords || [];
             const newKeywords = currentKeywords.filter((_, i) => i !== index);
             trackChange(chunkId, 'keywords', newKeywords);
             showMetadata(chunkId);
@@ -653,7 +736,7 @@
             const kw = prompt('Enter new keyword:');
             if (kw && kw.trim()) {
                 const chunkData = allChunksData[chunkId];
-                const currentKeywords = changes[chunkId]?.keywords || chunkData.keywords || [];
+                const currentKeywords = changes[chunkId]?.keywords || chunkData.enrichment.keywords || [];
                 const newKeywords = [...currentKeywords, kw.trim()];
                 trackChange(chunkId, 'keywords', newKeywords);
                 showMetadata(chunkId);
@@ -662,15 +745,19 @@
 
         function removeEntity(chunkId, index) {
             const chunkData = allChunksData[chunkId];
-            const currentEntities = changes[chunkId]?.entities || chunkData.entities || [];
+            const currentEntities = changes[chunkId]?.entities || chunkData.enrichment.entities || [];
             const newEntities = currentEntities.filter((_, i) => i !== index);
             trackChange(chunkId, 'entities', newEntities);
             showMetadata(chunkId);
+            
+            // Rebuild the document content to reflect entity changes
+            buildDocumentContent();
+            setupEventListeners();
         }
 
         function editEntity(chunkId, index) {
             const chunkData = allChunksData[chunkId];
-            const currentEntities = changes[chunkId]?.entities || chunkData.entities || [];
+            const currentEntities = changes[chunkId]?.entities || chunkData.enrichment.entities || [];
             const entity = currentEntities[index];
 
             editingEntity = { chunkId, index, entity };
@@ -688,12 +775,16 @@
             if (!type || !type.trim()) return;
 
             const chunkData = allChunksData[chunkId];
-            const currentEntities = changes[chunkId]?.entities || chunkData.entities || [];
+            const currentEntities = changes[chunkId]?.entities || chunkData.enrichment.entities || [];
             const newEntity = { text: text.trim(), type: type.trim(), confidence: 1.0 };
             const newEntities = [...currentEntities, newEntity];
 
             trackChange(chunkId, 'entities', newEntities);
             showMetadata(chunkId);
+            
+            // Rebuild the document content to reflect entity changes
+            buildDocumentContent();
+            setupEventListeners();
         }
 
         function closeEntityModal() {
@@ -709,7 +800,7 @@
             const newType = document.getElementById('entity-type-input').value;
 
             const chunkData = allChunksData[chunkId];
-            const currentEntities = changes[chunkId]?.entities || chunkData.entities || [];
+            const currentEntities = changes[chunkId]?.entities || chunkData.enrichment.entities || [];
 
             const newEntities = [...currentEntities];
             newEntities[index] = { ...newEntities[index], text: newText, type: newType };
@@ -717,6 +808,10 @@
             trackChange(chunkId, 'entities', newEntities);
             closeEntityModal();
             showMetadata(chunkId);
+            
+            // Rebuild the document content to reflect entity changes
+            buildDocumentContent();
+            setupEventListeners();
         }
 
         function exportAnnotations() {
