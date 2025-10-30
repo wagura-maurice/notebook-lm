@@ -315,58 +315,6 @@
         }
 
         /**
-         * Highlight entities in an element's text nodes
-         */
-        function highlightEntitiesInElement(element, entities) {
-            if (!entities || entities.length === 0) return;
-
-            // Sort entities by their position in the text (longest first to avoid partial matches)
-            const sortedEntities = [...entities].sort((a, b) => b.text.length - a.text.length);
-            
-            // Get all text content
-            let html = element.innerHTML;
-            
-            // Create a map to store entity replacements
-            const replacements = [];
-            
-            sortedEntities.forEach((entity, idx) => {
-                // Create a unique placeholder
-                const placeholder = `__ENTITY_${idx}__`;
-                
-                // Create the highlighted span
-                const span = document.createElement('span');
-                span.className = `entity entity-${entity.type}`;
-                span.textContent = entity.text;
-                
-                const tooltip = document.createElement('span');
-                tooltip.className = 'tooltip';
-                tooltip.textContent = `${entity.type.toUpperCase()}: ${entity.text} (conf: ${(entity.confidence || 1).toFixed(2)})`;
-                span.appendChild(tooltip);
-                
-                // Store the replacement
-                replacements.push({
-                    placeholder: placeholder,
-                    html: span.outerHTML,
-                    text: entity.text
-                });
-                
-                // Replace text with placeholder (case-insensitive, whole word)
-                const regex = new RegExp(`\\b${escapeRegex(entity.text)}\\b`, 'gi');
-                html = html.replace(regex, (match) => {
-                    // Only replace if not already inside a tag
-                    return placeholder;
-                });
-            });
-            
-            // Replace all placeholders with actual HTML
-            replacements.forEach(rep => {
-                html = html.replace(new RegExp(rep.placeholder, 'g'), rep.html);
-            });
-            
-            element.innerHTML = html;
-        }
-
-        /**
          * Escape special regex characters
          */
         function escapeRegex(string) {
@@ -375,44 +323,112 @@
 
         /**
          * Highlight entities in an element's text nodes
+         * @param {HTMLElement} element - The element containing text to highlight
+         * @param {Array} entities - Array of entity objects with text, type, and confidence
          */
         function highlightEntitiesInElement(element, entities) {
-            if (!entities || entities.length === 0) return;
-
-            entities.forEach(entity => {
-                const text = element.textContent;
-                const index = text.indexOf(entity.text);
+            try {
+                // Check for valid input
+                if (!element || !element.innerHTML) return;
+                if (!Array.isArray(entities) || entities.length === 0) return;
                 
-                if (index !== -1) {
-                    const before = text.substring(0, index);
-                    const match = entity.text;
-                    const after = text.substring(index + entity.text.length);
-                    
-                    // Clear and rebuild with highlighting
-                    element.innerHTML = '';
-                    
-                    if (before) {
-                        element.appendChild(document.createTextNode(before));
+                // Filter out invalid entities and ensure required properties exist
+                const validEntities = entities.filter(entity => 
+                    entity && 
+                    typeof entity === 'object' && 
+                    entity.text && 
+                    typeof entity.text === 'string' &&
+                    entity.type && 
+                    typeof entity.type === 'string'
+                );
+                
+                if (validEntities.length === 0) return;
+
+                // Sort entities by length (longest first) to handle nested entities correctly
+                const sortedEntities = [...validEntities].sort((a, b) => {
+                    const lenA = a.text ? a.text.length : 0;
+                    const lenB = b.text ? b.text.length : 0;
+                    return lenB - lenA;
+                });
+                
+                // Get the current HTML content
+                let html = element.innerHTML;
+                if (!html) return;
+                
+                // Create a map to store entity replacements
+                const replacements = [];
+                const processedTexts = new Set();
+                
+                // Process each entity
+                sortedEntities.forEach((entity, idx) => {
+                    try {
+                        const entityText = entity.text ? entity.text.trim() : '';
+                        if (!entityText || processedTexts.has(entityText)) return;
+                        
+                        processedTexts.add(entityText);
+                        const placeholder = `__ENTITY_${idx}__`;
+                        
+                        // Escape special regex characters in the entity text
+                        const escapedText = escapeRegex(entityText);
+                        
+                        // Skip if the text isn't found in the HTML
+                        if (!html.includes(entityText)) return;
+                        
+                        // Create the highlighted span with tooltip
+                        const span = document.createElement('span');
+                        span.className = `entity entity-${entity.type || 'unknown'}`;
+                        span.textContent = entityText;
+                        
+                        const tooltip = document.createElement('span');
+                        tooltip.className = 'tooltip';
+                        tooltip.textContent = `${(entity.type || 'UNKNOWN').toUpperCase()}: ${entityText} (conf: ${(entity.confidence || 1).toFixed(2)})`;
+                        span.appendChild(tooltip);
+                        
+                        // Store the replacement
+                        replacements.push({
+                            placeholder: placeholder,
+                            html: span.outerHTML,
+                            text: entityText
+                        });
+                        
+                        // Replace all occurrences of the entity text with a placeholder
+                        const regex = new RegExp(escapedText, 'g');
+                        html = html.replace(regex, (match, offset, fullText) => {
+                            // Check if the match is inside an HTML tag
+                            const before = fullText.substring(0, offset);
+                            const lastTagOpen = before.lastIndexOf('<');
+                            const lastTagClose = before.lastIndexOf('>');
+                            
+                            // Only replace if not inside a tag
+                            if (lastTagOpen === -1 || lastTagClose > lastTagOpen) {
+                                return placeholder;
+                            }
+                            return match;
+                        });
+                    } catch (e) {
+                        console.warn('Error processing entity:', entity, e);
                     }
-                    
-                    const span = document.createElement('span');
-                    span.className = `entity entity-${entity.type}`;
-                    span.textContent = match;
-                    
-                    const tooltip = document.createElement('span');
-                    tooltip.className = 'tooltip';
-                    tooltip.textContent = `${entity.type.toUpperCase()}: ${entity.text} (conf: ${(entity.confidence || 1).toFixed(2)})`;
-                    span.appendChild(tooltip);
-                    
-                    element.appendChild(span);
-                    
-                    if (after) {
-                        // Recursively highlight remaining entities
-                        const afterNode = document.createTextNode(after);
-                        element.appendChild(afterNode);
+                });
+                
+                // Replace all placeholders with the actual HTML
+                if (replacements.length > 0) {
+                    try {
+                        // Do a single pass through the HTML for all replacements
+                        const regex = new RegExp(replacements.map(r => escapeRegex(r.placeholder)).join('|'), 'g');
+                        html = html.replace(regex, (match) => {
+                            const replacement = replacements.find(r => r.placeholder === match);
+                            return replacement ? replacement.html : match;
+                        });
+                        
+                        // Update the element's HTML
+                        element.innerHTML = html;
+                    } catch (e) {
+                        console.error('Error applying entity highlights:', e);
                     }
                 }
-            });
+            } catch (error) {
+                console.error('Error in highlightEntitiesInElement:', error);
+            }
         }
 
         /**
