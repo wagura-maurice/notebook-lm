@@ -413,12 +413,46 @@
                         e.stopPropagation();
                         const element = document.getElementById(chunkId);
                         if (element) {
+                            // Scroll the document to show the section
                             element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            // Highlight the active section
+                            
+                            // Update active state in TOC
                             document.querySelectorAll('.nav-item').forEach(item => {
                                 item.classList.remove('active');
                             });
                             navItem.classList.add('active');
+                            
+                            // Ensure the parent section is expanded
+                            const section = navItem.closest('.outline-section');
+                            if (section) {
+                                const sectionHeader = section.querySelector('.outline-section-header');
+                                const sectionContent = section.querySelector('.outline-section-content');
+                                
+                                if (sectionHeader && sectionHeader.classList.contains('collapsed')) {
+                                    sectionHeader.classList.remove('collapsed');
+                                    sectionContent.style.maxHeight = sectionContent.scrollHeight + 'px';
+                                }
+                                
+                                // Scroll the TOC to show the active item
+                                const outline = document.getElementById('outline');
+                                const navItemRect = navItem.getBoundingClientRect();
+                                const outlineRect = outline.getBoundingClientRect();
+                                
+                                // Calculate scroll position to center the item
+                                const navItemTop = navItemRect.top + window.scrollY;
+                                const outlineTop = outlineRect.top + window.scrollY;
+                                const navItemHeight = navItem.offsetHeight;
+                                const outlineHeight = outline.offsetHeight;
+                                
+                                // Calculate the scroll position to center the nav item
+                                const scrollTo = navItemTop - outlineTop - (outlineHeight / 2) + (navItemHeight / 2);
+                                
+                                // Smooth scroll to the nav item
+                                outline.scrollTo({
+                                    top: scrollTo,
+                                    behavior: 'smooth'
+                                });
+                            }
                         }
                     });
                     
@@ -446,26 +480,78 @@
             });
             
             // Add scroll event listener to highlight current section
-            document.querySelector('.document-wrapper').addEventListener('scroll', () => {
-                const scrollPosition = document.querySelector('.document-wrapper').scrollTop;
-                let currentSection = null;
-                
-                chunkKeys.forEach(chunkId => {
-                    const element = document.getElementById(chunkId);
-                    if (element) {
+            const documentWrapper = document.querySelector('.document-wrapper');
+            if (documentWrapper) {
+                documentWrapper.addEventListener('scroll', () => {
+                    const scrollPosition = documentWrapper.scrollTop;
+                    let currentSection = null;
+                    let smallestDistance = Number.POSITIVE_INFINITY;
+                    
+                    // Get all chunk elements
+                    const chunkElements = document.querySelectorAll('.chunk-boundary');
+                    
+                    // Find the chunk closest to the top of the viewport
+                    chunkElements.forEach(element => {
                         const rect = element.getBoundingClientRect();
-                        if (rect.top <= 100) { // 100px from top of viewport
-                            currentSection = chunkId;
+                        const distance = Math.abs(rect.top);
+                        
+                        if (distance < smallestDistance) {
+                            smallestDistance = distance;
+                            currentSection = element.id;
                         }
+                    });
+                    
+                    if (currentSection) {
+                        // Update active state in TOC
+                        document.querySelectorAll('.nav-item').forEach(item => {
+                            const isActive = item.dataset.chunkId === currentSection;
+                            item.classList.toggle('active', isActive);
+                            
+                            // If this is the active item, ensure its section is expanded
+                            if (isActive) {
+                                const section = item.closest('.outline-section');
+                                if (section) {
+                                    const sectionHeader = section.querySelector('.outline-section-header');
+                                    const sectionContent = section.querySelector('.outline-section-content');
+                                    
+                                    if (sectionHeader && sectionContent && sectionHeader.classList.contains('collapsed')) {
+                                        sectionHeader.classList.remove('collapsed');
+                                        sectionContent.style.maxHeight = sectionContent.scrollHeight + 'px';
+                                        
+                                        // Scroll the TOC to show the active item
+                                        const outline = document.getElementById('outline');
+                                        const navItemRect = item.getBoundingClientRect();
+                                        const outlineRect = outline.getBoundingClientRect();
+                                        
+                                        // Calculate scroll position to center the item
+                                        const navItemTop = navItemRect.top + window.scrollY;
+                                        const outlineTop = outlineRect.top + window.scrollY;
+                                        const navItemHeight = item.offsetHeight;
+                                        const outlineHeight = outline.offsetHeight;
+                                        
+                                        // Calculate the scroll position to center the nav item
+                                        const scrollTo = navItemTop - outlineTop - (outlineHeight / 2) + (navItemHeight / 2);
+                                        
+                                        // Smooth scroll to the nav item
+                                        outline.scrollTo({
+                                            top: scrollTo,
+                                            behavior: 'smooth'
+                                        });
+                                    }
+                                }
+                            }
+                        });
                     }
                 });
                 
-                if (currentSection) {
-                    document.querySelectorAll('.nav-item').forEach(item => {
-                        item.classList.toggle('active', item.dataset.chunkId === currentSection);
-                    });
-                }
-            });
+                // Trigger initial scroll to highlight the first section
+                setTimeout(() => {
+                    const firstChunk = document.querySelector('.chunk-boundary');
+                    if (firstChunk) {
+                        firstChunk.scrollIntoView({ behavior: 'auto', block: 'start' });
+                    }
+                }, 100);
+            }
         }
 
         /**
