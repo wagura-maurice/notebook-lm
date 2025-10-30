@@ -217,6 +217,65 @@
         /**
          * Build document outline/navigation structure from chunks data
          */
+        /**
+         * Parse text and identify heading levels
+         * Returns an object with heading text, level, and content
+         */
+        function parseHeadings(text, chunkId) {
+            if (!text) return { level: 0, title: 'Untitled', content: '' };
+            
+            // Check for markdown-style headers
+            const headerMatch = text.match(/^(#+)\s*(.*?)(?:\n|$)/);
+            if (headerMatch) {
+                const [_, hashes, title] = headerMatch;
+                const level = hashes.length;
+                const content = text.replace(headerMatch[0], '').trim();
+                return { level, title: title.trim(), content, chunkId };
+            }
+            
+            // Check for bold text as potential title
+            const boldMatch = text.match(/^\*\*(.*?)\*\*/);
+            if (boldMatch) {
+                return { level: 3, title: boldMatch[1].trim(), content: text, chunkId };
+            }
+            
+            // Default to paragraph if no heading found
+            return { level: 0, title: `Section ${chunkId}`, content: text, chunkId };
+        }
+
+        /**
+         * Toggle section collapse/expand
+         * Ensures only one section is open at a time
+         */
+        function toggleSection(sectionHeader) {
+            const section = sectionHeader.closest('.outline-section');
+            const content = section.querySelector('.outline-section-content');
+            const isCollapsing = !sectionHeader.classList.contains('collapsed');
+            
+            // Close all other sections first
+            document.querySelectorAll('.outline-section-header').forEach(header => {
+                if (header !== sectionHeader) {
+                    header.classList.add('collapsed');
+                    const otherContent = header.nextElementSibling;
+                    if (otherContent && otherContent.classList.contains('outline-section-content')) {
+                        otherContent.style.maxHeight = '0';
+                    }
+                }
+            });
+            
+            // Toggle the clicked section
+            if (isCollapsing) {
+                sectionHeader.classList.add('collapsed');
+                content.style.maxHeight = '0';
+            } else {
+                sectionHeader.classList.remove('collapsed');
+                content.style.maxHeight = content.scrollHeight + 'px';
+            }
+        }
+
+        /**
+         * Build document outline with hierarchical structure and collapsible sections
+         */
         function buildDocumentOutline() {
             const outline = document.getElementById('outline');
             if (!outline) return;
@@ -234,43 +293,178 @@
             
             const sidebarSubtitle = document.createElement('div');
             sidebarSubtitle.className = 'sidebar-subtitle';
-            sidebarSubtitle.textContent = `${Object.keys(allChunksData).length} chunks`;
+            sidebarSubtitle.textContent = `${Object.keys(allChunksData).length} sections`;
             
             sidebarHeader.appendChild(sidebarTitle);
             sidebarHeader.appendChild(sidebarSubtitle);
             outline.appendChild(sidebarHeader);
 
-            // Create navigation items for each chunk
+            // Group chunks by section
+            const sections = {};
             const chunkKeys = Object.keys(allChunksData);
+            
+            // First pass: group chunks by section
             chunkKeys.forEach(chunkId => {
                 const chunk = allChunksData[chunkId];
+                const { level, title } = parseHeadings(chunk.text, chunkId);
                 
-                const navItem = document.createElement('div');
-                navItem.className = 'nav-item';
-                navItem.dataset.chunkId = chunkId;
+                // For top-level sections (level 1)
+                if (level === 1) {
+                    sections[chunkId] = {
+                        title: title || `Section ${chunkId}`,
+                        chunks: [chunkId],
+                        level: 1
+                    };
+                } else {
+                    // Find the nearest parent section
+                    let parentSectionId = null;
+                    for (let i = chunkKeys.indexOf(chunkId) - 1; i >= 0; i--) {
+                        const prevChunkId = chunkKeys[i];
+                        const prevLevel = parseHeadings(allChunksData[prevChunkId].text, prevChunkId).level;
+                        if (prevLevel < level) {
+                            parentSectionId = prevChunkId;
+                            break;
+                        }
+                    }
+                    
+                    if (parentSectionId && sections[parentSectionId]) {
+                        sections[parentSectionId].chunks.push(chunkId);
+                    } else {
+                        // If no parent section found, create a new section
+                        sections[chunkId] = {
+                            title: title || `Section ${chunkId}`,
+                            chunks: [chunkId],
+                            level: level
+                        };
+                    }
+                }
+            });
+
+            // Second pass: build the outline with collapsible sections
+            let isFirstSection = true;
+            Object.entries(sections).forEach(([sectionId, sectionData]) => {
+                const section = document.createElement('div');
+                section.className = 'outline-section';
                 
-                const navItemTitle = document.createElement('div');
-                navItemTitle.className = 'nav-item-title';
-                navItemTitle.textContent = chunk.enrichment.summary || 'Untitled';
+                // Create section header
+                const sectionHeader = document.createElement('div');
+                sectionHeader.className = 'outline-section-header';
                 
-                const navItemMeta = document.createElement('div');
-                navItemMeta.className = 'nav-item-meta';
+                // Only expand the first section by default
+                if (isFirstSection) {
+                    sectionHeader.classList.remove('collapsed');
+                    isFirstSection = false;
+                } else {
+                    sectionHeader.classList.add('collapsed');
+                }
                 
-                const navItemId = document.createElement('span');
-                navItemId.className = 'nav-item-id';
-                navItemId.textContent = chunk.chunk_id;
+                const toggle = document.createElement('span');
+                toggle.className = 'outline-toggle';
+                toggle.innerHTML = '▼';
                 
-                const navItemConfidence = document.createElement('span');
-                navItemConfidence.className = 'nav-item-confidence';
-                navItemConfidence.textContent = `${Math.round((chunk.enrichment.confidence || 0) * 100)}%`;
+                const sectionTitle = document.createElement('span');
+                sectionTitle.className = 'outline-section-title';
+                sectionTitle.textContent = sectionData.title;
                 
-                navItemMeta.appendChild(navItemId);
-                navItemMeta.appendChild(navItemConfidence);
+                const chunkCount = document.createElement('span');
+                chunkCount.className = 'outline-chunk-count';
+                chunkCount.textContent = sectionData.chunks.length;
                 
-                navItem.appendChild(navItemTitle);
-                navItem.appendChild(navItemMeta);
+                sectionHeader.appendChild(toggle);
+                sectionHeader.appendChild(sectionTitle);
+                sectionHeader.appendChild(chunkCount);
                 
-                outline.appendChild(navItem);
+                // Create section content
+                const sectionContent = document.createElement('div');
+                sectionContent.className = 'outline-section-content';
+                
+                // Add chunks to the section
+                sectionData.chunks.forEach(chunkId => {
+                    const chunk = allChunksData[chunkId];
+                    const { title } = parseHeadings(chunk.text, chunkId);
+                    
+                    // Create nav item
+                    const navItem = document.createElement('div');
+                    navItem.className = 'nav-item';
+                    navItem.dataset.chunkId = chunkId;
+                    
+                    // Create nav item title
+                    const navItemTitle = document.createElement('div');
+                    navItemTitle.className = 'nav-item-title';
+                    navItemTitle.textContent = chunk.enrichment.title || `Section ${chunkId}`;
+                    
+                    // Create meta info (ID and confidence)
+                    const navItemMeta = document.createElement('div');
+                    navItemMeta.className = 'nav-item-meta';
+                    
+                    const itemId = document.createElement('span');
+                    itemId.className = 'nav-item-id';
+                    itemId.textContent = chunk.chunk_id;
+                    
+                    const confidence = document.createElement('span');
+                    confidence.className = 'nav-item-confidence';
+                    confidence.textContent = chunk.enrichment.confidence * 100 + '%';
+                    
+                    navItemMeta.appendChild(itemId);
+                    navItemMeta.appendChild(confidence);
+                    
+                    // Add click handler to scroll to section
+                    navItem.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const element = document.getElementById(chunkId);
+                        if (element) {
+                            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            // Highlight the active section
+                            document.querySelectorAll('.nav-item').forEach(item => {
+                                item.classList.remove('active');
+                            });
+                            navItem.classList.add('active');
+                        }
+                    });
+                    
+                    navItem.appendChild(navItemTitle);
+                    navItem.appendChild(navItemMeta);
+                    sectionContent.appendChild(navItem);
+                });
+                
+                // Set initial state for section content
+                if (!sectionHeader.classList.contains('collapsed')) {
+                    // Use setTimeout to ensure the element is in the DOM before calculating scrollHeight
+                    setTimeout(() => {
+                        sectionContent.style.maxHeight = sectionContent.scrollHeight + 'px';
+                    }, 0);
+                } else {
+                    sectionContent.style.maxHeight = '0';
+                }
+                
+                // Toggle section on header click
+                sectionHeader.addEventListener('click', () => toggleSection(sectionHeader));
+                
+                section.appendChild(sectionHeader);
+                section.appendChild(sectionContent);
+                outline.appendChild(section);
+            });
+            
+            // Add scroll event listener to highlight current section
+            document.querySelector('.document-wrapper').addEventListener('scroll', () => {
+                const scrollPosition = document.querySelector('.document-wrapper').scrollTop;
+                let currentSection = null;
+                
+                chunkKeys.forEach(chunkId => {
+                    const element = document.getElementById(chunkId);
+                    if (element) {
+                        const rect = element.getBoundingClientRect();
+                        if (rect.top <= 100) { // 100px from top of viewport
+                            currentSection = chunkId;
+                        }
+                    }
+                });
+                
+                if (currentSection) {
+                    document.querySelectorAll('.nav-item').forEach(item => {
+                        item.classList.toggle('active', item.dataset.chunkId === currentSection);
+                    });
+                }
             });
         }
 
@@ -286,6 +480,7 @@
             const chunkKeys = Object.keys(allChunksData);
             chunkKeys.forEach(chunkId => {
                 const chunk = allChunksData[chunkId];
+                const { level, title, content } = parseHeadings(chunk.text, chunkId);
                 
                 // Create chunk boundary div
                 const chunkBoundary = document.createElement('div');
@@ -294,22 +489,45 @@
                 chunkBoundary.id = chunkId;
                 
                 // Create chunk badge
-                const chunkBadge = document.createElement('span');
+                const chunkBadge = document.createElement('div');
                 chunkBadge.className = 'chunk-badge';
                 const role = chunk.enrichment.rhetorical_role || 'other';
                 const confidence = Math.round((chunk.enrichment.confidence || 0) * 100);
                 chunkBadge.textContent = `${chunk.chunk_id} | ${role.charAt(0).toUpperCase() + role.slice(1)} | ${confidence}%`;
                 
-                chunkBoundary.appendChild(chunkBadge);
+                // Create appropriate heading element based on level
+                let headingElement;
+                if (level > 0) {
+                    const headingLevel = Math.min(level, 6); // Max h6
+                    headingElement = document.createElement(`h${headingLevel}`);
+                    headingElement.className = `heading-level-${headingLevel}`;
+                    headingElement.textContent = title;
+                }
                 
-                // Create content paragraph with summary
-                const content = document.createElement('p');
-                content.textContent = chunk.text || 'No content available';
+                // Create content container
+                const contentContainer = document.createElement('div');
+                contentContainer.className = 'content-container';
+                
+                // Add content (excluding the title if it was a heading)
+                const contentParagraph = document.createElement('div');
+                contentParagraph.className = 'content-paragraph';
+                contentParagraph.innerHTML = level > 0 ? content : chunk.text || 'No content available';
                 
                 // Highlight entities in the content
-                highlightEntitiesInElement(content, chunk.enrichment.entities || []);
+                highlightEntitiesInElement(contentParagraph, chunk.enrichment.entities || []);
                 
-                chunkBoundary.appendChild(content);
+                // Assemble the chunk
+                chunkBoundary.appendChild(chunkBadge);
+                if (headingElement) {
+                    chunkBoundary.appendChild(headingElement);
+                }
+                contentContainer.appendChild(contentParagraph);
+                chunkBoundary.appendChild(contentContainer);
+                
+                // Add metadata attributes for styling and interaction
+                chunkBoundary.dataset.level = level;
+                chunkBoundary.dataset.role = role.toLowerCase();
+                
                 docContent.appendChild(chunkBoundary);
             });
         }
