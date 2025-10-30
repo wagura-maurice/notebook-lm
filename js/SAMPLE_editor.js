@@ -1,1009 +1,1053 @@
-// Global state
-let editMode = false;
-let currentChunkId = null;
-let allChunksData = {};
-let changes = {};
-let editingEntity = null;
-
-// UI Elements
-const UI_ELEMENTS = {
-  toolbar: null,
-  sidebar: null,
-  documentContent: null,
-  metadataPanel: null,
-  entityModal: null,
-  // Add references to dynamic elements
-  modeToggle: null,
-  modeText: null,
-  changesBadge: null,
-  changesCount: null,
-  documentTitle: null,
-  documentMeta: null,
-};
-
-// Load the JSON data asynchronously
-async function loadChunksData() {
-  try {
-    const response = await fetch("./assets/SAMPLE_editor2.json");
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    allChunksData = await response.json();
-    console.log("Chunks data loaded successfully");
-    // Initialize the application after loading data
-    initializeApp();
-  } catch (error) {
-    console.error("Error loading chunks data:", error);
-    // Show error to user
-    alert("Failed to load document data. Please try again later.");
-  }
-}
-
-/**
- * Initialize the application UI by creating and appending all components
- */
-function initializeUI() {
-  // Create the main container if it doesn't exist
-  let appContainer = document.getElementById("app");
-  if (!appContainer) {
-    appContainer = document.createElement("div");
-    appContainer.id = "app";
-    document.body.appendChild(appContainer);
-  } else {
-    // Clear existing content
-    appContainer.innerHTML = '';
-  }
-
-  // Create and append all UI components
-  createToolbar();
-  createSidebar();
-  
-  // Create the container for sidebar and document content
-  const container = document.createElement("div");
-  container.className = "container";
-  
-  // Append sidebar to container first
-  if (UI_ELEMENTS.sidebar) {
-    container.appendChild(UI_ELEMENTS.sidebar);
-  }
-  
-  // Create document area (it will handle its own insertion)
-  createDocumentArea();
-  
-  // Create other UI elements
-  createMetadataPanel();
-  createEntityModal();
-
-  // Append everything to the app container
-  if (UI_ELEMENTS.toolbar) appContainer.appendChild(UI_ELEMENTS.toolbar);
-  appContainer.appendChild(container);
-  if (UI_ELEMENTS.metadataPanel) appContainer.appendChild(UI_ELEMENTS.metadataPanel);
-  if (UI_ELEMENTS.entityModal) appContainer.appendChild(UI_ELEMENTS.entityModal);
-
-  // Apply any initial styles if not already applied
-  if (!document.getElementById('app-styles')) {
-    applyInitialStyles();
-  }
-}
-
-/**
- * Initialize the application
- */
-function initializeApp() {
-  try {
-    // Initialize UI first
-    initializeUI();
-
-    // Set up all event listeners
-    setupEventListeners();
-
-    // If there's a hash in the URL, try to select that chunk
-    if (window.location.hash) {
-      const chunkId = window.location.hash.substring(1);
-      if (allChunksData[chunkId]) {
-        selectChunk(chunkId);
-      }
-    }
-
-    // Update UI based on initial state
-    updateUIForEditMode();
-  } catch (error) {
-    console.error("Error initializing application:", error);
-    // Show error to user
-    const errorDiv = document.createElement("div");
-    errorDiv.className = "error-message";
-    errorDiv.textContent =
-      "Failed to initialize the application. Please refresh the page or contact support.";
-    document.body.appendChild(errorDiv);
-  }
-}
-
-/**
- * Set up all event listeners
- */
-function setupEventListeners() {
-  setupChunkListeners();
-  setupNavigationListeners();
-  setupOutlineToggles();
-
-  // Add keyboard shortcuts
-  document.addEventListener("keydown", handleKeyDown);
-
-  // Add window resize handler
-  window.addEventListener("resize", handleWindowResize);
-}
-
-/**
- * Handle keyboard shortcuts
- */
-function handleKeyDown(e) {
-  // Escape key closes modals/panels
-  if (e.key === "Escape") {
-    closeMetadata();
-    closeEntityModal();
-  }
-
-  // Ctrl+S or Cmd+S to save
-  if ((e.ctrlKey || e.metaKey) && e.key === "s") {
-    e.preventDefault();
-    exportAnnotations();
-  }
-}
-
-/**
- * Handle window resize events
- */
-function handleWindowResize() {
-  // Update any responsive elements here
-  if (UI_ELEMENTS.metadataPanel) {
-    // Adjust metadata panel position if needed
-    if (currentChunkId) {
-      const chunkElement = document.getElementById(currentChunkId);
-      if (chunkElement) {
-        positionMetadataPanel(chunkElement);
-      }
-    }
-  }
-}
-
-/**
- * Apply initial styles to the application
- */
-function applyInitialStyles() {
-  // Only add styles if they haven't been added yet
-  if (document.getElementById('app-styles')) return;
-  
-  const style = document.createElement("style");
-  style.id = 'app-styles';
-  style.textContent = `
-    #app {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      line-height: 1.6;
-      color: #333;
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-    }
-    
-    .container {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-      position: relative;
-      width: 100%;
-    }
-    
-    .document-wrapper {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-    
-    /* Add any other base styles here */
-  `;
-  document.head.appendChild(style);
-}
-
-/**
- * Update UI elements based on edit mode
- */
-function updateUIForEditMode() {
-  if (!UI_ELEMENTS.modeText) return;
-
-  if (editMode) {
-    UI_ELEMENTS.modeText.textContent = "Switch to View Mode";
-    document.body.classList.add("edit-mode");
-  } else {
-    UI_ELEMENTS.modeText.textContent = "Switch to Edit Mode";
-    document.body.classList.remove("edit-mode");
-  }
-
-  // Update other UI elements as needed
-  updateChangeBadge();
-}
-
-// UI Component Creators
-function createToolbar() {
-  const toolbar = document.createElement("div");
-  toolbar.className = "toolbar";
-
-  const toolbarLeft = document.createElement("div");
-  toolbarLeft.className = "toolbar-left";
-
-  const title = document.createElement("div");
-  title.className = "toolbar-title";
-  title.textContent = "📝 Annotation Editor";
-
-  const modeToggle = document.createElement("button");
-  modeToggle.className = "mode-toggle";
-  modeToggle.id = "mode-toggle";
-  modeToggle.onclick = toggleEditMode;
-
-  const modeText = document.createElement("span");
-  modeText.id = "mode-text";
-  modeText.textContent = "Switch to Edit Mode";
-
-  modeToggle.appendChild(modeText);
-
-  const changesBadge = document.createElement("span");
-  changesBadge.className = "changes-badge";
-  changesBadge.id = "changes-badge";
-  changesBadge.style.display = "none";
-
-  const changesCount = document.createElement("span");
-  changesCount.id = "changes-count";
-  changesCount.textContent = "0";
-
-  changesBadge.appendChild(document.createTextNode(" "));
-  changesBadge.appendChild(changesCount);
-  changesBadge.appendChild(document.createTextNode(" changes"));
-
-  toolbarLeft.appendChild(title);
-  toolbarLeft.appendChild(modeToggle);
-  toolbarLeft.appendChild(changesBadge);
-
-  const toolbarActions = document.createElement("div");
-  toolbarActions.className = "toolbar-actions";
-
-  const exportBtn = document.createElement("button");
-  exportBtn.className = "btn btn-export";
-  exportBtn.onclick = exportAnnotations;
-  exportBtn.innerHTML = "💾 Export Changes";
-
-  const resetBtn = document.createElement("button");
-  resetBtn.className = "btn btn-reset";
-  resetBtn.onclick = resetChanges;
-  resetBtn.innerHTML = "🔄 Reset All";
-
-  toolbarActions.appendChild(exportBtn);
-  toolbarActions.appendChild(resetBtn);
-
-  toolbar.appendChild(toolbarLeft);
-  toolbar.appendChild(toolbarActions);
-
-  UI_ELEMENTS.toolbar = toolbar;
-}
-
-function createSidebar() {
-  const sidebar = document.createElement("div");
-  sidebar.className = "sidebar";
-
-  const sidebarHeader = document.createElement("div");
-  sidebarHeader.className = "sidebar-header";
-
-  const sidebarTitle = document.createElement("div");
-  sidebarTitle.className = "sidebar-title";
-  sidebarTitle.textContent = "Document Navigation";
-
-  const sidebarSubtitle = document.createElement("div");
-  sidebarSubtitle.className = "sidebar-subtitle";
-  sidebarSubtitle.textContent = "0 chunks"; // Will be updated after loading data
-
-  sidebarHeader.appendChild(sidebarTitle);
-  sidebarHeader.appendChild(sidebarSubtitle);
-
-  const outlineSection = document.createElement("div");
-  outlineSection.className = "outline-section";
-  outlineSection.style.marginLeft = "0px";
-
-  sidebar.appendChild(sidebarHeader);
-  sidebar.appendChild(outlineSection);
-
-  UI_ELEMENTS.sidebar = sidebar;
-}
-
-function createDocumentArea() {
-  // Check if document area already exists and clear it
-  let wrapper = document.querySelector('.document-wrapper');
-  if (wrapper) {
-    wrapper.remove();
-  }
-
-  wrapper = document.createElement("div");
-  wrapper.className = "document-wrapper";
-
-  const documentEl = document.createElement("div");
-  documentEl.className = "document";
-
-  const documentHeader = document.createElement("div");
-  documentHeader.className = "document-header";
-
-  const documentTitle = document.createElement("h1");
-  documentTitle.className = "document-title";
-  documentTitle.textContent =
-    allChunksData[Object.keys(allChunksData)[0]]?.doc ??
-    "Document Title Loading...";
-
-  const documentMeta = document.createElement("div");
-  documentMeta.className = "document-meta";
-
-  // Calculate total word count
-  let totalWords = 0;
-  Object.values(allChunksData).forEach((chunk) => {
-    if (chunk?.meta?.words) {
-      totalWords += chunk.meta.words;
-    }
-  });
-
-  const keys = Object.keys(allChunksData);
-  const lastKey = keys[keys.length - 1];
-  const timestamp = allChunksData[lastKey]?._ts || 'N/A';
-  documentMeta.textContent = `${keys.length} chunks | ${totalWords} words | Generated: ${timestamp}`;
-
-  documentHeader.appendChild(documentTitle);
-  documentHeader.appendChild(documentMeta);
-
-  const documentContent = document.createElement("div");
-  documentContent.className = "document-content";
-  documentContent.id = "document-content";
-
-  documentEl.appendChild(documentHeader);
-  documentEl.appendChild(documentContent);
-  wrapper.appendChild(documentEl);
-
-  // Insert the wrapper after the sidebar
-  const sidebar = document.querySelector('.sidebar');
-  if (sidebar && sidebar.parentNode) {
-    sidebar.parentNode.insertBefore(wrapper, sidebar.nextSibling);
-  } else {
-    document.body.appendChild(wrapper);
-  }
-
-  return wrapper;
-}
-
-function createMetadataPanel() {
-  const panel = document.createElement("div");
-  panel.className = "metadata-panel";
-  panel.id = "metadata-panel";
-
-  const closeBtn = document.createElement("button");
-  closeBtn.className = "metadata-close";
-  closeBtn.innerHTML = "&times;";
-  closeBtn.onclick = closeMetadata;
-
-  const content = document.createElement("div");
-  content.id = "metadata-content";
-
-  const defaultContent = document.createElement("div");
-  defaultContent.className = "metadata-section";
-
-  const title = document.createElement("div");
-  title.className = "metadata-title";
-  title.textContent = "Chunk Metadata";
-
-  const message = document.createElement("p");
-  message.textContent = "Click on any chunk to view and edit its metadata.";
-
-  defaultContent.appendChild(title);
-  defaultContent.appendChild(message);
-  content.appendChild(defaultContent);
-
-  panel.appendChild(closeBtn);
-  panel.appendChild(content);
-
-  UI_ELEMENTS.metadataPanel = panel;
-}
-
-function createEntityModal() {
-  const modal = document.createElement("div");
-  modal.className = "modal";
-  modal.id = "entity-modal";
-
-  const modalContent = document.createElement("div");
-  modalContent.className = "modal-content";
-
-  const modalTitle = document.createElement("div");
-  modalTitle.className = "modal-title";
-  modalTitle.textContent = "Edit Entity";
-
-  const formGroup1 = document.createElement("div");
-  formGroup1.className = "form-group";
-
-  const label1 = document.createElement("label");
-  label1.className = "form-label";
-  label1.textContent = "Entity Text:";
-
-  const input1 = document.createElement("input");
-  input1.type = "text";
-  input1.className = "form-input";
-  input1.id = "entity-text-input";
-
-  formGroup1.appendChild(label1);
-  formGroup1.appendChild(input1);
-
-  const formGroup2 = document.createElement("div");
-  formGroup2.className = "form-group";
-
-  const label2 = document.createElement("label");
-  label2.className = "form-label";
-  label2.textContent = "Entity Type:";
-
-  const select = document.createElement("select");
-  select.className = "form-input";
-  select.id = "entity-type-input";
-
-  const entityTypes = [
-    "person",
-    "org",
-    "location",
-    "program",
-    "date",
-    "amount",
-    "metric",
-    "law",
-    "policy",
-  ];
-
-  entityTypes.forEach((type) => {
-    const option = document.createElement("option");
-    option.value = type;
-    option.textContent = type;
-    select.appendChild(option);
-  });
-
-  formGroup2.appendChild(label2);
-  formGroup2.appendChild(select);
-
-  const modalActions = document.createElement("div");
-  modalActions.className = "modal-actions";
-
-  const cancelBtn = document.createElement("button");
-  cancelBtn.className = "btn btn-cancel";
-  cancelBtn.textContent = "Cancel";
-  cancelBtn.onclick = closeEntityModal;
-
-  const saveBtn = document.createElement("button");
-  saveBtn.className = "btn btn-save";
-  saveBtn.textContent = "Save";
-  saveBtn.onclick = saveEntityEdit;
-
-  modalActions.appendChild(cancelBtn);
-  modalActions.appendChild(saveBtn);
-
-  modalContent.appendChild(modalTitle);
-  modalContent.appendChild(formGroup1);
-  modalContent.appendChild(formGroup2);
-  modalContent.appendChild(modalActions);
-
-  modal.appendChild(modalContent);
-
-  UI_ELEMENTS.entityModal = modal;
-}
-
-/**
- * Start loading the data when the script loads
- */
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", loadChunksData);
-} else {
-  // If the document is already loaded, start immediately
-  loadChunksData();
-}
-
-// Expose public API
-window.EditorApp = {
-  toggleEditMode,
-  exportAnnotations,
-  resetChanges,
-  selectChunk,
-  closeMetadata,
-  closeEntityModal,
-};
-
-// Rest of your existing functions...
-function setupChunkListeners() {
-  document.querySelectorAll(".chunk-boundary").forEach((chunk) => {
-    chunk.addEventListener("click", function (e) {
-      if (e.target.tagName === "A") return;
-      const chunkId = this.dataset.chunkId;
-      selectChunk(chunkId);
-    });
-  });
-}
-
-function setupNavigationListeners() {
-  document.querySelectorAll(".nav-item").forEach((item) => {
-    item.addEventListener("click", function () {
-      const chunkId = this.dataset.chunkId;
-      selectChunk(chunkId);
-      scrollToChunk(chunkId);
-    });
-  });
-}
-
-function setupOutlineToggles() {
-  document.querySelectorAll(".outline-section-header").forEach((header) => {
-    header.addEventListener("click", function (e) {
-      e.stopPropagation();
-      const sectionId = this.dataset.sectionId;
-      const content = document.querySelector(
-        `.outline-section-content[data-section-id="${sectionId}"]`
-      );
-
-      if (content) {
-        const isCollapsed = this.classList.contains("collapsed");
-        if (isCollapsed) {
-          this.classList.remove("collapsed");
-          content.classList.remove("collapsed");
-          content.style.maxHeight = content.scrollHeight + "px";
-        } else {
-          this.classList.add("collapsed");
-          content.classList.add("collapsed");
-          content.style.maxHeight = "0";
+        // Global state
+        let editMode = false;
+        let currentChunkId = null;
+        let allChunksData = {};
+        let changes = {};
+        let editingEntity = null;
+        let originalHTMLContent = {}; // Store original HTML for each chunk
+
+        /**
+         * Load the JSON data asynchronously
+         */
+        async function loadChunksData() {
+            try {
+                const response = await fetch('./assets/SAMPLE_editor2.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                allChunksData = await response.json();
+                console.log('Chunks data loaded successfully');
+                
+                // Initialize the application after loading data
+                initializeApp();
+            } catch (error) {
+                console.error('Error loading chunks data:', error);
+                alert('Failed to load document data. Please try again later.');
+            }
         }
-      }
-    });
-  });
 
-  // Set initial max-height
-  document.querySelectorAll(".outline-section-content").forEach((content) => {
-    if (!content.classList.contains("collapsed")) {
-      content.style.maxHeight = content.scrollHeight + "px";
-    }
-  });
-}
+        /**
+         * Initialize the application
+         */
+        function initializeApp() {
+            try {
+                // Build dynamic UI
+                buildDocumentOutline();
+                buildDocumentContent();
+                updateDocumentHeader();
 
-function selectChunk(chunkId) {
-  currentChunkId = chunkId;
+                // Set up all event listeners
+                setupEventListeners();
 
-  // Update UI
-  document
-    .querySelectorAll(".chunk-boundary")
-    .forEach((c) => c.classList.remove("active"));
-  document
-    .querySelectorAll(".nav-item")
-    .forEach((c) => c.classList.remove("active"));
+                // If there's a hash in the URL, try to select that chunk
+                if (window.location.hash) {
+                    const chunkId = window.location.hash.substring(1);
+                    if (allChunksData[chunkId]) {
+                        selectChunk(chunkId);
+                    }
+                }
 
-  const chunkEl = document.querySelector(
-    `.chunk-boundary[data-chunk-id="${chunkId}"]`
-  );
-  const navItem = document.querySelector(
-    `.nav-item[data-chunk-id="${chunkId}"]`
-  );
-
-  if (chunkEl) chunkEl.classList.add("active");
-  if (navItem) {
-    navItem.classList.add("active");
-    navItem.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }
-
-  // Show metadata
-  showMetadata(chunkId);
-}
-
-function scrollToChunk(chunkId) {
-  const chunk = document.querySelector(
-    `.chunk-boundary[data-chunk-id="${chunkId}"]`
-  );
-  if (chunk) {
-    chunk.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
-}
-
-function showMetadata(chunkId) {
-  const chunkData = allChunksData[chunkId];
-  if (!chunkData) return;
-
-  const panel = document.getElementById("metadata-panel");
-  const content = document.getElementById("metadata-content");
-
-  // Get changes for this chunk (if any)
-  const chunkChanges = changes[chunkId] || {};
-
-  // Build metadata HTML
-  let html = "";
-
-  // Summary (editable in edit mode)
-  const summary =
-    chunkChanges.summary !== undefined
-      ? chunkChanges.summary
-      : chunkData.summary;
-  const summaryEdited = chunkChanges.summary !== undefined;
-
-  html += `
-    <div class="metadata-section">
-        <div class="metadata-title">Summary</div>
-        <textarea
-            class="editable-field ${summaryEdited ? "edited" : ""}"
-            id="summary-field"
-            ${editMode ? "" : "readonly"}
-            onchange="updateField('${chunkId}', 'summary', this.value)"
-        >${summary || "No summary"}</textarea>
-    </div>
-    `;
-
-  // Rhetorical Role
-  const role =
-    chunkChanges.rhetorical_role !== undefined
-      ? chunkChanges.rhetorical_role
-      : chunkData.rhetorical_role;
-  const roleEdited = chunkChanges.rhetorical_role !== undefined;
-
-  html += `
-    <div class="metadata-section">
-        <div class="metadata-title">Rhetorical Role</div>
-        <select
-            class="editable-field ${roleEdited ? "edited" : ""}"
-            id="role-field"
-            ${editMode ? "" : "disabled"}
-            onchange="updateField('${chunkId}', 'rhetorical_role', this.value)"
-        >
-            <option value="background">Background</option>
-            <option value="definition">Definition</option>
-            <option value="method">Method</option>
-            <option value="procedure">Procedure</option>
-            <option value="result">Result</option>
-            <option value="discussion">Discussion</option>
-            <option value="recommendation">Recommendation</option>
-            <option value="limitation">Limitation</option>
-            <option value="example">Example</option>
-            <option value="conclusion">Conclusion</option>
-            <option value="other">Other</option>
-        </select>
-    </div>
-    `;
-
-  // Set selected role
-  setTimeout(() => {
-    const roleSelect = document.getElementById("role-field");
-    if (roleSelect) roleSelect.value = role;
-  }, 0);
-
-  // Keywords
-  const keywords =
-    chunkChanges.keywords !== undefined
-      ? chunkChanges.keywords
-      : chunkData.keywords;
-  const keywordsEdited = chunkChanges.keywords !== undefined;
-
-  html += `
-    <div class="metadata-section">
-        <div class="metadata-title">Keywords (${keywords.length})</div>
-        <div class="keywords-editor" id="keywords-editor">
-    `;
-
-  keywords.forEach((kw, idx) => {
-    html += `
-        <span class="keyword-tag ${editMode ? "editable" : ""}">
-            ${kw}
-            ${
-              editMode
-                ? `<span class="keyword-remove" onclick="removeKeyword('${chunkId}', ${idx})">×</span>`
-                : ""
+                // Update UI based on initial state
+                updateUIForEditMode();
+            } catch (error) {
+                console.error('Error initializing application:', error);
+                alert('Failed to initialize the application. Please refresh the page.');
             }
-        </span>
-        `;
-  });
+        }
 
-  if (editMode) {
-    html += `
-        <button class="keyword-add" onclick="addKeyword('${chunkId}')">+ Add</button>
-        `;
-  }
+        /**
+         * Update document header with title and metadata
+         */
+        function updateDocumentHeader() {
+            const documentTitle = document.querySelector('.document-title');
+            const documentMeta = document.querySelector('.document-meta');
+            
+            if (!documentTitle || !documentMeta) return;
+            
+            // Get document title from first chunk
+            const rawTitle = allChunksData[Object.keys(allChunksData)[0]]?.doc || "Document Title Loading...";
+            documentTitle.textContent = rawTitle
+                .replace(/_/g, ' ')
+                .replace(/\./g, ' ')  // Replace dots with spaces
+                .replace(/\s+/g, ' ')  // Replace multiple spaces with single space
+                .trim();
+            
+            // Calculate total word count
+            let totalWords = 0;
+            Object.values(allChunksData).forEach(chunk => {
+                if (chunk.meta?.words) {
+                    totalWords += chunk.meta.words;
+                }
+            });
+            
+            const keys = Object.keys(allChunksData);
+            const lastKey = keys[keys.length - 1];
+            const timestamp = allChunksData[lastKey]?._ts || 'N/A';
+            
+            documentMeta.textContent = `${keys.length} chunks | ${totalWords} words | Generated: ${timestamp}`;
+        }
 
-  html += "</div></div>";
-
-  // Entities
-  const entities =
-    chunkChanges.entities !== undefined
-      ? chunkChanges.entities
-      : chunkData.entities;
-  const entitiesEdited = chunkChanges.entities !== undefined;
-
-  html += `
-    <div class="metadata-section">
-        <div class="metadata-title">Entities (${entities.length})</div>
-        <div class="entity-editor">
-    `;
-
-  entities.forEach((entity, idx) => {
-    const color = getEntityColor(entity.type);
-    html += `
-        <div class="entity-item ${editMode ? "editable" : ""}" onclick="${
-      editMode ? `editEntity('${chunkId}', ${idx})` : ""
-    }">
-            <div class="entity-text">${entity.text}</div>
-            <div class="entity-type-badge" style="background: ${color};">${
-      entity.type
-    }</div>
-            ${
-              editMode
-                ? `<button class="entity-remove" onclick="event.stopPropagation(); removeEntity('${chunkId}', ${idx}')">×</button>`
-                : ""
+        /**
+         * Build document outline/navigation structure from chunks data
+         */
+        /**
+         * Parse text and identify heading levels
+         * Returns an object with heading text, level, and content
+         */
+        function parseHeadings(text, chunkId) {
+            if (!text) return { level: 0, title: 'Untitled', content: '' };
+            
+            // Check for markdown-style headers
+            const headerMatch = text.match(/^(#+)\s*(.*?)(?:\n|$)/);
+            if (headerMatch) {
+                const [_, hashes, title] = headerMatch;
+                const level = hashes.length;
+                const content = text.replace(headerMatch[0], '').trim();
+                return { level, title: title.trim(), content, chunkId };
             }
-        </div>
-        `;
-  });
+            
+            // Check for bold text as potential title
+            const boldMatch = text.match(/^\*\*(.*?)\*\*/);
+            if (boldMatch) {
+                return { level: 3, title: boldMatch[1].trim(), content: text, chunkId };
+            }
+            
+            // Default to paragraph if no heading found
+            return { level: 0, title: `Section ${chunkId}`, content: text, chunkId };
+        }
 
-  if (editMode) {
-    html += `
-        <button class="entity-add" onclick="addEntity('${chunkId}')">+ Add Entity</button>
-        `;
-  }
+        /**
+         * Toggle section collapse/expand
+         * Ensures only one section is open at a time
+         */
+        function toggleSection(sectionHeader) {
+            const section = sectionHeader.closest('.outline-section');
+            const content = section.querySelector('.outline-section-content');
+            const isCollapsing = !sectionHeader.classList.contains('collapsed');
+            
+            // Close all other sections first
+            document.querySelectorAll('.outline-section-header').forEach(header => {
+                if (header !== sectionHeader) {
+                    header.classList.add('collapsed');
+                    const otherContent = header.nextElementSibling;
+                    if (otherContent && otherContent.classList.contains('outline-section-content')) {
+                        otherContent.style.maxHeight = '0';
+                    }
+                }
+            });
+            
+            // Toggle the clicked section
+            if (isCollapsing) {
+                sectionHeader.classList.add('collapsed');
+                content.style.maxHeight = '0';
+            } else {
+                sectionHeader.classList.remove('collapsed');
+                content.style.maxHeight = content.scrollHeight + 'px';
+            }
+        }
 
-  html += "</div></div>";
+        /**
+         * Build document outline with hierarchical structure and collapsible sections
+         */
+        function buildDocumentOutline() {
+            const outline = document.getElementById('outline');
+            if (!outline) return;
 
-  // Statistics
-  html += `
-    <div class="metadata-section">
-        <div class="metadata-title">Statistics</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div style="background: #f8f9fa; padding: 10px; border-radius: 4px; text-align: center;">
-                <div style="font-size: 24px; font-weight: 700; color: #667eea;">${chunkData.words}</div>
-                <div style="font-size: 11px; color: #7f8c8d;">Words</div>
+            // Clear existing outline content
+            outline.innerHTML = '';
+
+            // Add sidebar header
+            const sidebarHeader = document.createElement('div');
+            sidebarHeader.className = 'sidebar-header';
+            
+            const sidebarTitle = document.createElement('div');
+            sidebarTitle.className = 'sidebar-title';
+            sidebarTitle.textContent = 'Table of Contents';
+            
+            const sidebarSubtitle = document.createElement('div');
+            sidebarSubtitle.className = 'sidebar-subtitle';
+            sidebarSubtitle.textContent = `${Object.keys(allChunksData).length} sections`;
+            
+            sidebarHeader.appendChild(sidebarTitle);
+            sidebarHeader.appendChild(sidebarSubtitle);
+            outline.appendChild(sidebarHeader);
+
+            // Group chunks by section
+            const sections = {};
+            const chunkKeys = Object.keys(allChunksData);
+            
+            // First pass: group chunks by section
+            chunkKeys.forEach(chunkId => {
+                const chunk = allChunksData[chunkId];
+                const { level, title } = parseHeadings(chunk.text, chunkId);
+                
+                // For top-level sections (level 1)
+                if (level === 1) {
+                    sections[chunkId] = {
+                        title: title || `Section ${chunkId}`,
+                        chunks: [chunkId],
+                        level: 1
+                    };
+                } else {
+                    // Find the nearest parent section
+                    let parentSectionId = null;
+                    for (let i = chunkKeys.indexOf(chunkId) - 1; i >= 0; i--) {
+                        const prevChunkId = chunkKeys[i];
+                        const prevLevel = parseHeadings(allChunksData[prevChunkId].text, prevChunkId).level;
+                        if (prevLevel < level) {
+                            parentSectionId = prevChunkId;
+                            break;
+                        }
+                    }
+                    
+                    if (parentSectionId && sections[parentSectionId]) {
+                        sections[parentSectionId].chunks.push(chunkId);
+                    } else {
+                        // If no parent section found, create a new section
+                        sections[chunkId] = {
+                            title: title || `Section ${chunkId}`,
+                            chunks: [chunkId],
+                            level: level
+                        };
+                    }
+                }
+            });
+
+            // Second pass: build the outline with collapsible sections
+            let isFirstSection = true;
+            Object.entries(sections).forEach(([sectionId, sectionData]) => {
+                const section = document.createElement('div');
+                section.className = 'outline-section';
+                
+                // Create section header
+                const sectionHeader = document.createElement('div');
+                sectionHeader.className = 'outline-section-header';
+                
+                // Only expand the first section by default
+                if (isFirstSection) {
+                    sectionHeader.classList.remove('collapsed');
+                    isFirstSection = false;
+                } else {
+                    sectionHeader.classList.add('collapsed');
+                }
+                
+                const toggle = document.createElement('span');
+                toggle.className = 'outline-toggle';
+                toggle.innerHTML = '▼';
+                
+                const sectionTitle = document.createElement('span');
+                sectionTitle.className = 'outline-section-title';
+                sectionTitle.textContent = sectionData.title;
+                
+                const chunkCount = document.createElement('span');
+                chunkCount.className = 'outline-chunk-count';
+                chunkCount.textContent = sectionData.chunks.length;
+                
+                sectionHeader.appendChild(toggle);
+                sectionHeader.appendChild(sectionTitle);
+                sectionHeader.appendChild(chunkCount);
+                
+                // Create section content
+                const sectionContent = document.createElement('div');
+                sectionContent.className = 'outline-section-content';
+                
+                // Add chunks to the section
+                sectionData.chunks.forEach(chunkId => {
+                    const chunk = allChunksData[chunkId];
+                    const { title } = parseHeadings(chunk.text, chunkId);
+                    
+                    // Create nav item
+                    const navItem = document.createElement('div');
+                    navItem.className = 'nav-item';
+                    navItem.dataset.chunkId = chunkId;
+                    
+                    // Create nav item title
+                    const navItemTitle = document.createElement('div');
+                    navItemTitle.className = 'nav-item-title';
+                    navItemTitle.textContent = chunk.enrichment.title || `Section ${chunkId}`;
+                    
+                    // Create meta info (ID and confidence)
+                    const navItemMeta = document.createElement('div');
+                    navItemMeta.className = 'nav-item-meta';
+                    
+                    const itemId = document.createElement('span');
+                    itemId.className = 'nav-item-id';
+                    itemId.textContent = chunk.chunk_id;
+                    
+                    const confidence = document.createElement('span');
+                    confidence.className = 'nav-item-confidence';
+                    confidence.textContent = chunk.enrichment.confidence * 100 + '%';
+                    
+                    navItemMeta.appendChild(itemId);
+                    navItemMeta.appendChild(confidence);
+                    
+                    // Add click handler to scroll to section
+                    navItem.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const element = document.getElementById(chunkId);
+                        if (element) {
+                            // Scroll the document to show the section
+                            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            
+                            // Update active state in TOC
+                            document.querySelectorAll('.nav-item').forEach(item => {
+                                item.classList.remove('active');
+                            });
+                            navItem.classList.add('active');
+                            
+                            // Ensure the parent section is expanded
+                            const section = navItem.closest('.outline-section');
+                            if (section) {
+                                const sectionHeader = section.querySelector('.outline-section-header');
+                                const sectionContent = section.querySelector('.outline-section-content');
+                                
+                                if (sectionHeader && sectionHeader.classList.contains('collapsed')) {
+                                    sectionHeader.classList.remove('collapsed');
+                                    sectionContent.style.maxHeight = sectionContent.scrollHeight + 'px';
+                                }
+                                
+                                // Scroll the TOC to show the active item
+                                const outline = document.getElementById('outline');
+                                const navItemRect = navItem.getBoundingClientRect();
+                                const outlineRect = outline.getBoundingClientRect();
+                                
+                                // Calculate scroll position to center the item
+                                const navItemTop = navItemRect.top + window.scrollY;
+                                const outlineTop = outlineRect.top + window.scrollY;
+                                const navItemHeight = navItem.offsetHeight;
+                                const outlineHeight = outline.offsetHeight;
+                                
+                                // Calculate the scroll position to center the nav item
+                                const scrollTo = navItemTop - outlineTop - (outlineHeight / 2) + (navItemHeight / 2);
+                                
+                                // Smooth scroll to the nav item
+                                outline.scrollTo({
+                                    top: scrollTo,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }
+                    });
+                    
+                    navItem.appendChild(navItemTitle);
+                    navItem.appendChild(navItemMeta);
+                    sectionContent.appendChild(navItem);
+                });
+                
+                // Set initial state for section content
+                if (!sectionHeader.classList.contains('collapsed')) {
+                    // Use setTimeout to ensure the element is in the DOM before calculating scrollHeight
+                    setTimeout(() => {
+                        sectionContent.style.maxHeight = sectionContent.scrollHeight + 'px';
+                    }, 0);
+                } else {
+                    sectionContent.style.maxHeight = '0';
+                }
+                
+                // Toggle section on header click
+                sectionHeader.addEventListener('click', () => toggleSection(sectionHeader));
+                
+                section.appendChild(sectionHeader);
+                section.appendChild(sectionContent);
+                outline.appendChild(section);
+            });
+            
+            // Add scroll event listener to highlight current section
+            const documentWrapper = document.querySelector('.document-wrapper');
+            if (documentWrapper) {
+                documentWrapper.addEventListener('scroll', () => {
+                    const scrollPosition = documentWrapper.scrollTop;
+                    let currentSection = null;
+                    let smallestDistance = Number.POSITIVE_INFINITY;
+                    
+                    // Get all chunk elements
+                    const chunkElements = document.querySelectorAll('.chunk-boundary');
+                    
+                    // Find the chunk closest to the top of the viewport
+                    chunkElements.forEach(element => {
+                        const rect = element.getBoundingClientRect();
+                        const distance = Math.abs(rect.top);
+                        
+                        if (distance < smallestDistance) {
+                            smallestDistance = distance;
+                            currentSection = element.id;
+                        }
+                    });
+                    
+                    if (currentSection) {
+                        // Update active state in TOC
+                        document.querySelectorAll('.nav-item').forEach(item => {
+                            const isActive = item.dataset.chunkId === currentSection;
+                            item.classList.toggle('active', isActive);
+                            
+                            // If this is the active item, ensure its section is expanded
+                            if (isActive) {
+                                const section = item.closest('.outline-section');
+                                if (section) {
+                                    const sectionHeader = section.querySelector('.outline-section-header');
+                                    const sectionContent = section.querySelector('.outline-section-content');
+                                    
+                                    if (sectionHeader && sectionContent && sectionHeader.classList.contains('collapsed')) {
+                                        sectionHeader.classList.remove('collapsed');
+                                        sectionContent.style.maxHeight = sectionContent.scrollHeight + 'px';
+                                        
+                                        // Scroll the TOC to show the active item
+                                        const outline = document.getElementById('outline');
+                                        const navItemRect = item.getBoundingClientRect();
+                                        const outlineRect = outline.getBoundingClientRect();
+                                        
+                                        // Calculate scroll position to center the item
+                                        const navItemTop = navItemRect.top + window.scrollY;
+                                        const outlineTop = outlineRect.top + window.scrollY;
+                                        const navItemHeight = item.offsetHeight;
+                                        const outlineHeight = outline.offsetHeight;
+                                        
+                                        // Calculate the scroll position to center the nav item
+                                        const scrollTo = navItemTop - outlineTop - (outlineHeight / 2) + (navItemHeight / 2);
+                                        
+                                        // Smooth scroll to the nav item
+                                        outline.scrollTo({
+                                            top: scrollTo,
+                                            behavior: 'smooth'
+                                        });
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+                
+                // Trigger initial scroll to highlight the first section
+                setTimeout(() => {
+                    const firstChunk = document.querySelector('.chunk-boundary');
+                    if (firstChunk) {
+                        firstChunk.scrollIntoView({ behavior: 'auto', block: 'start' });
+                    }
+                }, 100);
+            }
+        }
+
+        /**
+         * Build document content with chunks and entity highlighting
+         */
+        function buildDocumentContent() {
+            const docContent = document.getElementById('document-content');
+            if (!docContent) return;
+
+            docContent.innerHTML = '';
+
+            const chunkKeys = Object.keys(allChunksData);
+            chunkKeys.forEach(chunkId => {
+                const chunk = allChunksData[chunkId];
+                const { level, title, content } = parseHeadings(chunk.text, chunkId);
+                
+                // Create chunk boundary div
+                const chunkBoundary = document.createElement('div');
+                chunkBoundary.className = 'chunk-boundary';
+                chunkBoundary.dataset.chunkId = chunkId;
+                chunkBoundary.id = chunkId;
+                
+                // Create chunk badge
+                const chunkBadge = document.createElement('div');
+                chunkBadge.className = 'chunk-badge';
+                const role = chunk.enrichment.rhetorical_role || 'other';
+                const confidence = Math.round((chunk.enrichment.confidence || 0) * 100);
+                chunkBadge.textContent = `${chunk.chunk_id} | ${role.charAt(0).toUpperCase() + role.slice(1)} | ${confidence}%`;
+                
+                // Create appropriate heading element based on level
+                let headingElement;
+                if (level > 0) {
+                    const headingLevel = Math.min(level, 6); // Max h6
+                    headingElement = document.createElement(`h${headingLevel}`);
+                    headingElement.className = `heading-level-${headingLevel}`;
+                    headingElement.textContent = title;
+                }
+                
+                // Create content container
+                const contentContainer = document.createElement('div');
+                contentContainer.className = 'content-container';
+                
+                // Add content (excluding the title if it was a heading)
+                const contentParagraph = document.createElement('div');
+                contentParagraph.className = 'content-paragraph';
+                contentParagraph.innerHTML = level > 0 ? content : chunk.text || 'No content available';
+                
+                // Highlight entities in the content
+                highlightEntitiesInElement(contentParagraph, chunk.enrichment.entities || []);
+                
+                // Assemble the chunk
+                chunkBoundary.appendChild(chunkBadge);
+                if (headingElement) {
+                    chunkBoundary.appendChild(headingElement);
+                }
+                contentContainer.appendChild(contentParagraph);
+                chunkBoundary.appendChild(contentContainer);
+                
+                // Add metadata attributes for styling and interaction
+                chunkBoundary.dataset.level = level;
+                chunkBoundary.dataset.role = role.toLowerCase();
+                
+                docContent.appendChild(chunkBoundary);
+            });
+        }
+
+        /**
+         * Escape special regex characters
+         */
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        /**
+         * Highlight entities in an element's text nodes
+         * @param {HTMLElement} element - The element containing text to highlight
+         * @param {Array} entities - Array of entity objects with text, type, and confidence
+         */
+        function highlightEntitiesInElement(element, entities) {
+            try {
+                // Check for valid input
+                if (!element || !element.innerHTML) return;
+                if (!Array.isArray(entities) || entities.length === 0) return;
+                
+                // Filter out invalid entities and ensure required properties exist
+                const validEntities = entities.filter(entity => 
+                    entity && 
+                    typeof entity === 'object' && 
+                    entity.text && 
+                    typeof entity.text === 'string' &&
+                    entity.type && 
+                    typeof entity.type === 'string'
+                );
+                
+                if (validEntities.length === 0) return;
+
+                // Sort entities by length (longest first) to handle nested entities correctly
+                const sortedEntities = [...validEntities].sort((a, b) => {
+                    const lenA = a.text ? a.text.length : 0;
+                    const lenB = b.text ? b.text.length : 0;
+                    return lenB - lenA;
+                });
+                
+                // Get the current HTML content
+                let html = element.innerHTML;
+                if (!html) return;
+                
+                // Create a map to store entity replacements
+                const replacements = [];
+                const processedTexts = new Set();
+                
+                // Process each entity
+                sortedEntities.forEach((entity, idx) => {
+                    try {
+                        const entityText = entity.text ? entity.text.trim() : '';
+                        if (!entityText || processedTexts.has(entityText)) return;
+                        
+                        processedTexts.add(entityText);
+                        const placeholder = `__ENTITY_${idx}__`;
+                        
+                        // Escape special regex characters in the entity text
+                        const escapedText = escapeRegex(entityText);
+                        
+                        // Skip if the text isn't found in the HTML
+                        if (!html.includes(entityText)) return;
+                        
+                        // Create the highlighted span with tooltip
+                        const span = document.createElement('span');
+                        span.className = `entity entity-${entity.type || 'unknown'}`;
+                        span.textContent = entityText;
+                        
+                        const tooltip = document.createElement('span');
+                        tooltip.className = 'tooltip';
+                        tooltip.textContent = `${(entity.type || 'UNKNOWN').toUpperCase()}: ${entityText} (conf: ${(entity.confidence || 1).toFixed(2)})`;
+                        span.appendChild(tooltip);
+                        
+                        // Store the replacement
+                        replacements.push({
+                            placeholder: placeholder,
+                            html: span.outerHTML,
+                            text: entityText
+                        });
+                        
+                        // Replace all occurrences of the entity text with a placeholder
+                        const regex = new RegExp(escapedText, 'g');
+                        html = html.replace(regex, (match, offset, fullText) => {
+                            // Check if the match is inside an HTML tag
+                            const before = fullText.substring(0, offset);
+                            const lastTagOpen = before.lastIndexOf('<');
+                            const lastTagClose = before.lastIndexOf('>');
+                            
+                            // Only replace if not inside a tag
+                            if (lastTagOpen === -1 || lastTagClose > lastTagOpen) {
+                                return placeholder;
+                            }
+                            return match;
+                        });
+                    } catch (e) {
+                        console.warn('Error processing entity:', entity, e);
+                    }
+                });
+                
+                // Replace all placeholders with the actual HTML
+                if (replacements.length > 0) {
+                    try {
+                        // Do a single pass through the HTML for all replacements
+                        const regex = new RegExp(replacements.map(r => escapeRegex(r.placeholder)).join('|'), 'g');
+                        html = html.replace(regex, (match) => {
+                            const replacement = replacements.find(r => r.placeholder === match);
+                            return replacement ? replacement.html : match;
+                        });
+                        
+                        // Update the element's HTML
+                        element.innerHTML = html;
+                    } catch (e) {
+                        console.error('Error applying entity highlights:', e);
+                    }
+                }
+            } catch (error) {
+                console.error('Error in highlightEntitiesInElement:', error);
+            }
+        }
+
+        /**
+         * Set up all event listeners
+         */
+        function setupEventListeners() {
+            setupChunkListeners();
+            setupNavigationListeners();
+
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', handleKeyDown);
+
+            // Add window resize handler
+            window.addEventListener('resize', handleWindowResize);
+        }
+
+        function setupChunkListeners() {
+            document.querySelectorAll('.chunk-boundary').forEach(chunk => {
+                chunk.addEventListener('click', function(e) {
+                    if (e.target.tagName === 'A') return;
+                    const chunkId = this.dataset.chunkId;
+                    selectChunk(chunkId);
+                });
+            });
+        }
+
+        function setupNavigationListeners() {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const chunkId = this.dataset.chunkId;
+                    selectChunk(chunkId);
+                    scrollToChunk(chunkId);
+                });
+            });
+        }
+
+        function handleKeyDown(e) {
+            if (e.key === 'Escape') {
+                closeMetadata();
+                closeEntityModal();
+            }
+
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                exportAnnotations();
+            }
+        }
+
+        function handleWindowResize() {
+            // Update any responsive elements here
+        }
+
+        function selectChunk(chunkId) {
+            currentChunkId = chunkId;
+
+            // Update UI
+            document.querySelectorAll('.chunk-boundary').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(c => c.classList.remove('active'));
+
+            const chunkEl = document.querySelector(`.chunk-boundary[data-chunk-id="${chunkId}"]`);
+            const navItem = document.querySelector(`.nav-item[data-chunk-id="${chunkId}"]`);
+
+            if (chunkEl) chunkEl.classList.add('active');
+            if (navItem) {
+                navItem.classList.add('active');
+                navItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            // Show metadata
+            showMetadata(chunkId);
+        }
+
+        function scrollToChunk(chunkId) {
+            const chunk = document.querySelector(`.chunk-boundary[data-chunk-id="${chunkId}"]`);
+            if (chunk) {
+                chunk.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function showMetadata(chunkId) {
+            const chunkData = allChunksData[chunkId];
+            if (!chunkData) return;
+
+            const panel = document.getElementById('metadata-panel');
+            const content = document.getElementById('metadata-content');
+
+            const chunkChanges = changes[chunkId] || {};
+            let html = '';
+
+            // Helper function to escape HTML
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // Summary
+            const summary = chunkChanges.summary !== undefined ? chunkChanges.summary : chunkData.enrichment.summary;
+            const summaryEdited = chunkChanges.summary !== undefined;
+            const escapedSummary = escapeHtml(summary || 'No summary');
+
+            html += `
+            <div class="metadata-section">
+                <div class="metadata-title">Summary</div>
+                <textarea
+                    class="editable-field ${summaryEdited ? 'edited' : ''}"
+                    id="summary-field"
+                    ${editMode ? '' : 'readonly'}
+                    onchange="updateField('${chunkId}', 'summary', this.value)"
+                >${escapedSummary}</textarea>
             </div>
-            <div style="background: #f8f9fa; padding: 10px; border-radius: 4px; text-align: center;">
-                <div style="font-size: 24px; font-weight: 700; color: #667eea;">${chunkData.sentences}</div>
-                <div style="font-size: 11px; color: #7f8c8d;">Sentences</div>
+            `;
+
+            // Rhetorical Role
+            const role = chunkChanges.rhetorical_role !== undefined ? chunkChanges.rhetorical_role : chunkData.enrichment.rhetorical_role;
+            const roleEdited = chunkChanges.rhetorical_role !== undefined;
+
+            html += `
+            <div class="metadata-section">
+                <div class="metadata-title">Rhetorical Role</div>
+                <select
+                    class="editable-field ${roleEdited ? 'edited' : ''}"
+                    id="role-field"
+                    ${editMode ? '' : 'disabled'}
+                    onchange="updateField('${chunkId}', 'rhetorical_role', this.value)"
+                >
+                    <option value="background">Background</option>
+                    <option value="definition">Definition</option>
+                    <option value="method">Method</option>
+                    <option value="procedure">Procedure</option>
+                    <option value="result">Result</option>
+                    <option value="discussion">Discussion</option>
+                    <option value="recommendation">Recommendation</option>
+                    <option value="limitation">Limitation</option>
+                    <option value="example">Example</option>
+                    <option value="conclusion">Conclusion</option>
+                    <option value="other">Other</option>
+                </select>
             </div>
-        </div>
-    </div>
-    `;
+            `;
 
-  content.innerHTML = html;
-  panel.classList.add("visible");
-}
+            setTimeout(() => {
+                const roleSelect = document.getElementById('role-field');
+                if (roleSelect) roleSelect.value = role;
+            }, 0);
 
-function getEntityColor(type) {
-  const colors = {
-    person: "#FFB3BA",
-    org: "#BAFFC9",
-    location: "#BAE1FF",
-    program: "#FFFFBA",
-    date: "#FFD8BA",
-    amount: "#E0BBE4",
-    metric: "#FFDAB9",
-    law: "#C7CEEA",
-    policy: "#B5EAD7",
-  };
-  return colors[type] || "#f0f0f0";
-}
+            // Keywords
+            const keywords = chunkChanges.keywords !== undefined ? chunkChanges.keywords : chunkData.enrichment.keywords;
+            html += `
+            <div class="metadata-section">
+                <div class="metadata-title">Keywords (${keywords.length})</div>
+                <div class="keywords-editor" id="keywords-editor">
+            `;
 
-function closeMetadata() {
-  document.getElementById("metadata-panel").classList.remove("visible");
-  document
-    .querySelectorAll(".chunk-boundary")
-    .forEach((c) => c.classList.remove("active"));
-  document
-    .querySelectorAll(".nav-item")
-    .forEach((c) => c.classList.remove("active"));
-  currentChunkId = null;
-}
+            keywords.forEach((kw, idx) => {
+                const escapedKw = escapeHtml(kw);
+                html += `
+                <span class="keyword-tag ${editMode ? 'editable' : ''}">
+                    ${escapedKw}
+                    ${editMode ? `<span class="keyword-remove" onclick="removeKeyword('${chunkId}', ${idx})">×</span>` : ''}
+                </span>
+                `;
+            });
 
-// EDIT MODE
-function toggleEditMode() {
-  editMode = !editMode;
-  const toggle = document.getElementById("mode-toggle");
-  const modeText = document.getElementById("mode-text");
-  const docContent = document.getElementById("document-content");
+            if (editMode) {
+                html += `<button class="keyword-add" onclick="addKeyword('${chunkId}')">+ Add</button>`;
+            }
 
-  if (editMode) {
-    toggle.classList.add("edit-mode");
-    modeText.textContent = "Switch to View Mode";
-    docContent.classList.add("edit-mode");
-  } else {
-    toggle.classList.remove("edit-mode");
-    modeText.textContent = "Switch to Edit Mode";
-    docContent.classList.remove("edit-mode");
-  }
+            html += '</div></div>';
 
-  // Refresh metadata panel if open
-  if (currentChunkId) {
-    showMetadata(currentChunkId);
-  }
-}
+            // Entities
+            const entities = chunkChanges.entities !== undefined ? chunkChanges.entities : chunkData.enrichment.entities;
+            html += `
+            <div class="metadata-section">
+                <div class="metadata-title">Entities (${entities.length})</div>
+                <div class="entity-editor">
+            `;
 
-// CHANGE TRACKING
-function trackChange(chunkId, field, value) {
-  if (!changes[chunkId]) {
-    changes[chunkId] = {};
-  }
-  changes[chunkId][field] = value;
+            entities.forEach((entity, idx) => {
+                const color = getEntityColor(entity.type);
+                const escapedText = escapeHtml(entity.text);
+                const escapedType = escapeHtml(entity.type);
+                html += `
+                <div class="entity-item ${editMode ? 'editable' : ''}" onclick="${editMode ? `editEntity('${chunkId}', ${idx})` : ''}">
+                    <div class="entity-text">${escapedText}</div>
+                    <div class="entity-type-badge" style="background: ${color};">${escapedType}</div>
+                    ${editMode ? `<button class="entity-remove" onclick="event.stopPropagation(); removeEntity('${chunkId}', ${idx})">×</button>` : ''}
+                </div>
+                `;
+            });
 
-  // Update UI
-  updateChangeBadge();
-  markChunkAsEdited(chunkId);
-}
+            if (editMode) {
+                html += `<button class="entity-add" onclick="addEntity('${chunkId}')">+ Add Entity</button>`;
+            }
 
-function updateChangeBadge() {
-  const count = Object.keys(changes).length;
-  const badge = document.getElementById("changes-badge");
-  const countEl = document.getElementById("changes-count");
+            html += '</div></div>';
 
-  if (count > 0) {
-    badge.style.display = "block";
-    countEl.textContent = count;
-  } else {
-    badge.style.display = "none";
-  }
-}
+            // Statistics
+            html += `
+            <div class="metadata-section">
+                <div class="metadata-title">Statistics</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 4px; text-align: center;">
+                        <div style="font-size: 24px; font-weight: 700; color: #667eea;">${chunkData.meta.words}</div>
+                        <div style="font-size: 11px; color: #7f8c8d;">Words</div>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 4px; text-align: center;">
+                        <div style="font-size: 24px; font-weight: 700; color: #667eea;">${chunkData.meta.sentences}</div>
+                        <div style="font-size: 11px; color: #7f8c8d;">Sentences</div>
+                    </div>
+                </div>
+            </div>
+            `;
 
-function markChunkAsEdited(chunkId) {
-  const chunk = document.querySelector(
-    `.chunk-boundary[data-chunk-id="${chunkId}"]`
-  );
-  const navItem = document.querySelector(
-    `.nav-item[data-chunk-id="${chunkId}"]`
-  );
+            content.innerHTML = html;
+            panel.classList.add('visible');
+        }
 
-  if (chunk && !chunk.classList.contains("edited")) {
-    chunk.classList.add("edited");
-    const badge = document.createElement("span");
-    badge.className = "edit-badge";
-    badge.textContent = "EDITED";
-    chunk.appendChild(badge);
-  }
+        function getEntityColor(type) {
+            const colors = {
+                person: '#FFB3BA',
+                org: '#BAFFC9',
+                location: '#BAE1FF',
+                program: '#FFFFBA',
+                date: '#FFD8BA',
+                amount: '#E0BBE4',
+                metric: '#FFDAB9',
+                law: '#C7CEEA',
+                policy: '#B5EAD7'
+            };
+            return colors[type] || '#f0f0f0';
+        }
 
-  if (navItem) {
-    navItem.classList.add("edited");
-  }
-}
+        function closeMetadata() {
+            document.getElementById('metadata-panel').classList.remove('visible');
+            document.querySelectorAll('.chunk-boundary').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(c => c.classList.remove('active'));
+            currentChunkId = null;
+        }
 
-// FIELD UPDATES
-function updateField(chunkId, field, value) {
-  trackChange(chunkId, field, value);
-  showMetadata(chunkId);
-}
+        function toggleEditMode() {
+            editMode = !editMode;
+            const toggle = document.getElementById('mode-toggle');
+            const modeText = document.getElementById('mode-text');
+            const docContent = document.getElementById('document-content');
 
-function removeKeyword(chunkId, index) {
-  const chunkData = allChunksData[chunkId];
-  const currentKeywords =
-    changes[chunkId]?.keywords || chunkData.keywords || [];
-  const newKeywords = currentKeywords.filter((_, i) => i !== index);
-  trackChange(chunkId, "keywords", newKeywords);
-  showMetadata(chunkId);
-}
+            if (editMode) {
+                toggle.classList.add('edit-mode');
+                modeText.textContent = 'Switch to View Mode';
+                docContent.classList.add('edit-mode');
+            } else {
+                toggle.classList.remove('edit-mode');
+                modeText.textContent = 'Switch to Edit Mode';
+                docContent.classList.remove('edit-mode');
+            }
 
-function addKeyword(chunkId) {
-  const kw = prompt("Enter new keyword:");
-  if (kw && kw.trim()) {
-    const chunkData = allChunksData[chunkId];
-    const currentKeywords =
-      changes[chunkId]?.keywords || chunkData.keywords || [];
-    const newKeywords = [...currentKeywords, kw.trim()];
-    trackChange(chunkId, "keywords", newKeywords);
-    showMetadata(chunkId);
-  }
-}
+            if (currentChunkId) {
+                showMetadata(currentChunkId);
+            }
+        }
 
-function removeEntity(chunkId, index) {
-  const chunkData = allChunksData[chunkId];
-  const currentEntities =
-    changes[chunkId]?.entities || chunkData.entities || [];
-  const newEntities = currentEntities.filter((_, i) => i !== index);
-  trackChange(chunkId, "entities", newEntities);
-  showMetadata(chunkId);
-}
+        function updateUIForEditMode() {
+            // Called after initialization
+            updateChangeBadge();
+        }
 
-function editEntity(chunkId, index) {
-  const chunkData = allChunksData[chunkId];
-  const currentEntities =
-    changes[chunkId]?.entities || chunkData.entities || [];
-  const entity = currentEntities[index];
+        function trackChange(chunkId, field, value) {
+            if (!changes[chunkId]) {
+                changes[chunkId] = {};
+            }
+            changes[chunkId][field] = value;
 
-  editingEntity = { chunkId, index, entity };
+            updateChangeBadge();
+            markChunkAsEdited(chunkId);
+        }
 
-  document.getElementById("entity-text-input").value = entity.text;
-  document.getElementById("entity-type-input").value = entity.type;
-  document.getElementById("entity-modal").classList.add("visible");
-}
+        function updateChangeBadge() {
+            const count = Object.keys(changes).length;
+            const badge = document.getElementById('changes-badge');
+            const countEl = document.getElementById('changes-count');
 
-function addEntity(chunkId) {
-  const text = prompt("Enter entity text:");
-  if (!text || !text.trim()) return;
+            if (count > 0) {
+                badge.style.display = 'block';
+                countEl.textContent = count;
+            } else {
+                badge.style.display = 'none';
+            }
+        }
 
-  const type = prompt(
-    "Enter entity type (person/org/location/program/date/amount/metric/law/policy):"
-  );
-  if (!type || !type.trim()) return;
+        function markChunkAsEdited(chunkId) {
+            const chunk = document.querySelector(`.chunk-boundary[data-chunk-id="${chunkId}"]`);
+            const navItem = document.querySelector(`.nav-item[data-chunk-id="${chunkId}"]`);
 
-  const chunkData = allChunksData[chunkId];
-  const currentEntities =
-    changes[chunkId]?.entities || chunkData.entities || [];
-  const newEntity = { text: text.trim(), type: type.trim() };
-  const newEntities = [...currentEntities, newEntity];
+            if (chunk && !chunk.classList.contains('edited')) {
+                chunk.classList.add('edited');
+                const badge = document.createElement('span');
+                badge.className = 'edit-badge';
+                badge.textContent = 'EDITED';
+                chunk.appendChild(badge);
+            }
 
-  trackChange(chunkId, "entities", newEntities);
-  showMetadata(chunkId);
-}
+            if (navItem) {
+                navItem.classList.add('edited');
+            }
+        }
 
-function closeEntityModal() {
-  document.getElementById("entity-modal").classList.remove("visible");
-  editingEntity = null;
-}
+        function updateField(chunkId, field, value) {
+            trackChange(chunkId, field, value);
+            showMetadata(chunkId);
+        }
 
-function saveEntityEdit() {
-  if (!editingEntity) return;
+        function removeKeyword(chunkId, index) {
+            const chunkData = allChunksData[chunkId];
+            const currentKeywords = changes[chunkId]?.keywords || chunkData.enrichment.keywords || [];
+            const newKeywords = currentKeywords.filter((_, i) => i !== index);
+            trackChange(chunkId, 'keywords', newKeywords);
+            showMetadata(chunkId);
+        }
 
-  const { chunkId, index } = editingEntity;
-  const newText = document.getElementById("entity-text-input").value;
-  const newType = document.getElementById("entity-type-input").value;
+        function addKeyword(chunkId) {
+            const kw = prompt('Enter new keyword:');
+            if (kw && kw.trim()) {
+                const chunkData = allChunksData[chunkId];
+                const currentKeywords = changes[chunkId]?.keywords || chunkData.enrichment.keywords || [];
+                const newKeywords = [...currentKeywords, kw.trim()];
+                trackChange(chunkId, 'keywords', newKeywords);
+                showMetadata(chunkId);
+            }
+        }
 
-  const chunkData = allChunksData[chunkId];
-  const currentEntities =
-    changes[chunkId]?.entities || chunkData.entities || [];
+        function removeEntity(chunkId, index) {
+            const chunkData = allChunksData[chunkId];
+            const currentEntities = changes[chunkId]?.entities || chunkData.enrichment.entities || [];
+            const newEntities = currentEntities.filter((_, i) => i !== index);
+            trackChange(chunkId, 'entities', newEntities);
+            showMetadata(chunkId);
+            
+            // Rebuild the document content to reflect entity changes
+            buildDocumentContent();
+            setupEventListeners();
+        }
 
-  const newEntities = [...currentEntities];
-  newEntities[index] = { ...newEntities[index], text: newText, type: newType };
+        function editEntity(chunkId, index) {
+            const chunkData = allChunksData[chunkId];
+            const currentEntities = changes[chunkId]?.entities || chunkData.enrichment.entities || [];
+            const entity = currentEntities[index];
 
-  trackChange(chunkId, "entities", newEntities);
-  closeEntityModal();
-  showMetadata(chunkId);
-}
+            editingEntity = { chunkId, index, entity };
 
-// EXPORT
-function exportAnnotations() {
-  // Only include chunks that have changes
-  const exportData = {};
+            document.getElementById('entity-text-input').value = entity.text;
+            document.getElementById('entity-type-input').value = entity.type;
+            document.getElementById('entity-modal').classList.add('visible');
+        }
 
-  for (const chunkId in changes) {
-    const chunkData = allChunksData[chunkId];
-    exportData[chunkId] = { ...chunkData, ...changes[chunkId] };
-  }
+        function addEntity(chunkId) {
+            const text = prompt('Enter entity text:');
+            if (!text || !text.trim()) return;
 
-  // Create a download link
-  const dataStr =
-    "data:text/json;charset=utf-8," +
-    encodeURIComponent(JSON.stringify(exportData, null, 2));
-  const downloadAnchorNode = document.createElement("a");
-  downloadAnchorNode.setAttribute("href", dataStr);
-  downloadAnchorNode.setAttribute("download", "annotations_export.json");
-  document.body.appendChild(downloadAnchorNode);
-  downloadAnchorNode.click();
-  downloadAnchorNode.remove();
-}
+            const type = prompt('Enter entity type (person/org/location/program/date/amount/metric/law/policy):');
+            if (!type || !type.trim()) return;
 
-function resetChanges() {
-  if (confirm("Are you sure you want to reset all changes?")) {
-    changes = {};
-    updateChangeBadge();
+            const chunkData = allChunksData[chunkId];
+            const currentEntities = changes[chunkId]?.entities || chunkData.enrichment.entities || [];
+            const newEntity = { text: text.trim(), type: type.trim(), confidence: 1.0 };
+            const newEntities = [...currentEntities, newEntity];
 
-    // Reset UI
-    document.querySelectorAll(".chunk-boundary").forEach((el) => {
-      el.classList.remove("edited");
-      const badge = el.querySelector(".edit-badge");
-      if (badge) badge.remove();
-    });
+            trackChange(chunkId, 'entities', newEntities);
+            showMetadata(chunkId);
+            
+            // Rebuild the document content to reflect entity changes
+            buildDocumentContent();
+            setupEventListeners();
+        }
 
-    document.querySelectorAll(".nav-item").forEach((el) => {
-      el.classList.remove("edited");
-    });
+        function closeEntityModal() {
+            document.getElementById('entity-modal').classList.remove('visible');
+            editingEntity = null;
+        }
 
-    // Refresh metadata panel if open
-    if (currentChunkId) {
-      showMetadata(currentChunkId);
-    }
-  }
-}
+        function saveEntityEdit() {
+            if (!editingEntity) return;
 
-// Keyboard shortcuts
-document.addEventListener("keydown", function (e) {
-  if (e.key === "Escape") {
-    closeMetadata();
-  }
-});
+            const { chunkId, index } = editingEntity;
+            const newText = document.getElementById('entity-text-input').value;
+            const newType = document.getElementById('entity-type-input').value;
+
+            const chunkData = allChunksData[chunkId];
+            const currentEntities = changes[chunkId]?.entities || chunkData.enrichment.entities || [];
+
+            const newEntities = [...currentEntities];
+            newEntities[index] = { ...newEntities[index], text: newText, type: newType };
+
+            trackChange(chunkId, 'entities', newEntities);
+            closeEntityModal();
+            showMetadata(chunkId);
+            
+            // Rebuild the document content to reflect entity changes
+            buildDocumentContent();
+            setupEventListeners();
+        }
+
+        function exportAnnotations() {
+            const exportData = {};
+
+            for (const chunkId in changes) {
+                const chunkData = allChunksData[chunkId];
+                exportData[chunkId] = { ...chunkData, ...changes[chunkId] };
+            }
+
+            const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportData, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute('href', dataStr);
+            downloadAnchorNode.setAttribute('download', 'annotations_export.json');
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function resetChanges() {
+            if (confirm('Are you sure you want to reset all changes?')) {
+                changes = {};
+                updateChangeBadge();
+
+                document.querySelectorAll('.chunk-boundary').forEach(el => {
+                    el.classList.remove('edited');
+                    const badge = el.querySelector('.edit-badge');
+                    if (badge) badge.remove();
+                });
+
+                document.querySelectorAll('.nav-item').forEach(el => {
+                    el.classList.remove('edited');
+                });
+
+                if (currentChunkId) {
+                    showMetadata(currentChunkId);
+                }
+            }
+        }
+
+        // Start loading the data when the script loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadChunksData);
+        } else {
+            loadChunksData();
+        }
